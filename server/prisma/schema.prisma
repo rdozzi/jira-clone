@@ -1,0 +1,153 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String?  @db.VarChar(191)
+  email        String   @unique @db.VarChar(191)
+  passwordHash String //Hashed by bcrypt in node
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now()) @db.Timestamptz()
+  updatedAt    DateTime @updatedAt @db.Timestamptz()
+
+  //Relationships
+  projects       Project[] //One-to-many User-to-Project
+  comments       Comment[]
+  attachments    Attachment[]
+  assigneeTicket Ticket[]     @relation("assignee")
+  reporterTicket Ticket[]     @relation("reporter")
+  Ticket         Ticket[]
+}
+
+model Project {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(191)
+  description String?       @default("NA") @db.VarChar(191)
+  ownerId     Int
+  status      ProjectStatus
+  createdAt   DateTime      @default(now()) @db.Timestamptz()
+  updatedAt   DateTime      @updatedAt @db.Timestamptz()
+
+  //Relationships
+  owner User    @relation(fields: [ownerId], references: [id])
+  Board Board[]
+}
+
+model Board {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(191)
+  projectId Int
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt @db.Timestamptz()
+
+  //Relationship
+  project Project  @relation(fields: [projectId], references: [id])
+  tickets Ticket[]
+}
+
+model Ticket {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(191)
+  description String   @db.VarChar(191)
+  status      Status   @default(IN_PROGRESS)
+  priority    Priority
+  type        Type
+  assigneeId  Int
+  reporterId  Int
+  boardId     Int
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @db.Timestamptz()
+
+  //Relationship
+  board        Board         @relation(fields: [boardId], references: [id])
+  assignee     User          @relation(name: "assignee", fields: [assigneeId], references: [id])
+  reporter     User          @relation(name: "reporter", fields: [reporterId], references: [id])
+  comments     Comment[]
+  attachments  Attachment[]
+  ticketLabels TicketLabel[]
+  User         User?         @relation(fields: [userId], references: [id])
+  userId       Int?
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  ticketId  Int
+  authorId  Int
+  content   String   @db.VarChar(1000)
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt @db.Timestamptz()
+
+  //Relationship
+  ticket Ticket @relation(fields: [ticketId], references: [id])
+  author User   @relation(fields: [authorId], references: [id])
+}
+
+model Attachment {
+  id         Int      @id @default(autoincrement())
+  ticketId   Int
+  filePath   String
+  uploadedBy Int
+  createdAt  DateTime @default(now()) @db.Timestamptz()
+
+  //Relationship
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+  uploaded User   @relation(fields: [uploadedBy], references: [id])
+}
+
+model Label {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(191)
+  color       String        @db.VarChar(191)
+  createdAt   DateTime      @default(now()) @db.Timestamptz()
+  TicketLabel TicketLabel[]
+}
+
+model TicketLabel {
+  id       Int @id @default(autoincrement())
+  ticketId Int
+  labelId  Int
+
+  //Relationship
+  ticketLabel Ticket @relation(fields: [ticketId], references: [id])
+  label       Label  @relation(fields: [labelId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ProjectStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum Status {
+  BACKLOG
+  IN_PROGRESS
+  DONE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Type {
+  BUG
+  TASK
+  STORY
+}
