@@ -28,23 +28,6 @@ async function main() {
       role: 'USER',
     },
   });
-  // const user1 = await prisma.user.create({
-  //   data: {
-  //     email: 'user1@example.com',
-  //     name: 'Bob',
-  //     passwordHash: hashedPassword,
-  //     role: 'USER',
-  //   },
-  // });
-
-  // const user2 = await prisma.user.upsert({
-  //   data: {
-  //     email: 'user2@example.com',
-  //     name: 'Sally',
-  //     password: hashedPassword,
-  //     role: 'USER',
-  //   },
-  // });
 
   console.log(`Created users: ${user1.name}, ${user2.name}`);
 
@@ -70,21 +53,6 @@ async function main() {
       status: 'ARCHIVED',
     },
   });
-  // const project1 = await prisma.project.upsert({
-  //   data: {
-  //     name: 'Project1',
-  //     description: 'Test project 1 for seeding',
-  //     ownerId: user1.id,
-  //   },
-  // });
-
-  // const project2 = await prisma.project.upsert({
-  //   data: {
-  //     name: 'Project2',
-  //     description: 'Test project 2 for seeding',
-  //     ownerId: user2.id,
-  //   },
-  // });
 
   console.log(`Created users: ${project1.name}, ${project2.name}`);
 
@@ -100,20 +68,6 @@ async function main() {
     update: {},
     create: { name: 'board2', projectId: project2.id },
   });
-
-  // const board1 = await prisma.board.upsert({
-  //   data: {
-  //     name: 'board1',
-  //     projectId: project1.id,
-  //   },
-  // });
-
-  // const board2 = await prisma.board.upsert({
-  //   data: {
-  //     name: 'board2',
-  //     projectId: project2.id,
-  //   },
-  // });
 
   console.log(`Created boards: ${board1.name}, ${board2.name}`);
 
@@ -147,31 +101,6 @@ async function main() {
     },
   });
 
-  // const ticket1 = await prisma.ticket.upsert({
-  //   data: {
-  //     title: 'ticket1',
-  //     description: 'Ticket 1 used for seeding',
-  //     status: 'BACKLOG',
-  //     priority: 'HIGH',
-  //     type: 'BUG',
-  //     assigneeId: user1.id,
-  //     reporterId: user2.id,
-  //     boardId: board1.id,
-  //   },
-  // });
-
-  // const ticket2 = await prisma.ticket.upsert({
-  //   data: {
-  //     title: 'ticket2',
-  //     description: 'Ticket 2 used for seeding',
-  //     status: 'IN_PROGRESS',
-  //     priority: 'MEDIUM',
-  //     type: 'TASK',
-  //     assigneeId: user2.id,
-  //     reporterId: user1.id,
-  //     boardId: board2.id,
-  //   },
-  // });
   console.log(`Created Tickets: ${ticket1.title}, ${ticket2.title}`);
 
   //Seed Comments
@@ -195,20 +124,6 @@ async function main() {
       content: 'Content for comment 2',
     },
   });
-  //   data: {
-  //     ticketId: ticket1.id,
-  //     userId: user1.id,
-  //     content: 'Content for comment 1',
-  //   },
-  // });
-
-  // const comment2 = await prisma.comment.upsert({
-  //   data: {
-  //     ticketId: ticket2.id,
-  //     userId: user2.id,
-  //     content: 'Content for comment 2',
-  //   },
-  // });
 
   console.log(`Created Comments: ${comment1.content}, ${comment2.content}`);
 
@@ -233,22 +148,6 @@ async function main() {
     },
   });
 
-  // const attachment1 = await prisma.attachment.upsert({
-  //   data: {
-  //     ticketId: ticket1.id,
-  //     filePath: 'filepath_attachment1',
-  //     uploadedBy: user1.id,
-  //   },
-  // });
-
-  // const attachment2 = await prisma.attachment.upsert({
-  //   data: {
-  //     ticketId: ticket2.id,
-  //     filePath: 'filepath_attachment2',
-  //     uploadedBy: user2.id,
-  //   },
-  // });
-
   console.log(`Created Attachments: ${attachment1.id}, ${attachment2.id}`);
 
   //Seed Labels
@@ -269,19 +168,6 @@ async function main() {
       color: '#0000FF',
     },
   });
-  // const label1 = await prisma.label.upsert({
-  //   data: {
-  //     name: 'Urgent',
-  //     color: '#FF0000',
-  //   },
-  // });
-
-  // const label2 = await prisma.label.upsert({
-  //   data: {
-  //     name: 'Feature',
-  //     color: '#0000FF',
-  //   },
-  // });
   console.log(`Created Labels: ${label1.name}, ${label2.name}`);
 
   //Associate Labels with Tickets
