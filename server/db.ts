@@ -1,4 +1,6 @@
-import Pool from 'pg';
+import { Pool } from 'pg';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import dotenv from 'dotenv';
 
 const pool = new Pool({
   user: process.env.DB_USER,
