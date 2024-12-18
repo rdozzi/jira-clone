@@ -1,5 +1,7 @@
 import express, { Request, Response, Application } from 'express';
 import userRoutes from './routes/userRoutes';
+import projectRoutes from './routes/projectRoutes';
+import ticketRoutes from './routes/ticketRoutes';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
@@ -10,7 +12,6 @@ const app: Application = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/api', userRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send(
@@ -19,18 +20,15 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // get all users
-app.get('/', (req: Request, res: Response) => {
-  try {
-    console.log(req.body);
-  } catch (error) {
-    console.error(error);
-  }
-});
-// get all projects
+app.use('/api', userRoutes);
 
-// get all boards
+// get all projects
+app.use('/api', projectRoutes);
 
 // get all tickets
+app.use('/api', ticketRoutes);
+
+// get all boards
 
 // get all comments
 
