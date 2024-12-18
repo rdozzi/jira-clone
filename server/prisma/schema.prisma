@@ -46,11 +46,12 @@ model Project {
 }
 
 model Board {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(255)
-  projectId Int
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt @db.Timestamptz()
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(255)
+  projectId   Int
+  description String?  @db.VarChar(255)
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @db.Timestamptz()
 
   //Relationship
   project Project  @relation(fields: [projectId], references: [id])
