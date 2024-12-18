@@ -14,4 +14,17 @@ router.get('/projects', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch projects' });
     }
 });
+router.get('/projects/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const projects = await prisma.project.findUnique({
+            where: { id: Number(id) },
+        });
+        res.status(200).json(projects);
+    }
+    catch (error) {
+        console.error('Error fetching projects: ', error);
+        res.status(500).json({ error: 'Failed to fetch projects' });
+    }
+});
 exports.default = router;

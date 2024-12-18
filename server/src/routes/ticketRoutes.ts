@@ -14,4 +14,20 @@ router.get('/tickets', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
+router.get(
+  '/tickets/:id',
+  async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    try {
+      const tickets = await prisma.ticket.findUnique({
+        where: { id: Number(id) },
+      });
+      res.status(200).json(tickets);
+    } catch (error) {
+      console.error('Error fetching tickets: ', error);
+      res.status(500).json({ error: 'Failed to fetch tickets' });
+    }
+  }
+);
+
 export default router;
