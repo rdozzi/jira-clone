@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { hashPassword } from '../password';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -32,8 +33,17 @@ router.get('/users/:id', async (req: Request, res: Response): Promise<void> => {
 
 router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const userDetails = await req.body;
-    const user = await prisma.user.create({ data: userDetails });
+    // const userDetails = await req.body;
+    const { email, name, passwordHash, role } = req.body;
+    const hashedPassword = await hashPassword(passwordHash);
+    const user = await prisma.user.create({
+      data: {
+        email: email,
+        name: name,
+        passwordHash: hashedPassword,
+        role: role,
+      },
+    });
     res.status(200).json(user);
   } catch (error) {
     console.error('Error creating user: ', error);
