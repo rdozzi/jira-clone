@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const client_1 = require("@prisma/client");
+const password_1 = require("../password");
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
 // Get all users
@@ -30,8 +31,17 @@ router.get('/users/:id', async (req, res) => {
 // Create user
 router.post('/', async (req, res) => {
     try {
-        const userDetails = await req.body;
-        const user = await prisma.user.create({ data: userDetails });
+        // const userDetails = await req.body;
+        const { email, name, passwordHash, role } = req.body;
+        const hashedPassword = await (0, password_1.hashPassword)(passwordHash);
+        const user = await prisma.user.create({
+            data: {
+                email: email,
+                name: name,
+                passwordHash: hashedPassword,
+                role: role,
+            },
+        });
         res.status(200).json(user);
     }
     catch (error) {
