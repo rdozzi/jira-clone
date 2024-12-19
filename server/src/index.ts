@@ -1,7 +1,7 @@
 import express, { Request, Response, Application } from 'express';
-import userRoutes from './routes/userRoutes';
-import projectRoutes from './routes/projectRoutes';
-import ticketRoutes from './routes/ticketRoutes';
+import userRoutes from './router/userRoutes';
+import projectRoutes from './router/projectRoutes';
+import ticketRoutes from './router/ticketRoutes';
 import dotenv from 'dotenv';
 import cors from 'cors';
 

@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
-const projectRoutes_1 = __importDefault(require("./routes/projectRoutes"));
-const ticketRoutes_1 = __importDefault(require("./routes/ticketRoutes"));
+const userRoutes_1 = __importDefault(require("./router/userRoutes"));
+const projectRoutes_1 = __importDefault(require("./router/projectRoutes"));
+const ticketRoutes_1 = __importDefault(require("./router/ticketRoutes"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
