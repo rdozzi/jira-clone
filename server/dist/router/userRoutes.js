@@ -19,8 +19,8 @@ router.get('/users', async (req, res) => {
 router.get('/users/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const users = await prisma.user.findUnique({ where: { id: Number(id) } });
-        res.status(200).json(users);
+        const user = await prisma.user.findUnique({ where: { id: Number(id) } });
+        res.status(200).json(user);
     }
     catch (error) {
         console.error('Error fetching users: ', error);
@@ -37,6 +37,19 @@ router.post('/', async (req, res) => {
     catch (error) {
         console.error('Error creating user: ', error);
         res.status(500).json({ error: 'Failed to create user' });
+    }
+});
+router.delete('/users/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleteData = await prisma.user.delete({
+            where: { id: Number(id) },
+        });
+        res.status(200).json(deleteData);
+    }
+    catch (error) {
+        console.error('Error fetching users: ', error);
+        res.status(500).json({ error: 'Failed to fetch users' });
     }
 });
 exports.default = router;
