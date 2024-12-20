@@ -2,6 +2,7 @@ import express, { Request, Response, Application } from 'express';
 import userRoutes from './router/userRoutes';
 import projectRoutes from './router/projectRoutes';
 import ticketRoutes from './router/ticketRoutes';
+import commentRoutes from './router/commentRoutes';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
@@ -28,13 +29,8 @@ app.use('/api', projectRoutes);
 // get all tickets
 app.use('/api', ticketRoutes);
 
-// get all boards
-
-// get all comments
-
-// get all attachments
-
-// get all labels
+// Fetch comments for a specific ticket
+app.use('/api', commentRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is Running on port ${process.env.PORT} with Nodemon!`);
