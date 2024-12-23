@@ -4,6 +4,7 @@ const express_1 = require("express");
 const client_1 = require("@prisma/client");
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
+// Get all Tickets
 router.get('/tickets', async (req, res) => {
     try {
         const tickets = await prisma.ticket.findMany();
@@ -14,6 +15,7 @@ router.get('/tickets', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch users' });
     }
 });
+// Get all Tickets by Id
 router.get('/tickets/:id', async (req, res) => {
     const { id } = req.params;
     try {
@@ -27,6 +29,22 @@ router.get('/tickets/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch tickets' });
     }
 });
+// Get all Tickets by User Id
+router.get('/tickets/assigneeId/:userId', async (req, res) => {
+    const { userId } = req.params;
+    console.log(userId);
+    try {
+        const tickets = await prisma.ticket.findMany({
+            where: { assigneeId: Number(userId) },
+        });
+        res.status(200).json(tickets);
+    }
+    catch (error) {
+        console.log('Error fetching tickets: ', error);
+        res.status(500).json({ error: 'Failed to fetch tickets' });
+    }
+});
+// Create new ticket
 router.post('/tickets', async (req, res) => {
     try {
         const ticketData = req.body;
@@ -40,6 +58,7 @@ router.post('/tickets', async (req, res) => {
         res.status(500).json({ error: 'Failed to create ticket' });
     }
 });
+// Delete ticket
 router.delete('/tickets/:id', async (req, res) => {
     try {
         const { id } = req.params;
