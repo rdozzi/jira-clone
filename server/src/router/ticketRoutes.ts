@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const router = Router();
 const prisma = new PrismaClient();
 
+// Get all Tickets
 router.get('/tickets', async (req: Request, res: Response): Promise<void> => {
   try {
     const tickets = await prisma.ticket.findMany();
@@ -14,6 +15,7 @@ router.get('/tickets', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
+// Get all Tickets by Id
 router.get(
   '/tickets/:id',
   async (req: Request, res: Response): Promise<void> => {
@@ -30,6 +32,25 @@ router.get(
   }
 );
 
+// Get all Tickets by User Id
+router.get(
+  '/tickets/assigneeId/:userId',
+  async (req: Request, res: Response): Promise<void> => {
+    const { userId } = req.params;
+    console.log(userId);
+    try {
+      const tickets = await prisma.ticket.findMany({
+        where: { assigneeId: Number(userId) },
+      });
+      res.status(200).json(tickets);
+    } catch (error) {
+      console.log('Error fetching tickets: ', error);
+      res.status(500).json({ error: 'Failed to fetch tickets' });
+    }
+  }
+);
+
+// Create new ticket
 router.post('/tickets', async (req: Request, res: Response): Promise<void> => {
   try {
     const ticketData = req.body;
@@ -43,6 +64,7 @@ router.post('/tickets', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
+// Delete ticket
 router.delete(
   '/tickets/:id',
   async (req: Request, res: Response): Promise<void> => {
