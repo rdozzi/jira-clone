@@ -58,6 +58,24 @@ router.post('/tickets', async (req, res) => {
         res.status(500).json({ error: 'Failed to create ticket' });
     }
 });
+// Update a ticket
+router.patch('/tickets/updateTicket/:assigneeId/:ticketId', async (req, res) => {
+    try {
+        const ticketData = req.body;
+        const { assigneeId, ticketId } = req.params;
+        const ticket = await prisma.ticket.update({
+            where: { assigneeId: Number(assigneeId), id: Number(ticketId) },
+            data: {
+                ...ticketData,
+            },
+        });
+        res.status(200).json(ticket);
+    }
+    catch {
+        console.error('Error editing ticket: ', error);
+        res.status(500).json({ error: 'Failed to edit ticket' });
+    }
+});
 // Delete ticket
 router.delete('/tickets/:id', async (req, res) => {
     try {
