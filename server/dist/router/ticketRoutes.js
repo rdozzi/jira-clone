@@ -71,7 +71,7 @@ router.patch('/tickets/updateTicket/:assigneeId/:ticketId', async (req, res) => 
         });
         res.status(200).json(ticket);
     }
-    catch {
+    catch (error) {
         console.error('Error editing ticket: ', error);
         res.status(500).json({ error: 'Failed to edit ticket' });
     }
