@@ -5,7 +5,7 @@ interface User {
   name: string;
 }
 
-function App() {
+function GetAllUsers() {
   const [userData, setUserData] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,6 +26,23 @@ function App() {
     fetchUsers();
   }, []);
 
+  // useEffect(() => {
+  //   const fetchUserbyId = async (id: number) => {
+  //     try {
+  //       const res = await fetch(`http://localhost:3000/api/users/${id}`);
+  //       if (!res.ok) {
+  //         throw new Error('Failed to fetch user');
+  //       }
+  //       const data = await res.json();
+  //       setUserData(data);
+  //     } catch (err: any | unknown) {
+  //       console.error(err);
+  //       setError(err.message);
+  //     }
+  //   };
+  //   fetchUserbyId(1);
+  // }, []);
+
   return (
     <div>
       {error && <p>Error: {error}</p>}
@@ -34,8 +51,11 @@ function App() {
           <li key={user.id}>{user.name}</li>
         ))}
       </ul>
+      {/* <span>
+        `User Id: {userData.id}, User Name: {userData.name}`
+      </span>*/}
     </div>
   );
 }
 
-export default App;
+export default GetAllUsers;
