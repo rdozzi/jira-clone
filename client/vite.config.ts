@@ -4,5 +4,5 @@ import eslintPlugin from 'vite-plugin-eslint';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), eslintPlugin()],
+  plugins: [react(), eslintPlugin({ cache: false })],
 });
