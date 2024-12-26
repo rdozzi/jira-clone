@@ -7,11 +7,13 @@ import Calender from './pages/Calender';
 function App() {
   return (
     <BrowserRouter>
-      <AppLayout>
-        <Route path='tickets/ticketlist' element={<TicketList />} />
-        <Route path='tickets/kanbanboard' element={<KanbanBoard />} />
-        <Route path='tickets/calendar' element={<Calender />} />
-      </AppLayout>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route path='tickets/ticketlist' element={<TicketList />} />
+          <Route path='tickets/kanbanboard' element={<KanbanBoard />} />
+          <Route path='tickets/calendar' element={<Calender />} />
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }
