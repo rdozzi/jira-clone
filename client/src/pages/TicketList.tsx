@@ -1,6 +1,6 @@
-import React from 'react';
 import { Table } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
+import { useGetTickets } from '../features/tickets/useGetTickets';
 
 interface DataType {
   id: number;
@@ -15,12 +15,12 @@ const columns: TableColumnsType<DataType> = [
   {
     title: 'Title',
     dataIndex: 'title',
-    sorter: { compare: (a, b) => a.title - b.title },
+    sorter: { compare: (a, b) => a.title.localeCompare(b.title) },
   },
   {
     title: 'Description',
     dataIndex: 'description',
-    sorter: { compare: (a, b) => a.description - b.description },
+    sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
   },
   {
     title: 'Status',
@@ -46,7 +46,16 @@ const onChange: TableProps<DataType>['onChange'] = (
   extra
 ) => console.log('params', pagination, filters, sorter, extra);
 
-function TicketList(): React.FC {
-  return <Table<DataType> columns={columns} onChange={onChange} />;
+function TicketList() {
+  const { isLoading, tickets, error } = useGetTickets();
+  console.log(tickets);
+
+  return (
+    <Table<DataType>
+      columns={columns}
+      dataSource={tickets}
+      onChange={onChange}
+    />
+  );
 }
 export default TicketList;
