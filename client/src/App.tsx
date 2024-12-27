@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import AppLayout from './ui/AppLayout';
 import TicketList from './pages/TicketList';
-import KanbanBoard from './pages/KanbanBoard';
+import TaskBoard from './pages/TaskBoard';
 import Calender from './pages/Calender';
 
 const queryClient = new QueryClient({
@@ -22,7 +22,7 @@ function App() {
         <Routes>
           <Route element={<AppLayout />}>
             <Route path='tickets/ticketlist' element={<TicketList />} />
-            <Route path='tickets/kanbanboard' element={<KanbanBoard />} />
+            <Route path='tickets/taskboard' element={<TaskBoard />} />
             <Route path='tickets/calendar' element={<Calender />} />
           </Route>
         </Routes>
