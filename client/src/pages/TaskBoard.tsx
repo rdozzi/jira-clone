@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card } from 'antd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { Card, Space } from 'antd';
 
 const ticketsDataExample = [
   { id: 't1', name: 'Ticket 1', description: 'Create Task Board' },
@@ -9,17 +10,41 @@ const ticketsDataExample = [
 
 function TaskBoard() {
   return (
-    <ul>
-      {ticketsDataExample.map((object) => (
-        // <li key={object.id}>
-        //   <div>{object.name}</div>
-        //   <div>{object.description}</div>
-        // </li>
-        <Card title={object.name} bordered={false} style={{ width: 300 }}>
-          <p>{object.description}</p>
-        </Card>
-      ))}
-    </ul>
+    <DragDropContext>
+      <Droppable droppableId='tickets'>
+        {(provided) => (
+          <ul
+            className='characters'
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+          >
+            {ticketsDataExample.map((object, index) => (
+              <Draggable key={object.id} draggableId={object.id} index={index}>
+                {(provided) => (
+                  <Space
+                    direction='vertical'
+                    size='middle'
+                    style={{ display: 'flex' }}
+                  >
+                    <Card
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      ref={provided.innerRef}
+                      title={object.name}
+                      bordered={false}
+                      size='small'
+                    >
+                      <p>{object.description}</p>
+                    </Card>
+                  </Space>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </ul>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 }
 
