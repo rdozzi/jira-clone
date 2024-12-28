@@ -5,6 +5,7 @@ import AppLayout from './ui/AppLayout';
 import TicketList from './pages/TicketList';
 import TaskBoard from './pages/TaskBoard';
 import Calender from './pages/Calender';
+import TaskBoardSandbox from './pages/TaskBoardSandbox';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,6 +25,7 @@ function App() {
             <Route path='tickets/ticketlist' element={<TicketList />} />
             <Route path='tickets/taskboard' element={<TaskBoard />} />
             <Route path='tickets/calendar' element={<Calender />} />
+            <Route path='taskboardsandbox' element={<TaskBoardSandbox />} />
           </Route>
         </Routes>
       </BrowserRouter>
