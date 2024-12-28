@@ -12,9 +12,16 @@ function TaskBoard() {
   const [tickets, setTickets] = useState(ticketsDataExample);
 
   function handleTickets(result) {
+    const { source, destination, type } = result;
+    if (!destination) return;
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    )
+      return;
     const items = Array.from(tickets);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
+    const [reorderedItem] = items.splice(source.index, 1);
+    items.splice(destination.index, 0, reorderedItem);
 
     setTickets(items);
   }
@@ -24,18 +31,22 @@ function TaskBoard() {
       <Droppable droppableId='tickets'>
         {(provided) => (
           <ul
-            className='characters'
+            className='tickets'
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {tickets.map((object, index) => (
-              <Draggable key={object.id} draggableId={object.id} index={index}>
-                {(provided) => (
-                  <Space
-                    direction='vertical'
-                    size='middle'
-                    style={{ display: 'flex' }}
-                  >
+            <Space
+              direction='vertical'
+              size='small'
+              style={{ display: 'flex' }}
+            >
+              {tickets.map((object, index) => (
+                <Draggable
+                  key={object.id}
+                  draggableId={object.id}
+                  index={index}
+                >
+                  {(provided) => (
                     <Card
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
@@ -46,10 +57,10 @@ function TaskBoard() {
                     >
                       <p>{object.description}</p>
                     </Card>
-                  </Space>
-                )}
-              </Draggable>
-            ))}
+                  )}
+                </Draggable>
+              ))}
+            </Space>
             {provided.placeholder}
           </ul>
         )}
