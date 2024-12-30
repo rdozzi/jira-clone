@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import AppLayout from './ui/AppLayout';
 import TicketList from './pages/TicketList';
-import Calender from './pages/Calendar';
+import Calendar from './pages/Calendar';
 import TaskBoard from './pages/TaskBoard';
 
 const queryClient = new QueryClient({
