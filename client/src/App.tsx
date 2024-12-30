@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import AppLayout from './ui/AppLayout';
 import TicketList from './pages/TicketList';
-import Calendar from './pages/Calendar';
+import TaskCalendar from './pages/TaskCalendar';
 import TaskBoard from './pages/TaskBoard';
 
 const queryClient = new QueryClient({
@@ -23,7 +23,7 @@ function App() {
           <Route element={<AppLayout />}>
             <Route path='tickets/ticketlist' element={<TicketList />} />
             <Route path='tickets/taskboard' element={<TaskBoard />} />
-            <Route path='tickets/calendar' element={<Calendar />} />
+            <Route path='tickets/calendar' element={<TaskCalendar />} />
           </Route>
         </Routes>
       </BrowserRouter>
