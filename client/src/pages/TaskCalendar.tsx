@@ -13,11 +13,13 @@ function TaskCalender() {
   const [ticketState, setTicketState] = useState([]);
   useEffect(() => {
     if (tickets) {
-      setTicketState(() => tickets);
+      const formattedTickets = tickets.map((ticket) => ({
+        ...ticket,
+        dueDate: dayjs(ticket.dueDate).format('YYYY-MM-DD'),
+      }));
+      setTicketState(formattedTickets);
     }
   }, [tickets]);
-
-  console.log(ticketState);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -26,22 +28,22 @@ function TaskCalender() {
   function cellRender(date, info) {
     if (info.type === 'date') {
       const formattedDate = dayjs(date).format('YYYY-MM-DD');
-      const activeTickets = ticketState.filter(
-        (ticket) => dayjs(ticket.dueDate).format('YYYY-MM-DD') === formattedDate
+      const ticketsForDate = ticketState.filter(
+        (ticket) => ticket.dueDate === formattedDate
       );
-      console.log(activeTickets);
 
       return (
         <ul>
-          {activeTickets.map((activeTicket) => (
-            <li key={activeTicket.id}>
-              <Badge status='success' text={activeTicket.title} />
+          {ticketsForDate.map((ticket) => (
+            <li key={ticket.id}>
+              <Badge status='success' text={ticket.title} />
             </li>
           ))}
         </ul>
       );
+    } else {
+      return null;
     }
-    return null;
   }
 
   return <Calendar cellRender={cellRender} />;
