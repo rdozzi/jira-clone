@@ -1,10 +1,12 @@
 import { Table } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
 import { useGetTickets } from '../features/tickets/useGetTickets';
+import dayjs from 'dayjs';
 
 interface DataType {
   id: number;
   title: string;
+  dueDate: Date;
   description: string;
   status: string;
   priority: string;
@@ -23,19 +25,25 @@ const columns: TableColumnsType<DataType> = [
     sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
   },
   {
+    title: 'Due Date',
+    dataIndex: `dueDate`,
+    sorter: { compare: (a, b) => a.dueDate.valueOf() - b.dueDate.valueOf() },
+    render: (date) => dayjs(date).format('MM / DD / YYYY'),
+  },
+  {
     title: 'Status',
     dataIndex: 'status',
-    sorter: { compare: (a, b) => a.status - b.status },
+    sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
   },
   {
     title: 'Priority',
     dataIndex: 'priority',
-    sorter: { compare: (a, b) => a.priority - b.priority },
+    sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
   },
   {
     title: 'Type',
     dataIndex: 'type',
-    sorter: { compare: (a, b) => a.priority - b.priority },
+    sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
   },
 ];
 
@@ -48,12 +56,12 @@ const onChange: TableProps<DataType>['onChange'] = (
 
 function TicketList() {
   const { isLoading, tickets, error } = useGetTickets();
-  console.log(tickets);
 
   return (
     <Table<DataType>
       columns={columns}
       dataSource={tickets}
+      rowKey='id'
       onChange={onChange}
     />
   );
