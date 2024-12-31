@@ -12,7 +12,8 @@ async function main() {
     update: {},
     create: {
       email: 'user1@example.com',
-      name: 'Bob',
+      first_name: 'Bob',
+      last_name: 'Newhart',
       passwordHash: hashedPassword,
       role: 'USER',
     },
@@ -23,13 +24,16 @@ async function main() {
     update: {},
     create: {
       email: 'user2@example.com',
-      name: 'Sally',
+      first_name: 'Sally',
+      last_name: 'Fields',
       passwordHash: hashedPassword,
       role: 'USER',
     },
   });
 
-  console.log(`Created users: ${user1.name}, ${user2.name}`);
+  console.log(
+    `Created users: ${user1.first_name} ${user1.last_name} , ${user2.first_name} ${user2.last_name}`
+  );
 
   // Seed Projects
   const project1 = await prisma.project.upsert({
