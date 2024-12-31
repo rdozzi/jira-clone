@@ -1,54 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Space, Card } from 'antd';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { useGetTickets } from '../features/tickets/useGetTickets';
 
 const boards = [
-  { id: 'backlog', name: 'Backlog' },
-  { id: 'inProgress', name: 'In Progress' },
-  { id: 'done', name: 'Done' },
+  { id: 'BACKLOG', name: 'Backlog' },
+  { id: 'IN_PROGRESS', name: 'In Progress' },
+  { id: 'DONE', name: 'Done' },
 ];
 
-const tickets = [
-  {
-    id: 't1',
-    name: 'Ticket 1',
-    description: 'Create Task Board',
-    status: 'inProgress',
-  },
-  {
-    id: 't2',
-    name: 'Ticket 2',
-    description: 'Create Calendar',
-    status: 'backlog',
-  },
-  {
-    id: 't3',
-    name: 'Ticket 3',
-    description: 'Improve your App :oP',
-    status: 'backlog',
-  },
-];
+// const tickets = [
+//   {
+//     id: 't1',
+//     name: 'Ticket 1',
+//     description: 'Create Task Board',
+//     status: 'inProgress',
+//   },
+//   {
+//     id: 't2',
+//     name: 'Ticket 2',
+//     description: 'Create Calendar',
+//     status: 'backlog',
+//   },
+//   {
+//     id: 't3',
+//     name: 'Ticket 3',
+//     description: 'Improve your App :oP',
+//     status: 'backlog',
+//   },
+// ];
 
-function initializeBoards(boards, tickets) {
-  // Create an object with board IDs as keys and empty arrys as values
-  const initialState = boards.reduce((acc, board) => {
-    acc[board.id] = []; // Initialize each board's ticket list as empty
-    return acc;
-  }, {});
+function TaskBoard() {
+  const { isLoading, tickets = [], error } = useGetTickets();
+  const [boardState, setBoardState] = useState({});
 
-  tickets.forEach((ticket) => {
-    if (initialState[ticket.status]) {
-      initialState[ticket.status].push(ticket);
+  useEffect(() => {
+    if (tickets.length > 0) {
+      console.log(tickets);
+      setBoardState(() => initializeBoards(boards, tickets));
     }
-  });
+  }, [tickets]);
 
-  return initialState;
-}
+  function initializeBoards(boards, tickets) {
+    // Create an object with board IDs as keys and empty arrys as values
+    const initialState = boards.reduce((acc, board) => {
+      acc[board.id] = []; // Initialize each board's ticket list as empty
+      return acc;
+    }, {});
 
-function TaskBoardSandbox() {
-  const [boardState, setBoardState] = useState(() =>
-    initializeBoards(boards, tickets)
-  );
+    tickets.forEach((ticket) => {
+      if (initialState[ticket.status]) {
+        initialState[ticket.status].push(ticket);
+      }
+    });
+
+    return initialState;
+  }
+
+  console.log(boardState);
 
   function handleOnDragEnd(result) {
     const { source, destination } = result;
@@ -78,7 +87,10 @@ function TaskBoardSandbox() {
       [source.droppableId]: sourceBoard,
       [destination.droppableId]: destinationBoard,
     });
-    console.log(updatedBoards);
+  }
+
+  if (isLoading) {
+    return <div> Loading... </div>;
   }
 
   return (
@@ -98,10 +110,10 @@ function TaskBoardSandbox() {
                     size='small'
                     style={{ display: 'flex' }}
                   >
-                    {boardState[board.id].map((ticket, index) => (
+                    {boardState[board.id]?.map((ticket, index) => (
                       <Draggable
                         key={ticket.id}
-                        draggableId={ticket.id}
+                        draggableId={ticket.title}
                         index={index}
                       >
                         {(provided) => (
@@ -109,7 +121,7 @@ function TaskBoardSandbox() {
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                             ref={provided.innerRef}
-                            title={ticket.name}
+                            title={ticket.title}
                             bordered={false}
                             size='small'
                           >
@@ -130,4 +142,4 @@ function TaskBoardSandbox() {
   );
 }
 
-export default TaskBoardSandbox;
+export default TaskBoard;
