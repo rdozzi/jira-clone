@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useGetTickets } from '../features/tickets/useGetTickets';
 import { Calendar, Badge } from 'antd';
 import dayjs from 'dayjs';
 
@@ -8,6 +8,8 @@ const events = [
 ];
 
 function TaskCalender() {
+  const { isLoading, tickets, error } = useGetTickets();
+
   function cellRender(date, info) {
     if (info.type === 'date') {
       const formattedDate = dayjs(date).format('YYYY-MM-DD');
@@ -16,9 +18,9 @@ function TaskCalender() {
 
       return (
         <ul>
-          {dayEvents.map((event) => (
-            <li key={event.id}>
-              <Badge status='success' text={event.title} />
+          {dayEvents.map((tickets) => (
+            <li key={tickets.id}>
+              <Badge status='success' text={tickets.title} />
             </li>
           ))}
         </ul>
