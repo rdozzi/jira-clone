@@ -14,7 +14,6 @@ export async function getTickets() {
       throw new Error('Failed to fetch tickets');
     }
     const data = await res.json();
-    console.log(data);
     return data;
   } catch (err: any | unknown) {
     console.error(err);
