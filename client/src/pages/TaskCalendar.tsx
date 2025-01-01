@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useGetTickets } from '../features/tickets/useGetTickets';
-import { Calendar, Badge } from 'antd';
+import { Calendar, Badge, Button, DatePicker, DatePickerProps } from 'antd';
+import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons';
+
 import dayjs from 'dayjs';
 
 // const events = [
@@ -11,6 +13,8 @@ import dayjs from 'dayjs';
 function TaskCalender() {
   const { isLoading, tickets, error } = useGetTickets();
   const [ticketState, setTicketState] = useState([]);
+  const [date, setDate] = useState(dayjs());
+
   useEffect(() => {
     if (tickets) {
       const formattedTickets = tickets.map((ticket) => ({
@@ -24,6 +28,32 @@ function TaskCalender() {
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
+  const headerRender = (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        padding: '4px',
+      }}
+    >
+      <Button type='link' onClick={() => setDate(date.add(-1, 'month'))}>
+        <LeftCircleOutlined />
+      </Button>
+      <Button type='link' onClick={() => setDate(dayjs())}>
+        Today
+      </Button>
+      <Button type='link' onClick={() => setDate(date.add(1, 'month'))}>
+        <RightCircleOutlined />
+      </Button>
+      <DatePicker
+        picker='month'
+        value={date}
+        onChange={(newDate) => setDate(newDate)}
+        format='MMM YYYY'
+      />
+    </div>
+  );
 
   function cellRender(date, info) {
     if (info.type === 'date') {
@@ -46,6 +76,12 @@ function TaskCalender() {
     }
   }
 
-  return <Calendar cellRender={cellRender} />;
+  return (
+    <Calendar
+      cellRender={cellRender}
+      value={date}
+      headerRender={() => headerRender}
+    />
+  );
 }
 export default TaskCalender;
