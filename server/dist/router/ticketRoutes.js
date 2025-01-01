@@ -7,7 +7,17 @@ const prisma = new client_1.PrismaClient();
 // Get all Tickets
 router.get('/tickets', async (req, res) => {
     try {
-        const tickets = await prisma.ticket.findMany();
+        const tickets = await prisma.ticket.findMany({
+            relationLoadStrategy: 'query',
+            include: {
+                assignee: {
+                    select: {
+                        first_name: true,
+                        last_name: true,
+                    },
+                },
+            },
+        });
         res.status(200).json(tickets);
     }
     catch (error) {

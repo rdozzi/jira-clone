@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { SelectOutlined } from '@ant-design/icons';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -7,7 +8,17 @@ const prisma = new PrismaClient();
 // Get all Tickets
 router.get('/tickets', async (req: Request, res: Response): Promise<void> => {
   try {
-    const tickets = await prisma.ticket.findMany();
+    const tickets = await prisma.ticket.findMany({
+      relationLoadStrategy: 'query',
+      include: {
+        assignee: {
+          select: {
+            first_name: true,
+            last_name: true,
+          },
+        },
+      },
+    });
     res.status(200).json(tickets);
   } catch (error) {
     console.error('Error fetching tickets: ', error);
