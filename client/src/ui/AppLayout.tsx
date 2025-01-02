@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { Flex, Layout } from 'antd';
+import HeaderComp from './HeaderComp';
 
 const { Header, Sider, Footer, Content } = Layout;
 
@@ -21,7 +22,7 @@ function AppLayout() {
     <Layout>
       <Sider style={siderStyle}>Sider</Sider>
       <Layout>
-        <Header style={headerStyle}>Header</Header>
+        <HeaderComp />
         <Content>
           <Outlet />
         </Content>
