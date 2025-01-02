@@ -32,10 +32,10 @@ function App() {
       >
         <BrowserRouter>
           <Routes>
-            <Route element={<AppLayout />}>
-              <Route path='tickets/ticketlist' element={<TicketList />} />
-              <Route path='tickets/taskboard' element={<TaskBoard />} />
-              <Route path='tickets/calendar' element={<TaskCalendar />} />
+            <Route path='tickets' element={<AppLayout />}>
+              <Route path='ticketlist' element={<TicketList />} />
+              <Route path='taskboard' element={<TaskBoard />} />
+              <Route path='calendar' element={<TaskCalendar />} />
             </Route>
           </Routes>
         </BrowserRouter>
