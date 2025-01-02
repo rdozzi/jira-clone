@@ -21,7 +21,14 @@ function App() {
       <ReactQueryDevtools initialIsOpen={false} />
 
       <ConfigProvider
-        theme={{ components: { Tabs: { itemColor: '#ffffff' } } }}
+        theme={{
+          components: {
+            Tabs: {
+              itemColor: '#ffffff',
+              inkBarColor: '#1677ff',
+            },
+          },
+        }}
       >
         <BrowserRouter>
           <Routes>
