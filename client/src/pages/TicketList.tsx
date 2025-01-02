@@ -1,7 +1,9 @@
-import { Table } from 'antd';
+import { Table, Button } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { useGetTickets } from '../features/tickets/useGetTickets';
 import dayjs from 'dayjs';
+import { icons } from 'antd/es/image/PreviewGroup';
 
 interface DataType {
   id: number;
@@ -60,16 +62,29 @@ const onChange: TableProps<DataType>['onChange'] = (
   extra
 ) => console.log('params', pagination, filters, sorter, extra);
 
+function handleCreate() {
+  return null;
+}
+
 function TicketList() {
   const { isLoading, tickets, error } = useGetTickets();
 
   return (
-    <Table<DataType>
-      columns={columns}
-      dataSource={tickets}
-      rowKey='id'
-      onChange={onChange}
-    />
+    <>
+      <Table<DataType>
+        columns={columns}
+        dataSource={tickets}
+        rowKey='id'
+        onChange={onChange}
+        loading={isLoading}
+        pagination={false}
+      />
+      <div>
+        <Button onClick={handleCreate}>
+          <PlusOutlined /> Create
+        </Button>
+      </div>
+    </>
   );
 }
 export default TicketList;
