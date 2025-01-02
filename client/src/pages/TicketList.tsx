@@ -26,9 +26,15 @@ const columns: TableColumnsType<DataType> = [
   },
   {
     title: 'Due Date',
-    dataIndex: `dueDate`,
+    dataIndex: 'dueDate',
     sorter: { compare: (a, b) => a.dueDate.valueOf() - b.dueDate.valueOf() },
     render: (date) => dayjs(date).format('MM / DD / YYYY'),
+  },
+  {
+    title: 'User',
+    dataIndex: 'assignee',
+    sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
+    render: ({ first_name, last_name }) => `${first_name} ${last_name}`,
   },
   {
     title: 'Status',
