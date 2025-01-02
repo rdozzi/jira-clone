@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { Table, Button } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useGetTickets } from '../features/tickets/useGetTickets';
 import dayjs from 'dayjs';
-import { icons } from 'antd/es/image/PreviewGroup';
+
+import CreateTicketModal from '../ui/CreateTicketModal';
 
 interface DataType {
   id: number;
@@ -62,12 +64,17 @@ const onChange: TableProps<DataType>['onChange'] = (
   extra
 ) => console.log('params', pagination, filters, sorter, extra);
 
-function handleCreate() {
-  return null;
-}
-
 function TicketList() {
   const { isLoading, tickets, error } = useGetTickets();
+  const [open, setOpen] = useState(false);
+
+  function handleCreate() {
+    setOpen(true);
+  }
+
+  function onClose() {
+    setOpen(false);
+  }
 
   return (
     <>
@@ -84,6 +91,7 @@ function TicketList() {
           <PlusOutlined /> Create
         </Button>
       </div>
+      <CreateTicketModal open={open} onClose={onClose} />
     </>
   );
 }
