@@ -1,4 +1,5 @@
-import { Layout } from 'antd';
+import { Layout, Tabs } from 'antd';
+import type { TabsProps } from 'antd';
 
 const { Header } = Layout;
 
@@ -9,8 +10,27 @@ const headerStyle: StyleObject = {
   color: 'white',
 };
 
+const items: TabsProps['items'] = [
+  {
+    key: 'taskList',
+    label: 'Task List',
+  },
+  {
+    key: 'taskBoard',
+    label: 'Task Board',
+  },
+  {
+    key: 'calendar',
+    label: 'Calendar',
+  },
+];
+
 function HeaderComp() {
-  return <Header style={headerStyle}>Header</Header>;
+  return (
+    <Header style={headerStyle}>
+      <Tabs defaultActiveKey='taskList' items={items} />
+    </Header>
+  );
 }
 
 export default HeaderComp;
