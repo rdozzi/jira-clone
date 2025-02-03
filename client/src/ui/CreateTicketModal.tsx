@@ -2,25 +2,36 @@ import { useState } from 'react';
 import { Modal, Form, Input, Radio, DatePicker, Select } from 'antd';
 import type { FormProps } from 'antd';
 import { useGetUsers } from '../features/users/useGetUsers';
+import { useCreateTickets } from '../features/tickets/useCreateTickets';
 
 function CreateTicketModal({ open, onClose }) {
+  const [form] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { isLoading, users } = useGetUsers();
+  const { createNewTicket, isCreating } = useCreateTickets();
 
   function handleOk() {
-    setConfirmLoading(true);
-    setTimeout(() => {
-      onClose();
-      setConfirmLoading(false);
-    }, 2000);
+    form.submit(); // Triggers form submission
+    // setConfirmLoading(true);
+    // onClose();
+    // setConfirmLoading(false);
   }
 
   function handleCancel() {
     onClose();
+    form.resetFields();
+  }
+
+  function onFinish(values) {
+    setConfirmLoading(true);
+    console.log(values);
+    form.resetFields();
+    onClose();
+    setConfirmLoading(false);
   }
 
   function getOptions() {
-    const userList = [];
+    const userList: [] = [];
 
     users?.map((user) => {
       const selectObject = {
@@ -29,8 +40,6 @@ function CreateTicketModal({ open, onClose }) {
       };
       userList.push(selectObject);
     });
-
-    console.log(userList);
 
     return userList;
   }
@@ -43,14 +52,16 @@ function CreateTicketModal({ open, onClose }) {
       onCancel={handleCancel}
       open={open}
       onClose={onClose}
+      getContainer={false}
     >
       <Form
+        form={form}
         name='basic'
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
         initialValues={{ remember: true }}
-        // onFinish={onFinish}
+        onFinish={onFinish}
         // onFinishFailed={onFinishFailed}
         autoComplete='off'
         disabled={isLoading}
@@ -112,13 +123,14 @@ function CreateTicketModal({ open, onClose }) {
         <Form.Item
           label='Status'
           name='status'
+          initialValue='BACKLOG'
           rules={[
             {
               required: true,
             },
           ]}
         >
-          <Radio.Group defaultValue='BACKLOG'>
+          <Radio.Group>
             <Radio value='BACKLOG'>BACKLOG</Radio>
             <Radio value='IN_PROGRESS'>IN_PROGRESS</Radio>
             <Radio value='DONE'>DONE</Radio>
@@ -128,13 +140,14 @@ function CreateTicketModal({ open, onClose }) {
         <Form.Item
           label='Priority'
           name='priority'
+          initialValue='LOW'
           rules={[
             {
               required: true,
             },
           ]}
         >
-          <Radio.Group defaultValue='LOW'>
+          <Radio.Group>
             <Radio value='LOW'>LOW</Radio>
             <Radio value='MEDIUM'>MEDIUM</Radio>
             <Radio value='HIGH'>HIGH</Radio>
@@ -144,13 +157,14 @@ function CreateTicketModal({ open, onClose }) {
         <Form.Item
           label='Type'
           name='type'
+          initialValue='BUG'
           rules={[
             {
               required: true,
             },
           ]}
         >
-          <Radio.Group defaultValue='BUG'>
+          <Radio.Group>
             <Radio value='BUG'>BUG</Radio>
             <Radio value='TASK'>TASK</Radio>
             <Radio value='STORY'>STORY</Radio>
