@@ -19,7 +19,12 @@ function getOptions(users: User[]): { value: number; label: string }[] {
   );
 }
 
-function CreateTicketModal({ open, onClose }) {
+interface CreateTicketModalProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+function CreateTicketModal({ open, onClose }: CreateTicketModalProps) {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { isLoading, users } = useGetUsers();
   const { createNewTicket, isCreating } = useCreateTickets();
@@ -36,16 +41,18 @@ function CreateTicketModal({ open, onClose }) {
     form.resetFields();
   }
 
-  async function onFinish(values) {
-    setConfirmLoading(true);
-    values = {
-      ...values,
-      boardId: 1,
-      reporterId: 1,
-      dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
-    };
+  interface Value {
+    title: string;
+    description: string;
+    dueDate: Date;
+    user: number;
+    status: string;
+    priority: string;
+    type: string;
+  }
+
+  async function onFinish(values: Value) {
     try {
-      setConfirmLoading(true);
       const { user, ...rest } = values;
       const updatedValues = {
         ...rest,
@@ -54,9 +61,10 @@ function CreateTicketModal({ open, onClose }) {
         assigneeId: user,
         dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
       };
+      console.log('updatedValues: ', updatedValues);
       await createNewTicket(updatedValues);
+      setConfirmLoading(isCreating);
       onClose();
-      form.resetFields();
     } catch (error) {
       console.error('Error creating ticket: ', error);
     } finally {
