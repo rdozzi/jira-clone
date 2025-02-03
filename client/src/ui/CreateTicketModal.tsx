@@ -1,20 +1,34 @@
 import { useState } from 'react';
 import { Modal, Form, Input, Radio, DatePicker, Select } from 'antd';
-import type { FormProps } from 'antd';
 import { useGetUsers } from '../features/users/useGetUsers';
 import { useCreateTickets } from '../features/tickets/useCreateTickets';
+import dayjs from 'dayjs';
+
+interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
+}
+
+function getOptions(users: User[]): { value: number; label: string }[] {
+  return (
+    users?.map((user) => ({
+      value: user.id,
+      label: `${user.first_name} ${user.last_name}`,
+    })) || []
+  );
+}
 
 function CreateTicketModal({ open, onClose }) {
-  const [form] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { isLoading, users } = useGetUsers();
   const { createNewTicket, isCreating } = useCreateTickets();
 
+  const [form] = Form.useForm();
+  const userOptions = getOptions(users);
+
   function handleOk() {
-    form.submit(); // Triggers form submission
-    // setConfirmLoading(true);
-    // onClose();
-    // setConfirmLoading(false);
+    form.submit();
   }
 
   function handleCancel() {
@@ -22,26 +36,32 @@ function CreateTicketModal({ open, onClose }) {
     form.resetFields();
   }
 
-  function onFinish(values) {
+  async function onFinish(values) {
     setConfirmLoading(true);
-    console.log(values);
-    form.resetFields();
-    onClose();
-    setConfirmLoading(false);
-  }
-
-  function getOptions() {
-    const userList: [] = [];
-
-    users?.map((user) => {
-      const selectObject = {
-        value: `${user.first_name}_${user.last_name}`,
-        label: `${user.first_name} ${user.last_name}`,
+    values = {
+      ...values,
+      boardId: 1,
+      reporterId: 1,
+      dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
+    };
+    try {
+      setConfirmLoading(true);
+      const { user, ...rest } = values;
+      const updatedValues = {
+        ...rest,
+        boardId: 1,
+        reporterId: 1,
+        assigneeId: user,
+        dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
       };
-      userList.push(selectObject);
-    });
-
-    return userList;
+      await createNewTicket(updatedValues);
+      onClose();
+      form.resetFields();
+    } catch (error) {
+      console.error('Error creating ticket: ', error);
+    } finally {
+      setConfirmLoading(false);
+    }
   }
 
   return (
@@ -117,7 +137,15 @@ function CreateTicketModal({ open, onClose }) {
             },
           ]}
         >
-          <Select options={getOptions()} />
+          <Select>
+            {userOptions.map((options) => {
+              return (
+                <Select.Option key={options.value} value={options.value}>
+                  {options.label}
+                </Select.Option>
+              );
+            })}
+          </Select>
         </Form.Item>
 
         <Form.Item
