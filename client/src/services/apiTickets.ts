@@ -1,9 +1,12 @@
 interface Ticket {
-  id: number;
-  title: string;
+  assigneeId: number;
+  boardId: number;
   description: string;
-  status: string;
+  dueDate: string;
   priority: string;
+  reporterId: number;
+  status: string;
+  title: string;
   type: string;
 }
 
