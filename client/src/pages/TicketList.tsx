@@ -3,6 +3,7 @@ import { Table, Button } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useGetTickets } from '../features/tickets/useGetTickets';
+import TicketListItemButton from '../ui/TicketListItemButton';
 import dayjs from 'dayjs';
 
 import CreateTicketModal from '../ui/CreateTicketModal';
@@ -55,6 +56,12 @@ const columns: TableColumnsType<DataType> = [
     dataIndex: 'type',
     sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
   },
+  {
+    title: '',
+    key: 'action',
+    align: 'center',
+    render: (record) => <TicketListItemButton record={record} />,
+  },
 ];
 
 const onChange: TableProps<DataType>['onChange'] = (
@@ -65,8 +72,9 @@ const onChange: TableProps<DataType>['onChange'] = (
 ) => console.log('params', pagination, filters, sorter, extra);
 
 function TicketList() {
-  const { isLoading, tickets, error } = useGetTickets();
+  const { isLoading, tickets } = useGetTickets(); // Add tanstack query "error" call everntually
   const [open, setOpen] = useState(false);
+  // const [ticketMenuOpen, setTicketMenuOpen] = useState(false);
 
   function handleCreate() {
     setOpen(true);
