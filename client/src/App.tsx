@@ -4,7 +4,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ConfigProvider } from 'antd';
 
 import AppLayout from './ui/AppLayout';
-import { ModalProvider } from './ui/ModalContext';
+import { ModalProvider } from './ui/ModalProvider';
 import TicketList from './pages/TicketList';
 import TaskCalendar from './pages/TaskCalendar';
 import TaskBoard from './pages/TaskBoard';
