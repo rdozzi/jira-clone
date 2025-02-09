@@ -1,5 +1,7 @@
 // import { useState } from 'react';
+import { Modal, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
+import { useModal } from './useModal';
 
 interface Record {
   assignee: { first_name: string; last_name: string };
@@ -18,14 +20,34 @@ interface Record {
 }
 
 function TicketListItemButton({ record }: { record: Record }) {
-  // const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const { isOpen, openModal, closeModal } = useModal();
   function onClick() {
-    console.log(record);
-    // setIsMenuOpen(!isMenuOpen);
+    if (isOpen) {
+      closeModal();
+    } else {
+      openModal();
+    }
   }
 
-  return <EllipsisOutlined onClick={onClick} />;
+  return (
+    <>
+      <Button type='text' onClick={onClick}>
+        <EllipsisOutlined />
+      </Button>
+      {isOpen && (
+        <Modal
+          title='Basic Modal'
+          open={isOpen}
+          onOk={closeModal}
+          onCancel={closeModal}
+        >
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Modal>
+      )}
+    </>
+  );
 }
 
 export default TicketListItemButton;
