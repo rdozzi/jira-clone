@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Table, Button } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { useModal } from '../ui/useModal';
+
 import { useGetTickets } from '../features/tickets/useGetTickets';
 import TicketListItemButton from '../ui/TicketListItemButton';
 import dayjs from 'dayjs';
@@ -18,52 +20,6 @@ interface DataType {
   type: string;
 }
 
-const columns: TableColumnsType<DataType> = [
-  {
-    title: 'Title',
-    dataIndex: 'title',
-    sorter: { compare: (a, b) => a.title.localeCompare(b.title) },
-  },
-  {
-    title: 'Description',
-    dataIndex: 'description',
-    sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
-  },
-  {
-    title: 'Due Date',
-    dataIndex: 'dueDate',
-    sorter: { compare: (a, b) => a.dueDate.valueOf() - b.dueDate.valueOf() },
-    render: (date) => dayjs(date).format('MM / DD / YYYY'),
-  },
-  {
-    title: 'User',
-    dataIndex: 'assignee',
-    sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
-    render: ({ first_name, last_name }) => `${first_name} ${last_name}`,
-  },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-    sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
-  },
-  {
-    title: 'Priority',
-    dataIndex: 'priority',
-    sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
-  },
-  {
-    title: 'Type',
-    dataIndex: 'type',
-    sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
-  },
-  {
-    title: '',
-    key: 'action',
-    align: 'center',
-    render: (record) => <TicketListItemButton record={record} />,
-  },
-];
-
 const onChange: TableProps<DataType>['onChange'] = (
   pagination,
   filters,
@@ -74,7 +30,53 @@ const onChange: TableProps<DataType>['onChange'] = (
 function TicketList() {
   const { isLoading, tickets } = useGetTickets(); // Add tanstack query "error" call everntually
   const [open, setOpen] = useState(false);
-  // const [ticketMenuOpen, setTicketMenuOpen] = useState(false);
+  const { isOpen, openModal, closeModal } = useModal();
+
+  const columns: TableColumnsType<DataType> = [
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      sorter: { compare: (a, b) => a.title.localeCompare(b.title) },
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
+    },
+    {
+      title: 'Due Date',
+      dataIndex: 'dueDate',
+      sorter: { compare: (a, b) => a.dueDate.valueOf() - b.dueDate.valueOf() },
+      render: (date) => dayjs(date).format('MM / DD / YYYY'),
+    },
+    {
+      title: 'User',
+      dataIndex: 'assignee',
+      sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
+      render: ({ first_name, last_name }) => `${first_name} ${last_name}`,
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
+    },
+    {
+      title: 'Priority',
+      dataIndex: 'priority',
+      sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
+    },
+    {
+      title: '',
+      key: 'action',
+      align: 'center',
+      render: (record) => <TicketListItemButton record={record} />,
+    },
+  ];
 
   function handleCreate() {
     setOpen(true);
