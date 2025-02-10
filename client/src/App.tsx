@@ -5,6 +5,7 @@ import { ConfigProvider } from 'antd';
 
 import AppLayout from './ui/AppLayout';
 import { ModalProvider } from './ui/ModalProvider';
+import { DropdownProvider } from './ui/DropdownContext';
 import TicketList from './pages/TicketList';
 import TaskCalendar from './pages/TaskCalendar';
 import TaskBoard from './pages/TaskBoard';
@@ -33,15 +34,17 @@ function App() {
         }}
       >
         <BrowserRouter>
-          <ModalProvider>
-            <Routes>
-              <Route path='tickets' element={<AppLayout />}>
-                <Route path='ticketlist' element={<TicketList />} />
-                <Route path='taskboard' element={<TaskBoard />} />
-                <Route path='calendar' element={<TaskCalendar />} />
-              </Route>
-            </Routes>
-          </ModalProvider>
+          <DropdownProvider>
+            <ModalProvider>
+              <Routes>
+                <Route path='tickets' element={<AppLayout />}>
+                  <Route path='ticketlist' element={<TicketList />} />
+                  <Route path='taskboard' element={<TaskBoard />} />
+                  <Route path='calendar' element={<TaskCalendar />} />
+                </Route>
+              </Routes>
+            </ModalProvider>
+          </DropdownProvider>
         </BrowserRouter>
       </ConfigProvider>
     </QueryClientProvider>
