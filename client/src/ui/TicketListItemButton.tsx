@@ -1,7 +1,8 @@
-// import { useState } from 'react';
-import { Modal, Button } from 'antd';
+import { Dropdown, Button } from 'antd';
+import type { MenuProps } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
-import { useModal } from './useModal';
+
+import { useDropdown } from './DropdownContext';
 
 interface Record {
   assignee: { first_name: string; last_name: string };
@@ -19,34 +20,52 @@ interface Record {
   udpatedAt: string;
 }
 
+const items: MenuProps['items'] = [
+  {
+    key: 'view_edit',
+    label: 'View/Edit',
+  },
+  {
+    key: 'duplicate',
+    label: 'Duplicate',
+  },
+  {
+    key: 'archive',
+    label: 'Archive',
+  },
+  {
+    key: 'delete',
+    label: 'Delete',
+  },
+];
+
 function TicketListItemButton({ record }: { record: Record }) {
-  const { isOpen, openModal, closeModal } = useModal();
-  function onClick() {
-    if (isOpen) {
-      closeModal();
-    } else {
-      openModal();
-    }
+  const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
+
+  const isDropdownOpen = activeDropdown === record.id;
+
+  function handleButtonClick() {
+    toggleDropdown(record.id);
+  }
+
+  function handleMenuClick(e: { key: string }) {
+    console.log(`Action selected: ${e.key} for ticket:`, record);
+    closeDropdown();
   }
 
   return (
-    <>
-      <Button type='text' onClick={onClick}>
+    <Dropdown
+      menu={{ items, onClick: handleMenuClick }}
+      open={isDropdownOpen}
+      trigger={['click']}
+      onOpenChange={(open) => {
+        if (!open) closeDropdown();
+      }}
+    >
+      <Button type='text' onClick={handleButtonClick}>
         <EllipsisOutlined />
       </Button>
-      {isOpen && (
-        <Modal
-          title='Basic Modal'
-          open={isOpen}
-          onOk={closeModal}
-          onCancel={closeModal}
-        >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-        </Modal>
-      )}
-    </>
+    </Dropdown>
   );
 }
 
