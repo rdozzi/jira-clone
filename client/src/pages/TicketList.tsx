@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Table, Button } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { useModal } from '../ui/useModal';
 
 import { useGetTickets } from '../features/tickets/useGetTickets';
 import TicketListItemButton from '../ui/TicketListItemButton';
@@ -30,7 +29,6 @@ const onChange: TableProps<DataType>['onChange'] = (
 function TicketList() {
   const { isLoading, tickets } = useGetTickets(); // Add tanstack query "error" call everntually
   const [open, setOpen] = useState(false);
-  const { isOpen, openModal, closeModal } = useModal();
 
   const columns: TableColumnsType<DataType> = [
     {
