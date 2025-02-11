@@ -41,3 +41,18 @@ export async function createTicket(ticket: Ticket) {
     console.error(err);
   }
 }
+
+export async function deleteTicket(id: number) {
+  try {
+    const res = await fetch(`http://localhost:3000/api/tickets/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      throw new Error('Failed to delete ticket');
+    }
+    const data = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(err);
+  }
+}
