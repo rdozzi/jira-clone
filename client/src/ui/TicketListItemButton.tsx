@@ -4,6 +4,7 @@ import { EllipsisOutlined } from '@ant-design/icons';
 import { useDropdown } from './DropdownContext';
 
 import { useDeleteTicket } from '../features/tickets/useDeleteTicket';
+import { useCreateTickets } from '../features/tickets/useCreateTickets';
 
 interface Record {
   assignee: { first_name: string; last_name: string };
@@ -19,6 +20,18 @@ interface Record {
   title: string;
   type: string;
   udpatedAt: string;
+}
+
+interface Ticket {
+  assigneeId: number;
+  boardId: number;
+  description: string;
+  dueDate: string;
+  priority: string;
+  reporterId: number;
+  status: string;
+  title: string;
+  type: string;
 }
 
 const dropdownItems = [
@@ -43,6 +56,7 @@ const dropdownItems = [
 function TicketListItemButton({ record }: { record: Record }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
   const { deleteTicket, isDeleting } = useDeleteTicket();
+  const { createNewTicket, isCreating } = useCreateTickets();
 
   const isDropdownOpen = activeDropdown === record.id;
 
@@ -51,10 +65,30 @@ function TicketListItemButton({ record }: { record: Record }) {
   }
 
   function handleMenuClick(e: { key: string }) {
+    const duplicateTicket: Ticket = {
+      assigneeId: record.assigneeId,
+      boardId: record.boardId,
+      description: record.description,
+      dueDate: record.dueDate,
+      priority: record.priority,
+      reporterId: record.reporterId,
+      status: record.status,
+      title: `${record.title} (Copy)`,
+      type: record.type,
+    };
     switch (e.key) {
       case 'delete':
-        console.log('Delete ticket:', record);
         deleteTicket(record.id);
+        console.log('Delete ticket:', record);
+        break;
+
+      case 'duplicate':
+        if (!record || typeof record != 'object') {
+          console.error('Invalid record for duplication', record);
+          break;
+        }
+        createNewTicket(duplicateTicket);
+        console.log('Duplicate ticket created:', record);
         break;
 
       default:
@@ -68,7 +102,7 @@ function TicketListItemButton({ record }: { record: Record }) {
       menu={{ items: dropdownItems, onClick: handleMenuClick }}
       open={isDropdownOpen}
       trigger={['click']}
-      disabled={isDeleting}
+      disabled={isDeleting || isCreating}
       onOpenChange={(open) => {
         if (!open) closeDropdown();
       }}
