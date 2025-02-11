@@ -1,8 +1,9 @@
 import { Dropdown, Button } from 'antd';
-import type { MenuProps } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 
 import { useDropdown } from './DropdownContext';
+
+import { useDeleteTicket } from '../features/tickets/useDeleteTicket';
 
 interface Record {
   assignee: { first_name: string; last_name: string };
@@ -20,7 +21,7 @@ interface Record {
   udpatedAt: string;
 }
 
-const items: MenuProps['items'] = [
+const dropdownItems = [
   {
     key: 'view_edit',
     label: 'View/Edit',
@@ -41,6 +42,7 @@ const items: MenuProps['items'] = [
 
 function TicketListItemButton({ record }: { record: Record }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
+  const { deleteTicket, isDeleting } = useDeleteTicket();
 
   const isDropdownOpen = activeDropdown === record.id;
 
@@ -49,15 +51,24 @@ function TicketListItemButton({ record }: { record: Record }) {
   }
 
   function handleMenuClick(e: { key: string }) {
-    console.log(`Action selected: ${e.key} for ticket:`, record);
+    switch (e.key) {
+      case 'delete':
+        console.log('Delete ticket:', record);
+        deleteTicket(record.id);
+        break;
+
+      default:
+        console.log(`Action selected: ${e.key} for ticket:`, record);
+    }
     closeDropdown();
   }
 
   return (
     <Dropdown
-      menu={{ items, onClick: handleMenuClick }}
+      menu={{ items: dropdownItems, onClick: handleMenuClick }}
       open={isDropdownOpen}
       trigger={['click']}
+      disabled={isDeleting}
       onOpenChange={(open) => {
         if (!open) closeDropdown();
       }}
