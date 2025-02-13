@@ -10,6 +10,8 @@ interface Ticket {
   type: string;
 }
 
+type UpdatedTicket = Partial<Ticket>;
+
 export async function getTickets() {
   try {
     const res = await fetch('http://localhost:3000/api/tickets');
@@ -49,6 +51,25 @@ export async function deleteTicket(id: number) {
     });
     if (!res.ok) {
       throw new Error('Failed to delete ticket');
+    }
+    const data = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(err);
+  }
+}
+
+export async function updateTicket(id: number, ticket: UpdatedTicket) {
+  try {
+    const res = await fetch(`http://localhost:3000/api/tickets/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(ticket),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to update ticket');
     }
     const data = await res.json();
     return data;
