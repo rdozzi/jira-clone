@@ -2,9 +2,9 @@ import React, { createContext, useContext, useState } from 'react';
 
 interface DropdownContextType {
   activeDropdown: number | null;
-  openDropdown: (ticketId: number) => void;
+  openDropdown: (_ticketId: number) => void;
   closeDropdown: () => void;
-  toggleDropdown: (ticketId: number) => void;
+  toggleDropdown: (_ticketId: number) => void;
 }
 
 const DropdownContext = createContext<DropdownContextType | null>(null);
@@ -38,5 +38,12 @@ export function useDropdown() {
   if (!useContext(DropdownContext)) {
     throw new Error('useDropdown must be used within a DropdownProvider');
   }
-  return useContext(DropdownContext);
+  return (
+    useContext(DropdownContext) || {
+      activeDropdown: null,
+      openDropdown: () => {},
+      closeDropdown: () => {},
+      toggleDropdown: () => {},
+    }
+  );
 }
