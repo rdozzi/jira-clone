@@ -5,8 +5,11 @@ import { useDropdown } from './DropdownContext';
 
 import { useDeleteTicket } from '../features/tickets/useDeleteTicket';
 import { useCreateTickets } from '../features/tickets/useCreateTickets';
+import { useModal } from './useModal';
 
-interface Record {
+import ViewEditTicketModal from './ViewEditTicketModal';
+
+export interface Record {
   assignee: { first_name: string; last_name: string };
   assigneeId: number;
   boardId: number;
@@ -55,6 +58,7 @@ const dropdownItems = [
 
 function TicketListItemButton({ record }: { record: Record }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
+  const { isOpen, openModal, closeModal } = useModal();
   const { deleteTicket, isDeleting } = useDeleteTicket();
   const { createNewTicket, isCreating } = useCreateTickets();
 
@@ -77,6 +81,11 @@ function TicketListItemButton({ record }: { record: Record }) {
       type: record.type,
     };
     switch (e.key) {
+      case 'view_edit':
+        openModal();
+        console.log('View/Edit ticket:', record);
+        break;
+
       case 'delete':
         deleteTicket(record.id);
         console.log('Delete ticket:', record);
@@ -98,19 +107,24 @@ function TicketListItemButton({ record }: { record: Record }) {
   }
 
   return (
-    <Dropdown
-      menu={{ items: dropdownItems, onClick: handleMenuClick }}
-      open={isDropdownOpen}
-      trigger={['click']}
-      disabled={isDeleting || isCreating}
-      onOpenChange={(open) => {
-        if (!open) closeDropdown();
-      }}
-    >
-      <Button type='text' onClick={handleButtonClick}>
-        <EllipsisOutlined />
-      </Button>
-    </Dropdown>
+    <>
+      <Dropdown
+        menu={{ items: dropdownItems, onClick: handleMenuClick }}
+        open={isDropdownOpen}
+        trigger={['click']}
+        disabled={isDeleting || isCreating}
+        onOpenChange={(open) => {
+          if (!open) closeDropdown();
+        }}
+      >
+        <Button type='text' onClick={handleButtonClick}>
+          <EllipsisOutlined />
+        </Button>
+      </Dropdown>
+      {isOpen && (
+        <ViewEditTicketModal closeModal={closeModal} record={record} />
+      )}
+    </>
   );
 }
 
