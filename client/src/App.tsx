@@ -4,7 +4,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ConfigProvider } from 'antd';
 
 import AppLayout from './ui/AppLayout';
-import { ModalProvider } from './contexts/ModalProvider';
+import { ModalProviderContext } from './contexts/ModalProviderContext';
 import { DropdownProvider } from './contexts/DropdownContext';
 import TicketList from './pages/TicketList';
 import TaskCalendar from './pages/TaskCalendar';
@@ -35,7 +35,7 @@ function App() {
       >
         <BrowserRouter>
           <DropdownProvider>
-            <ModalProvider>
+            <ModalProviderContext>
               <Routes>
                 <Route path='tickets' element={<AppLayout />}>
                   <Route path='ticketlist' element={<TicketList />} />
@@ -43,7 +43,7 @@ function App() {
                   <Route path='calendar' element={<TaskCalendar />} />
                 </Route>
               </Routes>
-            </ModalProvider>
+            </ModalProviderContext>
           </DropdownProvider>
         </BrowserRouter>
       </ConfigProvider>
