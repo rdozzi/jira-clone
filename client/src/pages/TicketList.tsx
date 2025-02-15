@@ -7,7 +7,7 @@ import { useGetTickets } from '../features/tickets/useGetTickets';
 import TicketListItemButton from '../ui/TicketListItemButton';
 import dayjs from 'dayjs';
 
-import CreateTicketModal from '../ui/CreateTicketModal';
+import CreateTicketModal from '../ui/TicketModal';
 
 interface DataType {
   id: number;
