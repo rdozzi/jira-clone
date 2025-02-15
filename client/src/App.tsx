@@ -4,8 +4,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ConfigProvider } from 'antd';
 
 import AppLayout from './ui/AppLayout';
-import { ModalProvider } from './ui/ModalProvider';
-import { DropdownProvider } from './ui/DropdownContext';
+import { ModalProvider } from './contexts/ModalProvider';
+import { DropdownProvider } from './contexts/DropdownContext';
 import TicketList from './pages/TicketList';
 import TaskCalendar from './pages/TaskCalendar';
 import TaskBoard from './pages/TaskBoard';

@@ -1,11 +1,11 @@
 import { Dropdown, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 
-import { useDropdown } from './DropdownContext';
+import { useDropdown } from '../contexts/DropdownContext';
 
 import { useDeleteTicket } from '../features/tickets/useDeleteTicket';
 import { useCreateTickets } from '../features/tickets/useCreateTickets';
-import { useModal } from './useModal';
+import { useModal } from '../contexts/useModal';
 
 import ViewEditTicketModal from './ViewEditTicketModal';
 
