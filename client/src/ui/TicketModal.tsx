@@ -19,12 +19,12 @@ function getOptions(users: User[]): { value: number; label: string }[] {
   );
 }
 
-interface CreateTicketModalProps {
+interface TicketModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-function CreateTicketModal({ open, onClose }: CreateTicketModalProps) {
+function TicketModal({ open, onClose }: TicketModalProps) {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { isLoading, users } = useGetUsers();
   const { createNewTicket, isCreating } = useCreateTickets();
@@ -211,4 +211,4 @@ function CreateTicketModal({ open, onClose }: CreateTicketModalProps) {
   );
 }
 
-export default CreateTicketModal;
+export default TicketModal;
