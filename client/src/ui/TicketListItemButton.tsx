@@ -1,13 +1,12 @@
 import { Dropdown, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 
-import { useDropdown } from '../contexts/DropdownContext';
-
 import { useDeleteTicket } from '../features/tickets/useDeleteTicket';
 import { useCreateTickets } from '../features/tickets/useCreateTickets';
+import { useDropdown } from '../contexts/DropdownContext';
 import { useModal } from '../contexts/useModal';
 
-import ViewEditTicketModal from './ViewEditTicketModal';
+import TicketModal from './TicketModal';
 
 export interface Record {
   assignee: { first_name: string; last_name: string };
@@ -68,6 +67,10 @@ function TicketListItemButton({ record }: { record: Record }) {
     toggleDropdown(record.id);
   }
 
+  function onClose() {
+    closeModal();
+  }
+
   function handleMenuClick(e: { key: string }) {
     const duplicateTicket: Ticket = {
       assigneeId: record.assigneeId,
@@ -122,7 +125,7 @@ function TicketListItemButton({ record }: { record: Record }) {
         </Button>
       </Dropdown>
       {isOpen && (
-        <ViewEditTicketModal closeModal={closeModal} record={record} />
+        <TicketModal isOpen={isOpen} onClose={onClose} record={record} />
       )}
     </>
   );
