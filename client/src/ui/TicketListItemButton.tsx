@@ -57,7 +57,7 @@ const dropdownItems = [
 
 function TicketListItemButton({ record }: { record: Record }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
-  const { isOpen, openModal, closeModal, mode, setModeViewEdit } = useModal();
+  const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
   const { deleteTicket, isDeleting } = useDeleteTicket();
   const { createNewTicket, isCreating } = useCreateTickets();
 
@@ -65,10 +65,6 @@ function TicketListItemButton({ record }: { record: Record }) {
 
   function handleButtonClick() {
     toggleDropdown(record.id);
-  }
-
-  function onClose() {
-    closeModal();
   }
 
   function handleMenuClick(e: { key: string }) {
@@ -85,8 +81,7 @@ function TicketListItemButton({ record }: { record: Record }) {
     };
     switch (e.key) {
       case 'view_edit':
-        setModeViewEdit();
-        openModal();
+        openModal('viewEdit', { id: record.id, record });
         console.log('View/Edit ticket:', record);
         break;
 
@@ -125,12 +120,12 @@ function TicketListItemButton({ record }: { record: Record }) {
           <EllipsisOutlined />
         </Button>
       </Dropdown>
-      {isOpen && (
+      {isOpen && mode === 'viewEdit' && modalProps?.id === record.id && (
         <TicketModal
           isOpen={isOpen}
-          onClose={onClose}
-          record={record}
+          closeModal={closeModal}
           mode={mode}
+          {...modalProps}
         />
       )}
     </>
