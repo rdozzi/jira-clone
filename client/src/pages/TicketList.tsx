@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import dayjs from 'dayjs';
+
 import { Table, Button } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { useGetTickets } from '../features/tickets/useGetTickets';
-import TicketListItemButton from '../ui/TicketListItemButton';
-import dayjs from 'dayjs';
+import { useModal } from '../contexts/useModal';
 
 import TicketModal from '../ui/TicketModal';
+import TicketListItemButton from '../ui/TicketListItemButton';
 
 interface DataType {
   id: number;
@@ -28,7 +29,7 @@ const onChange: TableProps<DataType>['onChange'] = (
 
 function TicketList() {
   const { isLoading, tickets } = useGetTickets(); // Add tanstack query "error" call everntually
-  const [open, setOpen] = useState(false);
+  const { isOpen, openModal, closeModal } = useModal();
 
   const columns: TableColumnsType<DataType> = [
     {
@@ -77,11 +78,11 @@ function TicketList() {
   ];
 
   function handleCreate() {
-    setOpen(true);
+    openModal();
   }
 
   function onClose() {
-    setOpen(false);
+    closeModal();
   }
 
   return (
@@ -99,7 +100,7 @@ function TicketList() {
           <PlusOutlined /> Create
         </Button>
       </div>
-      <TicketModal open={open} onClose={onClose} />
+      <TicketModal isOpen={isOpen} onClose={onClose} />
     </>
   );
 }
