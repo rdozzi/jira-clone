@@ -3,6 +3,7 @@ import { Modal, Form, Input, Radio, DatePicker, Select } from 'antd';
 import { useGetUsers } from '../features/users/useGetUsers';
 import { useCreateTickets } from '../features/tickets/useCreateTickets';
 import dayjs from 'dayjs';
+import { Record } from './TicketListItemButton';
 
 interface User {
   id: number;
@@ -19,12 +20,13 @@ function getOptions(users: User[]): { value: number; label: string }[] {
   );
 }
 
-interface TicketModalProps {
-  open: boolean;
+export interface TicketModalProps {
+  isOpen: boolean;
   onClose: () => void;
+  record?: Record;
 }
 
-function TicketModal({ open, onClose }: TicketModalProps) {
+function TicketModal({ isOpen, onClose, record }: TicketModalProps) {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { isLoading, users } = useGetUsers();
   const { createNewTicket, isCreating } = useCreateTickets();
@@ -78,7 +80,7 @@ function TicketModal({ open, onClose }: TicketModalProps) {
       onOk={handleOk}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
-      open={open}
+      open={isOpen}
       onClose={onClose}
       getContainer={false}
     >
