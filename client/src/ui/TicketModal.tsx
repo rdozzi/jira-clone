@@ -77,7 +77,11 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
 
   return (
     <Modal
-      title='Enter Ticket Information Here'
+      title={
+        mode === 'create'
+          ? 'Enter Ticket Information Here'
+          : 'Edit Ticket Information'
+      }
       onOk={handleOk}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
@@ -86,6 +90,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
       getContainer={false}
       destroyOnClose={true}
       mask={false}
+      okText={mode === 'create' ? 'Create' : 'Update'}
     >
       <Form
         form={form}
@@ -93,10 +98,22 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
-        initialValues={{ remember: true }}
         onFinish={onFinish}
         autoComplete='off'
         disabled={isLoading}
+        initialValues={
+          mode === 'viewEdit'
+            ? {
+                title: record?.title,
+                description: record?.description,
+                dueDate: dayjs(record?.dueDate),
+                user: record?.assigneeId,
+                status: record?.status,
+                priority: record?.priority,
+                type: record?.type,
+              }
+            : { status: 'BACKLOG', priority: 'LOW', type: 'BUG' }
+        }
       >
         <Form.Item
           label='Title'
@@ -109,7 +126,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
             },
           ]}
         >
-          <Input />
+          <Input placeholder='Please enter a title' />
         </Form.Item>
 
         <Form.Item
@@ -123,7 +140,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
             },
           ]}
         >
-          <Input />
+          <Input placeholder='Please enter a description' />
         </Form.Item>
 
         <Form.Item
@@ -136,7 +153,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
             },
           ]}
         >
-          <DatePicker />
+          <DatePicker style={{ width: '100%', textAlign: 'left' }} />
         </Form.Item>
 
         <Form.Item
@@ -149,7 +166,10 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
             },
           ]}
         >
-          <Select>
+          <Select
+            style={{ textAlign: 'left' }}
+            placeholder='Please select a user'
+          >
             {userOptions.map((options) => {
               return (
                 <Select.Option key={options.value} value={options.value}>
@@ -163,7 +183,6 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
         <Form.Item
           label='Status'
           name='status'
-          initialValue='BACKLOG'
           rules={[
             {
               required: true,
@@ -180,7 +199,6 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
         <Form.Item
           label='Priority'
           name='priority'
-          initialValue='LOW'
           rules={[
             {
               required: true,
@@ -197,7 +215,6 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
         <Form.Item
           label='Type'
           name='type'
-          initialValue='BUG'
           rules={[
             {
               required: true,
