@@ -2,47 +2,52 @@ import React, { createContext, useState } from 'react';
 
 type ModalContextType = {
   isOpen: boolean;
-  openModal: () => void;
+  openModal: (_mode: 'create' | 'viewEdit', _modalProps: object) => void;
   closeModal: () => void;
-  mode: 'create' | 'viewEdit';
-  setModeCreate: () => void;
-  setModeViewEdit: () => void;
+  mode: 'create' | 'viewEdit' | null;
+  modalProps: Record<string, unknown>;
+};
+
+type ModalState = {
+  isOpen: boolean;
+  mode: 'create' | 'viewEdit' | null;
+  modalProps: Record<string, unknown>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const ModalContext = createContext<ModalContextType | null>(null);
+export const ModalContext = createContext<ModalContextType | null>({
+  isOpen: false,
+  openModal: () => {},
+  closeModal: () => {},
+  mode: null,
+  modalProps: {},
+});
 
 type ModalProviderProps = { children: React.ReactNode };
 
 export function ModalProviderContext({ children }: ModalProviderProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [mode, setMode] = useState<'create' | 'viewEdit'>('create');
+  const [modalState, setModalState] = useState<ModalState>({
+    isOpen: false,
+    mode: null as 'create' | 'viewEdit' | null,
+    modalProps: {} as Record<string, unknown>,
+  });
 
-  function openModal() {
-    setIsOpen(true);
+  function openModal(mode: 'create' | 'viewEdit', modalProps = {}) {
+    setModalState({ isOpen: true, mode, modalProps });
   }
 
   function closeModal() {
-    setIsOpen(false);
-  }
-
-  function setModeCreate() {
-    setMode('create');
-  }
-
-  function setModeViewEdit() {
-    setMode('viewEdit');
+    setModalState({ isOpen: false, mode: null, modalProps: {} });
   }
 
   return (
     <ModalContext.Provider
       value={{
-        isOpen,
+        isOpen: modalState.isOpen,
         openModal,
         closeModal,
-        mode,
-        setModeCreate,
-        setModeViewEdit,
+        mode: modalState.mode,
+        modalProps: modalState.modalProps,
       }}
     >
       {children}
