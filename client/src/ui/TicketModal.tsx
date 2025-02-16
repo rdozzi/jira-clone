@@ -22,11 +22,12 @@ function getOptions(users: User[]): { value: number; label: string }[] {
 
 export interface TicketModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  closeModal: () => void;
   record?: Record;
+  mode: 'create' | 'viewEdit';
 }
 
-function TicketModal({ isOpen, onClose, record }: TicketModalProps) {
+function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { isLoading, users } = useGetUsers();
   const { createNewTicket, isCreating } = useCreateTickets();
@@ -39,7 +40,7 @@ function TicketModal({ isOpen, onClose, record }: TicketModalProps) {
   }
 
   function handleCancel() {
-    onClose();
+    closeModal();
     form.resetFields();
   }
 
@@ -66,7 +67,7 @@ function TicketModal({ isOpen, onClose, record }: TicketModalProps) {
       console.log('updatedValues: ', updatedValues);
       await createNewTicket(updatedValues);
       setConfirmLoading(isCreating);
-      onClose();
+      closeModal();
     } catch (error) {
       console.error('Error creating ticket: ', error);
     } finally {
@@ -81,8 +82,10 @@ function TicketModal({ isOpen, onClose, record }: TicketModalProps) {
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
       open={isOpen}
-      onClose={onClose}
+      onClose={closeModal}
       getContainer={false}
+      destroyOnClose={true}
+      mask={false}
     >
       <Form
         form={form}
@@ -92,7 +95,6 @@ function TicketModal({ isOpen, onClose, record }: TicketModalProps) {
         style={{ maxWidth: 600 }}
         initialValues={{ remember: true }}
         onFinish={onFinish}
-        // onFinishFailed={onFinishFailed}
         autoComplete='off'
         disabled={isLoading}
       >
