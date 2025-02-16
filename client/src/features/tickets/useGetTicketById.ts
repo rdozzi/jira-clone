@@ -3,7 +3,7 @@ import { getTicketById as apiGetTicketById } from '../../services/apiTickets';
 
 export function useGetTicketById(ticketId: any) {
   const {
-    isLoading,
+    isLoading: isFetching,
     data: ticket,
     error,
   } = useQuery({
@@ -12,5 +12,5 @@ export function useGetTicketById(ticketId: any) {
     enabled: !!ticketId, // Only run the query if ticketId is truthy
   });
 
-  return { isLoading, ticket, error };
+  return { isFetching, ticket, error };
 }
