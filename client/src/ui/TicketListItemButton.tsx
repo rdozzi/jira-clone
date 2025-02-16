@@ -57,7 +57,7 @@ const dropdownItems = [
 
 function TicketListItemButton({ record }: { record: Record }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
-  const { isOpen, openModal, closeModal } = useModal();
+  const { isOpen, openModal, closeModal, mode, setModeViewEdit } = useModal();
   const { deleteTicket, isDeleting } = useDeleteTicket();
   const { createNewTicket, isCreating } = useCreateTickets();
 
@@ -85,6 +85,7 @@ function TicketListItemButton({ record }: { record: Record }) {
     };
     switch (e.key) {
       case 'view_edit':
+        setModeViewEdit();
         openModal();
         console.log('View/Edit ticket:', record);
         break;
@@ -125,7 +126,12 @@ function TicketListItemButton({ record }: { record: Record }) {
         </Button>
       </Dropdown>
       {isOpen && (
-        <TicketModal isOpen={isOpen} onClose={onClose} record={record} />
+        <TicketModal
+          isOpen={isOpen}
+          onClose={onClose}
+          record={record}
+          mode={mode}
+        />
       )}
     </>
   );

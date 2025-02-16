@@ -29,7 +29,7 @@ const onChange: TableProps<DataType>['onChange'] = (
 
 function TicketList() {
   const { isLoading, tickets } = useGetTickets(); // Add tanstack query "error" call everntually
-  const { isOpen, openModal, closeModal } = useModal();
+  const { isOpen, openModal, closeModal, mode, setModeCreate } = useModal();
 
   const columns: TableColumnsType<DataType> = [
     {
@@ -78,6 +78,7 @@ function TicketList() {
   ];
 
   function handleCreate() {
+    setModeCreate();
     openModal();
   }
 
@@ -100,7 +101,7 @@ function TicketList() {
           <PlusOutlined /> Create
         </Button>
       </div>
-      <TicketModal isOpen={isOpen} onClose={onClose} />
+      <TicketModal isOpen={isOpen} onClose={onClose} mode={mode} />
     </>
   );
 }
