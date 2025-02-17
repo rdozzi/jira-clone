@@ -10,9 +10,13 @@ const boards = [
   { id: 'DONE', name: 'Done' },
 ];
 
+function openCreateTicketModal() {
+  console.log('onCreateTicket button Pushed!');
+}
+
 function TaskBoard() {
-  const { isLoading, tickets = [], error } = useGetTickets();
   const [boardState, setBoardState] = useState({});
+  const { isLoading, tickets = [], error } = useGetTickets();
 
   useEffect(() => {
     if (tickets.length > 0) {
@@ -81,7 +85,10 @@ function TaskBoard() {
                 ref={provided.innerRef}
                 style={{ width: '300px', textAlign: 'center' }}
               >
-                <TaskBoardCardComp boardName={board.name}>
+                <TaskBoardCardComp
+                  boardName={board.name}
+                  openCreateTicketModal={openCreateTicketModal}
+                >
                   <Space
                     direction='vertical'
                     size='small'
