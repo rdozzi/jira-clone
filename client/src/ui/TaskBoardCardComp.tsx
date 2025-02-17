@@ -6,7 +6,7 @@ function openCreateTicketModal() {
   console.log('onCreateTicket button Pushed!');
 }
 
-function TaskBoardCardComp({ children, boardTitle }) {
+function TaskBoardCardComp({ children, boardName }) {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <Card
@@ -20,7 +20,7 @@ function TaskBoardCardComp({ children, boardTitle }) {
             fontWeight: 'bold',
           }}
         >
-          {boardTitle}
+          {boardName}
         </div>
       }
       extra={

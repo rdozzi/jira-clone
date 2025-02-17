@@ -81,7 +81,7 @@ function TaskBoard() {
                 ref={provided.innerRef}
                 style={{ width: '300px', textAlign: 'center' }}
               >
-                <Card title={board.name} bordered={false}>
+                <TaskBoardCardComp boardName={board.name}>
                   <Space
                     direction='vertical'
                     size='small'
@@ -109,7 +109,7 @@ function TaskBoard() {
                     ))}
                     {provided.placeholder}
                   </Space>
-                </Card>
+                </TaskBoardCardComp>
               </div>
             )}
           </Droppable>
