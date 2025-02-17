@@ -72,15 +72,19 @@ export async function deleteTicket(id: number) {
   }
 }
 
-export async function updateTicket(id: number, ticket: UpdatedTicket) {
+export async function updateTicket(ticketId: number, ticket: UpdatedTicket) {
   try {
-    const res = await fetch(`http://localhost:3000/api/tickets/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(ticket),
-    });
+    console.log('updateTicket Called');
+    const res = await fetch(
+      `http://localhost:3000/api/tickets/updateTicket/${ticketId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ticket),
+      }
+    );
     if (!res.ok) {
       throw new Error('Failed to update ticket');
     }
