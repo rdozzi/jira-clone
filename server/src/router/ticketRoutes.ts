@@ -1,6 +1,5 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { SelectOutlined } from '@ant-design/icons';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -77,13 +76,14 @@ router.post('/tickets', async (req: Request, res: Response): Promise<void> => {
 
 // Update a ticket
 router.patch(
-  '/tickets/updateTicket/:assigneeId/:ticketId',
+  '/tickets/updateTicket/:ticketId',
   async (req: Request, res: Response): Promise<void> => {
     try {
       const ticketData = req.body;
-      const { assigneeId, ticketId } = req.params;
+      const { ticketId } = req.params;
+      console.log(ticketId);
       const ticket = await prisma.ticket.update({
-        where: { assigneeId: Number(assigneeId), id: Number(ticketId) },
+        where: { id: Number(ticketId) },
         data: {
           ...ticketData,
         },
