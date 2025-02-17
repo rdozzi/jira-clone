@@ -2,11 +2,7 @@ import { useState } from 'react';
 import { Card } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
-function openCreateTicketModal() {
-  console.log('onCreateTicket button Pushed!');
-}
-
-function TaskBoardCardComp({ children, boardName }) {
+function TaskBoardCardComp({ children, boardName, openCreateTicketModal }) {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <Card
