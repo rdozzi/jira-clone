@@ -10,6 +10,9 @@ function TaskBoardTicketCardComp({
 }) {
   return (
     <Card
+      {...draggableProps}
+      {...dragHandleProps}
+      ref={innerRef}
       bordered={false}
       size='small'
       title={
@@ -27,8 +30,6 @@ function TaskBoardTicketCardComp({
             style={{
               position: 'absolute',
               right: 0,
-              // transition: 'opacity 0.2s ease-in-out',
-              // opacity: isHovered ? 1 : 0,
               cursor: 'pointer',
             }}
           >
