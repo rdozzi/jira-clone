@@ -7,6 +7,8 @@ import { useGetTickets } from '../features/tickets/useGetTickets';
 import { useModal } from '../contexts/useModal';
 
 import TaskBoardCardComp from '../ui/TaskBoardCardComp';
+import TaskBoardTicketCardComp from '../ui/TaskBoardTicketCardComp';
+
 import TicketModal from '../ui/TicketModal';
 
 const boards = [
@@ -108,16 +110,14 @@ function TaskBoard() {
                           index={index}
                         >
                           {(provided) => (
-                            <Card
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              ref={provided.innerRef}
-                              title={ticket.title}
-                              bordered={false}
-                              size='small'
+                            <TaskBoardTicketCardComp
+                              draggableProps={provided.draggableProps}
+                              dragHandleProps={provided.dragHandleProps}
+                              innerRef={provided.innerRef}
+                              ticket={ticket}
                             >
                               <p>{ticket.description}</p>
-                            </Card>
+                            </TaskBoardTicketCardComp>
                           )}
                         </Draggable>
                       ))}
