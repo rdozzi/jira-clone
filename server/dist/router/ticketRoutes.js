@@ -69,12 +69,13 @@ router.post('/tickets', async (req, res) => {
     }
 });
 // Update a ticket
-router.patch('/tickets/updateTicket/:assigneeId/:ticketId', async (req, res) => {
+router.patch('/tickets/updateTicket/:ticketId', async (req, res) => {
     try {
         const ticketData = req.body;
-        const { assigneeId, ticketId } = req.params;
+        const { ticketId } = req.params;
+        console.log(ticketId);
         const ticket = await prisma.ticket.update({
-            where: { assigneeId: Number(assigneeId), id: Number(ticketId) },
+            where: { id: Number(ticketId) },
             data: {
                 ...ticketData,
             },
