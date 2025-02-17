@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Space, Card } from 'antd';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useGetTickets } from '../features/tickets/useGetTickets';
+import TaskBoardCardComp from '../ui/TaskBoardCardComp';
 
 const boards = [
   { id: 'BACKLOG', name: 'Backlog' },
@@ -9,34 +10,12 @@ const boards = [
   { id: 'DONE', name: 'Done' },
 ];
 
-// const tickets = [
-//   {
-//     id: 't1',
-//     name: 'Ticket 1',
-//     description: 'Create Task Board',
-//     status: 'inProgress',
-//   },
-//   {
-//     id: 't2',
-//     name: 'Ticket 2',
-//     description: 'Create Calendar',
-//     status: 'backlog',
-//   },
-//   {
-//     id: 't3',
-//     name: 'Ticket 3',
-//     description: 'Improve your App :oP',
-//     status: 'backlog',
-//   },
-// ];
-
 function TaskBoard() {
   const { isLoading, tickets = [], error } = useGetTickets();
   const [boardState, setBoardState] = useState({});
 
   useEffect(() => {
     if (tickets.length > 0) {
-      console.log(tickets);
       setBoardState(() => initializeBoards(boards, tickets));
     }
   }, [tickets]);
@@ -56,8 +35,6 @@ function TaskBoard() {
 
     return initialState;
   }
-
-  console.log(boardState);
 
   function handleOnDragEnd(result) {
     const { source, destination } = result;
