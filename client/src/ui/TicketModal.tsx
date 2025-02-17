@@ -1,9 +1,15 @@
 import { useState } from 'react';
+import dayjs from 'dayjs';
+
 import { Modal, Form, Input, Radio, DatePicker, Select } from 'antd';
+
+import { Record } from './TicketListItemButton';
+
 import { useGetUsers } from '../features/users/useGetUsers';
 import { useCreateTickets } from '../features/tickets/useCreateTickets';
-import dayjs from 'dayjs';
-import { Record } from './TicketListItemButton';
+import { useGetTicketById } from '../features/tickets/useGetTicketById';
+import { useUpdateTicket } from '../features/tickets/useUpdateTicket';
+import getUpdatedFields from '../utilities/getUpdatedFields';
 
 interface User {
   id: number;
@@ -31,6 +37,8 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { isLoading, users } = useGetUsers();
   const { createNewTicket, isCreating } = useCreateTickets();
+  const { ticket: ticketDbEntry } = useGetTicketById(record?.id);
+  const { updateTicket, isUpdating } = useUpdateTicket();
 
   const [form] = Form.useForm();
   const userOptions = getOptions(users);
@@ -54,7 +62,15 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
     type: string;
   }
 
-  async function onFinish(values: Value) {
+  function handleOnFinish(values: Value) {
+    if (mode === 'create') {
+      onFinishCreate(values);
+    } else {
+      onFinishEdit(values);
+    }
+  }
+
+  async function onFinishCreate(values: Value) {
     try {
       const { user, ...rest } = values;
       const updatedValues = {
@@ -64,12 +80,33 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
         assigneeId: user,
         dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
       };
-      console.log('updatedValues: ', updatedValues);
       await createNewTicket(updatedValues);
       setConfirmLoading(isCreating);
       closeModal();
     } catch (error) {
       console.error('Error creating ticket: ', error);
+    } finally {
+      setConfirmLoading(false);
+    }
+  }
+
+  async function onFinishEdit(values: Value) {
+    try {
+      const { user, ...rest } = values;
+      const ticketId = ticketDbEntry.id;
+      const updatedValues = {
+        ...rest,
+        boardId: 1,
+        reporterId: 1,
+        assigneeId: user,
+        dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
+      };
+      const updatedFields = getUpdatedFields(ticketDbEntry, updatedValues);
+      await updateTicket({ ticketId, values: updatedFields });
+      setConfirmLoading(isUpdating);
+      closeModal();
+    } catch (error) {
+      console.error('Error updating ticket: ', error);
     } finally {
       setConfirmLoading(false);
     }
@@ -98,7 +135,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
-        onFinish={onFinish}
+        onFinish={handleOnFinish}
         autoComplete='off'
         disabled={isLoading}
         initialValues={
