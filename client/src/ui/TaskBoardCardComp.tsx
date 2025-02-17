@@ -15,36 +15,43 @@ function TaskBoardCardComp({ children, boardName }) {
         <div
           style={{
             display: 'flex',
+            alignItems: 'center',
             justifyContent: 'center',
-            flexGrow: 1,
-            fontWeight: 'bold',
+            position: 'relative',
+            width: '100%',
           }}
         >
-          {boardName}
-        </div>
-      }
-      extra={
-        isHovered && (
-          <PlusCircleOutlined
+          <span style={{ fontWeight: 'bold' }}>{boardName}</span>
+
+          <span
             style={{
-              fontSize: 20,
+              position: 'absolute',
+              right: 0,
+              transition: 'opacity 0.2s ease-in-out',
+              opacity: isHovered ? 1 : 0,
               cursor: 'pointer',
-              color: 'blue', //Lighter shade#1890ff
-              transition: 'color 0.2s ease-in-out',
             }}
+            onClick={openCreateTicketModal}
             onMouseEnter={(e) => (e.currentTarget.style.color = '#40a9ff')}
             onMouseLeave={(e) => (e.currentTarget.style.color = 'blue')} //#1890ff
-            onClick={openCreateTicketModal}
             tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && openCreateTicketModal()}
             role='button'
             aria-label='Add new task'
-          />
-        )
+          >
+            {/* style={{ width: 24, textAlign: 'right' }} */}
+            <PlusCircleOutlined
+              style={{
+                fontSize: 20,
+                color: 'blue', //Lighter shade#1890ff
+              }}
+            />
+          </span>
+        </div>
       }
+      style={{ position: 'relative' }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      // style={{ position: 'relative' }} // Ensure proper layout behavior
     >
       {children}
     </Card>
