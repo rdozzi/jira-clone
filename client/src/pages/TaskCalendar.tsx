@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
-import { useGetTickets } from '../features/tickets/useGetTickets';
-import { Calendar, Badge, Button, DatePicker, DatePickerProps } from 'antd';
-import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons';
-
 import dayjs from 'dayjs';
 
-// const events = [
-//   { id: 1, title: 'Ticket1', date: '2024-12-30', status: 'Completed' },
-//   { id: 2, title: 'Ticket2', date: '2024-12-31', status: 'In Progress' },
-// ];
+import { Calendar, Badge, Button, DatePicker, DatePickerProps } from 'antd';
+import {
+  LeftCircleOutlined,
+  RightCircleOutlined,
+  EditOutlined,
+} from '@ant-design/icons';
+
+import { useGetTickets } from '../features/tickets/useGetTickets';
+import { useModal } from '../contexts/useModal';
+
+import TicketModal from '../ui/TicketModal';
 
 function TaskCalender() {
-  const { isLoading, tickets, error } = useGetTickets();
   const [ticketState, setTicketState] = useState([]);
   const [date, setDate] = useState(dayjs());
+  const { isLoading, tickets, error } = useGetTickets();
+  const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
   useEffect(() => {
     if (tickets) {
@@ -29,6 +33,10 @@ function TaskCalender() {
     return <div>Loading...</div>;
   }
 
+  function handleCreate() {
+    openModal('create', {});
+  }
+
   const headerRender = (
     <div
       style={{
@@ -37,6 +45,7 @@ function TaskCalender() {
         padding: '4px',
       }}
     >
+      <EditOutlined style={{ fontSize: '16px' }} onClick={handleCreate} />
       <Button type='link' onClick={() => setDate(date.add(-1, 'month'))}>
         <LeftCircleOutlined />
       </Button>
@@ -77,11 +86,21 @@ function TaskCalender() {
   }
 
   return (
-    <Calendar
-      cellRender={cellRender}
-      value={date}
-      headerRender={() => headerRender}
-    />
+    <>
+      <Calendar
+        cellRender={cellRender}
+        value={date}
+        headerRender={() => headerRender}
+      />
+      {mode === 'create' && (
+        <TicketModal
+          isOpen={isOpen}
+          closeModal={closeModal}
+          mode={mode}
+          {...modalProps}
+        />
+      )}
+    </>
   );
 }
 export default TaskCalender;
