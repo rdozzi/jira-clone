@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 
-import { Calendar, Badge, Button, DatePicker, DatePickerProps } from 'antd';
+import { Calendar, Card, Button, DatePicker, DatePickerProps } from 'antd';
 import {
   LeftCircleOutlined,
   RightCircleOutlined,
@@ -12,6 +12,7 @@ import { useGetTickets } from '../features/tickets/useGetTickets';
 import { useModal } from '../contexts/useModal';
 
 import TicketModal from '../ui/TicketModal';
+import TicketListItemButton from '../ui/TicketListItemButton';
 
 function TaskCalender() {
   const [ticketState, setTicketState] = useState([]);
@@ -72,10 +73,34 @@ function TaskCalender() {
       );
 
       return (
-        <ul>
+        <ul style={{ listStyleType: 'none', padding: '0' }}>
           {ticketsForDate.map((ticket) => (
-            <li key={ticket.id}>
-              <Badge status='success' text={ticket.title} />
+            <li
+              key={ticket.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              {/* <Card style={{ width: '100%' }}>{ticket.title}</Card> */}
+              <span
+                style={{
+                  margin: '1px',
+                  // borderRadius: '10px',
+                  padding: '2px 5px 2px 5px',
+                  maxWidth: '100px',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  backgroundColor: '#ADD8E6',
+                  textAlign: 'center',
+                }}
+              >
+                {ticket.title}
+              </span>
+              <span style={{ marginLeft: '5px', marginRight: '5px' }}>
+                <TicketListItemButton record={ticket} />
+              </span>
             </li>
           ))}
         </ul>
@@ -91,6 +116,7 @@ function TaskCalender() {
         cellRender={cellRender}
         value={date}
         headerRender={() => headerRender}
+        // style={{ textAlign: 'left' }}
       />
       {mode === 'create' && (
         <TicketModal
