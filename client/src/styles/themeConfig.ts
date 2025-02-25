@@ -18,10 +18,13 @@ export const lightTheme: Theme = {
       darkSecondary: '#C532DB',
       success: '#10B981', // Green
       lightSuccess: '#B3E6D5',
+      darkSuccess: '#00A56D',
       warning: '#FBBF24', // Yellow
       lightWarning: '#FAE8B9',
+      darkWarning: '#E7AB10',
       error: '#F43F5E', // Red
       lightError: '#F2B7C4',
+      darkError: '#CE0A35',
       infoLayer: '#FDFDFD',
       intermediateContainer: '#EFEFEF',
       background: '#D9D9D9',
@@ -53,10 +56,13 @@ export const darkTheme: Theme = {
       lightSecondary: '#6568FF',
       success: '#067A53', // Green
       darkSuccess: '#173A2E',
+      lightSuccess: '#1A8E67',
       warning: '#896406', // Yellow
       darkWarning: '#3E3317',
+      lightWarning: '#9D781A',
       error: '#D7133E', // Red
       darkError: '#561B28',
+      lightError: '#EB2752',
       infoLayer: '#323232',
       intermediateContainer: '#262626',
       background: '#1E1E1E',
