@@ -15,6 +15,7 @@ interface DataType {
   title: string;
   dueDate: Date;
   description: string;
+  assignee: { last_name: string };
   status: string;
   priority: string;
   type: string;
@@ -35,43 +36,46 @@ function TicketList() {
     return <div>Error loading tickets: {error.message}</div>;
   }
 
+  console.log(tickets);
+
   const columns: TableColumnsType<DataType> = [
     {
       title: 'Title',
       dataIndex: 'title',
-      sorter: { compare: (a, b) => a.title.localeCompare(b.title) },
+      sorter: (a, b) => a.title.localeCompare(b.title),
     },
     {
       title: 'Description',
       dataIndex: 'description',
-      sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
+      sorter: (a, b) => a.description.localeCompare(b.description),
     },
     {
       title: 'Due Date',
       dataIndex: 'dueDate',
-      sorter: { compare: (a, b) => a.dueDate.valueOf() - b.dueDate.valueOf() },
+      sorter: (a, b) => dayjs(a.dueDate).diff(dayjs(b.dueDate)),
       render: (date) => dayjs(date).format('MM / DD / YYYY'),
     },
     {
       title: 'User',
       dataIndex: 'assignee',
-      sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
+      sorter: (a, b) =>
+        a.assignee['last_name'].localeCompare(b.assignee['last_name']),
       render: ({ first_name, last_name }) => `${first_name} ${last_name}`,
     },
     {
       title: 'Status',
       dataIndex: 'status',
-      sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
+      sorter: (a, b) => a.status.localeCompare(b.status),
     },
     {
       title: 'Priority',
       dataIndex: 'priority',
-      sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
+      sorter: (a, b) => a.priority.localeCompare(b.priority),
     },
     {
       title: 'Type',
       dataIndex: 'type',
-      sorter: { compare: (a, b) => a.description.localeCompare(b.description) },
+      sorter: (a, b) => a.type.localeCompare(b.type),
     },
     {
       title: '',
