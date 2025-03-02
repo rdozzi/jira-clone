@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 
 import { ConfigProvider } from 'antd';
 
@@ -7,7 +7,6 @@ interface ConfigProviderComponentProps extends React.PropsWithChildren {
   lightTheme: { colorText: string; colorPrimary: string };
   darkTheme: { colorText: string; colorPrimary: string };
   modeTheme: 'light' | 'dark';
-  children: React.ReactNode;
 }
 
 function ConfigProviderComponent({
