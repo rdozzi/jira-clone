@@ -3,7 +3,7 @@ import { SunOutlined, MoonOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 
 function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
+  const { modeTheme, toggleTheme } = useTheme();
 
   function handleClick() {
     toggleTheme();
@@ -11,16 +11,18 @@ function ThemeToggle() {
 
   return (
     <Tooltip
-      title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+      title={
+        modeTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'
+      }
     >
       <Button
         type='text'
-        icon={theme === 'light' ? <MoonOutlined /> : <SunOutlined />}
+        icon={modeTheme === 'light' ? <MoonOutlined /> : <SunOutlined />}
         onClick={handleClick}
         style={{
           fontSize: '20px',
           transition: 'transform 0.3s ease-in-out',
-          transform: theme === 'light' ? 'rotate(0deg)' : 'rotate(180deg)',
+          transform: modeTheme === 'light' ? 'rotate(0deg)' : 'rotate(180deg)',
         }}
       />
     </Tooltip>
