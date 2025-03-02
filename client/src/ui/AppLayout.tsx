@@ -1,17 +1,13 @@
 import { Outlet } from 'react-router-dom';
-import { Flex, Layout } from 'antd';
+import { Layout } from 'antd';
 import HeaderComp from './HeaderComp';
+import ThemeToggle from './ThemeToggle';
 
-const { Header, Sider, Footer, Content } = Layout;
+const { Sider, Footer, Content } = Layout;
 
 type StyleObject = React.CSSProperties;
 
 const siderStyle: StyleObject = { backgroundColor: 'aqua', height: '100vh' };
-
-const headerStyle: StyleObject = {
-  backgroundColor: 'blue',
-  color: 'white',
-};
 
 const footerStyle: StyleObject = {
   backgroundColor: 'lightblue',
@@ -20,7 +16,12 @@ const footerStyle: StyleObject = {
 function AppLayout() {
   return (
     <Layout>
-      <Sider style={siderStyle}>Sider</Sider>
+      <Sider style={siderStyle}>
+        <div>Sider</div>
+        <div>
+          <ThemeToggle />
+        </div>
+      </Sider>
       <Layout>
         <HeaderComp />
         <Content>
