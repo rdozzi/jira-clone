@@ -15,7 +15,7 @@ function ThemeToggle() {
     >
       <Button
         type='text'
-        icon={theme === 'light' ? <SunOutlined /> : <MoonOutlined />}
+        icon={theme === 'light' ? <MoonOutlined /> : <SunOutlined />}
         onClick={handleClick}
         style={{
           fontSize: '20px',
