@@ -24,8 +24,12 @@ export function ThemeProviderContext({ children }: { children: ReactNode }) {
           token: { ...themeTokens },
           components: {
             Tabs: {
-              itemColor: '#ffffff',
-              inkBarColor: '#1677ff',
+              itemColor:
+                theme === 'light' ? lightTheme.colorText : darkTheme.colorText,
+              inkBarColor:
+                theme === 'light'
+                  ? lightTheme.colorPrimary
+                  : darkTheme.colorPrimary,
             },
           },
         }}
