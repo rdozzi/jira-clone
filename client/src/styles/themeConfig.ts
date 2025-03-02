@@ -1,10 +1,4 @@
-interface Theme {
-  colorPrimary: string;
-  colorText: string;
-  colorBgContainer: string;
-  borderRadius: number;
-  fontSize: number;
-  fontFamily: string;
+interface ColorPaletteType {
   primary: string;
   lightPrimary: string;
   darkPrimary: string;
@@ -25,21 +19,9 @@ interface Theme {
   background: string;
   textPrimary: string;
   textSecondary: string;
-  h1: number;
-  h2: number;
-  h3: number;
-  bodyText: number;
-  smallText: number;
 }
 
-export const lightTheme: Theme = {
-  colorPrimary: '#CCCDF7', //Indigo
-  colorText: '#1F2937',
-  colorBgContainer: '#FDFDFD',
-  borderRadius: 8,
-  fontSize: 16,
-  fontFamily: "'Inter', sans-serif",
-
+export const lightColorPalette: ColorPaletteType = {
   primary: '#6366F1', //Indigo
   lightPrimary: '#CCCDF7',
   darkPrimary: '#4F52DD',
@@ -60,22 +42,9 @@ export const lightTheme: Theme = {
   background: '#D9D9D9',
   textPrimary: '#1F2937',
   textSecondary: '#333333',
-
-  h1: 32,
-  h2: 24,
-  h3: 18,
-  bodyText: 16,
-  smallText: 12,
 };
 
-export const darkTheme: Theme = {
-  colorPrimary: '#5154F0', //Indigo
-  colorText: '#FDFDFD',
-  colorBgContainer: '#323232',
-  borderRadius: 8,
-  fontSize: 16,
-  fontFamily: "'Inter', sans-serif",
-
+export const darkColorPalette: ColorPaletteType = {
   primary: '#5154F0', //Indigo
   darkPrimary: '#2D2E5D',
   lightPrimary: ' #6568FF',
@@ -96,10 +65,47 @@ export const darkTheme: Theme = {
   background: '#1E1E1E',
   textPrimary: '#FDFDFD',
   textSecondary: '#EFEFEF',
+};
 
+interface FontSizeType {
+  h1: number;
+  h2: number;
+  h3: number;
+  bodyText: number;
+  smallText: number;
+}
+
+const fontSize: FontSizeType = {
   h1: 32,
   h2: 24,
   h3: 18,
   bodyText: 16,
   smallText: 12,
+};
+
+interface Theme {
+  colorPrimary: string;
+  colorText: string;
+  colorBgContainer: string;
+  borderRadius: number;
+  fontSize: number;
+  fontFamily: string;
+}
+
+export const lightTheme: Theme = {
+  colorPrimary: '#CCCDF7',
+  colorText: '#1F2937',
+  colorBgContainer: '#FDFDFD',
+  borderRadius: 8,
+  fontSize: fontSize.bodyText,
+  fontFamily: "'Inter', sans-serif",
+};
+
+export const darkTheme: Theme = {
+  colorPrimary: '#5154F0',
+  colorText: '#FDFDFD',
+  colorBgContainer: '#323232',
+  borderRadius: 8,
+  fontSize: 16,
+  fontFamily: "'Inter', sans-serif",
 };
