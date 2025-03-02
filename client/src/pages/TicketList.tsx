@@ -10,14 +10,17 @@ import { useModal } from '../contexts/useModal';
 import TicketModal from '../ui/TicketModal';
 import TicketListItemButton from '../ui/TicketListItemButton';
 
+const priorityOrder = { HIGH: 3, MEDIUM: 2, LOW: 1 };
+const statusOrder = { BACKLOG: 3, IN_PROGRESS: 2, DONE: 1 };
+
 interface DataType {
   id: number;
   title: string;
   dueDate: Date;
   description: string;
   assignee: { last_name: string };
-  status: string;
-  priority: string;
+  status: keyof typeof statusOrder;
+  priority: keyof typeof priorityOrder;
   type: string;
 }
 
@@ -36,8 +39,6 @@ function TicketList() {
     return <div>Error loading tickets: {error.message}</div>;
   }
 
-  console.log(tickets);
-
   const columns: TableColumnsType<DataType> = [
     {
       title: 'Title',
@@ -52,25 +53,41 @@ function TicketList() {
     {
       title: 'Due Date',
       dataIndex: 'dueDate',
-      sorter: (a, b) => dayjs(a.dueDate).diff(dayjs(b.dueDate)),
+      sorter: {
+        compare: (a, b) =>
+          dayjs(a.dueDate).valueOf() - dayjs(b.dueDate).valueOf(),
+        multiple: 2,
+      },
       render: (date) => dayjs(date).format('MM / DD / YYYY'),
     },
     {
       title: 'User',
       dataIndex: 'assignee',
-      sorter: (a, b) =>
-        a.assignee['last_name'].localeCompare(b.assignee['last_name']),
+      sorter: {
+        compare: (a, b) =>
+          a.assignee['last_name']
+            .toLocaleLowerCase()
+            .localeCompare(b.assignee['last_name'].toLocaleLowerCase()),
+        multiple: 0,
+      },
       render: ({ first_name, last_name }) => `${first_name} ${last_name}`,
     },
     {
       title: 'Status',
       dataIndex: 'status',
-      sorter: (a, b) => a.status.localeCompare(b.status),
+      sorter: {
+        compare: (a, b) => statusOrder[a.status] - statusOrder[b.status],
+        multiple: 1,
+      },
     },
     {
       title: 'Priority',
       dataIndex: 'priority',
-      sorter: (a, b) => a.priority.localeCompare(b.priority),
+      sorter: {
+        compare: (a, b) =>
+          priorityOrder[a.priority] - priorityOrder[b.priority],
+        multiple: 2,
+      },
     },
     {
       title: 'Type',
