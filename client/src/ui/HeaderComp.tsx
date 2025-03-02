@@ -4,13 +4,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const { Header } = Layout;
 
-type StyleObject = React.CSSProperties;
-
-const headerStyle: StyleObject = {
-  backgroundColor: 'blue',
-  color: 'white',
-};
-
 function HeaderComp() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,7 +24,7 @@ function HeaderComp() {
   ];
 
   return (
-    <Header style={headerStyle}>
+    <Header>
       <Tabs
         activeKey={location.pathname}
         onChange={(key) => navigate(key)}
