@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
 
-import { Space, Card } from 'antd';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { Space } from 'antd';
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from '@hello-pangea/dnd';
 
 import { useGetTickets } from '../features/tickets/useGetTickets';
 import { useModal } from '../contexts/useModal';
@@ -11,7 +16,30 @@ import TaskBoardTicketCardComp from '../ui/TaskBoardTicketCardComp';
 
 import TicketModal from '../ui/TicketModal';
 
-const boards = [
+interface Board {
+  id: string;
+  name: string;
+}
+
+interface Tickets {
+  assignee: { first_name: string; last_name: string };
+  assigneeId: number;
+  boardId: number;
+  createdAt: Date;
+  description: string;
+  dueDate: Date;
+  id: number;
+  priority: 'HIGH' | 'MEDIUM' | 'LOW';
+  reporterId: number;
+  status: 'BACKLOG' | 'IN_PROGRESS' | 'DONE';
+  title: string;
+  type: 'BUG' | 'TASK' | 'STORY';
+  updatedAt: Date;
+}
+
+type BoardState = Record<string, Tickets[]>;
+
+const boards: Board[] = [
   { id: 'BACKLOG', name: 'Backlog' },
   { id: 'IN_PROGRESS', name: 'In Progress' },
   { id: 'DONE', name: 'Done' },
@@ -19,7 +47,7 @@ const boards = [
 
 function TaskBoard() {
   const [boardState, setBoardState] = useState({});
-  const { isLoading, tickets = [], error } = useGetTickets();
+  const { isLoading, tickets = [] } = useGetTickets(); // Add error later
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
   useEffect(() => {
@@ -32,12 +60,15 @@ function TaskBoard() {
     openModal('create', {});
   }
 
-  function initializeBoards(boards, tickets) {
+  function initializeBoards(boards: Board[], tickets: Tickets[]) {
     // Create an object with board IDs as keys and empty arrys as values
-    const initialState = boards.reduce((acc, board) => {
-      acc[board.id] = []; // Initialize each board's ticket list as empty
-      return acc;
-    }, {});
+    const initialState: Record<string, Tickets[]> = boards.reduce(
+      (acc, board) => {
+        acc[board.id] = []; // Initialize each board's ticket list as empty
+        return acc;
+      },
+      {} as Record<string, Tickets[]>
+    );
 
     tickets.forEach((ticket) => {
       if (initialState[ticket.status]) {
@@ -48,7 +79,8 @@ function TaskBoard() {
     return initialState;
   }
 
-  function handleOnDragEnd(result) {
+  function handleOnDragEnd(result: DropResult) {
+    console.log(result);
     const { source, destination } = result;
     if (!destination) return;
 
@@ -59,11 +91,12 @@ function TaskBoard() {
       return;
 
     // Create a shallow clone of the initial state
-    const updatedBoards = { ...boardState };
+    const updatedBoards: BoardState = { ...boardState };
+    console.log(updatedBoards);
 
     // Get the arrays of the source and destination boards
-    const sourceBoard = updatedBoards[source.droppableId];
-    const destinationBoard = updatedBoards[destination.droppableId];
+    const sourceBoard = updatedBoards[source.droppableId] ?? [];
+    const destinationBoard = updatedBoards[destination.droppableId] ?? [];
 
     // Remove the item from the source board
     const [movedItem] = sourceBoard.splice(source.index, 1);
@@ -103,7 +136,7 @@ function TaskBoard() {
                       size='small'
                       style={{ display: 'flex' }}
                     >
-                      {boardState[board.id]?.map((ticket, index) => (
+                      {boardState[board.id]?.map((ticket, index: number) => (
                         <Draggable
                           key={ticket.id}
                           draggableId={ticket.title}
