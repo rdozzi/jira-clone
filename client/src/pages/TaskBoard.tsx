@@ -46,7 +46,7 @@ const boards: Board[] = [
 ];
 
 function TaskBoard() {
-  const [boardState, setBoardState] = useState({});
+  const [boardState, setBoardState] = useState<BoardState>({});
   const { isLoading, tickets = [] } = useGetTickets(); // Add error later
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
@@ -109,6 +109,12 @@ function TaskBoard() {
       [source.droppableId]: sourceBoard,
       [destination.droppableId]: destinationBoard,
     });
+
+    // function createNewBoard(boardName: string) {
+    //   if (!updatedBoards[boardName]) {
+    //     updatedBoards[boardName] = [];
+    //   }
+    // }
   }
 
   if (isLoading) {
@@ -136,24 +142,26 @@ function TaskBoard() {
                       size='small'
                       style={{ display: 'flex' }}
                     >
-                      {boardState[board.id]?.map((ticket, index: number) => (
-                        <Draggable
-                          key={ticket.id}
-                          draggableId={ticket.title}
-                          index={index}
-                        >
-                          {(provided) => (
-                            <TaskBoardTicketCardComp
-                              draggableProps={provided.draggableProps}
-                              dragHandleProps={provided.dragHandleProps}
-                              innerRef={provided.innerRef}
-                              ticket={ticket}
-                            >
-                              <p>{ticket.description}</p>
-                            </TaskBoardTicketCardComp>
-                          )}
-                        </Draggable>
-                      ))}
+                      {boardState[board.id]?.map(
+                        (ticket: Tickets, index: number) => (
+                          <Draggable
+                            key={ticket.id}
+                            draggableId={ticket.title}
+                            index={index}
+                          >
+                            {(provided) => (
+                              <TaskBoardTicketCardComp
+                                draggableProps={provided.draggableProps}
+                                dragHandleProps={provided.dragHandleProps}
+                                innerRef={provided.innerRef}
+                                ticket={ticket}
+                              >
+                                <p>{ticket.description}</p>
+                              </TaskBoardTicketCardComp>
+                            )}
+                          </Draggable>
+                        )
+                      )}
                       {provided.placeholder}
                     </Space>
                   </TaskBoardCardComp>
