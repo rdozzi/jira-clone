@@ -1,27 +1,20 @@
 import { useState, useEffect } from 'react';
 
 import { Space } from 'antd';
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from '@hello-pangea/dnd';
+import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 
 import { useGetTickets } from '../features/tickets/useGetTickets';
 import { useModal } from '../contexts/useModal';
 
-import TaskBoardCardComp from '../ui/TaskBoardCardComp';
-import TaskBoardTicketCardComp from '../ui/TaskBoardTicketCardComp';
-
 import TicketModal from '../ui/TicketModal';
+import TaskBoardColumn from '../ui/TaskBoardColumn';
 
 interface Board {
   id: string;
   name: string;
 }
 
-interface Tickets {
+export interface Tickets {
   assignee: { first_name: string; last_name: string };
   assigneeId: number;
   boardId: number;
@@ -126,48 +119,12 @@ function TaskBoard() {
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <Space direction='horizontal' size='small' style={{ display: 'flex' }}>
           {boards.map((board) => (
-            <Droppable droppableId={board.id} key={board.id}>
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  style={{ width: '300px', textAlign: 'center' }}
-                >
-                  <TaskBoardCardComp
-                    boardName={board.name}
-                    openCreateTicketModal={openCreateTicketModal}
-                  >
-                    <Space
-                      direction='vertical'
-                      size='small'
-                      style={{ display: 'flex' }}
-                    >
-                      {boardState[board.id]?.map(
-                        (ticket: Tickets, index: number) => (
-                          <Draggable
-                            key={ticket.id}
-                            draggableId={ticket.title}
-                            index={index}
-                          >
-                            {(provided) => (
-                              <TaskBoardTicketCardComp
-                                draggableProps={provided.draggableProps}
-                                dragHandleProps={provided.dragHandleProps}
-                                innerRef={provided.innerRef}
-                                ticket={ticket}
-                              >
-                                <p>{ticket.description}</p>
-                              </TaskBoardTicketCardComp>
-                            )}
-                          </Draggable>
-                        )
-                      )}
-                      {provided.placeholder}
-                    </Space>
-                  </TaskBoardCardComp>
-                </div>
-              )}
-            </Droppable>
+            <TaskBoardColumn
+              key={board.id}
+              board={board}
+              boardState={boardState}
+              openCreateTicketModal={openCreateTicketModal}
+            />
           ))}
         </Space>
       </DragDropContext>
