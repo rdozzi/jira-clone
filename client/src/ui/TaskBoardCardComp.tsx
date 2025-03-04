@@ -2,11 +2,17 @@ import { useState } from 'react';
 import { Card } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
-function TaskBoardCardComp({ children, boardName, openCreateTicketModal }) {
+function TaskBoardCardComp({
+  children,
+  boardName,
+  openCreateTicketModal,
+  innerRef,
+}) {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <Card
       bordered={false}
+      ref={innerRef}
       title={
         <div
           style={{
