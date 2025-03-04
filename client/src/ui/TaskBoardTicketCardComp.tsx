@@ -1,7 +1,9 @@
+import { memo } from 'react';
+
 import { Card } from 'antd';
 import TicketListItemButton from './TicketListItemButton';
 
-function TaskBoardTicketCardComp({
+const TaskBoardTicketCardComp = memo(function TaskBoardTicketCardComp({
   draggableProps,
   dragHandleProps,
   innerRef,
@@ -41,6 +43,6 @@ function TaskBoardTicketCardComp({
       {children}
     </Card>
   );
-}
+});
 
 export default TaskBoardTicketCardComp;

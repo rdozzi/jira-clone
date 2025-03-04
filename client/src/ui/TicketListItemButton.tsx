@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 import { Dropdown, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 
@@ -55,7 +57,11 @@ const dropdownItems = [
   },
 ];
 
-function TicketListItemButton({ record }: { record: Record }) {
+const TicketListItemButton = memo(function TicketListItemButton({
+  record,
+}: {
+  record: Record;
+}) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
   const { deleteTicket, isDeleting } = useDeleteTicket();
@@ -130,6 +136,6 @@ function TicketListItemButton({ record }: { record: Record }) {
       )}
     </>
   );
-}
+});
 
 export default TicketListItemButton;
