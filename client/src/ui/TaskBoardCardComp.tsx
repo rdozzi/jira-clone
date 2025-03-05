@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import { Card } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
@@ -8,11 +8,12 @@ function TaskBoardCardComp({
   openCreateTicketModal,
   innerRef,
 }) {
-  const [isHovered, setIsHovered] = useState(false);
+  const iconRef = useRef(null);
+  console.log(iconRef);
   return (
     <Card
       bordered={false}
-      ref={innerRef}
+      ref={innerRef} // Required for @pangea/dnd
       title={
         <div
           style={{
@@ -30,12 +31,10 @@ function TaskBoardCardComp({
               position: 'absolute',
               right: 0,
               transition: 'opacity 0.2s ease-in-out',
-              opacity: isHovered ? 1 : 0,
+              opacity: 1,
               cursor: 'pointer',
             }}
             onClick={openCreateTicketModal}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#40a9ff')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'blue')} //#1890ff
             tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && openCreateTicketModal()}
             role='button'
@@ -43,17 +42,20 @@ function TaskBoardCardComp({
           >
             {/* style={{ width: 24, textAlign: 'right' }} */}
             <PlusCircleOutlined
+              ref={iconRef}
               style={{
                 fontSize: 20,
                 color: 'blue', //Lighter shade#1890ff
+                opacity: 0,
+                transition: 'opacity 0.2s ease-in-out',
               }}
             />
           </span>
         </div>
       }
       style={{ position: 'relative' }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => (iconRef.current.style.opacity = 1)}
+      onMouseLeave={() => (iconRef.current.style.opacity = 0)}
     >
       {children}
     </Card>
