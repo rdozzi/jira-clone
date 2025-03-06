@@ -123,7 +123,8 @@ function TaskBoard() {
             <TaskBoardColumn
               key={board.id}
               board={board}
-              boardState={boardState}
+              // boardState={boardState}
+              tickets={boardState[board.id] || []}
               openCreateTicketModal={openCreateTicketModal}
             />
           ))}
