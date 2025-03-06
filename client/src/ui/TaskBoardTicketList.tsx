@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import MemoSpaceComponent from './MemoSpaceComponent';
 import TaskBoardCardComp from './TaskBoardCardComp';
@@ -5,7 +6,11 @@ import TaskBoardTicketCardComp from './TaskBoardTicketCardComp';
 
 import { Tickets } from '../pages/TaskBoard';
 
-function TaskBoardTicketList({ board, tickets, openCreateTicketModal }) {
+const TaskBoardTicketList = memo(function TaskBoardTicketList({
+  board,
+  tickets = [],
+  openCreateTicketModal,
+}) {
   return (
     <Droppable droppableId={board.id} key={board.id}>
       {(provided) => (
@@ -19,7 +24,7 @@ function TaskBoardTicketList({ board, tickets, openCreateTicketModal }) {
             {tickets.map((ticket: Tickets, index: number) => (
               <Draggable
                 key={ticket.id}
-                draggableId={ticket.title}
+                draggableId={ticket.id.toString()}
                 index={index}
               >
                 {(provided) => (
@@ -40,6 +45,6 @@ function TaskBoardTicketList({ board, tickets, openCreateTicketModal }) {
       )}
     </Droppable>
   );
-}
+});
 
 export default TaskBoardTicketList;
