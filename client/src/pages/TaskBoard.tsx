@@ -84,7 +84,8 @@ function TaskBoard() {
       return;
 
     // Create a shallow clone of the initial state
-    const updatedBoards: BoardState = { ...boardState };
+    // const updatedBoards: BoardState = { ...boardState };
+    const updatedBoards: BoardState = JSON.parse(JSON.stringify(boardState));
     console.log(updatedBoards);
 
     // Get the arrays of the source and destination boards
