@@ -2,13 +2,13 @@ import { ConfigProvider } from 'antd';
 import TaskBoardTicketList from './TaskBoardTicketList';
 import TaskBoardCardComp from './TaskBoardCardComp';
 
-function TaskBoardColumn({ board, boardState, openCreateTicketModal }) {
+function TaskBoardColumn({ board, tickets, openCreateTicketModal }) {
   return (
     <ConfigProvider>
       <div style={{ width: '300px', textAlign: 'center' }}>
         <TaskBoardTicketList
           board={board}
-          tickets={boardState[board.id] || []}
+          tickets={tickets || []}
           openCreateTicketModal={openCreateTicketModal}
         />
       </div>
