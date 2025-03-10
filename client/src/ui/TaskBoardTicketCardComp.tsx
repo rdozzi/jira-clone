@@ -10,6 +10,10 @@ const TaskBoardTicketCardComp = memo(function TaskBoardTicketCardComp({
     <Card
       bordered={false}
       size='small'
+      style={{
+        willChange: 'transform',
+        transition: 'transform 0.2s ease-in-out',
+      }}
       title={
         <div
           style={{
@@ -39,7 +43,10 @@ const TaskBoardTicketCardComp = memo(function TaskBoardTicketCardComp({
 }, arePropsEqual);
 
 function arePropsEqual(prevProps, nextProps) {
-  return prevProps.ticket === nextProps.ticket;
+  return (
+    prevProps.ticket.id === nextProps.ticket.id &&
+    prevProps.ticket.status === nextProps.ticket.status
+  );
 }
 
 export default TaskBoardTicketCardComp;
