@@ -24,6 +24,9 @@ const TaskBoardTicketList = memo(function TaskBoardTicketList({
               ? '#f5f5f5'
               : 'transparent',
             transition: 'background-color 0.2s ease-in-out',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-start', // Aligns correctly
           }}
         >
           <TaskBoardCardComp
@@ -31,6 +34,23 @@ const TaskBoardTicketList = memo(function TaskBoardTicketList({
             openCreateTicketModal={openCreateTicketModal}
           >
             <MemoSpaceComponent>
+              {tickets.length === 0 && !snapshot.isDraggingOver && (
+                <div
+                  style={{
+                    height: '80px',
+                    width: '100%',
+                    opacity: 0.3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    pointerEvents: 'none', // This makes sure it's not interactable
+                    border: '1px dashed #ccc',
+                    borderRadius: '4px',
+                  }}
+                >
+                  Drop tasks here
+                </div>
+              )}
               {tickets.map((ticket: Tickets, index: number) => (
                 <Draggable
                   key={ticket.id}
