@@ -1,19 +1,13 @@
-import { useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Card } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
-function TaskBoardCardComp({
-  children,
-  boardName,
-  openCreateTicketModal,
-  innerRef,
-}) {
+function TaskBoardCardComp({ children, boardName, openCreateTicketModal }) {
+  const [shouldAnimate, setShouldAnimate] = useState(true);
   const iconRef = useRef(null);
-  console.log(iconRef);
   return (
     <Card
       bordered={false}
-      ref={innerRef} // Required for @pangea/dnd
       title={
         <div
           style={{
@@ -53,7 +47,11 @@ function TaskBoardCardComp({
           </span>
         </div>
       }
-      style={{ position: 'relative' }}
+      style={{
+        position: 'relative',
+        transition: shouldAnimate ? 'all 0.3s ease-in-out' : 'none',
+      }}
+      onAnimationEnd={() => setShouldAnimate(false)}
       onMouseEnter={() => (iconRef.current.style.opacity = 1)}
       onMouseLeave={() => (iconRef.current.style.opacity = 0)}
     >
