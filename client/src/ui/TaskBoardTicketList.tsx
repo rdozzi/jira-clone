@@ -3,6 +3,7 @@ import { Droppable, Draggable } from '@hello-pangea/dnd';
 import MemoSpaceComponent from './MemoSpaceComponent';
 import TaskBoardCardComp from './TaskBoardCardComp';
 import TaskBoardTicketCardComp from './TaskBoardTicketCardComp';
+import PhantomDraggable from './PhantomDraggable';
 
 import { Tickets } from '../pages/TaskBoard';
 
@@ -34,23 +35,13 @@ const TaskBoardTicketList = memo(function TaskBoardTicketList({
             openCreateTicketModal={openCreateTicketModal}
           >
             <MemoSpaceComponent>
-              {tickets.length === 0 && !snapshot.isDraggingOver && (
-                <div
-                  style={{
-                    height: '80px',
-                    width: '100%',
-                    opacity: 0.3,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    pointerEvents: 'none', // This makes sure it's not interactable
-                    border: '1px dashed #ccc',
-                    borderRadius: '4px',
-                  }}
-                >
-                  Drop tasks here
-                </div>
+              {tickets.length === 0 && (
+                <PhantomDraggable
+                  boardId={board.id}
+                  isDraggingOver={snapshot.isDraggingOver}
+                />
               )}
+
               {tickets.map((ticket: Tickets, index: number) => (
                 <Draggable
                   key={ticket.id}
