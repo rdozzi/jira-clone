@@ -12,39 +12,49 @@ const TaskBoardTicketList = memo(function TaskBoardTicketList({
   openCreateTicketModal,
 }) {
   return (
-    <Droppable droppableId={board.id} key={board.id}>
+    <Droppable droppableId={board.id} key={board.id} isDropDisabled={false}>
       {(provided) => (
-        <TaskBoardCardComp
-          boardName={board.name}
-          openCreateTicketModal={openCreateTicketModal}
-          {...provided.droppableProps}
-          innerRef={provided.innerRef}
-        >
-          <MemoSpaceComponent>
-            {tickets.map((ticket: Tickets, index: number) => (
-              <Draggable
-                key={ticket.id}
-                draggableId={ticket.id.toString()}
-                index={index}
-              >
-                {(provided) => (
-                  <TaskBoardTicketCardComp
-                    draggableProps={provided.draggableProps}
-                    dragHandleProps={provided.dragHandleProps}
-                    innerRef={provided.innerRef}
-                    ticket={ticket}
-                  >
-                    <p>{ticket.description}</p>
-                  </TaskBoardTicketCardComp>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </MemoSpaceComponent>
-        </TaskBoardCardComp>
+        <div ref={provided.innerRef} {...provided.droppableProps}>
+          <TaskBoardCardComp
+            boardName={board.name}
+            openCreateTicketModal={openCreateTicketModal}
+          >
+            <MemoSpaceComponent>
+              {tickets.map((ticket: Tickets, index: number) => (
+                <Draggable
+                  key={ticket.id}
+                  draggableId={ticket.id.toString()}
+                  index={index}
+                >
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <TaskBoardTicketCardComp ticket={ticket}>
+                        <p>{ticket.description}</p>
+                      </TaskBoardTicketCardComp>
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </MemoSpaceComponent>
+          </TaskBoardCardComp>
+        </div>
       )}
     </Droppable>
   );
-});
+},
+arePropsEqual);
+
+function arePropsEqual(prevProps, nextProps) {
+  if (prevProps.board !== nextProps.board) return false;
+  if (prevProps.tickets.length !== nextProps.tickets.length) return false;
+  return prevProps.tickets.every(
+    (ticket, i) => ticket.id === nextProps.tickets[i]?.id
+  );
+}
 
 export default TaskBoardTicketList;
