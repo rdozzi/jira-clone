@@ -43,7 +43,6 @@ function TaskBoard() {
   const { isLoading, tickets = [] } = useGetTickets(); // Add error later
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
-
   useEffect(() => {
     if (!isLoading && tickets.length > 0) {
       setBoardState(() => initializeBoards(boards, tickets));
@@ -76,44 +75,63 @@ function TaskBoard() {
   function handleOnDragEnd(result: DropResult) {
     console.log(result);
     const { source, destination } = result;
-    if (!destination) return;
+    if (!destination) return; // Ignore if dropped outside a droppable area
 
+    // If the item is moved to the same position, do nothing
     if (
       source.droppableId === destination.droppableId &&
       source.index === destination.index
-    )
+    ) {
       return;
+    }
 
-    // Create a deep copy of only affected boards clone of the initial state
-    // const updatedBoards: BoardState = JSON.parse(JSON.stringify(boardState));
-    const updatedSourceBoard = [...(boardState[source.droppableId] || [])];
-    const updatedDestinationBoard = [
-      ...(boardState[destination.droppableId] || []),
-    ];
+    console.log('Before Update:', boardState);
 
-    // Get the arrays of the source and destination boards
-    // const sourceBoard = updatedBoards[source.droppableId] ?? [];
-    // const destinationBoard = updatedBoards[destination.droppableId] ?? [];
+    setBoardState((prev) => {
+      // Clone only the affected board(s) instead of the entire state
+      const sourceBoard = [...(prev[source.droppableId] || [])];
 
-    // Remove the item from the source board
-    const [movedItem] = updatedSourceBoard.splice(source.index, 1);
+      // Ensure the item exists before moving
+      if (!sourceBoard[source.index]) return prev;
 
-    updatedDestinationBoard.splice(destination.index, 0, movedItem);
+      // Clone the ticket to avoid mutation
+      const movedItem = { ...sourceBoard[source.index] };
 
-    // Add the item to the destination board
-    // destinationBoard.splice(destination.index, 0, movedItem);
+      // Remove from the source board
+      sourceBoard.splice(source.index, 1);
 
-    setBoardState((prev) => ({
-      ...prev,
-      [source.droppableId]: updatedSourceBoard,
-      [destination.droppableId]: updatedDestinationBoard,
-    }));
+      if (source.droppableId === destination.droppableId) {
+        // Move inside the same board (reorder)
+        sourceBoard.splice(destination.index, 0, movedItem);
 
-    // function createNewBoard(boardName: string) {
-    //   if (!updatedBoards[boardName]) {
-    //     updatedBoards[boardName] = [];
-    //   }
-    // }
+        // Update the state for that board only
+        const newState = {
+          ...prev,
+          [source.droppableId]: sourceBoard,
+        };
+
+        console.log('After Same-Board Move:', newState);
+        return newState;
+      } else {
+        // Moving to a different board
+        const destinationBoard = [...(prev[destination.droppableId] || [])];
+        movedItem.status = destination.droppableId as
+          | 'BACKLOG'
+          | 'IN_PROGRESS'
+          | 'DONE';
+        destinationBoard.splice(destination.index, 0, movedItem);
+
+        // Set the new state with fresh references
+        const newState = {
+          ...prev,
+          [source.droppableId]: sourceBoard,
+          [destination.droppableId]: destinationBoard,
+        };
+
+        console.log('After Update:', newState);
+        return newState;
+      }
+    });
   }
 
   if (isLoading) {
@@ -128,7 +146,6 @@ function TaskBoard() {
             <TaskBoardColumn
               key={board.id}
               board={board}
-              // boardState={boardState}
               tickets={boardState[board.id] || []}
               openCreateTicketModal={openCreateTicketModal}
             />
