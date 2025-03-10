@@ -5,7 +5,14 @@ import TaskBoardCardComp from './TaskBoardCardComp';
 function TaskBoardColumn({ board, tickets, openCreateTicketModal }) {
   return (
     <ConfigProvider>
-      <div style={{ width: '300px', textAlign: 'center' }}>
+      <div
+        style={{
+          width: '300px',
+          minHeight: '500px',
+          textAlign: 'center',
+          flexShrink: 0,
+        }}
+      >
         <TaskBoardTicketList
           board={board}
           tickets={tickets || []}
