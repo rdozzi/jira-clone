@@ -43,11 +43,12 @@ function TaskBoard() {
   const { isLoading, tickets = [] } = useGetTickets(); // Add error later
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
+
   useEffect(() => {
-    if (tickets.length > 0) {
+    if (!isLoading && tickets.length > 0) {
       setBoardState(() => initializeBoards(boards, tickets));
     }
-  }, [tickets]);
+  }, [isLoading, tickets]);
 
   function openCreateTicketModal() {
     openModal('create', {});
@@ -83,26 +84,30 @@ function TaskBoard() {
     )
       return;
 
-    // Create a shallow clone of the initial state
-    // const updatedBoards: BoardState = { ...boardState };
-    const updatedBoards: BoardState = JSON.parse(JSON.stringify(boardState));
-    console.log(updatedBoards);
+    // Create a deep copy of only affected boards clone of the initial state
+    // const updatedBoards: BoardState = JSON.parse(JSON.stringify(boardState));
+    const updatedSourceBoard = [...(boardState[source.droppableId] || [])];
+    const updatedDestinationBoard = [
+      ...(boardState[destination.droppableId] || []),
+    ];
 
     // Get the arrays of the source and destination boards
-    const sourceBoard = updatedBoards[source.droppableId] ?? [];
-    const destinationBoard = updatedBoards[destination.droppableId] ?? [];
+    // const sourceBoard = updatedBoards[source.droppableId] ?? [];
+    // const destinationBoard = updatedBoards[destination.droppableId] ?? [];
 
     // Remove the item from the source board
-    const [movedItem] = sourceBoard.splice(source.index, 1);
+    const [movedItem] = updatedSourceBoard.splice(source.index, 1);
+
+    updatedDestinationBoard.splice(destination.index, 0, movedItem);
 
     // Add the item to the destination board
-    destinationBoard.splice(destination.index, 0, movedItem);
+    // destinationBoard.splice(destination.index, 0, movedItem);
 
-    setBoardState({
-      ...updatedBoards,
-      [source.droppableId]: sourceBoard,
-      [destination.droppableId]: destinationBoard,
-    });
+    setBoardState((prev) => ({
+      ...prev,
+      [source.droppableId]: updatedSourceBoard,
+      [destination.droppableId]: updatedDestinationBoard,
+    }));
 
     // function createNewBoard(boardName: string) {
     //   if (!updatedBoards[boardName]) {
