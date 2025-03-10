@@ -50,6 +50,7 @@ function TaskBoardCardComp({ children, boardName, openCreateTicketModal }) {
       style={{
         position: 'relative',
         transition: shouldAnimate ? 'all 0.3s ease-in-out' : 'none',
+        minHeight: '300px',
       }}
       onAnimationEnd={() => setShouldAnimate(false)}
       onMouseEnter={() => (iconRef.current.style.opacity = 1)}
