@@ -82,7 +82,7 @@ function TaskBoard() {
   return (
     <>
       <DragDropContext onDragEnd={handleOnDragEnd}>
-        <Space direction='horizontal' size='small' style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto' }}>
           {boards.map((board) => (
             <TaskBoardColumn
               key={board.id}
@@ -91,7 +91,7 @@ function TaskBoard() {
               openCreateTicketModal={openCreateTicketModal}
             />
           ))}
-        </Space>
+        </div>
       </DragDropContext>
       {mode === 'create' && (
         <TicketModal
