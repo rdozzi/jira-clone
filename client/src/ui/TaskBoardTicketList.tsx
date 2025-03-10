@@ -13,8 +13,19 @@ const TaskBoardTicketList = memo(function TaskBoardTicketList({
 }) {
   return (
     <Droppable droppableId={board.id} key={board.id} isDropDisabled={false}>
-      {(provided) => (
-        <div ref={provided.innerRef} {...provided.droppableProps}>
+      {(provided, snapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+          style={{
+            minHeight: '300px',
+            padding: '8px',
+            backgroundColor: snapshot.isDraggingOver
+              ? '#f5f5f5'
+              : 'transparent',
+            transition: 'background-color 0.2s ease-in-out',
+          }}
+        >
           <TaskBoardCardComp
             boardName={board.name}
             openCreateTicketModal={openCreateTicketModal}
@@ -26,11 +37,17 @@ const TaskBoardTicketList = memo(function TaskBoardTicketList({
                   draggableId={ticket.id.toString()}
                   index={index}
                 >
-                  {(provided) => (
+                  {(provided, snapshot) => (
                     <div
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
+                      style={{
+                        transition: snapshot.isDragging
+                          ? 'none'
+                          : 'transform 0.2s ease-out',
+                        ...provided.draggableProps.style,
+                      }}
                     >
                       <TaskBoardTicketCardComp ticket={ticket}>
                         <p>{ticket.description}</p>
@@ -53,7 +70,9 @@ function arePropsEqual(prevProps, nextProps) {
   if (prevProps.board !== nextProps.board) return false;
   if (prevProps.tickets.length !== nextProps.tickets.length) return false;
   return prevProps.tickets.every(
-    (ticket, i) => ticket.id === nextProps.tickets[i]?.id
+    (ticket, i) =>
+      ticket.id === nextProps.tickets[i]?.id &&
+      ticket.status === nextProps.tickets[i]?.status
   );
 }
 
