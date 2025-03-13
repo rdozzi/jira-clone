@@ -1,5 +1,7 @@
 import { memo } from 'react';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
+import { TaskBoardColumnProps } from './TaskBoardColumn';
+
 import MemoSpaceComponent from './MemoSpaceComponent';
 import TaskBoardCardComp from './TaskBoardCardComp';
 import TaskBoardTicketCardComp from './TaskBoardTicketCardComp';
@@ -7,11 +9,11 @@ import PhantomDraggable from './PhantomDraggable';
 
 import { Tickets } from '../pages/TaskBoard';
 
-const TaskBoardTicketList = memo(function TaskBoardTicketList({
+const TaskBoardCompContainer = memo(function TaskBoardCompContainer({
   board,
   tickets = [],
   openCreateTicketModal,
-}) {
+}: TaskBoardColumnProps) {
   return (
     <Droppable droppableId={board.id} key={board.id} isDropDisabled={false}>
       {(provided, snapshot) => (
@@ -24,7 +26,8 @@ const TaskBoardTicketList = memo(function TaskBoardTicketList({
             backgroundColor: snapshot.isDraggingOver
               ? '#f5f5f5'
               : 'transparent',
-            transition: 'background-color 0.2s ease-in-out',
+            transition:
+              'background-color 0.2s ease-in-out, height 2s ease-in-out',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'flex-start', // Aligns correctly
@@ -54,10 +57,18 @@ const TaskBoardTicketList = memo(function TaskBoardTicketList({
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                       style={{
+                        background: 'white',
+                        padding: '12px',
+                        borderRadius: '6px',
+                        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
                         transition: snapshot.isDragging
-                          ? 'none'
-                          : 'transform 0.2s ease-out',
-                        ...provided.draggableProps.style,
+                          ? 'none' // No transition while dragging
+                          : 'transform 0.3s ease-in-out',
+                        opacity: snapshot.isDragging ? 0.8 : 1,
+                        transform: snapshot.isDragging
+                          ? 'scale(1.05)'
+                          : 'scale(1)',
+                        ...provided.draggableProps.style, // Preserve default drag styles
                       }}
                     >
                       <TaskBoardTicketCardComp ticket={ticket}>
@@ -77,7 +88,10 @@ const TaskBoardTicketList = memo(function TaskBoardTicketList({
 },
 arePropsEqual);
 
-function arePropsEqual(prevProps, nextProps) {
+function arePropsEqual(
+  prevProps: TaskBoardColumnProps,
+  nextProps: TaskBoardColumnProps
+): boolean {
   if (prevProps.board !== nextProps.board) return false;
   if (prevProps.tickets.length !== nextProps.tickets.length) return false;
   return prevProps.tickets.every(
@@ -87,4 +101,4 @@ function arePropsEqual(prevProps, nextProps) {
   );
 }
 
-export default TaskBoardTicketList;
+export default TaskBoardCompContainer;
