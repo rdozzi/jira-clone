@@ -14,23 +14,23 @@ export interface Record {
   assignee: { first_name: string; last_name: string };
   assigneeId: number;
   boardId: number;
-  createdAt: string;
+  createdAt: Date;
   description: string;
-  dueDate: string;
+  dueDate: Date;
   id: number;
   priority: string;
   reporterId: number;
   status: string;
   title: string;
   type: string;
-  udpatedAt: string;
+  updatedAt: Date;
 }
 
 interface Ticket {
   assigneeId: number;
   boardId: number;
   description: string;
-  dueDate: string;
+  dueDate: Date;
   priority: string;
   reporterId: number;
   status: string;
