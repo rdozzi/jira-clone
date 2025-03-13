@@ -2,7 +2,7 @@ interface Ticket {
   assigneeId: number;
   boardId: number;
   description: string;
-  dueDate: string;
+  dueDate: string | Date;
   priority: string;
   reporterId: number;
   status: string;
