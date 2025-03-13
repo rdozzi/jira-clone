@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { Space } from 'antd';
-import { DragDropContext, DropResult } from '@hello-pangea/dnd';
+import { DragDropContext } from '@hello-pangea/dnd';
 
 import { useGetTickets } from '../features/tickets/useGetTickets';
 import { useModal } from '../contexts/useModal';
@@ -11,7 +10,7 @@ import TaskBoardColumn from '../ui/TaskBoardColumn';
 
 import { useDragHandler } from '../hooks/useDragHandler';
 
-interface Board {
+export interface Board {
   id: string;
   name: string;
 }
