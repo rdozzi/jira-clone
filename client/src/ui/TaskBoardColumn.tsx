@@ -1,8 +1,18 @@
 import { ConfigProvider } from 'antd';
-import TaskBoardTicketList from './TaskBoardTicketList';
-import TaskBoardCardComp from './TaskBoardCardComp';
+import { Board, Tickets } from '../pages/TaskBoard';
+import TaskBoardCompContainer from './TaskBoardCompContainer';
 
-function TaskBoardColumn({ board, tickets, openCreateTicketModal }) {
+export interface TaskBoardColumnProps {
+  board: Board;
+  tickets: Tickets[];
+  openCreateTicketModal: () => void;
+}
+
+function TaskBoardColumn({
+  board,
+  tickets,
+  openCreateTicketModal,
+}: TaskBoardColumnProps) {
   return (
     <ConfigProvider>
       <div
@@ -13,7 +23,7 @@ function TaskBoardColumn({ board, tickets, openCreateTicketModal }) {
           flexShrink: 0,
         }}
       >
-        <TaskBoardTicketList
+        <TaskBoardCompContainer
           board={board}
           tickets={tickets || []}
           openCreateTicketModal={openCreateTicketModal}
