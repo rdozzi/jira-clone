@@ -2,10 +2,29 @@ import { memo } from 'react';
 import { Card } from 'antd';
 import TicketListItemButton from './TicketListItemButton';
 
+interface TaskBoardTicketCardCompProps {
+  ticket: {
+    assignee: { first_name: string; last_name: string };
+    assigneeId: number;
+    boardId: number;
+    createdAt: Date;
+    description: string;
+    dueDate: Date;
+    id: number;
+    priority: string;
+    reporterId: number;
+    status: string;
+    title: string;
+    type: string;
+    updatedAt: Date;
+  };
+  children: React.ReactNode;
+}
+
 const TaskBoardTicketCardComp = memo(function TaskBoardTicketCardComp({
   ticket, //Individual ticket information
   children,
-}) {
+}: TaskBoardTicketCardCompProps) {
   return (
     <Card
       bordered={false}
@@ -42,7 +61,10 @@ const TaskBoardTicketCardComp = memo(function TaskBoardTicketCardComp({
   );
 }, arePropsEqual);
 
-function arePropsEqual(prevProps, nextProps) {
+function arePropsEqual(
+  prevProps: TaskBoardTicketCardCompProps,
+  nextProps: TaskBoardTicketCardCompProps
+): boolean {
   return (
     prevProps.ticket.id === nextProps.ticket.id &&
     prevProps.ticket.status === nextProps.ticket.status
