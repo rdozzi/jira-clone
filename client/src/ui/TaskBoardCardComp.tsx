@@ -1,10 +1,19 @@
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { Card } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
-function TaskBoardCardComp({ children, boardName, openCreateTicketModal }) {
-  const [shouldAnimate, setShouldAnimate] = useState(true);
-  const iconRef = useRef(null);
+interface TaskBoardCardCompProps {
+  children: React.ReactNode;
+  boardName: string;
+  openCreateTicketModal: () => void;
+}
+
+function TaskBoardCardComp({
+  children,
+  boardName,
+  openCreateTicketModal,
+}: TaskBoardCardCompProps) {
+  const iconRef = useRef<HTMLElement | null>(null);
   return (
     <Card
       bordered={false}
@@ -49,12 +58,20 @@ function TaskBoardCardComp({ children, boardName, openCreateTicketModal }) {
       }
       style={{
         position: 'relative',
-        transition: shouldAnimate ? 'all 0.3s ease-in-out' : 'none',
+
+        transition: 'height 0.7s ease-in-out, min-height 0.7s ease-in-out', // Always animate
         minHeight: '300px',
       }}
-      onAnimationEnd={() => setShouldAnimate(false)}
-      onMouseEnter={() => (iconRef.current.style.opacity = 1)}
-      onMouseLeave={() => (iconRef.current.style.opacity = 0)}
+      onMouseEnter={() => {
+        if (iconRef.current) {
+          iconRef.current.style.opacity = '1';
+        }
+      }}
+      onMouseLeave={() => {
+        if (iconRef.current) {
+          iconRef.current.style.opacity = '0';
+        }
+      }}
     >
       {children}
     </Card>
