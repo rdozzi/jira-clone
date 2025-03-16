@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 
-import { Calendar, Card, Button, DatePicker, DatePickerProps } from 'antd';
+import type { Dayjs } from 'dayjs';
+import type { CalendarProps } from 'antd';
+import { Record } from '../ui/TicketListItemButton';
+
+import { Calendar, Button, DatePicker } from 'antd';
 import {
   LeftCircleOutlined,
   RightCircleOutlined,
@@ -14,15 +18,17 @@ import { useModal } from '../contexts/useModal';
 import TicketModal from '../ui/TicketModal';
 import TicketListItemButton from '../ui/TicketListItemButton';
 
+type CellRenderRecord = Record;
+
 function TaskCalender() {
   const [ticketState, setTicketState] = useState([]);
   const [date, setDate] = useState(dayjs());
-  const { isLoading, tickets, error } = useGetTickets();
+  const { isLoading, tickets } = useGetTickets(); // Add error later
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
   useEffect(() => {
     if (tickets) {
-      const formattedTickets = tickets.map((ticket) => ({
+      const formattedTickets = tickets.map((ticket: CellRenderRecord) => ({
         ...ticket,
         dueDate: dayjs(ticket.dueDate).format('YYYY-MM-DD'),
       }));
@@ -65,16 +71,21 @@ function TaskCalender() {
     </div>
   );
 
-  function cellRender(date, info) {
-    if (info.type === 'date') {
+  type CellRenderInfoType = Parameters<
+    NonNullable<CalendarProps<Dayjs>['cellRender']>
+  >[1];
+
+  function cellRender(date: Dayjs, info: CellRenderInfoType) {
+    if (info?.type === 'date') {
       const formattedDate = dayjs(date).format('YYYY-MM-DD');
       const ticketsForDate = ticketState.filter(
-        (ticket) => ticket.dueDate === formattedDate
+        (ticket: CellRenderRecord) =>
+          ticket.dueDate.toString() === formattedDate
       );
 
       return (
         <ul style={{ listStyleType: 'none', padding: '0' }}>
-          {ticketsForDate.map((ticket) => (
+          {ticketsForDate.map((ticket: CellRenderRecord) => (
             <li
               key={ticket.id}
               style={{
@@ -82,7 +93,6 @@ function TaskCalender() {
                 alignItems: 'center',
               }}
             >
-              {/* <Card style={{ width: '100%' }}>{ticket.title}</Card> */}
               <span
                 style={{
                   margin: '1px',
@@ -116,7 +126,6 @@ function TaskCalender() {
         cellRender={cellRender}
         value={date}
         headerRender={() => headerRender}
-        // style={{ textAlign: 'left' }}
       />
       {mode === 'create' && (
         <TicketModal
