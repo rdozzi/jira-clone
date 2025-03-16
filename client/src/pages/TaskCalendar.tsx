@@ -5,7 +5,7 @@ import type { Dayjs } from 'dayjs';
 import type { CalendarProps } from 'antd';
 import { Record } from '../ui/TicketListItemButton';
 
-import { Calendar, Button, DatePicker } from 'antd';
+import { Calendar, Button, DatePicker, Segmented } from 'antd';
 import {
   LeftCircleOutlined,
   RightCircleOutlined,
@@ -23,6 +23,7 @@ type CellRenderRecord = Record;
 function TaskCalender() {
   const [ticketState, setTicketState] = useState([]);
   const [date, setDate] = useState(dayjs());
+  const [viewMode, setViewMode] = useState<'month' | 'year'>('month');
   const { isLoading, tickets } = useGetTickets(); // Add error later
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
@@ -49,25 +50,44 @@ function TaskCalender() {
       style={{
         display: 'flex',
         justifyContent: 'flex-end',
+        alignItems: 'center',
         padding: '4px',
       }}
     >
-      <EditOutlined style={{ fontSize: '16px' }} onClick={handleCreate} />
-      <Button type='link' onClick={() => setDate(date.add(-1, 'month'))}>
-        <LeftCircleOutlined />
-      </Button>
-      <Button type='link' onClick={() => setDate(dayjs())}>
-        Today
-      </Button>
-      <Button type='link' onClick={() => setDate(date.add(1, 'month'))}>
-        <RightCircleOutlined />
-      </Button>
-      <DatePicker
-        picker='month'
-        value={date}
-        onChange={(newDate) => setDate(newDate)}
-        format='MMM YYYY'
-      />
+      <span>
+        <EditOutlined style={{ fontSize: '16px' }} onClick={handleCreate} />
+        <Button type='link' onClick={() => setDate(date.add(-1, 'month'))}>
+          <LeftCircleOutlined />
+        </Button>
+        <Button type='link' onClick={() => setDate(dayjs())}>
+          Today
+        </Button>
+        <Button type='link' onClick={() => setDate(date.add(1, 'month'))}>
+          <RightCircleOutlined />
+        </Button>
+        <DatePicker
+          picker='month'
+          value={date}
+          onChange={(newDate) => setDate(newDate)}
+          format='MMM YYYY'
+        />
+      </span>
+      <span>
+        <Segmented
+          options={[
+            { label: 'Month', value: 'month' },
+            { label: 'Year', value: 'year' },
+          ]}
+          value={viewMode}
+          onChange={(value) => setViewMode(value)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '3px 10px',
+          }}
+        />
+      </span>
     </div>
   );
 
@@ -123,6 +143,8 @@ function TaskCalender() {
   return (
     <>
       <Calendar
+        mode={viewMode}
+        onPanelChange={(date, mode) => setViewMode(mode)}
         cellRender={cellRender}
         value={date}
         headerRender={() => headerRender}
