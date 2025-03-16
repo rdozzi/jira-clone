@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import dayjs from 'dayjs';
 
 import { Modal, Form, Input, Radio, DatePicker, Select } from 'antd';
@@ -112,7 +113,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
     }
   }
 
-  return (
+  return createPortal(
     <Modal
       title={
         mode === 'create'
@@ -265,7 +266,8 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
           </Radio.Group>
         </Form.Item>
       </Form>
-    </Modal>
+    </Modal>,
+    document.body
   );
 }
 
