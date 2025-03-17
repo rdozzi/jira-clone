@@ -185,15 +185,21 @@ function TaskCalender() {
         </ul>
       );
     } else if (info?.type === 'month' && viewMode === 'year') {
-      console.log(viewMode);
-      const formattedDate = dayjs(date).format('YYYY-MM-DD');
-      const ticketsForDate = ticketState.filter(
-        (ticket: CellRenderRecord) =>
-          ticket.dueDate.toString() === formattedDate
-      );
-      return (
+      const groupedTickets = {};
+      ticketState.forEach((ticket: CellRenderRecord) => {
+        const month = dayjs(ticket.dueDate).format('YYYY-MM');
+        if (!groupedTickets[month]) {
+          groupedTickets[month] = [];
+        }
+        groupedTickets[month].push(ticket);
+      });
+
+      const formattedDate = dayjs(date).format('YYYY-MM');
+      const monthTickets = groupedTickets[formattedDate] || [];
+
+      return monthTickets.length > 0 ? (
         <ul style={{ listStyleType: 'none', padding: '0' }}>
-          {ticketsForDate.map((ticket: CellRenderRecord) => (
+          {monthTickets.map((ticket: CellRenderRecord) => (
             <li
               key={ticket.id}
               style={{
@@ -204,11 +210,13 @@ function TaskCalender() {
               <span
                 style={{
                   margin: '1px',
-                  // borderRadius: '10px',
                   padding: '2px 5px 2px 5px',
                   maxWidth: '100px',
                   textOverflow: 'ellipsis',
                   overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  backgroundColor: '#ADD8E6',
+                  textAlign: 'center',
                 }}
               >
                 {ticket.title}
@@ -219,7 +227,7 @@ function TaskCalender() {
             </li>
           ))}
         </ul>
-      );
+      ) : null;
     } else {
       return null;
     }
