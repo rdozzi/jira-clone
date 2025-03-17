@@ -1,7 +1,10 @@
+import { Record } from './TicketListItemButton';
 import TicketListItemButton from './TicketListItemButton';
 
+type CellRenderRecord = Record;
+
 // "record" is used in place of "ticket"
-function TaskCalendarCellRender({ record }) {
+function TaskCalendarCellRender({ record }: { record: CellRenderRecord }) {
   return (
     <li
       key={record.id}
