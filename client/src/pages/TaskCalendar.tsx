@@ -20,10 +20,12 @@ import TicketListItemButton from '../ui/TicketListItemButton';
 
 type CellRenderRecord = Record;
 
+type ViewMode = 'month' | 'year';
+
 function TaskCalender() {
   const [ticketState, setTicketState] = useState([]);
   const [date, setDate] = useState(dayjs());
-  const [viewMode, setViewMode] = useState<'month' | 'year'>('month');
+  const [viewMode, setViewMode] = useState<ViewMode>('month');
   const { isLoading, tickets } = useGetTickets(); // Add error later
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
@@ -45,64 +47,66 @@ function TaskCalender() {
     openModal('create', {});
   }
 
-  const headerRender = (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        padding: '4px',
-      }}
-    >
-      <span>
-        <EditOutlined style={{ fontSize: '16px' }} onClick={handleCreate} />
-        <Button type='link' onClick={() => setDate(date.add(-1, 'month'))}>
-          <LeftCircleOutlined />
-        </Button>
-        <Button type='link' onClick={() => setDate(dayjs())}>
-          Today
-        </Button>
-        <Button type='link' onClick={() => setDate(date.add(1, 'month'))}>
-          <RightCircleOutlined />
-        </Button>
-        <DatePicker
-          picker='month'
-          value={date}
-          onChange={(newDate) => setDate(newDate)}
-          format='MMM YYYY'
-        />
-      </span>
-      <span>
-        <Segmented
-          options={[
-            { label: 'Month', value: 'month' },
-            { label: 'Year', value: 'year' },
-          ]}
-          value={viewMode}
-          onChange={(value) => setViewMode(value)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '3px 10px',
-          }}
-        />
-      </span>
-    </div>
-  );
+  function headerRender() {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          padding: '4px',
+        }}
+      >
+        <span>
+          <EditOutlined style={{ fontSize: '16px' }} onClick={handleCreate} />
+          <Button type='link' onClick={() => setDate(date.add(-1, 'month'))}>
+            <LeftCircleOutlined />
+          </Button>
+          <Button type='link' onClick={() => setDate(dayjs())}>
+            Today
+          </Button>
+          <Button type='link' onClick={() => setDate(date.add(1, 'month'))}>
+            <RightCircleOutlined />
+          </Button>
+          <DatePicker
+            picker='month'
+            value={date}
+            onChange={(newDate) => setDate(newDate)}
+            format='MMM YYYY'
+          />
+        </span>
+        <span>
+          <Segmented
+            options={[
+              { label: 'Month', value: 'month' },
+              { label: 'Year', value: 'year' },
+            ]}
+            value={viewMode}
+            onChange={(val) => setViewMode(val as ViewMode)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '3px 10px',
+            }}
+          />
+        </span>
+      </div>
+    );
+  }
 
   type CellRenderInfoType = Parameters<
     NonNullable<CalendarProps<Dayjs>['cellRender']>
   >[1];
 
   function cellRender(date: Dayjs, info: CellRenderInfoType) {
-    if (info?.type === 'date') {
+    if (info?.type === 'date' && viewMode === 'month') {
+      console.log(viewMode);
       const formattedDate = dayjs(date).format('YYYY-MM-DD');
       const ticketsForDate = ticketState.filter(
         (ticket: CellRenderRecord) =>
           ticket.dueDate.toString() === formattedDate
       );
-
       return (
         <ul style={{ listStyleType: 'none', padding: '0' }}>
           {ticketsForDate.map((ticket: CellRenderRecord) => (
@@ -135,6 +139,42 @@ function TaskCalender() {
           ))}
         </ul>
       );
+    } else if (info?.type === 'month' && viewMode === 'year') {
+      console.log(viewMode);
+      const formattedDate = dayjs(date).format('YYYY-MM-DD');
+      const ticketsForDate = ticketState.filter(
+        (ticket: CellRenderRecord) =>
+          ticket.dueDate.toString() === formattedDate
+      );
+      return (
+        <ul style={{ listStyleType: 'none', padding: '0' }}>
+          {ticketsForDate.map((ticket: CellRenderRecord) => (
+            <li
+              key={ticket.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <span
+                style={{
+                  margin: '1px',
+                  // borderRadius: '10px',
+                  padding: '2px 5px 2px 5px',
+                  maxWidth: '100px',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                }}
+              >
+                {ticket.title}
+              </span>
+              <span style={{ marginLeft: '5px', marginRight: '5px' }}>
+                <TicketListItemButton record={ticket} />
+              </span>
+            </li>
+          ))}
+        </ul>
+      );
     } else {
       return null;
     }
@@ -144,10 +184,14 @@ function TaskCalender() {
     <>
       <Calendar
         mode={viewMode}
-        onPanelChange={(date, mode) => setViewMode(mode)}
+        onPanelChange={(date, mode) => {
+          if (mode !== viewMode) {
+            setViewMode(mode as ViewMode);
+          }
+        }}
         cellRender={cellRender}
         value={date}
-        headerRender={() => headerRender}
+        headerRender={headerRender}
       />
       {mode === 'create' && (
         <TicketModal
