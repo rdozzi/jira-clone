@@ -17,6 +17,7 @@ import { useModal } from '../contexts/useModal';
 
 import TicketModal from '../ui/TicketModal';
 import TaskCalendarTicketItem from '../ui/TaskCalendarTicketItem';
+import TaskCalendarTicketList from '../ui/TaskCalendarTicketList';
 
 type CellRenderRecord = Record;
 
@@ -147,13 +148,7 @@ const TaskCalender = memo(function TaskCalender() {
         (ticket: CellRenderRecord) =>
           ticket.dueDate.toString() === formattedDate
       );
-      return (
-        <ul style={{ listStyleType: 'none', padding: '0' }}>
-          {ticketsForDate.map((ticket: CellRenderRecord) => (
-            <TaskCalendarTicketItem key={ticket.id} record={ticket} />
-          ))}
-        </ul>
-      );
+      return <TaskCalendarTicketList tickets={ticketsForDate} />;
     } else if (info?.type === 'month' && viewMode === 'year') {
       const groupedTickets: { [key: string]: CellRenderRecord[] } = {};
       ticketState.forEach((ticket: CellRenderRecord) => {
@@ -167,13 +162,7 @@ const TaskCalender = memo(function TaskCalender() {
       const formattedDate = dayjs(date).format('YYYY-MM');
       const monthTickets = groupedTickets[formattedDate] || [];
 
-      return monthTickets.length > 0 ? (
-        <ul style={{ listStyleType: 'none', padding: '0' }}>
-          {monthTickets.map((ticket: CellRenderRecord) => (
-            <TaskCalendarTicketItem key={ticket.id} record={ticket} />
-          ))}
-        </ul>
-      ) : null;
+      return <TaskCalendarTicketList tickets={monthTickets} />;
     } else {
       return null;
     }
