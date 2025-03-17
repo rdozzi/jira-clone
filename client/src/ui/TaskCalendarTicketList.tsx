@@ -3,7 +3,7 @@ import TaskCalendarTicketItem from './TaskCalendarTicketItem';
 
 type CellRenderRecord = Record;
 
-function TaskCalendarTicketList({ tickets }) {
+function TaskCalendarTicketList({ tickets }: { tickets: CellRenderRecord[] }) {
   return (
     <ul style={{ listStyleType: 'none', padding: '0' }}>
       {tickets.map((ticket: CellRenderRecord) => (
