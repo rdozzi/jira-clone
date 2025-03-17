@@ -16,7 +16,7 @@ import { useGetTickets } from '../features/tickets/useGetTickets';
 import { useModal } from '../contexts/useModal';
 
 import TicketModal from '../ui/TicketModal';
-import TicketListItemButton from '../ui/TicketListItemButton';
+import TaskCalendarTicketItem from '../ui/TaskCalendarTicketItem';
 
 type CellRenderRecord = Record;
 
@@ -150,31 +150,7 @@ const TaskCalender = memo(function TaskCalender() {
       return (
         <ul style={{ listStyleType: 'none', padding: '0' }}>
           {ticketsForDate.map((ticket: CellRenderRecord) => (
-            <li
-              key={ticket.id}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <span
-                style={{
-                  margin: '1px',
-                  padding: '2px 5px 2px 5px',
-                  maxWidth: '100px',
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  backgroundColor: '#ADD8E6',
-                  textAlign: 'center',
-                }}
-              >
-                {ticket.title}
-              </span>
-              <span style={{ marginLeft: '5px', marginRight: '5px' }}>
-                <TicketListItemButton record={ticket} />
-              </span>
-            </li>
+            <TaskCalendarTicketItem key={ticket.id} record={ticket} />
           ))}
         </ul>
       );
@@ -194,31 +170,7 @@ const TaskCalender = memo(function TaskCalender() {
       return monthTickets.length > 0 ? (
         <ul style={{ listStyleType: 'none', padding: '0' }}>
           {monthTickets.map((ticket: CellRenderRecord) => (
-            <li
-              key={ticket.id}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <span
-                style={{
-                  margin: '1px',
-                  padding: '2px 5px 2px 5px',
-                  maxWidth: '100px',
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  backgroundColor: '#ADD8E6',
-                  textAlign: 'center',
-                }}
-              >
-                {ticket.title}
-              </span>
-              <span style={{ marginLeft: '5px', marginRight: '5px' }}>
-                <TicketListItemButton record={ticket} />
-              </span>
-            </li>
+            <TaskCalendarTicketItem key={ticket.id} record={ticket} />
           ))}
         </ul>
       ) : null;
