@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import dayjs from 'dayjs';
 
 import type { Dayjs } from 'dayjs';
@@ -22,7 +22,7 @@ type CellRenderRecord = Record;
 
 type ViewMode = 'month' | 'year';
 
-function TaskCalender() {
+const TaskCalender = memo(function TaskCalender() {
   const [ticketState, setTicketState] = useState([]);
   const [date, setDate] = useState(dayjs());
   const [viewMode, setViewMode] = useState<ViewMode>('month');
@@ -256,5 +256,5 @@ function TaskCalender() {
       )}
     </>
   );
-}
+});
 export default TaskCalender;
