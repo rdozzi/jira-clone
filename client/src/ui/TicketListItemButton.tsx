@@ -16,7 +16,7 @@ export interface Record {
   boardId: number;
   createdAt: Date;
   description: string;
-  dueDate: Date;
+  dueDate: Date | string;
   id: number;
   priority: string;
   reporterId: number;
@@ -30,7 +30,7 @@ interface Ticket {
   assigneeId: number;
   boardId: number;
   description: string;
-  dueDate: Date;
+  dueDate: Date | string;
   priority: string;
   reporterId: number;
   status: string;
