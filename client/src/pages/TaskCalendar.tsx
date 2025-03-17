@@ -2,7 +2,7 @@ import { useState, useEffect, memo, useMemo, useCallback } from 'react';
 import dayjs from 'dayjs';
 
 import type { Dayjs } from 'dayjs';
-import type { CalendarProps } from 'antd';
+import type { CalendarProps, SegmentedProps } from 'antd';
 import { Record } from '../ui/TicketListItemButton';
 
 import { Calendar, Button, DatePicker, Segmented } from 'antd';
@@ -41,15 +41,19 @@ const TaskCalender = memo(function TaskCalender() {
     [viewMode]
   );
 
-  const updateDate = useCallback(
-    (amount: number) => setDate(date.add(amount, navType)),
-    [navType, date]
+  const handlePrev = useCallback(
+    () => setDate(date.add(-1, navType)),
+    [date, navType]
+  );
+  const handleNext = useCallback(
+    () => setDate(date.add(1, navType)),
+    [date, navType]
   );
 
   const controls = useMemo(
     () => (
       <span>
-        <Button type='link' onClick={() => updateDate(-1)}>
+        <Button type='link' onClick={handlePrev}>
           <LeftCircleOutlined />
         </Button>
         {viewMode === 'month' ? (
@@ -57,7 +61,7 @@ const TaskCalender = memo(function TaskCalender() {
             Today
           </Button>
         ) : null}
-        <Button type='link' onClick={() => updateDate(1)}>
+        <Button type='link' onClick={handleNext}>
           <RightCircleOutlined />
         </Button>
         <DatePicker
@@ -65,10 +69,19 @@ const TaskCalender = memo(function TaskCalender() {
           value={date}
           onChange={(newDate) => setDate(newDate)}
           format={viewMode === 'month' ? 'MMM YYYY' : 'YYYY'}
+          transitionName=''
+          getPopupContainer={(trigger) => trigger.parentNode as HTMLElement}
         />
       </span>
     ),
-    [navType, viewMode, updateDate, date]
+    [navType, viewMode, date, handlePrev, handleNext]
+  );
+
+  const handleViewModeChange = useCallback(
+    (mode: ViewMode) => {
+      setViewMode(mode);
+    },
+    [setViewMode]
   );
 
   useEffect(() => {
@@ -80,6 +93,14 @@ const TaskCalender = memo(function TaskCalender() {
       setTicketState(formattedTickets);
     }
   }, [tickets]);
+
+  const segmentOptions: SegmentedProps<ViewMode>['options'] = useMemo(
+    () => [
+      { label: 'Month', value: 'month' },
+      { label: 'Year', value: 'year' },
+    ],
+    []
+  );
 
   const headerRender = useCallback(
     function headerRender() {
@@ -98,12 +119,9 @@ const TaskCalender = memo(function TaskCalender() {
           {controls}
           <span>
             <Segmented
-              options={[
-                { label: 'Month', value: 'month' },
-                { label: 'Year', value: 'year' },
-              ]}
+              options={segmentOptions}
               value={viewMode}
-              onChange={(val) => setViewMode(val as ViewMode)}
+              onChange={handleViewModeChange}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -115,7 +133,7 @@ const TaskCalender = memo(function TaskCalender() {
         </div>
       );
     },
-    [controls, handleCreate, viewMode]
+    [controls, handleCreate, viewMode, segmentOptions, handleViewModeChange]
   );
 
   type CellRenderInfoType = Parameters<
