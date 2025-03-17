@@ -185,7 +185,7 @@ function TaskCalender() {
         </ul>
       );
     } else if (info?.type === 'month' && viewMode === 'year') {
-      const groupedTickets = {};
+      const groupedTickets: { [key: string]: CellRenderRecord[] } = {};
       ticketState.forEach((ticket: CellRenderRecord) => {
         const month = dayjs(ticket.dueDate).format('YYYY-MM');
         if (!groupedTickets[month]) {
