@@ -142,13 +142,11 @@ const TaskCalender = memo(function TaskCalender() {
 
   function cellRender(date: Dayjs, info: CellRenderInfoType) {
     if (info?.type === 'date' && viewMode === 'month') {
-      console.log(viewMode);
       const formattedDate = dayjs(date).format('YYYY-MM-DD');
       const ticketsForDate = ticketState.filter(
         (ticket: CellRenderRecord) =>
           ticket.dueDate.toString() === formattedDate
       );
-      console.log(ticketsForDate);
       return (
         <ul style={{ listStyleType: 'none', padding: '0' }}>
           {ticketsForDate.map((ticket: CellRenderRecord) => (
