@@ -48,51 +48,96 @@ function TaskCalender() {
   }
 
   function headerRender() {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          padding: '4px',
-        }}
-      >
-        <span>
-          <EditOutlined style={{ fontSize: '16px' }} onClick={handleCreate} />
-          <Button type='link' onClick={() => setDate(date.add(-1, 'month'))}>
-            <LeftCircleOutlined />
-          </Button>
-          <Button type='link' onClick={() => setDate(dayjs())}>
-            Today
-          </Button>
-          <Button type='link' onClick={() => setDate(date.add(1, 'month'))}>
-            <RightCircleOutlined />
-          </Button>
-          <DatePicker
-            picker='month'
-            value={date}
-            onChange={(newDate) => setDate(newDate)}
-            format='MMM YYYY'
-          />
-        </span>
-        <span>
-          <Segmented
-            options={[
-              { label: 'Month', value: 'month' },
-              { label: 'Year', value: 'year' },
-            ]}
-            value={viewMode}
-            onChange={(val) => setViewMode(val as ViewMode)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '3px 10px',
-            }}
-          />
-        </span>
-      </div>
-    );
+    if (viewMode === 'month') {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            padding: '4px',
+          }}
+        >
+          <span>
+            <EditOutlined style={{ fontSize: '16px' }} onClick={handleCreate} />
+            <Button type='link' onClick={() => setDate(date.add(-1, 'month'))}>
+              <LeftCircleOutlined />
+            </Button>
+            <Button type='link' onClick={() => setDate(dayjs())}>
+              Today
+            </Button>
+            <Button type='link' onClick={() => setDate(date.add(1, 'month'))}>
+              <RightCircleOutlined />
+            </Button>
+            <DatePicker
+              picker='month'
+              value={date}
+              onChange={(newDate) => setDate(newDate)}
+              format='MMM YYYY'
+            />
+          </span>
+          <span>
+            <Segmented
+              options={[
+                { label: 'Month', value: 'month' },
+                { label: 'Year', value: 'year' },
+              ]}
+              value={viewMode}
+              onChange={(val) => setViewMode(val as ViewMode)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '3px 10px',
+              }}
+            />
+          </span>
+        </div>
+      );
+    } else if (viewMode === 'year') {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            padding: '4px',
+          }}
+        >
+          <span>
+            <EditOutlined style={{ fontSize: '16px' }} onClick={handleCreate} />
+            <Button type='link' onClick={() => setDate(date.add(-1, 'year'))}>
+              <LeftCircleOutlined />
+            </Button>
+            <Button type='link' onClick={() => setDate(date.add(1, 'year'))}>
+              <RightCircleOutlined />
+            </Button>
+            <DatePicker
+              picker='year'
+              value={date}
+              onChange={(newDate) => setDate(newDate)}
+              format='YYYY'
+            />
+          </span>
+          <span>
+            <Segmented
+              options={[
+                { label: 'Month', value: 'month' },
+                { label: 'Year', value: 'year' },
+              ]}
+              value={viewMode}
+              onChange={(val) => setViewMode(val as ViewMode)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '3px 10px',
+              }}
+            />
+          </span>
+        </div>
+      );
+    }
   }
 
   type CellRenderInfoType = Parameters<
@@ -107,6 +152,7 @@ function TaskCalender() {
         (ticket: CellRenderRecord) =>
           ticket.dueDate.toString() === formattedDate
       );
+      console.log(ticketsForDate);
       return (
         <ul style={{ listStyleType: 'none', padding: '0' }}>
           {ticketsForDate.map((ticket: CellRenderRecord) => (
@@ -120,7 +166,6 @@ function TaskCalender() {
               <span
                 style={{
                   margin: '1px',
-                  // borderRadius: '10px',
                   padding: '2px 5px 2px 5px',
                   maxWidth: '100px',
                   textOverflow: 'ellipsis',
@@ -184,7 +229,7 @@ function TaskCalender() {
     <>
       <Calendar
         mode={viewMode}
-        onPanelChange={(date, mode) => {
+        onPanelChange={(_, mode) => {
           if (mode !== viewMode) {
             setViewMode(mode as ViewMode);
           }
