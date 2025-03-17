@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo, useMemo, useCallback } from 'react';
 import dayjs from 'dayjs';
 
 import type { Dayjs } from 'dayjs';
@@ -29,6 +29,48 @@ const TaskCalender = memo(function TaskCalender() {
   const { isLoading, tickets } = useGetTickets(); // Add error later
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
+  const handleCreate = useCallback(
+    function handleCreate() {
+      openModal('create', {});
+    },
+    [openModal]
+  );
+
+  const navType = useMemo(
+    () => (viewMode === 'month' ? 'month' : 'year'),
+    [viewMode]
+  );
+
+  const updateDate = useCallback(
+    (amount: number) => setDate(date.add(amount, navType)),
+    [navType, date]
+  );
+
+  const controls = useMemo(
+    () => (
+      <span>
+        <Button type='link' onClick={() => updateDate(-1)}>
+          <LeftCircleOutlined />
+        </Button>
+        {viewMode === 'month' ? (
+          <Button type='link' onClick={() => setDate(dayjs())}>
+            Today
+          </Button>
+        ) : null}
+        <Button type='link' onClick={() => updateDate(1)}>
+          <RightCircleOutlined />
+        </Button>
+        <DatePicker
+          picker={navType}
+          value={date}
+          onChange={(newDate) => setDate(newDate)}
+          format={viewMode === 'month' ? 'MMM YYYY' : 'YYYY'}
+        />
+      </span>
+    ),
+    [navType, viewMode, updateDate, date]
+  );
+
   useEffect(() => {
     if (tickets) {
       const formattedTickets = tickets.map((ticket: CellRenderRecord) => ({
@@ -39,16 +81,8 @@ const TaskCalender = memo(function TaskCalender() {
     }
   }, [tickets]);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  function handleCreate() {
-    openModal('create', {});
-  }
-
-  function headerRender() {
-    if (viewMode === 'month') {
+  const headerRender = useCallback(
+    function headerRender() {
       return (
         <div
           style={{
@@ -60,22 +94,8 @@ const TaskCalender = memo(function TaskCalender() {
         >
           <span>
             <EditOutlined style={{ fontSize: '16px' }} onClick={handleCreate} />
-            <Button type='link' onClick={() => setDate(date.add(-1, 'month'))}>
-              <LeftCircleOutlined />
-            </Button>
-            <Button type='link' onClick={() => setDate(dayjs())}>
-              Today
-            </Button>
-            <Button type='link' onClick={() => setDate(date.add(1, 'month'))}>
-              <RightCircleOutlined />
-            </Button>
-            <DatePicker
-              picker='month'
-              value={date}
-              onChange={(newDate) => setDate(newDate)}
-              format='MMM YYYY'
-            />
           </span>
+          {controls}
           <span>
             <Segmented
               options={[
@@ -94,51 +114,9 @@ const TaskCalender = memo(function TaskCalender() {
           </span>
         </div>
       );
-    } else if (viewMode === 'year') {
-      return (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            padding: '4px',
-          }}
-        >
-          <span>
-            <EditOutlined style={{ fontSize: '16px' }} onClick={handleCreate} />
-            <Button type='link' onClick={() => setDate(date.add(-1, 'year'))}>
-              <LeftCircleOutlined />
-            </Button>
-            <Button type='link' onClick={() => setDate(date.add(1, 'year'))}>
-              <RightCircleOutlined />
-            </Button>
-            <DatePicker
-              picker='year'
-              value={date}
-              onChange={(newDate) => setDate(newDate)}
-              format='YYYY'
-            />
-          </span>
-          <span>
-            <Segmented
-              options={[
-                { label: 'Month', value: 'month' },
-                { label: 'Year', value: 'year' },
-              ]}
-              value={viewMode}
-              onChange={(val) => setViewMode(val as ViewMode)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '3px 10px',
-              }}
-            />
-          </span>
-        </div>
-      );
-    }
-  }
+    },
+    [controls, handleCreate, viewMode]
+  );
 
   type CellRenderInfoType = Parameters<
     NonNullable<CalendarProps<Dayjs>['cellRender']>
@@ -231,6 +209,10 @@ const TaskCalender = memo(function TaskCalender() {
     } else {
       return null;
     }
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
