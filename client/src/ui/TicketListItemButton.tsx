@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import dayjs from 'dayjs';
 
 import { Dropdown, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
@@ -78,7 +79,7 @@ const TicketListItemButton = memo(function TicketListItemButton({
       assigneeId: record.assigneeId,
       boardId: record.boardId,
       description: record.description,
-      dueDate: record.dueDate,
+      dueDate: dayjs(record.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
       priority: record.priority,
       reporterId: record.reporterId,
       status: record.status,
