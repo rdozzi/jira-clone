@@ -4,7 +4,7 @@ import { Table, Button } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-import { useGetTickets } from '../features/tickets/useGetTickets';
+import { useTickets } from '../contexts/useTickets';
 import { useModal } from '../contexts/useModal';
 
 import TicketModal from '../ui/TicketModal';
@@ -32,7 +32,7 @@ const onChange: TableProps<DataType>['onChange'] = (
 ) => console.log('params', pagination, filters, sorter, extra);
 
 function TicketList() {
-  const { isLoading, tickets, error } = useGetTickets();
+  const { isLoading, tickets, error } = useTickets();
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
   if (error) {
