@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import { DragDropContext } from '@hello-pangea/dnd';
 
-import { useGetTickets } from '../features/tickets/useGetTickets';
+import { useTickets } from '../contexts/useTickets';
 import { useModal } from '../contexts/useModal';
 
 import TicketModal from '../ui/TicketModal';
@@ -41,7 +41,7 @@ const boards: Board[] = [
 
 function TaskBoard() {
   const [boardState, setBoardState] = useState<BoardState>({});
-  const { isLoading, tickets = [] } = useGetTickets(); // Add error later
+  const { isLoading, tickets = [] } = useTickets(); // Add error later
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
   const handleOnDragEnd = useDragHandler(setBoardState);
 
