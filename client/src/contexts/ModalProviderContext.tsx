@@ -1,27 +1,11 @@
-import React, { createContext, useState } from 'react';
-
-type ModalContextType = {
-  isOpen: boolean;
-  openModal: (_mode: 'create' | 'viewEdit', _modalProps: object) => void;
-  closeModal: () => void;
-  mode: 'create' | 'viewEdit' | null;
-  modalProps: Record<string, unknown>;
-};
+import React, { useState } from 'react';
+import { ModalContext } from './ModalContext';
 
 type ModalState = {
   isOpen: boolean;
   mode: 'create' | 'viewEdit' | null;
   modalProps: Record<string, unknown>;
 };
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const ModalContext = createContext<ModalContextType | null>({
-  isOpen: false,
-  openModal: () => {},
-  closeModal: () => {},
-  mode: null,
-  modalProps: {},
-});
 
 type ModalProviderProps = { children: React.ReactNode };
 
