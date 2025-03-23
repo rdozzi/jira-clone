@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { Card } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
@@ -14,8 +14,22 @@ function TaskBoardCardComp({
   openCreateTicketModal,
 }: TaskBoardCardCompProps) {
   const iconRef = useRef<HTMLElement | null>(null);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    const handleResetOpacity = () => {
+      if (!cardRef.current || !iconRef.current) return;
+
+      const isHovered = cardRef.current.matches(':hover');
+      iconRef.current.style.opacity = isHovered ? '1 ' : '0';
+    };
+
+    handleResetOpacity();
+  });
+
   return (
     <Card
+      ref={cardRef}
       bordered={false}
       title={
         <div
