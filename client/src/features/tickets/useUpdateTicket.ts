@@ -8,7 +8,13 @@ export function useUpdateTicket() {
     mutationFn: ({ ticketId, values }: { ticketId: number; values: any }) => {
       return apiUpdateTicket(ticketId, values);
     },
-    onSuccess: () => {
+    onSuccess: (updatedTicket) => {
+      queryClient.setQueryData(['tickets'], (oldTickets: any[] | undefined) => {
+        if (!oldTickets) return oldTickets;
+        return oldTickets.map((ticket) =>
+          ticket.id === updatedTicket.id ? updateTicket : ticket
+        );
+      });
       queryClient.invalidateQueries({ queryKey: ['tickets'] });
     },
     onError: (error) => {
