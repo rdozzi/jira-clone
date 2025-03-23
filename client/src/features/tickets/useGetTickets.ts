@@ -6,7 +6,13 @@ export function useGetTickets() {
     isLoading,
     data: tickets,
     error,
-  } = useQuery({ queryKey: ['tickets'], queryFn: getTickets });
+  } = useQuery({
+    queryKey: ['tickets'],
+    queryFn: getTickets,
+    staleTime: 0,
+    gcTime: 1000 * 60 * 10,
+    refetchOnWindowFocus: false,
+  });
 
   return { isLoading, tickets, error };
 }
