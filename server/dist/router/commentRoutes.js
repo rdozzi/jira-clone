@@ -58,3 +58,30 @@ router.delete('/comments/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch tickets' });
     }
 });
+// Edit comment
+router.patch('/comments/updateComment/:commentId', async (req, res) => {
+    try {
+        const { content } = req.body;
+        const { commentId } = req.params;
+        console.log(commentId);
+        if (typeof content !== 'string' || content.trim() === '') {
+            res
+                .status(400)
+                .json({
+                error: 'Content is required and must be a non-empty string.',
+            });
+            return;
+        }
+        const updateComment = await prisma.comment.update({
+            where: { id: Number(commentId) },
+            data: {
+                content,
+            },
+        });
+        res.status(200).json(updateComment);
+    }
+    catch (error) {
+        console.error('Error editing comment: ', error);
+        res.status(500).json({ error: 'Failed to edit comment' });
+    }
+});
