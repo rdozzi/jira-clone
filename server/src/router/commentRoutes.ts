@@ -18,7 +18,7 @@ router.get('/comments', async (req: Request, res: Response): Promise<void> => {
 // Get comments for a specific ticket
 
 router.get(
-  '/tickets/:ticketId/comments',
+  '/tickets/comments/:ticketId',
   async (req: Request, res: Response): Promise<void> => {
     const { ticketId } = req.params;
     try {
