@@ -16,7 +16,7 @@ router.get('/comments', async (req, res) => {
     }
 });
 // Get comments for a specific ticket
-router.get('/tickets/comments/:ticketId', async (req, res) => {
+router.get('/comments/:ticketId', async (req, res) => {
     const { ticketId } = req.params;
     try {
         const ticketComments = await prisma.comment.findMany({
@@ -44,3 +44,17 @@ router.post('/comments', async (req, res) => {
     }
 });
 exports.default = router;
+// Delete comment
+router.delete('/comments/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleteComment = await prisma.comment.delete({
+            where: { id: Number(id) },
+        });
+        res.status(200).json(deleteComment);
+    }
+    catch (error) {
+        console.error('Error fetching tickets: ', error);
+        res.status(500).json({ error: 'Failed to fetch tickets' });
+    }
+});
