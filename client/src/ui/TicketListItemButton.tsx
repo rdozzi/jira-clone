@@ -156,7 +156,12 @@ const TicketListItemButton = memo(function TicketListItemButton({
         />
       )}
       {isCommentOpen && (
-        <CommentModal isCommentOpen={isCommentOpen} onOk={onOkCommentModal} />
+        <CommentModal
+          isCommentOpen={isCommentOpen}
+          onOk={onOkCommentModal}
+          ticketTitle={record.title}
+          ticketDescription={record.description}
+        />
       )}
     </>
   );

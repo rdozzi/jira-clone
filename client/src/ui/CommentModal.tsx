@@ -1,7 +1,7 @@
 import { Modal } from 'antd';
 
-function CommentModal({ isCommentOpen, onOk }) {
-  // Ticket-Specific Information (Record?)
+function CommentModal({ isCommentOpen, onOk, ticketTitle, ticketDescription }) {
+  // Ticket-Specific Information (Record?):
   // Current comments associated with ticket
   // Field to add a comment
 
@@ -11,8 +11,13 @@ function CommentModal({ isCommentOpen, onOk }) {
       onOk={onOk}
       onCancel={onOk}
       cancelButtonProps={{ style: { display: 'none' } }}
+      destroyOnClose={true}
+      title={'Comments'}
     >
-      Comment Check
+      <>
+        <div>Title: {ticketTitle}</div>
+        <div>Description: {ticketDescription}</div>
+      </>
     </Modal>
   );
 }
