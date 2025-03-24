@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { useState, memo } from 'react';
 import dayjs from 'dayjs';
 
 import { Dropdown, Button } from 'antd';
@@ -10,6 +10,7 @@ import { useDropdown } from '../contexts/DropdownContext';
 import { useModal } from '../contexts/useModal';
 
 import TicketModal from './TicketModal';
+import CommentModal from './CommentModal';
 
 export interface Record {
   assignee: { first_name: string; last_name: string };
@@ -53,6 +54,10 @@ const dropdownItems = [
     label: 'Archive',
   },
   {
+    key: 'add_view_comments',
+    label: 'Add/View Comments',
+  },
+  {
     key: 'delete',
     label: 'Delete',
   },
@@ -68,10 +73,16 @@ const TicketListItemButton = memo(function TicketListItemButton({
   const { deleteTicket, isDeleting } = useDeleteTicket();
   const { createNewTicket, isCreating } = useCreateTickets();
 
+  const [isCommentOpen, setIsCommentOpen] = useState(false);
+
   const isDropdownOpen = activeDropdown === record.id;
 
   function handleButtonClick() {
     toggleDropdown(record.id);
+  }
+
+  function onOkCommentModal() {
+    setIsCommentOpen(false);
   }
 
   function handleMenuClick(e: { key: string }) {
@@ -92,11 +103,6 @@ const TicketListItemButton = memo(function TicketListItemButton({
         console.log('View/Edit ticket:', record);
         break;
 
-      case 'delete':
-        deleteTicket(record.id);
-        console.log('Delete ticket:', record);
-        break;
-
       case 'duplicate':
         if (!record || typeof record != 'object') {
           console.error('Invalid record for duplication', record);
@@ -104,6 +110,20 @@ const TicketListItemButton = memo(function TicketListItemButton({
         }
         createNewTicket(duplicateTicket);
         console.log('Duplicate ticket created:', record);
+        break;
+
+      case 'archive':
+        console.log('Archive ticket:', record);
+        break;
+
+      case 'add_view_comments':
+        setIsCommentOpen(() => true);
+        console.log('Comment', record);
+        break;
+
+      case 'delete':
+        deleteTicket(record.id);
+        console.log('Delete ticket:', record);
         break;
 
       default:
@@ -134,6 +154,9 @@ const TicketListItemButton = memo(function TicketListItemButton({
           mode={mode}
           {...modalProps}
         />
+      )}
+      {isCommentOpen && (
+        <CommentModal isCommentOpen={isCommentOpen} onOk={onOkCommentModal} />
       )}
     </>
   );
