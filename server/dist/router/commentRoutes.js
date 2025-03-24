@@ -16,7 +16,7 @@ router.get('/comments', async (req, res) => {
     }
 });
 // Get comments for a specific ticket
-router.get('/tickets/:ticketId/comments', async (req, res) => {
+router.get('/tickets/comments/:ticketId', async (req, res) => {
     const { ticketId } = req.params;
     try {
         const ticketComments = await prisma.comment.findMany({
