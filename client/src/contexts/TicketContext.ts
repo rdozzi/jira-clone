@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 import { UseMutationResult } from '@tanstack/react-query';
-import { Tickets } from '../types/ticket';
+import { Tickets } from '../types/Tickets';
 
 interface TicketContextType {
   tickets: Tickets[];
