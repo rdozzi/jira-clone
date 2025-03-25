@@ -161,7 +161,7 @@ const TicketListItemButton = memo(function TicketListItemButton({
           onOk={onOkCommentModal}
           ticketTitle={record.title}
           ticketDescription={record.description}
-          record={record.id}
+          recordId={record.id}
         />
       )}
     </>
