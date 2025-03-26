@@ -8,12 +8,16 @@ interface CommentObject {
 }
 
 export function sortCommentObjects(arrOfObjects: CommentObject[] | []) {
+  if (arrOfObjects.length === 0) return [];
+
   arrOfObjects.sort(
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
   );
 
-  console.log(arrOfObjects);
-  console.log(typeof arrOfObjects[0].createdAt);
+  if (arrOfObjects.length !== 0) {
+    console.log(arrOfObjects);
+    console.log(typeof arrOfObjects[0].createdAt);
+  }
 
   return arrOfObjects;
 }
