@@ -1,7 +1,8 @@
-import { useMemo } from 'react';
-import { Modal } from 'antd';
+import { useMemo, useState } from 'react';
+import { Modal, Input, Button } from 'antd';
 import { useGetCommentsById } from '../features/comments/useGetCommentsById';
 import { sortCommentObjects } from '../utilities/sortCommentObjects';
+import { useCreateComment } from '../features/comments/useCreateComment';
 
 interface CommentModalProps {
   isCommentOpen: boolean;
@@ -11,6 +12,8 @@ interface CommentModalProps {
   recordId: number;
 }
 
+const { TextArea } = Input;
+
 function CommentModal({
   isCommentOpen,
   onOk,
@@ -19,7 +22,11 @@ function CommentModal({
   recordId,
 }: CommentModalProps) {
   // Field to add a comment
+  const [value, setValue] = useState('');
   const { isFetching, comments, error } = useGetCommentsById(recordId);
+  const { createNewComment, isCreating } = useCreateComment();
+
+  console.log(createNewComment, isCreating);
 
   const sortedComments = useMemo(() => {
     if (!comments) return [];
@@ -51,6 +58,14 @@ function CommentModal({
               </li>
             ))}
         </ul>
+        <div>
+          <TextArea
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder='Enter your comment here'
+            autoSize={{ minRows: 3 }}
+          />
+        </div>
       </>
     </Modal>
   );
