@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
-import { Modal, Input, Button } from 'antd';
+import { Modal, Input, Button, Form } from 'antd';
 import { useGetCommentsById } from '../features/comments/useGetCommentsById';
 import { sortCommentObjects } from '../utilities/sortCommentObjects';
 import { useCreateComment } from '../features/comments/useCreateComment';
+import { randomNumberGen } from '../utilities/randomNumberGen';
 
 interface CommentModalProps {
   isCommentOpen: boolean;
@@ -26,15 +27,35 @@ function CommentModal({
   const { isFetching, comments, error } = useGetCommentsById(recordId);
   const { createNewComment, isCreating } = useCreateComment();
 
-  console.log(createNewComment, isCreating);
-
   const sortedComments = useMemo(() => {
-    if (!comments) return [];
-
-    return sortCommentObjects(comments);
+    return sortCommentObjects(comments ?? []);
   }, [comments]);
 
+  const [form] = Form.useForm();
+
   if (error) return <div>Could not load Comment Data</div>;
+
+  interface CommentPayload {
+    content: string;
+    ticketId: number;
+    authorId: number;
+  }
+
+  async function onFinish(values: { content: string }) {
+    try {
+      const commentPayload: CommentPayload = {
+        ...values,
+        ticketId: recordId,
+        authorId: randomNumberGen(1, 2),
+      };
+      console.log('Comment Payload:', commentPayload);
+      await createNewComment(commentPayload);
+    } catch (error) {
+      console.error('Error updating ticket: ', error);
+    } finally {
+      form.resetFields();
+    }
+  }
 
   return (
     <Modal
@@ -59,12 +80,32 @@ function CommentModal({
             ))}
         </ul>
         <div>
-          <TextArea
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder='Enter your comment here'
-            autoSize={{ minRows: 3 }}
-          />
+          <Form onFinish={onFinish} form={form}>
+            <Form.Item
+              label='Comment'
+              name='content'
+              style={{ display: 'grid' }}
+            >
+              <TextArea
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                placeholder='Enter your comment here'
+                autoSize={{ minRows: 3 }}
+                allowClear={true}
+                showCount
+                maxLength={200}
+              />
+            </Form.Item>
+            <Form.Item label={null}>
+              <Button
+                variant='outlined'
+                htmlType='submit'
+                disabled={isCreating}
+              >
+                Add Comment
+              </Button>
+            </Form.Item>
+          </Form>
         </div>
       </>
     </Modal>
