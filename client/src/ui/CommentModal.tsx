@@ -4,6 +4,7 @@ import { useGetCommentsById } from '../features/comments/useGetCommentsById';
 import { sortCommentObjects } from '../utilities/sortCommentObjects';
 import { useCreateComment } from '../features/comments/useCreateComment';
 import { randomNumberGen } from '../utilities/randomNumberGen';
+import { getLocalTime } from '../utilities/getLocalTime';
 
 interface CommentModalProps {
   isCommentOpen: boolean;
@@ -75,7 +76,7 @@ function CommentModal({
             sortedComments.map((comment) => (
               <li key={comment.id} style={{ listStyleType: 'none' }}>
                 <span>{comment.content}</span> //{' '}
-                <span>{comment.createdAt.toLocaleString()}</span>
+                <span>{getLocalTime(comment.createdAt)}</span>
               </li>
             ))}
         </ul>
