@@ -25,7 +25,7 @@ function CommentModal({
   // Field to add a comment
   const [value, setValue] = useState('');
   const { isFetching, comments, error } = useGetCommentsById(recordId);
-  const { createNewComment, isCreating } = useCreateComment();
+  const { createNewComment, isCreating } = useCreateComment(recordId);
 
   const sortedComments = useMemo(() => {
     return sortCommentObjects(comments ?? []);
