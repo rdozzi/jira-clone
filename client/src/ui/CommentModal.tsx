@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
-import { Modal, Input, Button, Form } from 'antd';
+import { Modal, Input, Button, Form, Tooltip, Popconfirm } from 'antd';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useGetCommentsById } from '../features/comments/useGetCommentsById';
 import { sortCommentObjects } from '../utilities/sortCommentObjects';
 import { useCreateComment } from '../features/comments/useCreateComment';
+import { useDeleteComment } from '../features/comments/useDeleteComment';
 import { randomNumberGen } from '../utilities/randomNumberGen';
 import { getLocalTime } from '../utilities/getLocalTime';
 
@@ -27,6 +29,7 @@ function CommentModal({
   const [value, setValue] = useState('');
   const { isFetching, comments, error } = useGetCommentsById(recordId);
   const { createNewComment, isCreating } = useCreateComment(recordId);
+  const { deleteComment, isDeleting } = useDeleteComment(recordId);
 
   const sortedComments = useMemo(() => {
     return sortCommentObjects(comments ?? []);
@@ -52,9 +55,18 @@ function CommentModal({
       console.log('Comment Payload:', commentPayload);
       await createNewComment(commentPayload);
     } catch (error) {
-      console.error('Error updating ticket: ', error);
+      console.error('Error updating comment: ', error);
     } finally {
       form.resetFields();
+    }
+  }
+
+  async function handleDeleteComment(commentId: number) {
+    try {
+      console.log('Deleting comment: ', commentId);
+      await deleteComment(commentId);
+    } catch (error) {
+      console.error('Error deleting comment: ', error);
     }
   }
 
@@ -77,6 +89,34 @@ function CommentModal({
               <li key={comment.id} style={{ listStyleType: 'none' }}>
                 <span>{comment.content}</span> //{' '}
                 <span>{getLocalTime(comment.createdAt)}</span>
+                <Tooltip title='Edit Comment'>
+                  <Button
+                    type='text'
+                    shape='circle'
+                    icon={<EditOutlined />}
+                    size='small'
+                  ></Button>
+                </Tooltip>
+                <Popconfirm
+                  title='Delete Comment'
+                  description='Are you sure you want to delete this comment?'
+                  onConfirm={() => handleDeleteComment(comment.id)}
+                  onCancel={() => console.log('User canceled deletion')}
+                  placement='top'
+                  okText='Yes'
+                  cancelText='No'
+                >
+                  <Tooltip title='Delete Comment'>
+                    <Button
+                      type='text'
+                      shape='circle'
+                      icon={<DeleteOutlined />}
+                      size='small'
+                      disabled={isDeleting}
+                      danger
+                    ></Button>
+                  </Tooltip>
+                </Popconfirm>
               </li>
             ))}
         </ul>
