@@ -31,3 +31,20 @@ export async function createComment(commentObject: object) {
     console.error(err);
   }
 }
+
+// Delete a comment by ticket Id - Requires ticketId
+
+export async function deleteComment(ticketId: number) {
+  try {
+    const res = await fetch(`http://localhost:3000/api/comments/${ticketId}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      throw new Error('Failed to delete comment');
+    }
+    const data = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(err);
+  }
+}
