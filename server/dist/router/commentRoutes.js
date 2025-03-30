@@ -58,16 +58,14 @@ router.delete('/comments/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch tickets' });
     }
 });
-// Edit comment
+// Update comment
 router.patch('/comments/updateComment/:commentId', async (req, res) => {
     try {
         const { content } = req.body;
         const { commentId } = req.params;
         console.log(commentId);
         if (typeof content !== 'string' || content.trim() === '') {
-            res
-                .status(400)
-                .json({
+            res.status(400).json({
                 error: 'Content is required and must be a non-empty string.',
             });
             return;

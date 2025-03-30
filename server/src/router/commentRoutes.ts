@@ -64,7 +64,7 @@ router.delete(
   }
 );
 
-// Edit comment
+// Update comment
 router.patch(
   '/comments/updateComment/:commentId',
   async (req: Request, res: Response): Promise<void> => {
@@ -74,11 +74,9 @@ router.patch(
       console.log(commentId);
 
       if (typeof content !== 'string' || content.trim() === '') {
-        res
-          .status(400)
-          .json({
-            error: 'Content is required and must be a non-empty string.',
-          });
+        res.status(400).json({
+          error: 'Content is required and must be a non-empty string.',
+        });
         return;
       }
 
