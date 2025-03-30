@@ -66,7 +66,7 @@ router.delete(
 
 // Update comment
 router.patch(
-  '/comments/updateComment/:commentId',
+  '/comments/:commentId',
   async (req: Request, res: Response): Promise<void> => {
     try {
       const { content } = req.body;
