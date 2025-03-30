@@ -10,8 +10,11 @@ import { useGetCommentsById } from '../features/comments/useGetCommentsById';
 import { sortCommentObjects } from '../utilities/sortCommentObjects';
 import { useCreateComment } from '../features/comments/useCreateComment';
 import { useDeleteComment } from '../features/comments/useDeleteComment';
+import { useUpdateComment } from '../features/comments/useUpdateComment';
+
 import { randomNumberGen } from '../utilities/randomNumberGen';
 import { getLocalTime } from '../utilities/getLocalTime';
+import { areStringsIdentical } from '../utilities/areStringsIdentical';
 
 interface CommentModalProps {
   isCommentOpen: boolean;
@@ -20,9 +23,6 @@ interface CommentModalProps {
   ticketDescription: string;
   recordId: number;
 }
-
-const { TextArea } = Input;
-
 function CommentModal({
   isCommentOpen,
   onOk,
@@ -30,12 +30,13 @@ function CommentModal({
   ticketDescription,
   recordId,
 }: CommentModalProps) {
-  // Field to add a comment
-  const [value, setValue] = useState('');
+  const [createValue, setCreateValue] = useState('');
+  const [editValue, setEditValue] = useState<string | null>('');
   const [openEditor, setOpenEditor] = useState<number | null>(null);
   const { isFetching, comments, error } = useGetCommentsById(recordId);
   const { createNewComment, isCreating } = useCreateComment(recordId);
   const { deleteComment, isDeleting } = useDeleteComment(recordId);
+  const { editComment, isUpdating } = useUpdateComment(recordId);
 
   const sortedComments = useMemo(() => {
     return sortCommentObjects(comments ?? []);
@@ -51,22 +52,34 @@ function CommentModal({
     authorId: number;
   }
 
-  function handleOpenEditor(id: number) {
+  function handleOpenEditor(id: number, content: string) {
     if (openEditor === null) {
       setOpenEditor(id);
+      setEditValue(content);
     } else if (openEditor === id) {
       setOpenEditor(null);
     } else if (openEditor !== id) {
       setOpenEditor(id);
+      setEditValue(content);
     }
   }
 
-  function handleEditComment() {
-    console.log('Click Check Button');
-    setOpenEditor(null);
+  async function handleEditComment(commentId: number, content: string) {
+    const trimmedContent = content.trim();
+    try {
+      const editPayload = { commentId: commentId, content: trimmedContent };
+      console.log(editPayload);
+      await editComment(editPayload);
+    } catch (error) {
+      console.error('Error updating comment: ', error);
+    } finally {
+      setOpenEditor(null);
+    }
   }
 
-  async function onFinish(values: { content: string }) {
+  async function handleCreateComment(values: { content: string }) {
+    const trimmedContent = values.content.trim();
+    values.content = trimmedContent;
     try {
       const commentPayload: CommentPayload = {
         ...values,
@@ -76,7 +89,7 @@ function CommentModal({
       console.log('Comment Payload:', commentPayload);
       await createNewComment(commentPayload);
     } catch (error) {
-      console.error('Error updating comment: ', error);
+      console.error('Error creating comment: ', error);
     } finally {
       form.resetFields();
     }
@@ -110,24 +123,50 @@ function CommentModal({
               <li key={comment.id} style={{ listStyleType: 'none' }}>
                 {openEditor === comment.id ? (
                   <Space.Compact>
-                    <Input defaultValue={comment.content} />
+                    <Input
+                      defaultValue={comment.content}
+                      disabled={isUpdating}
+                      value={editValue || ''}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    />
                     <Tooltip title='Confirm Changes'>
                       <Button
                         icon={<CheckOutlined />}
-                        onClick={handleEditComment}
+                        onClick={() => {
+                          if (
+                            areStringsIdentical(
+                              editValue || comment.content,
+                              comment.content
+                            )
+                          ) {
+                            setOpenEditor(null);
+                          } else {
+                            handleEditComment(
+                              comment.id,
+                              editValue || comment.content
+                            );
+                          }
+                        }}
+                        disabled={isUpdating}
                       />
                     </Tooltip>
                     <Tooltip title='Cancel Changes'>
                       <Button
                         icon={<CloseOutlined />}
                         onClick={() => setOpenEditor(null)}
+                        disabled={isUpdating}
                       />
                     </Tooltip>
                   </Space.Compact>
                 ) : (
                   <>
                     <span>{comment.content}</span> //{' '}
-                    <span>{getLocalTime(comment.createdAt)}</span>
+                    <span>{getLocalTime(comment.updatedAt)}</span>
                   </>
                 )}
                 <Tooltip title='Edit Comment'>
@@ -136,7 +175,9 @@ function CommentModal({
                     shape='circle'
                     icon={<EditOutlined />}
                     size='small'
-                    onClick={() => handleOpenEditor(comment.id)}
+                    onClick={() =>
+                      handleOpenEditor(comment.id, comment.content)
+                    }
                   ></Button>
                 </Tooltip>
                 <Popconfirm
@@ -163,15 +204,15 @@ function CommentModal({
             ))}
         </ul>
         <div>
-          <Form onFinish={onFinish} form={form}>
+          <Form onFinish={handleCreateComment} form={form}>
             <Form.Item
               label='Comment'
               name='content'
               style={{ display: 'grid' }}
             >
-              <TextArea
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
+              <Input.TextArea
+                value={createValue}
+                onChange={(e) => setCreateValue(e.target.value)}
                 placeholder='Enter your comment here'
                 autoSize={{ minRows: 3 }}
                 allowClear={true}
