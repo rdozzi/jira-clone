@@ -59,7 +59,7 @@ router.delete('/comments/:id', async (req, res) => {
     }
 });
 // Update comment
-router.patch('/comments/updateComment/:commentId', async (req, res) => {
+router.patch('/comments/:commentId', async (req, res) => {
     try {
         const { content } = req.body;
         const { commentId } = req.params;
