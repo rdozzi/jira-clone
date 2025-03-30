@@ -12,7 +12,7 @@ export async function getCommentsById(ticketId: number) {
   }
 }
 
-// Create a comment by ticket Id - Requires ticketId, authorId, content
+// Create a comment by ticket Id - Requires ticketId, authorId, content object
 export async function createComment(commentObject: object) {
   try {
     const res = await fetch('http://localhost:3000/api/comments', {
@@ -33,7 +33,6 @@ export async function createComment(commentObject: object) {
 }
 
 // Delete a comment by ticket Id - Requires ticketId
-
 export async function deleteComment(ticketId: number) {
   try {
     const res = await fetch(`http://localhost:3000/api/comments/${ticketId}`, {
@@ -46,5 +45,28 @@ export async function deleteComment(ticketId: number) {
     return data;
   } catch (err: any | unknown) {
     console.error(err);
+  }
+}
+
+// Edit a Comment - CommentId and payload required (updatedAt is updated via the ORM)
+export async function editComment(commentId: number, content: string) {
+  try {
+    const res = await fetch(
+      `http://localhost:3000/api/tickets/updateTicket/${commentId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(content),
+      }
+    );
+    if (!res.ok) {
+      throw new Error('Failed to update comment');
+    }
+    const data = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error('Comment Error', err);
   }
 }
