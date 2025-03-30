@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react';
-import { Modal, Input, Button, Form, Tooltip, Popconfirm } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Modal, Input, Button, Form, Tooltip, Popconfirm, Space } from 'antd';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
 import { useGetCommentsById } from '../features/comments/useGetCommentsById';
 import { sortCommentObjects } from '../utilities/sortCommentObjects';
 import { useCreateComment } from '../features/comments/useCreateComment';
@@ -27,6 +32,7 @@ function CommentModal({
 }: CommentModalProps) {
   // Field to add a comment
   const [value, setValue] = useState('');
+  const [openEditor, setOpenEditor] = useState<number | null>(null);
   const { isFetching, comments, error } = useGetCommentsById(recordId);
   const { createNewComment, isCreating } = useCreateComment(recordId);
   const { deleteComment, isDeleting } = useDeleteComment(recordId);
@@ -43,6 +49,21 @@ function CommentModal({
     content: string;
     ticketId: number;
     authorId: number;
+  }
+
+  function handleOpenEditor(id: number) {
+    if (openEditor === null) {
+      setOpenEditor(id);
+    } else if (openEditor === id) {
+      setOpenEditor(null);
+    } else if (openEditor !== id) {
+      setOpenEditor(id);
+    }
+  }
+
+  function handleEditComment() {
+    console.log('Click Check Button');
+    setOpenEditor(null);
   }
 
   async function onFinish(values: { content: string }) {
@@ -87,14 +108,35 @@ function CommentModal({
           {sortedComments &&
             sortedComments.map((comment) => (
               <li key={comment.id} style={{ listStyleType: 'none' }}>
-                <span>{comment.content}</span> //{' '}
-                <span>{getLocalTime(comment.createdAt)}</span>
+                {openEditor === comment.id ? (
+                  <Space.Compact>
+                    <Input defaultValue={comment.content} />
+                    <Tooltip title='Confirm Changes'>
+                      <Button
+                        icon={<CheckOutlined />}
+                        onClick={handleEditComment}
+                      />
+                    </Tooltip>
+                    <Tooltip title='Cancel Changes'>
+                      <Button
+                        icon={<CloseOutlined />}
+                        onClick={() => setOpenEditor(null)}
+                      />
+                    </Tooltip>
+                  </Space.Compact>
+                ) : (
+                  <>
+                    <span>{comment.content}</span> //{' '}
+                    <span>{getLocalTime(comment.createdAt)}</span>
+                  </>
+                )}
                 <Tooltip title='Edit Comment'>
                   <Button
                     type='text'
                     shape='circle'
                     icon={<EditOutlined />}
                     size='small'
+                    onClick={() => handleOpenEditor(comment.id)}
                   ></Button>
                 </Tooltip>
                 <Popconfirm
@@ -134,6 +176,7 @@ function CommentModal({
                 autoSize={{ minRows: 3 }}
                 allowClear={true}
                 showCount
+                minLength={1}
                 maxLength={200}
               />
             </Form.Item>
