@@ -51,16 +51,13 @@ export async function deleteComment(ticketId: number) {
 // Edit a Comment - CommentId and payload required (updatedAt is updated via the ORM)
 export async function editComment(commentId: number, content: string) {
   try {
-    const res = await fetch(
-      `http://localhost:3000/api/tickets/updateTicket/${commentId}`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(content),
-      }
-    );
+    const res = await fetch(`http://localhost:3000/api/comments/${commentId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content }),
+    });
     if (!res.ok) {
       throw new Error('Failed to update comment');
     }
