@@ -15,6 +15,7 @@ import { useUpdateComment } from '../features/comments/useUpdateComment';
 import { randomNumberGen } from '../utilities/randomNumberGen';
 import { getLocalTime } from '../utilities/getLocalTime';
 import { areStringsIdentical } from '../utilities/areStringsIdentical';
+import CreateCommentForm from './createCommentForm';
 
 interface CommentModalProps {
   isCommentOpen: boolean;
@@ -30,7 +31,6 @@ function CommentModal({
   ticketDescription,
   recordId,
 }: CommentModalProps) {
-  const [createValue, setCreateValue] = useState('');
   const [editValue, setEditValue] = useState<string | null>('');
   const [openEditor, setOpenEditor] = useState<number | null>(null);
   const { isFetching, comments, error } = useGetCommentsById(recordId);
@@ -203,35 +203,11 @@ function CommentModal({
               </li>
             ))}
         </ul>
-        <div>
-          <Form onFinish={handleCreateComment} form={form}>
-            <Form.Item
-              label='Comment'
-              name='content'
-              style={{ display: 'grid' }}
-            >
-              <Input.TextArea
-                value={createValue}
-                onChange={(e) => setCreateValue(e.target.value)}
-                placeholder='Enter your comment here'
-                autoSize={{ minRows: 3 }}
-                allowClear={true}
-                showCount
-                minLength={1}
-                maxLength={200}
-              />
-            </Form.Item>
-            <Form.Item label={null}>
-              <Button
-                variant='outlined'
-                htmlType='submit'
-                disabled={isCreating}
-              >
-                Add Comment
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
+        <CreateCommentForm
+          handleCreateComment={handleCreateComment}
+          isCreating={isCreating}
+          form={form}
+        />
       </>
     </Modal>
   );
