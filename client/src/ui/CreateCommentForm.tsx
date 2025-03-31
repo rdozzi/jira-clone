@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Form, Input, Button } from 'antd';
 
 import { FormInstance } from 'antd';
@@ -8,7 +9,7 @@ interface CreateCommentFormProps {
   form: FormInstance;
 }
 
-function CreateCommentForm({
+const CreateCommentForm = memo(function CreateCommentForm({
   handleCreateComment,
   isCreating,
   form,
@@ -34,6 +35,6 @@ function CreateCommentForm({
       </Form>
     </div>
   );
-}
+});
 
 export default CreateCommentForm;
