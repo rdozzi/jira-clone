@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { Modal, Form } from 'antd';
 
 import { useGetCommentsById } from '../features/comments/useGetCommentsById';
@@ -39,64 +39,76 @@ function CommentModal({
 
   const [form] = Form.useForm();
 
+  const handleOpenEditor = useCallback(
+    function handleOpenEditor(id: number, content: string) {
+      if (openEditor === null) {
+        setOpenEditor(id);
+        setEditValue(content);
+      } else if (openEditor === id) {
+        setOpenEditor(null);
+      } else if (openEditor !== id) {
+        setOpenEditor(id);
+        setEditValue(content);
+      }
+    },
+    [openEditor]
+  );
+
+  const handleEditComment = useCallback(
+    async function handleEditComment(commentId: number, content: string) {
+      const trimmedContent = content.trim();
+      try {
+        const editPayload = { commentId: commentId, content: trimmedContent };
+        console.log(editPayload);
+        await editComment(editPayload);
+      } catch (error) {
+        console.error('Error updating comment: ', error);
+      } finally {
+        setOpenEditor(null);
+      }
+    },
+    [editComment]
+  );
+
+  const handleCreateComment = useCallback(
+    async function handleCreateComment(values: { content: string }) {
+      const trimmedContent = values.content.trim();
+      values.content = trimmedContent;
+      try {
+        const commentPayload: CommentPayload = {
+          ...values,
+          ticketId: recordId,
+          authorId: randomNumberGen(1, 2),
+        };
+        console.log('Comment Payload:', commentPayload);
+        await createNewComment(commentPayload);
+      } catch (error) {
+        console.error('Error creating comment: ', error);
+      } finally {
+        form.resetFields();
+      }
+    },
+    [createNewComment, recordId, form]
+  );
+
+  const handleDeleteComment = useCallback(
+    async function handleDeleteComment(commentId: number) {
+      try {
+        console.log('Deleting comment: ', commentId);
+        await deleteComment(commentId);
+      } catch (error) {
+        console.error('Error deleting comment: ', error);
+      }
+    },
+    [deleteComment]
+  );
+
   if (error) return <div>Could not load Comment Data</div>;
 
   interface CommentPayload {
     content: string;
     ticketId: number;
     authorId: number;
-  }
-
-  function handleOpenEditor(id: number, content: string) {
-    if (openEditor === null) {
-      setOpenEditor(id);
-      setEditValue(content);
-    } else if (openEditor === id) {
-      setOpenEditor(null);
-    } else if (openEditor !== id) {
-      setOpenEditor(id);
-      setEditValue(content);
-    }
-  }
-
-  async function handleEditComment(commentId: number, content: string) {
-    const trimmedContent = content.trim();
-    try {
-      const editPayload = { commentId: commentId, content: trimmedContent };
-      console.log(editPayload);
-      await editComment(editPayload);
-    } catch (error) {
-      console.error('Error updating comment: ', error);
-    } finally {
-      setOpenEditor(null);
-    }
-  }
-
-  async function handleCreateComment(values: { content: string }) {
-    const trimmedContent = values.content.trim();
-    values.content = trimmedContent;
-    try {
-      const commentPayload: CommentPayload = {
-        ...values,
-        ticketId: recordId,
-        authorId: randomNumberGen(1, 2),
-      };
-      console.log('Comment Payload:', commentPayload);
-      await createNewComment(commentPayload);
-    } catch (error) {
-      console.error('Error creating comment: ', error);
-    } finally {
-      form.resetFields();
-    }
-  }
-
-  async function handleDeleteComment(commentId: number) {
-    try {
-      console.log('Deleting comment: ', commentId);
-      await deleteComment(commentId);
-    } catch (error) {
-      console.error('Error deleting comment: ', error);
-    }
   }
 
   return (
