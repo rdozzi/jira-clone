@@ -1,11 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Modal, Input, Button, Form, Tooltip, Popconfirm, Space } from 'antd';
-import {
-  DeleteOutlined,
-  EditOutlined,
-  CheckOutlined,
-  CloseOutlined,
-} from '@ant-design/icons';
+import { Modal, Form } from 'antd';
+
 import { useGetCommentsById } from '../features/comments/useGetCommentsById';
 import { sortCommentObjects } from '../utilities/sortCommentObjects';
 import { useCreateComment } from '../features/comments/useCreateComment';
@@ -13,9 +8,9 @@ import { useDeleteComment } from '../features/comments/useDeleteComment';
 import { useUpdateComment } from '../features/comments/useUpdateComment';
 
 import { randomNumberGen } from '../utilities/randomNumberGen';
-import { getLocalTime } from '../utilities/getLocalTime';
-import { areStringsIdentical } from '../utilities/areStringsIdentical';
+
 import CreateCommentForm from './createCommentForm';
+import CommentRowWithEditor from './CommentRowWithEditor';
 
 interface CommentModalProps {
   isCommentOpen: boolean;
@@ -120,87 +115,19 @@ function CommentModal({
         <ul style={{ display: 'contents' }}>
           {sortedComments &&
             sortedComments.map((comment) => (
-              <li key={comment.id} style={{ listStyleType: 'none' }}>
-                {openEditor === comment.id ? (
-                  <Space.Compact>
-                    <Input
-                      defaultValue={comment.content}
-                      disabled={isUpdating}
-                      value={editValue || ''}
-                      onChange={(e) => setEditValue(e.target.value)}
-                      style={{
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    />
-                    <Tooltip title='Confirm Changes'>
-                      <Button
-                        icon={<CheckOutlined />}
-                        onClick={() => {
-                          if (
-                            areStringsIdentical(
-                              editValue || comment.content,
-                              comment.content
-                            )
-                          ) {
-                            setOpenEditor(null);
-                          } else {
-                            handleEditComment(
-                              comment.id,
-                              editValue || comment.content
-                            );
-                          }
-                        }}
-                        disabled={isUpdating}
-                      />
-                    </Tooltip>
-                    <Tooltip title='Cancel Changes'>
-                      <Button
-                        icon={<CloseOutlined />}
-                        onClick={() => setOpenEditor(null)}
-                        disabled={isUpdating}
-                      />
-                    </Tooltip>
-                  </Space.Compact>
-                ) : (
-                  <>
-                    <span>{comment.content}</span> //{' '}
-                    <span>{getLocalTime(comment.updatedAt)}</span>
-                  </>
-                )}
-                <Tooltip title='Edit Comment'>
-                  <Button
-                    type='text'
-                    shape='circle'
-                    icon={<EditOutlined />}
-                    size='small'
-                    onClick={() =>
-                      handleOpenEditor(comment.id, comment.content)
-                    }
-                  ></Button>
-                </Tooltip>
-                <Popconfirm
-                  title='Delete Comment'
-                  description='Are you sure you want to delete this comment?'
-                  onConfirm={() => handleDeleteComment(comment.id)}
-                  onCancel={() => console.log('User canceled deletion')}
-                  placement='top'
-                  okText='Yes'
-                  cancelText='No'
-                >
-                  <Tooltip title='Delete Comment'>
-                    <Button
-                      type='text'
-                      shape='circle'
-                      icon={<DeleteOutlined />}
-                      size='small'
-                      disabled={isDeleting}
-                      danger
-                    ></Button>
-                  </Tooltip>
-                </Popconfirm>
-              </li>
+              <CommentRowWithEditor
+                comment={comment}
+                openEditor={openEditor}
+                isUpdating={isUpdating}
+                editValue={editValue}
+                isDeleting={isDeleting}
+                setEditValue={setEditValue}
+                setOpenEditor={setOpenEditor}
+                handleEditComment={handleEditComment}
+                handleOpenEditor={handleOpenEditor}
+                handleDeleteComment={handleDeleteComment}
+                key={comment.id}
+              />
             ))}
         </ul>
         <CreateCommentForm
