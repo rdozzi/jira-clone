@@ -9,7 +9,7 @@ import { useUpdateComment } from '../features/comments/useUpdateComment';
 
 import { randomNumberGen } from '../utilities/randomNumberGen';
 
-import CreateCommentForm from './createCommentForm';
+import CreateCommentForm from './CreateCommentForm';
 import CommentRowWithEditor from './CommentRowWithEditor';
 
 interface CommentModalProps {
