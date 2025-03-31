@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Space, Input, Button, Tooltip, Popconfirm } from 'antd';
 import {
   DeleteOutlined,
@@ -28,7 +29,7 @@ interface CommentRowWithEditorProps {
   handleDeleteComment: (_commentId: number) => void;
 }
 
-function CommentRowWithEditor({
+const CommentRowWithEditor = memo(function CommentRowWithEditor({
   comment,
   openEditor,
   isUpdating,
@@ -118,6 +119,6 @@ function CommentRowWithEditor({
       </Popconfirm>
     </li>
   );
-}
+});
 
 export default CommentRowWithEditor;
