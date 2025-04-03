@@ -18,12 +18,10 @@ interface TaskBoardTicketCardCompProps {
     type: string;
     updatedAt: Date;
   };
-  children: React.ReactNode;
 }
 
 const TaskBoardTicketCardComp = memo(function TaskBoardTicketCardComp({
   ticket, //Individual ticket information
-  children,
 }: TaskBoardTicketCardCompProps) {
   return (
     <Card
@@ -56,7 +54,7 @@ const TaskBoardTicketCardComp = memo(function TaskBoardTicketCardComp({
         </div>
       }
     >
-      {children}
+      <p>{ticket.description}</p>
     </Card>
   );
 }, arePropsEqual);
@@ -66,8 +64,8 @@ function arePropsEqual(
   nextProps: TaskBoardTicketCardCompProps
 ): boolean {
   return (
-    prevProps.ticket.id === nextProps.ticket.id &&
-    prevProps.ticket.status === nextProps.ticket.status
+    prevProps.ticket.title === nextProps.ticket.title &&
+    prevProps.ticket.description === nextProps.ticket.description
   );
 }
 
