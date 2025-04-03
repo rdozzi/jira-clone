@@ -71,9 +71,7 @@ const TaskBoardCompContainer = memo(function TaskBoardCompContainer({
                         ...provided.draggableProps.style, // Preserve default drag styles
                       }}
                     >
-                      <TaskBoardTicketCardComp ticket={ticket}>
-                        <p>{ticket.description}</p>
-                      </TaskBoardTicketCardComp>
+                      <TaskBoardTicketCardComp ticket={ticket} />
                     </div>
                   )}
                 </Draggable>
@@ -97,7 +95,9 @@ function arePropsEqual(
   return prevProps.tickets.every(
     (ticket, i) =>
       ticket.id === nextProps.tickets[i]?.id &&
-      ticket.status === nextProps.tickets[i]?.status
+      ticket.status === nextProps.tickets[i]?.status &&
+      ticket.title === nextProps.tickets[i]?.title &&
+      ticket.description === nextProps.tickets[i]?.description
   );
 }
 
