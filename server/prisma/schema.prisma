@@ -28,8 +28,9 @@ model User {
   projects       Project[] //One-to-many User-to-Project
   comments       Comment[]
   attachments    Attachment[]
-  assigneeTicket Ticket[]     @relation("assignee")
-  reporterTicket Ticket[]     @relation("reporter")
+  assigneeTicket Ticket[]      @relation("assignee")
+  reporterTicket Ticket[]      @relation("reporter")
+  activityLog    ActivityLog[]
 }
 
 model Project {
@@ -135,12 +136,16 @@ model TicketLabel {
 }
 
 model ActivityLog {
-  id         Int      @id @default(autoincrement())
-  userId     Int
-  action     String   @db.VarChar(255)
+  id         Int               @id @default(autoincrement())
+  userId     Int?
+  actorType  ActorTypeActivity @default(USER)
+  action     String            @db.VarChar(255)
   targetId   Int?
-  targetType String   @db.VarChar(255)
-  createdAt  DateTime @default(now()) @db.Timestamptz()
+  targetType String            @db.VarChar(255)
+  createdAt  DateTime          @default(now()) @db.Timestamptz()
+
+  //Relationship
+  user User? @relation(fields: [userId], references: [id])
 }
 
 enum Role {
@@ -183,4 +188,9 @@ enum StorageType {
   LOCAL
   CLOUD
   DATABASE
+}
+
+enum ActorTypeActivity {
+  USER
+  SYSTEM
 }
