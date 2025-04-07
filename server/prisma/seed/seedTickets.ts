@@ -1,4 +1,5 @@
 import { PrismaClient, User, Board } from '@prisma/client';
+import { logSeedUtility } from '../../utility/logSeedUtility';
 
 type SeedTicketsArgs = {
   prisma: PrismaClient;
@@ -13,6 +14,9 @@ type SeedTicketsArgs = {
 };
 
 export async function seedTickets({ prisma, users, boards }: SeedTicketsArgs) {
+  const seeds = [{ id: 1 }, { id: 2 }];
+  const modelName = 'Ticket';
+  logSeedUtility({ seeds, modelName, prisma });
   //Seed Tickets
   const ticket1 = await prisma.ticket.upsert({
     where: { id: 1 },
@@ -42,8 +46,6 @@ export async function seedTickets({ prisma, users, boards }: SeedTicketsArgs) {
       boardId: boards.board2.id,
     },
   });
-
-  console.log(`Created Tickets: ${ticket1.title}, ${ticket2.title}`);
 
   return { ticket1, ticket2 };
 }

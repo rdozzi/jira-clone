@@ -17,12 +17,13 @@ export async function seedLabelsWithTickets({
   labels,
   tickets,
 }: SeedLabelsWithTicketsArgs) {
-  await prisma.ticketLabel.createMany({
+  const result = await prisma.ticketLabel.createMany({
     data: [
       { ticketId: tickets.ticket1.id, labelId: labels.label1.id },
       { ticketId: tickets.ticket1.id, labelId: labels.label2.id },
     ],
+    skipDuplicates: true,
   });
 
-  console.log('Associated labels with tickets');
+  console.log(`Associated ${result.count} labels(s) with tickets`);
 }

@@ -1,7 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import { randomNumberGen } from '../../utility/randomNumberGen';
-
+import { logSeedUtility } from '../../utility/logSeedUtility';
 export async function seedAttachments(prisma: PrismaClient) {
+  const seeds = [{ id: 1 }, { id: 2 }];
+  const modelName = 'Attachment';
+  logSeedUtility({ seeds, modelName, prisma });
+
   const attachment1 = await prisma.attachment.upsert({
     where: { id: 1 },
     update: {},
@@ -35,8 +39,6 @@ export async function seedAttachments(prisma: PrismaClient) {
       storageType: 'LOCAL',
     },
   });
-
-  console.log(`Created Attachments: ${attachment1.id}, ${attachment2.id}`);
 
   return { attachment1, attachment2 };
 }

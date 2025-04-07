@@ -1,6 +1,11 @@
 import { PrismaClient } from '@prisma/client';
+import { logSeedUtility } from '../../utility/logSeedUtility';
 
 export async function seedLabels(prisma: PrismaClient) {
+  const seeds = [{ id: 1 }, { id: 2 }];
+  const modelName = 'Label';
+  logSeedUtility({ seeds, modelName, prisma });
+
   const label1 = await prisma.label.upsert({
     where: { id: 1 },
     update: {},
@@ -18,7 +23,6 @@ export async function seedLabels(prisma: PrismaClient) {
       color: '#0000FF',
     },
   });
-  console.log(`Created Labels: ${label1.name}, ${label2.name}`);
 
   return { label1, label2 };
 }

@@ -1,5 +1,5 @@
 import { PrismaClient, Project } from '@prisma/client';
-
+import { logSeedUtility } from '../../utility/logSeedUtility';
 type SeedBoardsArgs = {
   prisma: PrismaClient;
   projects: {
@@ -9,6 +9,10 @@ type SeedBoardsArgs = {
 };
 
 export async function seedBoards({ prisma, projects }: SeedBoardsArgs) {
+  const seeds = [{ id: 1 }, { id: 2 }];
+  const modelName = 'Board';
+  logSeedUtility({ seeds, modelName, prisma });
+
   const board1 = await prisma.board.upsert({
     where: { id: 1 },
     update: { description: 'This is a description for board1' },
@@ -27,7 +31,6 @@ export async function seedBoards({ prisma, projects }: SeedBoardsArgs) {
       description: 'This is a description for board2',
     },
   });
-  console.log(`Created boards: ${board1.name}, ${board2.name}`);
 
   return { board1, board2 };
 }
