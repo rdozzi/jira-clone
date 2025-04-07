@@ -1,3 +1,13 @@
 {
-  "conventionalCommits.scopes": ["prisma", "database", "backend", "frontend"]
+  "conventionalCommits.scopes": [
+    "database/prisma",
+    "backend",
+    "frontend",
+    "ui",
+    "auth",
+    "infra",
+    "tests",
+    "docs"
+  ],
+  "conventionalCommits.gitmoji": false
 }
