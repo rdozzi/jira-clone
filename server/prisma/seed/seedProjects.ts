@@ -1,4 +1,5 @@
 import { PrismaClient, User } from '@prisma/client';
+import { logSeedUtility } from '../../utility/logSeedUtility';
 
 type SeedProjectsArgs = {
   prisma: PrismaClient;
@@ -9,6 +10,10 @@ type SeedProjectsArgs = {
 };
 
 export async function seedProjects({ prisma, users }: SeedProjectsArgs) {
+  const seeds = [{ id: 1 }, { id: 2 }];
+  const modelName = 'Project';
+  logSeedUtility({ seeds, modelName, prisma });
+
   // Seed Projects
   const project1 = await prisma.project.upsert({
     where: { id: 1 },
@@ -30,7 +35,6 @@ export async function seedProjects({ prisma, users }: SeedProjectsArgs) {
       status: 'ARCHIVED',
     },
   });
-  console.log(`Created projects: ${project1.name}, ${project2.name}`);
 
   return { project1, project2 };
 }

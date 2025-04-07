@@ -1,7 +1,13 @@
 import { PrismaClient } from '@prisma/client';
+import { logSeedUtility } from '../../utility/logSeedUtility';
 
 export async function seedActivityLog(prisma: PrismaClient) {
   //Seed Activity Log
+
+  const seeds = [{ id: 1 }];
+  const modelName = 'ActivityLog';
+  logSeedUtility({ seeds, modelName, prisma });
+
   await prisma.activityLog.upsert({
     where: { id: 1 },
     update: {},

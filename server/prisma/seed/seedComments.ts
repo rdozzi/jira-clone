@@ -1,5 +1,5 @@
 import { PrismaClient, Ticket, User } from '@prisma/client';
-
+import { logSeedUtility } from '../../utility/logSeedUtility';
 type SeedCommentsArgs = {
   prisma: PrismaClient;
   tickets: {
@@ -17,6 +17,10 @@ export async function seedComments({
   tickets,
   users,
 }: SeedCommentsArgs) {
+  const seeds = [{ id: 1 }, { id: 2 }];
+  const modelName = 'Comment';
+  logSeedUtility({ seeds, modelName, prisma });
+
   const comment1 = await prisma.comment.upsert({
     where: { id: 1 },
     update: {},
@@ -35,6 +39,6 @@ export async function seedComments({
       authorId: users.user2.id,
     },
   });
-  console.log(`Created comments: ${comment1.content}, ${comment2.content}`);
+
   return { comment1, comment2 };
 }
