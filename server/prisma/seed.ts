@@ -18,6 +18,7 @@ async function main() {
   const tickets = await seedTickets({ prisma, users, boards });
   const labels = await seedLabels(prisma);
 
+  await seedUsers(prisma);
   await seedProjects({ prisma, users });
   await seedBoards({ prisma, projects });
   await seedTickets({ prisma, users, boards });
