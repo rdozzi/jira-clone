@@ -4,14 +4,14 @@ import { localStorage } from './localStorage';
 
 type Destination = 'LOCAL' | 'CLOUD' | 'DB';
 
-async function storageDispatcher(files, destination: Destination = 'LOCAL') {
+async function storageDispatcher(file, destination: Destination = 'LOCAL') {
   switch (destination) {
     case 'LOCAL':
-      return localStorage(files);
+      return localStorage(file);
     case 'CLOUD':
-      return cloudStorage(files);
+      return cloudStorage(file);
     case 'DB':
-      return dbStorage(files);
+      return dbStorage(file);
     default:
       throw new Error('Invalid storage destination');
   }
