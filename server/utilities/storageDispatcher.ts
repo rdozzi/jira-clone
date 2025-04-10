@@ -16,5 +16,3 @@ async function storageDispatcher(file, destination: Destination = 'LOCAL') {
       throw new Error('Invalid storage destination');
   }
 }
-
-export default storageDispatcher;
