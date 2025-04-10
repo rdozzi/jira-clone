@@ -4,7 +4,10 @@ import { saveToLocal } from './localStorage';
 
 type Destination = 'LOCAL' | 'CLOUD' | 'DB';
 
-async function storageDispatcher(file, destination: Destination = 'LOCAL') {
+export async function storageDispatcher(
+  file,
+  destination: Destination = 'LOCAL'
+) {
   switch (destination) {
     case 'LOCAL':
       return saveToLocal(file);
