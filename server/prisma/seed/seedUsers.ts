@@ -1,6 +1,6 @@
 import { hashPassword } from '../../src/password';
 import { PrismaClient } from '@prisma/client';
-import { logSeedUtility } from '../../utility/logSeedUtility';
+import { logSeedUtility } from '../../src/utilities/logSeedUtility';
 
 export async function seedUsers(prisma: PrismaClient) {
   const hashedPassword = await hashPassword('seedPassword123');

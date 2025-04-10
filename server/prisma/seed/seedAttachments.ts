@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { randomNumberGen } from '../../utility/randomNumberGen';
-import { logSeedUtility } from '../../utility/logSeedUtility';
+import { randomNumberGen } from '../../src/utilities/randomNumberGen';
+import { logSeedUtility } from '../../src/utilities/logSeedUtility';
 export async function seedAttachments(prisma: PrismaClient) {
   const seeds = [{ id: 1 }, { id: 2 }];
   const modelName = 'Attachment';

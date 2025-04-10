@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { logSeedUtility } from '../../utility/logSeedUtility';
+import { logSeedUtility } from '../../src/utilities/logSeedUtility';
 
 export async function seedLabels(prisma: PrismaClient) {
   const seeds = [{ id: 1 }, { id: 2 }];

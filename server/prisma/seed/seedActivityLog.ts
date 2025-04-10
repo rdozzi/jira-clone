@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { logSeedUtility } from '../../utility/logSeedUtility';
-
+import { logSeedUtility } from '../../src/utilities/logSeedUtility';
 export async function seedActivityLog(prisma: PrismaClient) {
   //Seed Activity Log
 
