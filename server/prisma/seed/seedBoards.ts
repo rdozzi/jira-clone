@@ -1,5 +1,5 @@
 import { PrismaClient, Project } from '@prisma/client';
-import { logSeedUtility } from '../../utility/logSeedUtility';
+import { logSeedUtility } from '../../src/utilities/logSeedUtility';
 type SeedBoardsArgs = {
   prisma: PrismaClient;
   projects: {

@@ -1,5 +1,5 @@
 import { PrismaClient, User, Board } from '@prisma/client';
-import { logSeedUtility } from '../../utility/logSeedUtility';
+import { logSeedUtility } from '../../src/utilities/logSeedUtility';
 
 type SeedTicketsArgs = {
   prisma: PrismaClient;
