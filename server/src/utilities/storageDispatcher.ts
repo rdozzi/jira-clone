@@ -1,6 +1,6 @@
 import { getStorageType } from '../config/storage';
-import { saveToCloud } from './cloudStorage';
-import { saveToLocal } from './localStorage';
+import { saveToCloud } from './uploadToCloud';
+import { saveToLocal } from './uploadToDisk';
 import { FileMetadata } from '../types/file';
 
 export async function storageDispatcher(
