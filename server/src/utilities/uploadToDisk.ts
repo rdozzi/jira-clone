@@ -5,10 +5,10 @@ import { FileMetadata } from '../types/file';
 export async function saveToLocal(
   file: Express.Multer.File
 ): Promise<FileMetadata> {
-  const dest = path.resolve(file.destination);
-
-  if (!fs.existsSync(dest)) {
-    fs.mkdirSync(dest, { recursive: true });
+  // const dest = path.resolve(file.destination);
+  const uploadDirectory = path.join(__dirname, '..', '..', 'uploads');
+  if (!fs.existsSync(uploadDirectory)) {
+    fs.mkdirSync(uploadDirectory, { recursive: true });
   }
 
   return {
@@ -16,6 +16,6 @@ export async function saveToLocal(
     mimetype: file.mimetype,
     size: file.size,
     storageLocation: 'LOCAL',
-    savedPath: path.join(dest, file.filename),
+    savedPath: file.path,
   };
 }
