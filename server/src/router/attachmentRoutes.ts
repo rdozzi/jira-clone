@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient, AttachmentEntityType } from '@prisma/client';
+import { handleUpload } from '../controllers/uploadController';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -29,6 +30,13 @@ router.get(
 );
 
 // Create attachment
+router.post(
+  '/attachments',
+  async (req: Request, res: Response): Promise<void> => {
+    handleUpload(req, res, prisma);
+  }
+);
+
 // Create several attachments
 // Delete attachment
 // Delete all attachments
