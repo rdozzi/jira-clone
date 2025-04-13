@@ -4,7 +4,8 @@ import { storageDispatcher } from '../utilities/storageDispatcher';
 export async function handleUpload(req: Request, res: Response) {
   try {
     if (!req.file) throw new Error('No file uploaded');
-    const destination = req.query.destination || 'LOCAL'; // Default to LOCAL if not specified
+    const destination =
+      (req.query.destination as 'CLOUD' | 'LOCAL') || undefined;
     const metadata = await storageDispatcher(req.file, destination);
     res.status(200).json({
       message: 'File uploaded successfully',
@@ -14,7 +15,7 @@ export async function handleUpload(req: Request, res: Response) {
     console.error('Error uploading file:', error);
     res.status(500).json({
       message: 'Error uploading file',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }
