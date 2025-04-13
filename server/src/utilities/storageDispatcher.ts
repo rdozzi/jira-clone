@@ -1,21 +1,19 @@
+import { getStorageType } from '../config/storage';
 import { saveToCloud } from './cloudStorage';
-import { saveToDB } from './dbStorage';
 import { saveToLocal } from './localStorage';
-
-type Destination = 'LOCAL' | 'CLOUD' | 'DB';
+import { FileMetadata } from '../types/file';
 
 export async function storageDispatcher(
-  file,
-  destination: Destination = 'LOCAL'
-) {
-  switch (destination) {
+  file: Express.Multer.File,
+  storageOverride?: 'LOCAL' | 'CLOUD'
+): Promise<FileMetadata> {
+  const type = storageOverride || getStorageType();
+  switch (type) {
     case 'LOCAL':
       return saveToLocal(file);
     case 'CLOUD':
       return saveToCloud(file);
-    case 'DB':
-      return saveToDB(file);
     default:
-      throw new Error('Invalid storage destination');
+      throw new Error(`Invalid storage destination: ${type}`);
   }
 }
