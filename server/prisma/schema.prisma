@@ -197,7 +197,6 @@ enum AttachmentEntityType {
 enum StorageType {
   LOCAL
   CLOUD
-  DATABASE
 }
 
 enum ActorTypeActivity {
