@@ -1,21 +1,17 @@
 import { Request, Response } from 'express';
-import { storageDispatcher } from '../utilities/storageDispatcher';
+import { handleFileUpload } from '../services/uploadService';
 
 export async function handleUpload(req: Request, res: Response) {
   try {
-    if (!req.file) throw new Error('No file uploaded');
-    const destination =
-      (req.query.destination as 'CLOUD' | 'LOCAL') || undefined;
-    const metadata = await storageDispatcher(req.file, destination);
+    const metadata = await handleFileUpload(req.file as Express.Multer.File);
     res.status(200).json({
       message: 'File uploaded successfully',
       metadata,
     });
   } catch (error) {
-    console.error('Error uploading file:', error);
     res.status(500).json({
-      message: 'Error uploading file',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      message: 'File upload failed',
+      error: (error as Error).message,
     });
   }
 }
