@@ -1,23 +1,21 @@
 import path from 'path';
-import { promises as fs } from 'fs';
+import fs from 'fs';
 import { FileMetadata } from '../types/file';
 
-export async function saveToLocal(file): Promise<FileMetadata> {
-  const storagePath = path.join(__dirname, '../uploads');
-  const filePath = path.join(storagePath, file.originalname);
+export async function saveToLocal(
+  file: Express.Multer.File
+): Promise<FileMetadata> {
+  const dest = path.resolve(file.destination);
 
-  try {
-    await fs.mkdir(storagePath, { recursive: true });
-    await fs.writeFile(filePath, file.buffer);
-    return {
-      filename: file.originalname,
-      mimetype: file.mimetype,
-      size: file.size,
-      storageLocation: 'local',
-      savedPath: filePath,
-    };
-  } catch (error) {
-    console.error('Error saving file to local storage:', error);
-    throw error;
+  if (!fs.existsSync(dest)) {
+    fs.mkdirSync(dest, { recursive: true });
   }
+
+  return {
+    filename: file.filename,
+    mimetype: file.mimetype,
+    size: file.size,
+    storageLocation: 'LOCAL',
+    savedPath: path.join(dest, file.filename),
+  };
 }
