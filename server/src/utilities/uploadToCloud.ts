@@ -1,7 +1,5 @@
 import { FileMetadata } from '../types/file';
 
-//
-
 export async function saveToCloud(
   file: Express.Multer.File
 ): Promise<FileMetadata> {
