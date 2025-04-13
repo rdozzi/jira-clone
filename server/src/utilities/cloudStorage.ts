@@ -2,7 +2,9 @@ import { FileMetadata } from '../types/file';
 
 //
 
-export async function saveToCloud(file): Promise<FileMetadata> {
+export async function saveToCloud(
+  file: Express.Multer.File
+): Promise<FileMetadata> {
   // This is a placeholder function for cloud storage
   // In a real implementation, you would use an SDK or API to upload the file to a cloud service
   // and return the file metadata
@@ -12,7 +14,7 @@ export async function saveToCloud(file): Promise<FileMetadata> {
       filename: file.originalname,
       mimetype: file.mimetype,
       size: file.size,
-      storageLocation: 'cloud',
+      storageLocation: 'CLOUD',
       cloudUrl: dummyCloudUrl,
     };
   } catch (error) {
