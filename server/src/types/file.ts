@@ -1,9 +1,10 @@
+type StorageLocation = 'LOCAL' | 'CLOUD';
+
 export interface FileMetadata {
   filename: string;
   mimetype: string;
   size: number;
-  storageLocation: 'local' | 'cloud' | 'db';
+  storageLocation: StorageLocation;
   savedPath?: string;
   cloudUrl?: string;
-  dbId?: string;
 }
