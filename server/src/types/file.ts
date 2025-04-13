@@ -1,4 +1,6 @@
-type StorageLocation = 'LOCAL' | 'CLOUD';
+import { StorageType } from '@prisma/client';
+
+type StorageLocation = StorageType;
 
 export interface FileMetadata {
   filename: string;
