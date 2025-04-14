@@ -27,6 +27,7 @@ export async function handleUpload(
         fileSize: metadata.size,
         filePath: metadata.savedPath,
         fileUrl: metadata.cloudUrl,
+        storageType: metadata.storageType,
       },
     });
     res.status(201).json({
