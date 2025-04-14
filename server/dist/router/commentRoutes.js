@@ -43,7 +43,6 @@ router.post('/comments', async (req, res) => {
         res.status(500).json({ error: 'Failed to create comment' });
     }
 });
-exports.default = router;
 // Delete comment
 router.delete('/comments/:id', async (req, res) => {
     try {
@@ -83,3 +82,4 @@ router.patch('/comments/:commentId', async (req, res) => {
         res.status(500).json({ error: 'Failed to edit comment' });
     }
 });
+exports.default = router;
