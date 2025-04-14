@@ -6,7 +6,7 @@ export interface FileMetadata {
   filename: string;
   mimetype: string;
   size: number;
-  storageLocation: StorageLocation;
+  storageType: StorageLocation;
   savedPath?: string;
   cloudUrl?: string;
 }

@@ -15,7 +15,7 @@ export async function saveToLocal(
     filename: file.filename,
     mimetype: file.mimetype,
     size: file.size,
-    storageLocation: 'LOCAL',
+    storageType: 'LOCAL',
     savedPath: file.path,
   };
 }
