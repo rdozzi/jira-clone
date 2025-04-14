@@ -45,7 +45,6 @@ router.post('/comments', async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ error: 'Failed to create comment' });
   }
 });
-export default router;
 
 // Delete comment
 router.delete(
@@ -93,3 +92,5 @@ router.patch(
     }
   }
 );
+
+export default router;
