@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient, AttachmentEntityType } from '@prisma/client';
 import { handleUpload } from '../controllers/uploadController';
+import { uploadMiddleware } from '../middleware/uploadMiddleware';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -32,8 +33,9 @@ router.get(
 // Create attachment
 router.post(
   '/attachments',
+  uploadMiddleware,
   async (req: Request, res: Response): Promise<void> => {
-    handleUpload(req, res, prisma);
+    await handleUpload(req, res, prisma);
   }
 );
 
