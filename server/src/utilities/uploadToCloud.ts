@@ -12,7 +12,7 @@ export async function saveToCloud(
       filename: file.originalname,
       mimetype: file.mimetype,
       size: file.size,
-      storageLocation: 'CLOUD',
+      storageType: 'CLOUD',
       cloudUrl: dummyCloudUrl,
     };
   } catch (error) {
