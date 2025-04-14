@@ -1,14 +1,16 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const client_1 = require("@prisma/client");
+const prisma_1 = __importDefault(require("../lib/prisma"));
 const password_1 = require("../password");
 const router = (0, express_1.Router)();
-const prisma = new client_1.PrismaClient();
 // Get all users
 router.get('/users', async (req, res) => {
     try {
-        const users = await prisma.user.findMany();
+        const users = await prisma_1.default.user.findMany();
         res.status(200).json(users);
     }
     catch (error) {
@@ -20,7 +22,7 @@ router.get('/users', async (req, res) => {
 router.get('/users/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const user = await prisma.user.findUnique({ where: { id: Number(id) } });
+        const user = await prisma_1.default.user.findUnique({ where: { id: Number(id) } });
         res.status(200).json(user);
     }
     catch (error) {
@@ -34,7 +36,7 @@ router.post('/', async (req, res) => {
         // const userDetails = await req.body;
         const { email, name, passwordHash, role } = req.body;
         const hashedPassword = await (0, password_1.hashPassword)(passwordHash);
-        const user = await prisma.user.create({
+        const user = await prisma_1.default.user.create({
             data: {
                 email: email,
                 first_name: name,
@@ -53,7 +55,7 @@ router.post('/', async (req, res) => {
 router.delete('/users/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const deleteData = await prisma.user.delete({
+        const deleteData = await prisma_1.default.user.delete({
             where: { id: Number(id) },
         });
         res.status(200).json(deleteData);

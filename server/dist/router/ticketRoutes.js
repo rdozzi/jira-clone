@@ -1,13 +1,15 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const client_1 = require("@prisma/client");
+const prisma_1 = __importDefault(require("../lib/prisma"));
 const router = (0, express_1.Router)();
-const prisma = new client_1.PrismaClient();
 // Get all Tickets
 router.get('/tickets', async (req, res) => {
     try {
-        const tickets = await prisma.ticket.findMany({
+        const tickets = await prisma_1.default.ticket.findMany({
             relationLoadStrategy: 'query',
             include: {
                 assignee: {
@@ -29,7 +31,7 @@ router.get('/tickets', async (req, res) => {
 router.get('/tickets/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const tickets = await prisma.ticket.findUnique({
+        const tickets = await prisma_1.default.ticket.findUnique({
             where: { id: Number(id) },
         });
         res.status(200).json(tickets);
@@ -44,7 +46,7 @@ router.get('/tickets/assigneeId/:userId', async (req, res) => {
     const { userId } = req.params;
     console.log(userId);
     try {
-        const tickets = await prisma.ticket.findMany({
+        const tickets = await prisma_1.default.ticket.findMany({
             where: { assigneeId: Number(userId) },
         });
         res.status(200).json(tickets);
@@ -58,7 +60,7 @@ router.get('/tickets/assigneeId/:userId', async (req, res) => {
 router.post('/tickets', async (req, res) => {
     try {
         const ticketData = req.body;
-        const ticket = await prisma.ticket.create({
+        const ticket = await prisma_1.default.ticket.create({
             data: ticketData,
         });
         res.status(200).json(ticket);
@@ -74,7 +76,7 @@ router.patch('/tickets/updateTicket/:ticketId', async (req, res) => {
         const ticketData = req.body;
         const { ticketId } = req.params;
         console.log(ticketId);
-        const ticket = await prisma.ticket.update({
+        const ticket = await prisma_1.default.ticket.update({
             where: { id: Number(ticketId) },
             data: {
                 ...ticketData,
@@ -91,7 +93,7 @@ router.patch('/tickets/updateTicket/:ticketId', async (req, res) => {
 router.delete('/tickets/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const deleteTicket = await prisma.ticket.delete({
+        const deleteTicket = await prisma_1.default.ticket.delete({
             where: { id: Number(id) },
         });
         res.status(200).json(deleteTicket);
