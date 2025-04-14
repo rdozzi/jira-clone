@@ -1,12 +1,14 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const client_1 = require("@prisma/client");
+const prisma_1 = __importDefault(require("../lib/prisma"));
 const router = (0, express_1.Router)();
-const prisma = new client_1.PrismaClient();
 router.get('/projects', async (req, res) => {
     try {
-        const projects = await prisma.project.findMany();
+        const projects = await prisma_1.default.project.findMany();
         res.status(200).json(projects);
     }
     catch (error) {
@@ -17,7 +19,7 @@ router.get('/projects', async (req, res) => {
 router.get('/projects/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const projects = await prisma.project.findUnique({
+        const projects = await prisma_1.default.project.findUnique({
             where: { id: Number(id) },
         });
         res.status(200).json(projects);
@@ -30,7 +32,7 @@ router.get('/projects/:id', async (req, res) => {
 router.post('/projects', async (req, res) => {
     try {
         const projectData = req.body;
-        const project = await prisma.project.create({
+        const project = await prisma_1.default.project.create({
             data: projectData,
         });
         res.status(200).json(project);
@@ -43,7 +45,7 @@ router.post('/projects', async (req, res) => {
 router.delete('/projects/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const deleteProject = await prisma.project.delete({
+        const deleteProject = await prisma_1.default.project.delete({
             where: { id: Number(id) },
         });
         res.status(200).json(deleteProject);

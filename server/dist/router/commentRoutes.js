@@ -1,13 +1,15 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const client_1 = require("@prisma/client");
+const prisma_1 = __importDefault(require("../lib/prisma"));
 const router = (0, express_1.Router)();
-const prisma = new client_1.PrismaClient();
 // Get all comments
 router.get('/comments', async (req, res) => {
     try {
-        const comments = await prisma.comment.findMany();
+        const comments = await prisma_1.default.comment.findMany();
         res.status(200).json(comments);
     }
     catch (error) {
@@ -19,7 +21,7 @@ router.get('/comments', async (req, res) => {
 router.get('/comments/:ticketId', async (req, res) => {
     const { ticketId } = req.params;
     try {
-        const ticketComments = await prisma.comment.findMany({
+        const ticketComments = await prisma_1.default.comment.findMany({
             where: { ticketId: Number(ticketId) },
         });
         res.status(200).json(ticketComments);
@@ -33,7 +35,7 @@ router.get('/comments/:ticketId', async (req, res) => {
 router.post('/comments', async (req, res) => {
     try {
         const commentData = req.body;
-        const comment = await prisma.comment.create({
+        const comment = await prisma_1.default.comment.create({
             data: commentData,
         });
         res.status(200).json(comment);
@@ -47,7 +49,7 @@ router.post('/comments', async (req, res) => {
 router.delete('/comments/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const deleteComment = await prisma.comment.delete({
+        const deleteComment = await prisma_1.default.comment.delete({
             where: { id: Number(id) },
         });
         res.status(200).json(deleteComment);
@@ -69,7 +71,7 @@ router.patch('/comments/:commentId', async (req, res) => {
             });
             return;
         }
-        const updateComment = await prisma.comment.update({
+        const updateComment = await prisma_1.default.comment.update({
             where: { id: Number(commentId) },
             data: {
                 content,
