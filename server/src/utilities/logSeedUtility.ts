@@ -1,4 +1,16 @@
-export function logSeedUtility({ seeds, modelName, prisma }) {
+import { PrismaClient } from '@prisma/client';
+
+type logSeedUtilityProps = {
+  seeds: Array<{ id: number }>;
+  modelName: string;
+  prisma: PrismaClient;
+};
+
+export function logSeedUtility({
+  seeds,
+  modelName,
+  prisma,
+}: logSeedUtilityProps): void {
   for (const seed of seeds) {
     /* eslint-disable  @typescript-eslint/no-explicit-any */
     const model = prisma[modelName as keyof typeof prisma] as any;
