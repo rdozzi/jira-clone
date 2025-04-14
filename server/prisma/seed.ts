@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../src/lib/prisma';
 import { seedUsers } from './seed/seedUsers';
 import { seedProjects } from './seed/seedProjects';
 import { seedBoards } from './seed/seedBoards';
@@ -8,8 +8,6 @@ import { seedAttachments } from './seed/seedAttachments';
 import { seedLabels } from './seed/seedLabels';
 import { seedLabelsWithTickets } from './seed/seedLabelsWithTickets';
 import { seedActivityLog } from './seed/seedActivityLog';
-
-const prisma = new PrismaClient();
 
 async function main() {
   const users = await seedUsers(prisma);
