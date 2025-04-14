@@ -1,10 +1,12 @@
 import { Router, Request, Response } from 'express';
-import { PrismaClient, AttachmentEntityType } from '@prisma/client';
+import { AttachmentEntityType } from '@prisma/client';
 import { handleUpload } from '../controllers/uploadController';
 import { uploadMiddleware } from '../middleware/uploadMiddleware';
+import prisma from '../lib/prisma';
+import { deleteAttachment } from '../controllers/deleteAttachmentController';
+import { validateAttachmentExists } from '../middleware/deleteAttachmentMiddleware';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Get all attachments if Entity/Id is not provided
 router.get(
@@ -36,6 +38,15 @@ router.post(
   uploadMiddleware,
   async (req: Request, res: Response): Promise<void> => {
     await handleUpload(req, res, prisma);
+  }
+);
+
+// Delete attachment
+router.delete(
+  '/attachments/:id',
+  validateAttachmentExists,
+  async (req: Request, res: Response): Promise<void> => {
+    await deleteAttachment(req, res, prisma);
   }
 );
 
