@@ -5,6 +5,8 @@ import { uploadMiddleware } from '../middleware/uploadMiddleware';
 import prisma from '../lib/prisma';
 import { deleteAttachment } from '../controllers/deleteAttachmentController';
 import { validateAttachmentExists } from '../middleware/deleteAttachmentMiddleware';
+import { deleteManyAttachmentMiddleware } from '../middleware/deleteManyAttachmentMiddleware';
+import { deleteManyAttachments } from '../controllers/deleteManyAttachmentsController';
 
 const router = Router();
 
@@ -50,9 +52,16 @@ router.delete(
   }
 );
 
+// Delete many attachments
+router.delete(
+  '/attachments',
+  deleteManyAttachmentMiddleware,
+  async (req: Request, res: Response): Promise<void> => {
+    await deleteManyAttachments(req, res, prisma);
+  }
+);
+
 // Create several attachments
-// Delete attachment
-// Delete all attachments
 // Download attachment
 // Download all attachments by Entity/Id
 
