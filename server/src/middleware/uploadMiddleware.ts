@@ -37,4 +37,5 @@ if (storageType === 'LOCAL') {
   throw new Error(`Invalid storage type: ${storageType}`);
 }
 
-export const uploadMiddleware = upload.single('file');
+export const uploadSingleMiddleware = upload.single('file');
+export const uploadMultipleMiddleware = upload.array('files', 10);

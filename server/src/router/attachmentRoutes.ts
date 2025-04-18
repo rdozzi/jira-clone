@@ -1,7 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { AttachmentEntityType } from '@prisma/client';
-import { handleUpload } from '../controllers/uploadController';
-import { uploadMiddleware } from '../middleware/uploadMiddleware';
+import {
+  handleSingleUpload,
+  handleMultipleUpload,
+} from '../controllers/uploadController';
+import {
+  uploadSingleMiddleware,
+  uploadMultipleMiddleware,
+} from '../middleware/uploadMiddleware';
 import prisma from '../lib/prisma';
 import { deleteAttachment } from '../controllers/deleteAttachmentController';
 import { validateAttachmentExists } from '../middleware/deleteAttachmentMiddleware';
@@ -34,12 +40,21 @@ router.get(
   }
 );
 
-// Create attachment
+// Create single attachment
 router.post(
-  '/attachments',
-  uploadMiddleware,
+  '/attachments/single',
+  uploadSingleMiddleware,
   async (req: Request, res: Response): Promise<void> => {
-    await handleUpload(req, res, prisma);
+    await handleSingleUpload(req, res, prisma);
+  }
+);
+
+// Create several attachments
+router.post(
+  '/attachments/many',
+  uploadMultipleMiddleware,
+  async (req: Request, res: Response): Promise<void> => {
+    await handleMultipleUpload(req, res, prisma);
   }
 );
 
@@ -61,7 +76,6 @@ router.delete(
   }
 );
 
-// Create several attachments
 // Download attachment
 // Download all attachments by Entity/Id
 
