@@ -1,18 +1,23 @@
 import { Router, Request, Response } from 'express';
 import { AttachmentEntityType } from '@prisma/client';
-import {
-  handleSingleUpload,
-  handleMultipleUpload,
-} from '../controllers/uploadController';
+
+import prisma from '../lib/prisma';
+
 import {
   uploadSingleMiddleware,
   uploadMultipleMiddleware,
 } from '../middleware/uploadMiddleware';
-import prisma from '../lib/prisma';
-import { deleteAttachment } from '../controllers/deleteAttachmentController';
-import { validateAttachmentExists } from '../middleware/deleteAttachmentMiddleware';
 import { deleteManyAttachmentMiddleware } from '../middleware/deleteManyAttachmentMiddleware';
+import { validateAttachmentExists } from '../middleware/deleteAttachmentMiddleware';
+import { downloadSingleAttachmentMiddleware } from '../middleware/downloadMiddleware';
+
+import {
+  handleSingleUpload,
+  handleMultipleUpload,
+} from '../controllers/uploadController';
 import { deleteManyAttachments } from '../controllers/deleteManyAttachmentsController';
+import { deleteAttachment } from '../controllers/deleteAttachmentController';
+import { downloadSingleAttachment } from '../controllers/downloadController';
 
 const router = Router();
 
@@ -77,6 +82,13 @@ router.delete(
 );
 
 // Download attachment
-// Download all attachments by Entity/Id
+router.get(
+  '/attachments/:id/download',
+  downloadSingleAttachmentMiddleware,
+  async (req: Request, res: Response): Promise<void> => {
+    await downloadSingleAttachment(req, res, prisma);
+  }
+);
+// Download multiple attachments by Entity/Id
 
 export default router;
