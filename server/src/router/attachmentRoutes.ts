@@ -9,7 +9,8 @@ import {
 } from '../middleware/uploadMiddleware';
 import { deleteManyAttachmentMiddleware } from '../middleware/deleteManyAttachmentMiddleware';
 import { validateAttachmentExists } from '../middleware/deleteAttachmentMiddleware';
-import { downloadSingleAttachmentMiddleware } from '../middleware/downloadMiddleware';
+import { downloadSingleAttachmentMiddleware } from '../middleware/downloadSingleMiddleware';
+import { downloadMultipleAttachmentMiddleware } from '../middleware/downloadMultipleMiddleware';
 
 import {
   handleSingleUpload,
@@ -18,6 +19,7 @@ import {
 import { deleteManyAttachments } from '../controllers/deleteManyAttachmentsController';
 import { deleteAttachment } from '../controllers/deleteAttachmentController';
 import { downloadSingleAttachment } from '../controllers/downloadController';
+import { downloadMultipleAttachments } from '../controllers/downloadMultipleController';
 
 const router = Router();
 
@@ -89,6 +91,14 @@ router.get(
     await downloadSingleAttachment(req, res, prisma);
   }
 );
+
 // Download multiple attachments by Entity/Id
+router.post(
+  '/attachments/download',
+  downloadMultipleAttachmentMiddleware,
+  async (req: Request, res: Response): Promise<void> => {
+    await downloadMultipleAttachments(req, res, prisma);
+  }
+);
 
 export default router;
