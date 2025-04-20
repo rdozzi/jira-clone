@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import path from 'path';
-import { getSignedUrl } from '../utilities/getSignedUrl';
+import { generateSignedCloudUrl } from '../utilities/generateSignedCloudUrl';
 import { PrismaClient } from '@prisma/client';
 
 export async function downloadSingleAttachment(
@@ -22,7 +22,7 @@ export async function downloadSingleAttachment(
       const filePath = path.resolve(attachment.filePath || '');
       return res.download(filePath, attachment.fileName);
     } else if (attachment.storageType === 'CLOUD') {
-      const signedUrl = await getSignedUrl(attachment);
+      const signedUrl = await generateSignedCloudUrl(attachment);
       // Indicate a successful response with a 201 status code
       res.status(201).json({
         message: `Signed URL generated successfully: ${signedUrl}`,
