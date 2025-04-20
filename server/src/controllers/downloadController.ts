@@ -23,7 +23,11 @@ export async function downloadSingleAttachment(
       return res.download(filePath, attachment.fileName);
     } else if (attachment.storageType === 'CLOUD') {
       const signedUrl = await getSignedUrl(attachment);
-      return res.redirect(signedUrl);
+      // Indicate a successful response with a 201 status code
+      res.status(201).json({
+        message: `Signed URL generated successfully: ${signedUrl}`,
+      });
+      // return res.redirect(signedUrl);
     } else {
       res.status(400).json({ error: 'Invalid storage type' });
     }
