@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
 import axios from 'axios';
-import { generateSignedCloudUrl } from '../utilities/generateSignedCloudUrl';
+import { generateSignedCloudUrl } from '../../utilities/generateSignedCloudUrl';
 import { PrismaClient } from '@prisma/client';
 
 export async function downloadMultipleAttachments(
