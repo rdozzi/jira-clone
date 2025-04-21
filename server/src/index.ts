@@ -6,6 +6,7 @@ import commentRoutes from './router/commentRoutes';
 import attachmentRoutes from './router/attachmentRoutes';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { globalLogMiddleware } from './middleware/logMiddleware';
 
 dotenv.config();
 
@@ -30,6 +31,8 @@ app.use('/api', ticketRoutes);
 app.use('/api', commentRoutes);
 
 app.use('/api', attachmentRoutes);
+
+app.use(globalLogMiddleware());
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is Running on port ${process.env.PORT} with Nodemon!`);

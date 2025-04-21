@@ -11,6 +11,7 @@ const commentRoutes_1 = __importDefault(require("./router/commentRoutes"));
 const attachmentRoutes_1 = __importDefault(require("./router/attachmentRoutes"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
+const logMiddleware_1 = require("./middleware/logMiddleware");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // Middleware
@@ -24,6 +25,7 @@ app.use('/api', projectRoutes_1.default);
 app.use('/api', ticketRoutes_1.default);
 app.use('/api', commentRoutes_1.default);
 app.use('/api', attachmentRoutes_1.default);
+app.use((0, logMiddleware_1.globalLogMiddleware)());
 app.listen(process.env.PORT, () => {
     console.log(`Server is Running on port ${process.env.PORT} with Nodemon!`);
 });
