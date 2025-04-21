@@ -1,5 +1,4 @@
 import { Router, Request, Response } from 'express';
-import { AttachmentEntityType } from '@prisma/client';
 
 import prisma from '../lib/prisma';
 
@@ -12,6 +11,7 @@ import { validateAttachmentExists } from '../middleware/deleteAttachmentMiddlewa
 import { downloadSingleAttachmentMiddleware } from '../middleware/downloadSingleMiddleware';
 import { downloadMultipleAttachmentMiddleware } from '../middleware/downloadMultipleMiddleware';
 
+import { getAllAttachments } from '../controllers/getAllAttachments';
 import {
   handleSingleUpload,
   handleMultipleUpload,
@@ -27,23 +27,7 @@ const router = Router();
 router.get(
   '/attachments',
   async (req: Request, res: Response): Promise<void> => {
-    const { entityType, entityId } = req.body;
-    try {
-      const whereClause =
-        entityType && entityId
-          ? {
-              entityType: entityType as AttachmentEntityType,
-              entityId: Number(entityId),
-            }
-          : undefined;
-      const attachments = await prisma.attachment.findMany({
-        where: whereClause,
-      });
-      res.status(200).json(attachments);
-    } catch (error) {
-      console.error('Error fetching attachments: ', error);
-      res.status(500).json({ error: 'Failed to fetch attachments' });
-    }
+    await getAllAttachments(req, res, prisma);
   }
 );
 
