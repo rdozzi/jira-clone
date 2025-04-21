@@ -4,6 +4,7 @@ import projectRoutes from './router/projectRoutes';
 import ticketRoutes from './router/ticketRoutes';
 import commentRoutes from './router/commentRoutes';
 import attachmentRoutes from './router/attachmentRoutes';
+import boardRoutes from './router/boardRoutes';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { globalLogMiddleware } from './middleware/logMiddleware';
@@ -31,6 +32,8 @@ app.use('/api', ticketRoutes);
 app.use('/api', commentRoutes);
 
 app.use('/api', attachmentRoutes);
+
+app.use('/api', boardRoutes);
 
 app.use(globalLogMiddleware());
 
