@@ -5,54 +5,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const prisma_1 = __importDefault(require("../lib/prisma"));
+const projectController_1 = require("../controllers/projectController");
 const router = (0, express_1.Router)();
+// Get all projects
 router.get('/projects', async (req, res) => {
-    try {
-        const projects = await prisma_1.default.project.findMany();
-        res.status(200).json(projects);
-    }
-    catch (error) {
-        console.error('Error fetching projects: ', error);
-        res.status(500).json({ error: 'Failed to fetch projects' });
-    }
+    await (0, projectController_1.getAllProjects)(req, res, prisma_1.default);
 });
+// Get project by Id
 router.get('/projects/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        const projects = await prisma_1.default.project.findUnique({
-            where: { id: Number(id) },
-        });
-        res.status(200).json(projects);
-    }
-    catch (error) {
-        console.error('Error fetching projects: ', error);
-        res.status(500).json({ error: 'Failed to fetch projects' });
-    }
+    await (0, projectController_1.getProjectById)(req, res, prisma_1.default);
 });
+// Create project
 router.post('/projects', async (req, res) => {
-    try {
-        const projectData = req.body;
-        const project = await prisma_1.default.project.create({
-            data: projectData,
-        });
-        res.status(200).json(project);
-    }
-    catch (error) {
-        console.error('Error creating project: ', error);
-        res.status(500).json({ error: 'Failed to create project' });
-    }
+    await (0, projectController_1.createProject)(req, res, prisma_1.default);
 });
+// Delete project
 router.delete('/projects/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const deleteProject = await prisma_1.default.project.delete({
-            where: { id: Number(id) },
-        });
-        res.status(200).json(deleteProject);
-    }
-    catch (error) {
-        console.error('Error fetching project: ', error);
-        res.status(500).json({ error: 'Failed to fetch project' });
-    }
+    await (0, projectController_1.deleteProject)(req, res, prisma_1.default);
 });
 exports.default = router;
