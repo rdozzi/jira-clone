@@ -17,77 +17,97 @@ export async function getAllBoards(
 }
 
 // Get board by Id
-export async function getProjectById(
+export async function getBoardById(
   req: Request,
   res: Response,
   prisma: PrismaClient
 ) {
   const { id } = req.params;
   try {
-    const projects = await prisma.project.findUnique({
+    const board = await prisma.board.findUnique({
       where: { id: Number(id) },
     });
-    res.status(200).json(projects);
+    res.status(200).json(board);
   } catch (error) {
-    console.error('Error fetching projects: ', error);
-    res.status(500).json({ error: 'Failed to fetch projects' });
+    console.error('Error fetching board: ', error);
+    res.status(500).json({ error: 'Failed to fetch board' });
   }
 }
 // Get boards by Project Id
-// Create board
-export async function createProject(
+export async function getBoardsByProjectId(
   req: Request,
   res: Response,
   prisma: PrismaClient
 ) {
+  const { projectId } = req.params;
   try {
-    const projectData = req.body;
-    const project = await prisma.project.create({
-      data: projectData,
+    const projectBoards = await prisma.board.findMany({
+      where: { projectId: Number(projectId) },
     });
-    res.status(200).json(project);
+    res.status(200).json(projectBoards);
   } catch (error) {
-    console.error('Error creating project: ', error);
-    res.status(500).json({ error: 'Failed to create project' });
+    console.error(`Error fetching boards for project ${projectId}: `, error);
+    res
+      .status(500)
+      .json({ error: `Failed to fetch boards for project ${projectId}` });
   }
 }
-// Update board
-export async function updateTicket(
+
+// Create board
+export async function createBoard(
   req: Request,
   res: Response,
   prisma: PrismaClient
 ) {
   try {
-    const ticketData = req.body;
-    const { ticketId } = req.params;
-    console.log(ticketId);
-    const ticket = await prisma.ticket.update({
-      where: { id: Number(ticketId) },
+    const boardData = req.body;
+    const board = await prisma.board.create({
+      data: boardData,
+    });
+    res.status(200).json(board);
+  } catch (error) {
+    console.error('Error creating board: ', error);
+    res.status(500).json({ error: 'Failed to create board' });
+  }
+}
+
+// Update board
+export async function updateBoard(
+  req: Request,
+  res: Response,
+  prisma: PrismaClient
+) {
+  try {
+    const boardData = req.body;
+    const { boardId } = req.params;
+    console.log(boardId);
+    const board = await prisma.board.update({
+      where: { id: Number(boardId) },
       data: {
-        ...ticketData,
+        ...boardData,
       },
     });
-    res.status(200).json(ticket);
+    res.status(200).json(board);
   } catch (error) {
-    console.error('Error editing ticket: ', error);
-    res.status(500).json({ error: 'Failed to edit ticket' });
+    console.error('Error editing board: ', error);
+    res.status(500).json({ error: 'Failed to edit board' });
   }
 }
 
 // Delete board
-export async function deleteProject(
+export async function deleteBoard(
   req: Request,
   res: Response,
   prisma: PrismaClient
 ) {
   try {
-    const { id } = req.params;
-    const deleteProject = await prisma.project.delete({
-      where: { id: Number(id) },
+    const { boardId } = req.params;
+    const deleteboard = await prisma.board.delete({
+      where: { id: Number(boardId) },
     });
-    res.status(200).json(deleteProject);
+    res.status(200).json(deleteboard);
   } catch (error) {
-    console.error('Error fetching project: ', error);
-    res.status(500).json({ error: 'Failed to fetch project' });
+    console.error('Error deleting board: ', error);
+    res.status(500).json({ error: 'Failed to delete board' });
   }
 }
