@@ -1,43 +1,26 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
+import {
+  getAllTickets,
+  getTicketById,
+  getTicketByAssigneeId,
+  createNewTicket,
+  updateTicket,
+  deleteTicket,
+} from '../controllers/ticketController';
 
 const router = Router();
 
 // Get all Tickets
 router.get('/tickets', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const tickets = await prisma.ticket.findMany({
-      relationLoadStrategy: 'query',
-      include: {
-        assignee: {
-          select: {
-            first_name: true,
-            last_name: true,
-          },
-        },
-      },
-    });
-    res.status(200).json(tickets);
-  } catch (error) {
-    console.error('Error fetching tickets: ', error);
-    res.status(500).json({ error: 'Failed to fetch tickets' });
-  }
+  await getAllTickets(req, res, prisma);
 });
 
-// Get all Tickets by Id
+// Get Ticket by Id
 router.get(
   '/tickets/:id',
   async (req: Request, res: Response): Promise<void> => {
-    const { id } = req.params;
-    try {
-      const tickets = await prisma.ticket.findUnique({
-        where: { id: Number(id) },
-      });
-      res.status(200).json(tickets);
-    } catch (error) {
-      console.error('Error fetching tickets: ', error);
-      res.status(500).json({ error: 'Failed to fetch tickets' });
-    }
+    await getTicketById(req, res, prisma);
   }
 );
 
@@ -45,53 +28,20 @@ router.get(
 router.get(
   '/tickets/assigneeId/:userId',
   async (req: Request, res: Response): Promise<void> => {
-    const { userId } = req.params;
-    console.log(userId);
-    try {
-      const tickets = await prisma.ticket.findMany({
-        where: { assigneeId: Number(userId) },
-      });
-      res.status(200).json(tickets);
-    } catch (error) {
-      console.log('Error fetching tickets: ', error);
-      res.status(500).json({ error: 'Failed to fetch tickets' });
-    }
+    await getTicketByAssigneeId(req, res, prisma);
   }
 );
 
 // Create new ticket
 router.post('/tickets', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const ticketData = req.body;
-    const ticket = await prisma.ticket.create({
-      data: ticketData,
-    });
-    res.status(200).json(ticket);
-  } catch (error) {
-    console.error('Error creating ticket: ', error);
-    res.status(500).json({ error: 'Failed to create ticket' });
-  }
+  await createNewTicket(req, res, prisma);
 });
 
 // Update a ticket
 router.patch(
   '/tickets/updateTicket/:ticketId',
   async (req: Request, res: Response): Promise<void> => {
-    try {
-      const ticketData = req.body;
-      const { ticketId } = req.params;
-      console.log(ticketId);
-      const ticket = await prisma.ticket.update({
-        where: { id: Number(ticketId) },
-        data: {
-          ...ticketData,
-        },
-      });
-      res.status(200).json(ticket);
-    } catch (error) {
-      console.error('Error editing ticket: ', error);
-      res.status(500).json({ error: 'Failed to edit ticket' });
-    }
+    await updateTicket(req, res, prisma);
   }
 );
 
@@ -99,16 +49,7 @@ router.patch(
 router.delete(
   '/tickets/:id',
   async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { id } = req.params;
-      const deleteTicket = await prisma.ticket.delete({
-        where: { id: Number(id) },
-      });
-      res.status(200).json(deleteTicket);
-    } catch (error) {
-      console.error('Error fetching tickets: ', error);
-      res.status(500).json({ error: 'Failed to fetch tickets' });
-    }
+    await deleteTicket(req, res, prisma);
   }
 );
 
