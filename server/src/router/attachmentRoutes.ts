@@ -11,15 +11,15 @@ import { validateAttachmentExists } from '../middleware/deleteAttachmentMiddlewa
 import { downloadSingleAttachmentMiddleware } from '../middleware/downloadSingleMiddleware';
 import { downloadMultipleAttachmentMiddleware } from '../middleware/downloadMultipleMiddleware';
 
-import { getAllAttachments } from '../controllers/getAllAttachments';
+import { getAllAttachments } from '../controllers/attachmentControllers/getAllAttachments';
 import {
   handleSingleUpload,
   handleMultipleUpload,
-} from '../controllers/uploadController';
-import { deleteManyAttachments } from '../controllers/deleteManyAttachmentsController';
-import { deleteAttachment } from '../controllers/deleteAttachmentController';
-import { downloadSingleAttachment } from '../controllers/downloadController';
-import { downloadMultipleAttachments } from '../controllers/downloadMultipleController';
+} from '../controllers/attachmentControllers/uploadController';
+import { deleteManyAttachments } from '../controllers/attachmentControllers/deleteManyAttachmentsController';
+import { deleteAttachment } from '../controllers/attachmentControllers/deleteAttachmentController';
+import { downloadSingleAttachment } from '../controllers/attachmentControllers/downloadController';
+import { downloadMultipleAttachments } from '../controllers/attachmentControllers/downloadMultipleController';
 
 const router = Router();
 

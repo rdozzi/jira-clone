@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import path from 'path';
-import { generateSignedCloudUrl } from '../utilities/generateSignedCloudUrl';
+import { generateSignedCloudUrl } from '../../utilities/generateSignedCloudUrl';
 import { PrismaClient } from '@prisma/client';
 
 export async function downloadSingleAttachment(

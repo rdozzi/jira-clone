@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { handleFileUpload } from '../services/uploadService';
+import { handleFileUpload } from '../../services/uploadService';
 import { PrismaClient } from '@prisma/client';
 
 export async function handleSingleUpload(
