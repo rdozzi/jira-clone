@@ -1,5 +1,6 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { buildLogEvent } from '../services/buildLogEvent';
 
 export async function getAllTickets(
   req: Request,
@@ -63,6 +64,7 @@ export async function getTicketByAssigneeId(
 export async function createNewTicket(
   req: Request,
   res: Response,
+  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
@@ -70,7 +72,24 @@ export async function createNewTicket(
     const ticket = await prisma.ticket.create({
       data: ticketData,
     });
-    res.status(200).json(ticket);
+
+    res.locals.logEvent = buildLogEvent({
+      userId: 1,
+      actorType: 'USER',
+      action: 'CREATE_TICKET',
+      targetId: ticket.id,
+      targetType: 'TICKET',
+      metadata: {
+        title: `${ticket.title}`,
+        description: `${ticket.description}`,
+      },
+      ticketId: ticket.id,
+      boardId: ticket.boardId,
+      projectId: 1,
+    });
+
+    res.status(201).json(ticket);
+    next();
   } catch (error) {
     console.error('Error creating ticket: ', error);
     res.status(500).json({ error: 'Failed to create ticket' });
