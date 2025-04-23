@@ -20,8 +20,8 @@ router.get('/tickets/assigneeId/:userId', async (req, res) => {
     await (0, ticketController_1.getTicketByAssigneeId)(req, res, prisma_1.default);
 });
 // Create new ticket
-router.post('/tickets', async (req, res) => {
-    await (0, ticketController_1.createNewTicket)(req, res, prisma_1.default);
+router.post('/tickets', async (req, res, next) => {
+    await (0, ticketController_1.createNewTicket)(req, res, next, prisma_1.default);
 });
 // Update a ticket
 router.patch('/tickets/updateTicket/:ticketId', async (req, res) => {
