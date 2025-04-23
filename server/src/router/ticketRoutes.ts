@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import prisma from '../lib/prisma';
 import {
   getAllTickets,
@@ -33,9 +33,12 @@ router.get(
 );
 
 // Create new ticket
-router.post('/tickets', async (req: Request, res: Response): Promise<void> => {
-  await createNewTicket(req, res, prisma);
-});
+router.post(
+  '/tickets',
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await createNewTicket(req, res, next, prisma);
+  }
+);
 
 // Update a ticket
 router.patch(
