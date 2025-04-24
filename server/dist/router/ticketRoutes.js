@@ -23,12 +23,12 @@ router.get('/tickets/assigneeId/:userId', async (req, res) => {
 router.post('/tickets', async (req, res, next) => {
     await (0, ticketController_1.createNewTicket)(req, res, next, prisma_1.default);
 });
+// Delete ticket
+router.delete('/tickets/:id', async (req, res, next) => {
+    await (0, ticketController_1.deleteTicket)(req, res, next, prisma_1.default);
+});
 // Update a ticket
 router.patch('/tickets/updateTicket/:ticketId', async (req, res) => {
     await (0, ticketController_1.updateTicket)(req, res, prisma_1.default);
-});
-// Delete ticket
-router.delete('/tickets/:id', async (req, res) => {
-    await (0, ticketController_1.deleteTicket)(req, res, prisma_1.default);
 });
 exports.default = router;

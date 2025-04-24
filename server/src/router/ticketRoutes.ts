@@ -40,19 +40,19 @@ router.post(
   }
 );
 
+// Delete ticket
+router.delete(
+  '/tickets/:id',
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await deleteTicket(req, res, next, prisma);
+  }
+);
+
 // Update a ticket
 router.patch(
   '/tickets/updateTicket/:ticketId',
   async (req: Request, res: Response): Promise<void> => {
     await updateTicket(req, res, prisma);
-  }
-);
-
-// Delete ticket
-router.delete(
-  '/tickets/:id',
-  async (req: Request, res: Response): Promise<void> => {
-    await deleteTicket(req, res, prisma);
   }
 );
 
