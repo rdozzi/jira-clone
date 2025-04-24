@@ -96,6 +96,43 @@ export async function createNewTicket(
   }
 }
 
+export async function deleteTicket(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+  prisma: PrismaClient
+) {
+  try {
+    const { id } = req.params;
+
+    const deleteTicket = await prisma.ticket.delete({
+      where: { id: Number(id) },
+    });
+
+    res.locals.logEvent = buildLogEvent({
+      userId: 1,
+      actorType: 'USER',
+      action: 'DELETE_TICKET',
+      targetId: deleteTicket.id,
+      targetType: 'TICKET',
+      metadata: {
+        title: `${deleteTicket.title}`,
+        description: `${deleteTicket.description}`,
+      },
+      ticketId: deleteTicket.id,
+      boardId: deleteTicket.boardId,
+      projectId: null,
+    });
+
+    res.status(200).json(deleteTicket);
+    console.log('delete ticket', res.locals.logEvent);
+    next();
+  } catch (error) {
+    console.error('Error fetching tickets: ', error);
+    res.status(500).json({ error: 'Failed to fetch tickets' });
+  }
+}
+
 export async function updateTicket(
   req: Request,
   res: Response,
@@ -115,22 +152,5 @@ export async function updateTicket(
   } catch (error) {
     console.error('Error editing ticket: ', error);
     res.status(500).json({ error: 'Failed to edit ticket' });
-  }
-}
-
-export async function deleteTicket(
-  req: Request,
-  res: Response,
-  prisma: PrismaClient
-) {
-  try {
-    const { id } = req.params;
-    const deleteTicket = await prisma.ticket.delete({
-      where: { id: Number(id) },
-    });
-    res.status(200).json(deleteTicket);
-  } catch (error) {
-    console.error('Error fetching tickets: ', error);
-    res.status(500).json({ error: 'Failed to fetch tickets' });
   }
 }
