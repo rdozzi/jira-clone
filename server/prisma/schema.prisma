@@ -28,9 +28,8 @@ model User {
   projects       Project[] //One-to-many User-to-Project
   comments       Comment[]
   attachments    Attachment[]
-  assigneeTicket Ticket[]      @relation("assignee")
-  reporterTicket Ticket[]      @relation("reporter")
-  activityLog    ActivityLog[]
+  assigneeTicket Ticket[]     @relation("assignee")
+  reporterTicket Ticket[]     @relation("reporter")
 }
 
 model Project {
@@ -43,9 +42,8 @@ model Project {
   updatedAt   DateTime      @updatedAt @db.Timestamptz()
 
   //Relationships
-  owner       User          @relation(fields: [ownerId], references: [id])
-  Board       Board[]
-  ActivityLog ActivityLog[]
+  owner User    @relation(fields: [ownerId], references: [id])
+  Board Board[]
 }
 
 model Board {
@@ -57,9 +55,8 @@ model Board {
   updatedAt   DateTime @updatedAt @db.Timestamptz()
 
   //Relationship
-  project     Project       @relation(fields: [projectId], references: [id])
-  tickets     Ticket[]
-  ActivityLog ActivityLog[]
+  project Project  @relation(fields: [projectId], references: [id])
+  tickets Ticket[]
 }
 
 model Ticket {
@@ -82,7 +79,6 @@ model Ticket {
   reporter     User          @relation(name: "reporter", fields: [reporterId], references: [id])
   comments     Comment[]
   ticketLabels TicketLabel[]
-  ActivityLog  ActivityLog[]
 }
 
 model Comment {
@@ -150,12 +146,6 @@ model ActivityLog {
   projectId  Int?
   boardId    Int?
   createdAt  DateTime          @default(now()) @db.Timestamptz()
-
-  //Relationship
-  user    User?    @relation(fields: [userId], references: [id])
-  project Project? @relation(fields: [projectId], references: [id])
-  board   Board?   @relation(fields: [boardId], references: [id])
-  ticket  Ticket?  @relation(fields: [ticketId], references: [id])
 }
 
 enum Role {
