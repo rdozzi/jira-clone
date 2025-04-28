@@ -106,19 +106,11 @@ export async function deleteTicket(
   try {
     const { id } = req.params;
 
-    // Check to see if comments exist
-    const comments = await prisma.comment.findMany({
-      where: { ticketId: Number(id) },
-    });
+    // Check to see if comments exist/Delete if they exist
+    await prisma.comment.deleteMany({ where: { ticketId: Number(id) } });
 
-    // Delete comments if they exist
-    if (comments) {
-      comments.map(async (comment) => {
-        await prisma.comment.delete({
-          where: { id: Number(comment.id) },
-        });
-      });
-    }
+    // Check to see if Ticket Labels Exist/Delete if they exist
+    await prisma.ticketLabel.findMany({ where: { ticketId: Number(id) } });
 
     const deleteTicket = await prisma.ticket.delete({
       where: { id: Number(id) },
