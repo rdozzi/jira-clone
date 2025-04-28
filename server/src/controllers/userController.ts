@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../password';
 import { buildLogEvent } from '../services/buildLogEvent';
+import { generateDiff } from '../services/generateDiff';
 
 // Get all users
 export async function getAllUsers(
@@ -76,6 +77,58 @@ export async function createUser(
   }
 }
 
+// Update user
+export async function updateUser(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+  prisma: PrismaClient
+) {
+  try {
+    const userData = req.body;
+    const { id } = req.params;
+    console.log(userData);
+
+    const oldUser = await prisma.user.findUnique({
+      where: { id: Number(id) },
+    });
+    if (!oldUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const newUser = await prisma.user.update({
+      where: { id: Number(id) },
+      data: {
+        ...userData,
+      },
+    });
+
+    const changes = generateDiff(oldUser, newUser);
+
+    res.locals.logEvent = buildLogEvent({
+      userId: Number(id),
+      actorType: 'USER',
+      action: 'UPDATE_USER',
+      targetId: Number(id),
+      targetType: 'USER',
+      metadata: {
+        name: `${newUser.first_name}_${newUser.last_name}`,
+        changes,
+      },
+      ticketId: null,
+      boardId: null,
+      projectId: null,
+    });
+
+    res.status(200).json(newUser);
+    next();
+  } catch (error) {
+    console.error('Error editing ticket: ', error);
+    res.status(500).json({ error: 'Failed to edit ticket' });
+  }
+}
+
+// Delete User
 export async function deleteUser(
   req: Request,
   res: Response,
