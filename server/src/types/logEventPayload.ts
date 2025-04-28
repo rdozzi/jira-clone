@@ -1,7 +1,7 @@
 import { ActorTypeActivity } from '@prisma/client';
 
 type JsonPrimitive = string | number | boolean;
-export type Json = JsonPrimitive | { [key: string]: Json } | Json[];
+export type Json = JsonPrimitive | { [key: string]: Json } | Json[] | object;
 
 export type LogEventPayload = {
   userId?: number | null;
