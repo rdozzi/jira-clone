@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import prisma from '../lib/prisma';
 import {
   getAllUsers,
@@ -20,14 +20,17 @@ router.get('/users/:id', async (req: Request, res: Response): Promise<void> => {
 });
 
 // Create user
-router.post('/', async (req: Request, res: Response): Promise<void> => {
-  await createUser(req, res, prisma);
-});
+router.post(
+  '/users',
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await createUser(req, res, next, prisma);
+  }
+);
 
 router.delete(
   '/users/:id',
-  async (req: Request, res: Response): Promise<void> => {
-    await deleteUser(req, res, prisma);
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await deleteUser(req, res, next, prisma);
   }
 );
 
