@@ -51,8 +51,8 @@ router.delete(
 // Update a ticket
 router.patch(
   '/tickets/updateTicket/:ticketId',
-  async (req: Request, res: Response): Promise<void> => {
-    await updateTicket(req, res, prisma);
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await updateTicket(req, res, next, prisma);
   }
 );
 

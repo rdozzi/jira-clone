@@ -28,7 +28,7 @@ router.delete('/tickets/:id', async (req, res, next) => {
     await (0, ticketController_1.deleteTicket)(req, res, next, prisma_1.default);
 });
 // Update a ticket
-router.patch('/tickets/updateTicket/:ticketId', async (req, res) => {
-    await (0, ticketController_1.updateTicket)(req, res, prisma_1.default);
+router.patch('/tickets/updateTicket/:ticketId', async (req, res, next) => {
+    await (0, ticketController_1.updateTicket)(req, res, next, prisma_1.default);
 });
 exports.default = router;
