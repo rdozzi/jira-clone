@@ -19,7 +19,12 @@ router.get('/users/:id', async (req, res) => {
 router.post('/users', async (req, res, next) => {
     await (0, userController_1.createUser)(req, res, next, prisma_1.default);
 });
+// Delete user
 router.delete('/users/:id', async (req, res, next) => {
     await (0, userController_1.deleteUser)(req, res, next, prisma_1.default);
+});
+// Update user info
+router.patch('/users/updateUser/:id', async (req, res, next) => {
+    await (0, userController_1.updateUser)(req, res, next, prisma_1.default);
 });
 exports.default = router;
