@@ -10,6 +10,7 @@ export function globalLogMiddleware() {
       if (res.statusCode < 400 && logEvent) {
         try {
           await createActivityLog(logEvent);
+          console.log('Log event successful', logEvent);
         } catch (error) {
           console.error('Error creating activity log: ', error);
         }
