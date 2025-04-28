@@ -16,10 +16,10 @@ router.get('/users/:id', async (req, res) => {
     await (0, userController_1.getUserById)(req, res, prisma_1.default);
 });
 // Create user
-router.post('/', async (req, res) => {
-    await (0, userController_1.createUser)(req, res, prisma_1.default);
+router.post('/users', async (req, res, next) => {
+    await (0, userController_1.createUser)(req, res, next, prisma_1.default);
 });
-router.delete('/users/:id', async (req, res) => {
-    await (0, userController_1.deleteUser)(req, res, prisma_1.default);
+router.delete('/users/:id', async (req, res, next) => {
+    await (0, userController_1.deleteUser)(req, res, next, prisma_1.default);
 });
 exports.default = router;
