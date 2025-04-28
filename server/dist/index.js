@@ -22,6 +22,7 @@ app.use(express_1.default.json());
 app.get('/', (req, res) => {
     res.send('Hello! This is your first app with Express.js, Typescript, and Nodemon!');
 });
+app.use((0, logMiddleware_1.globalLogMiddleware)());
 app.use('/api', userRoutes_1.default);
 app.use('/api', projectRoutes_1.default);
 app.use('/api', ticketRoutes_1.default);
@@ -29,7 +30,6 @@ app.use('/api', commentRoutes_1.default);
 app.use('/api', attachmentRoutes_1.default);
 app.use('/api', boardRoutes_1.default);
 app.use('/api', labelRoutes_1.default);
-app.use((0, logMiddleware_1.globalLogMiddleware)());
 app.listen(process.env.PORT, () => {
     console.log(`Server is Running on port ${process.env.PORT} with Nodemon!`);
 });

@@ -24,6 +24,8 @@ app.get('/', (req: Request, res: Response) => {
   );
 });
 
+app.use(globalLogMiddleware());
+
 app.use('/api', userRoutes);
 
 app.use('/api', projectRoutes);
@@ -37,8 +39,6 @@ app.use('/api', attachmentRoutes);
 app.use('/api', boardRoutes);
 
 app.use('/api', labelRoutes);
-
-app.use(globalLogMiddleware());
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is Running on port ${process.env.PORT} with Nodemon!`);
