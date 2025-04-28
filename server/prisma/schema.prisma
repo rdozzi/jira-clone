@@ -15,14 +15,15 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  first_name   String   @db.VarChar(255)
-  last_name    String   @db.VarChar(255)
-  email        String   @unique @db.VarChar(255)
+  id           Int       @id @default(autoincrement())
+  first_name   String    @db.VarChar(255)
+  last_name    String    @db.VarChar(255)
+  email        String    @unique @db.VarChar(255)
   passwordHash String //Hashed by bcrypt in node
-  role         Role     @default(USER)
-  createdAt    DateTime @default(now()) @db.Timestamptz()
-  updatedAt    DateTime @updatedAt @db.Timestamptz()
+  role         Role      @default(USER)
+  createdAt    DateTime  @default(now()) @db.Timestamptz()
+  updatedAt    DateTime  @updatedAt @db.Timestamptz()
+  deletedAt    DateTime? @updatedAt @db.Timestamptz()
 
   //Relationships
   projects       Project[] //One-to-many User-to-Project
@@ -36,13 +37,13 @@ model Project {
   id          Int           @id @default(autoincrement())
   name        String        @db.VarChar(255)
   description String?       @default("NA") @db.VarChar(255)
-  ownerId     Int
+  ownerId     Int?
   status      ProjectStatus
   createdAt   DateTime      @default(now()) @db.Timestamptz()
   updatedAt   DateTime      @updatedAt @db.Timestamptz()
 
   //Relationships
-  owner User    @relation(fields: [ownerId], references: [id])
+  owner User?   @relation(fields: [ownerId], references: [id], onDelete: SetNull)
   Board Board[]
 }
 
@@ -66,8 +67,8 @@ model Ticket {
   status      Status    @default(IN_PROGRESS)
   priority    Priority
   type        Type
-  assigneeId  Int
-  reporterId  Int
+  assigneeId  Int?
+  reporterId  Int?
   boardId     Int
   dueDate     DateTime? @db.Timestamptz
   createdAt   DateTime  @default(now()) @db.Timestamptz()
@@ -75,8 +76,8 @@ model Ticket {
 
   //Relationship
   board        Board         @relation(fields: [boardId], references: [id])
-  assignee     User          @relation(name: "assignee", fields: [assigneeId], references: [id])
-  reporter     User          @relation(name: "reporter", fields: [reporterId], references: [id])
+  assignee     User?         @relation(name: "assignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  reporter     User?         @relation(name: "reporter", fields: [reporterId], references: [id], onDelete: SetNull)
   comments     Comment[]
   ticketLabels TicketLabel[]
 }
@@ -84,14 +85,14 @@ model Ticket {
 model Comment {
   id        Int      @id @default(autoincrement())
   ticketId  Int
-  authorId  Int
+  authorId  Int?
   content   String   @db.VarChar(1000)
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt @db.Timestamptz()
 
   //Relationship
   ticket Ticket @relation(fields: [ticketId], references: [id])
-  author User   @relation(fields: [authorId], references: [id])
+  author User?  @relation(fields: [authorId], references: [id], onDelete: SetNull)
 }
 
 model Attachment {
@@ -103,13 +104,13 @@ model Attachment {
   fileType    String               @db.VarChar(255)
   fileUrl     String?              @db.VarChar(255)
   filePath    String?
-  uploadedBy  Int
+  uploadedBy  Int?
   createdAt   DateTime             @default(now()) @db.Timestamptz()
   deletedAt   DateTime?            @db.Timestamptz()
   storageType StorageType          @default(LOCAL)
 
   //Relationships
-  uploaded User @relation(fields: [uploadedBy], references: [id])
+  uploaded User? @relation(fields: [uploadedBy], references: [id], onDelete: SetNull)
 
   //Relationship
   @@index([entityType, entityId])
