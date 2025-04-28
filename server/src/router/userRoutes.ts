@@ -5,6 +5,7 @@ import {
   getUserById,
   createUser,
   deleteUser,
+  updateUser,
 } from '../controllers/userController';
 
 const router = Router();
@@ -27,10 +28,19 @@ router.post(
   }
 );
 
+// Delete user
 router.delete(
   '/users/:id',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteUser(req, res, next, prisma);
+  }
+);
+
+// Update user info
+router.patch(
+  '/users/updateUser/:id',
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await updateUser(req, res, next, prisma);
   }
 );
 
