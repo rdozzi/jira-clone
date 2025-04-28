@@ -29,8 +29,8 @@ router.post(
 );
 
 // Delete user
-router.delete(
-  '/users/:id',
+router.patch(
+  '/users/:id/soft-delete',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteUser(req, res, next, prisma);
   }
@@ -38,7 +38,7 @@ router.delete(
 
 // Update user info
 router.patch(
-  '/users/updateUser/:id',
+  '/users/:id/update',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await updateUser(req, res, next, prisma);
   }
