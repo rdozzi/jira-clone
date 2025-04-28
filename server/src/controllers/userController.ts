@@ -87,7 +87,6 @@ export async function updateUser(
   try {
     const userData = req.body;
     const { id } = req.params;
-    console.log(userData);
 
     const oldUser = await prisma.user.findUnique({
       where: { id: Number(id) },
@@ -123,12 +122,12 @@ export async function updateUser(
     res.status(200).json(newUser);
     next();
   } catch (error) {
-    console.error('Error editing ticket: ', error);
-    res.status(500).json({ error: 'Failed to edit ticket' });
+    console.error('Error editing user: ', error);
+    res.status(500).json({ error: 'Failed to edit user' });
   }
 }
 
-// Delete User
+// Delete User (Patch)
 export async function deleteUser(
   req: Request,
   res: Response,
@@ -137,13 +136,46 @@ export async function deleteUser(
 ) {
   try {
     const { id } = req.params;
-    const deleteData = await prisma.user.delete({
-      where: { id: Number(id) },
+    const userId = parseInt(id, 10);
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
     });
-    res.status(200).json(deleteData);
+
+    if (!existingUser) {
+      return res
+        .status(404)
+        .json({ error: `User with ID ${userId} not found.` });
+    }
+
+    const deletedUserData = await prisma.user.update({
+      where: { id: Number(id) },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+
+    res.locals.logEvent = buildLogEvent({
+      userId: userId,
+      actorType: 'USER',
+      action: 'DELETE_USER',
+      targetId: userId,
+      targetType: 'USER',
+      metadata: {
+        name: `${deletedUserData.first_name}_${deletedUserData.last_name}`,
+        deletedOn: `${deletedUserData.deletedAt}`,
+      },
+      ticketId: null,
+      boardId: null,
+      projectId: null,
+    });
+
+    res.status(200).json({
+      message: `Soft delete action successful. Date ${deletedUserData.deletedAt} added to deletedAt`,
+    });
     next();
   } catch (error) {
-    console.error('Error fetching users: ', error);
-    res.status(500).json({ error: 'Failed to fetch users' });
+    console.error('Error soft-deleting user: ', error);
+    res.status(500).json({ error: 'Failed to soft-delete user' });
   }
 }
