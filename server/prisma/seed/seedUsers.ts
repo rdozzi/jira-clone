@@ -12,7 +12,7 @@ export async function seedUsers(prisma: PrismaClient) {
   // Seed Users
   const user1 = await prisma.user.upsert({
     where: { id: 1 },
-    update: {},
+    update: { deletedAt: null },
     create: {
       email: 'user1@example.com',
       first_name: 'Bob',
@@ -24,7 +24,7 @@ export async function seedUsers(prisma: PrismaClient) {
 
   const user2 = await prisma.user.upsert({
     where: { id: 2 },
-    update: {},
+    update: { deletedAt: null },
     create: {
       email: 'user2@example.com',
       first_name: 'Sally',
@@ -34,5 +34,17 @@ export async function seedUsers(prisma: PrismaClient) {
     },
   });
 
-  return { user1, user2 };
+  const user3 = await prisma.user.upsert({
+    where: { id: 3 },
+    update: { deletedAt: null },
+    create: {
+      email: 'user5@example.com',
+      first_name: 'Jon',
+      last_name: 'Lovitz',
+      passwordHash: hashedPassword,
+      role: 'USER',
+    },
+  });
+
+  return { user1, user2, user3 };
 }
