@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
+import { generateDiff } from '../services/generateDiff';
 
 export async function getAllTickets(
   req: Request,
@@ -105,6 +106,20 @@ export async function deleteTicket(
   try {
     const { id } = req.params;
 
+    // Check to see if comments exist
+    const comments = await prisma.comment.findMany({
+      where: { ticketId: Number(id) },
+    });
+
+    // Delete comments if they exist
+    if (comments) {
+      comments.map(async (comment) => {
+        await prisma.comment.delete({
+          where: { id: Number(comment.id) },
+        });
+      });
+    }
+
     const deleteTicket = await prisma.ticket.delete({
       where: { id: Number(id) },
     });
@@ -125,7 +140,6 @@ export async function deleteTicket(
     });
 
     res.status(200).json(deleteTicket);
-    console.log('delete ticket', res.locals.logEvent);
     next();
   } catch (error) {
     console.error('Error fetching tickets: ', error);
@@ -136,19 +150,53 @@ export async function deleteTicket(
 export async function updateTicket(
   req: Request,
   res: Response,
+  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
     const ticketData = req.body;
     const { ticketId } = req.params;
-    console.log(ticketId);
-    const ticket = await prisma.ticket.update({
+
+    const oldTicket = await prisma.ticket.findUnique({
+      where: { id: Number(ticketId) },
+    });
+    if (!oldTicket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    const newTicket = await prisma.ticket.update({
       where: { id: Number(ticketId) },
       data: {
         ...ticketData,
       },
     });
-    res.status(200).json(ticket);
+
+    const changes = generateDiff(oldTicket, newTicket);
+
+    res.locals.logEvent = buildLogEvent({
+      userId: 1,
+      actorType: 'USER',
+      action: 'UPDATE_TICKET',
+      targetId: newTicket.id,
+      targetType: 'TICKET',
+      metadata: {
+        ticketDescription: `${newTicket.description}`,
+        title: `${newTicket.title}`,
+        changes,
+      },
+      ticketId: newTicket.id,
+      boardId: newTicket.boardId,
+      projectId: null,
+    });
+
+    res.status(200).json(newTicket);
+    console.log(
+      'status',
+      res.status,
+      'res.locals.logEvent',
+      res.locals.logEvent
+    );
+    next();
   } catch (error) {
     console.error('Error editing ticket: ', error);
     res.status(500).json({ error: 'Failed to edit ticket' });
