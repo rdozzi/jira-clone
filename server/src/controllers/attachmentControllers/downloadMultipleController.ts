@@ -1,14 +1,16 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
 import axios from 'axios';
 import { generateSignedCloudUrl } from '../../utilities/generateSignedCloudUrl';
 import { PrismaClient } from '@prisma/client';
+import { buildLogEvent } from '../../services/buildLogEvent';
 
 export async function downloadMultipleAttachments(
   req: Request,
   res: Response,
+  next: NextFunction,
   prisma: PrismaClient
 ) {
   const { ids } = req.body;
@@ -64,5 +66,29 @@ export async function downloadMultipleAttachments(
     }
   }
 
+  res.locals.logEvent = buildLogEvent({
+    userId: null, //Add value via auth routes later
+    actorType: 'USER',
+    action: 'DOWNLOAD_MULTIPLE_ATTACHMENTS',
+    targetId: null,
+    targetType: 'ATTACHMENTS',
+    metadata: {
+      count: attachments.length,
+      filenames: attachments.map((a) => a.fileName),
+      totalSize: attachments.reduce((sum, a) => sum + a.fileSize, 0),
+      storageTypes: [...new Set(attachments.map((a) => a.storageType))],
+      downloadMethod: 'Archive_Stream',
+    },
+    ticketId: null,
+    boardId: null,
+    projectId: null,
+  });
+
   archive.finalize();
+
+  if (!res.headersSent) {
+    next();
+  } else {
+    console.warn('Response headers already sent: skipping next()');
+  }
 }
