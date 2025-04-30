@@ -7,12 +7,22 @@ export function globalLogMiddleware() {
   return function (req: Request, res: Response, next: NextFunction) {
     res.on('finish', async () => {
       const logEvent = res.locals.logEvent;
-      if (res.statusCode < 400 && logEvent) {
+      const logEvents = res.locals.logEvents;
+      if (res.statusCode < 400) {
         try {
-          await createActivityLog(logEvent);
-          console.log('Log event successful', logEvent);
+          if (logEvents && Array.isArray(logEvents)) {
+            await Promise.all(
+              logEvents.map((logEvent) => {
+                createActivityLog(logEvent);
+                console.log('Log event successful', logEvent);
+              })
+            );
+          } else if (logEvent) {
+            createActivityLog(logEvent);
+            console.log('Log event successful', logEvent);
+          }
         } catch (error) {
-          console.error('Error creating activity log: ', error);
+          console.error('Error creating activity log(s): ', error);
         }
       }
     });
