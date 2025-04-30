@@ -1,16 +1,19 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import fs from 'fs/promises';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
+import { buildLogEvent } from '../../services/buildLogEvent';
 
 export async function deleteAttachment(
   req: Request,
   res: Response,
+  next: NextFunction,
   prisma: PrismaClient
 ): Promise<void> {
   console.log('Deleting attachment controller...');
   try {
     const attachment = req.attachment;
+    const deletedAttachment = { ...req.attachment };
     const storageType = attachment.storageType;
     if (storageType === 'LOCAL') {
       const filePath = path.resolve(
@@ -31,7 +34,28 @@ export async function deleteAttachment(
     await prisma.attachment.delete({
       where: { id: attachment.id },
     });
+
+    res.locals.logEvent = buildLogEvent({
+      userId: deletedAttachment.uploadedBy,
+      actorType: 'USER',
+      action: 'DELETE_ATTACHMENT',
+      targetId: deletedAttachment.id,
+      targetType: 'ATTACHMENT',
+      metadata: {
+        fileName: deletedAttachment.fileName,
+        fileType: deletedAttachment.entityType,
+        fileSize: deletedAttachment.fileSize,
+        filePath: deletedAttachment.filePath,
+        fileUrl: deletedAttachment.fileUrl,
+        storageType: deletedAttachment.storageType,
+      },
+      ticketId: deletedAttachment.entityId,
+      boardId: null,
+      projectId: null,
+    });
+
     res.status(200).json({ message: 'Attachment deleted successfully' });
+    next();
   } catch (error) {
     console.error('Error deleting attachment: ', error);
     res.status(500).json({ error: 'Failed to delete attachment' });
