@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 
 import prisma from '../lib/prisma';
 
@@ -35,8 +35,8 @@ router.get(
 router.post(
   '/attachments/single',
   uploadSingleMiddleware,
-  async (req: Request, res: Response): Promise<void> => {
-    await handleSingleUpload(req, res, prisma);
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await handleSingleUpload(req, res, next, prisma);
   }
 );
 
@@ -44,8 +44,8 @@ router.post(
 router.post(
   '/attachments/many',
   uploadMultipleMiddleware,
-  async (req: Request, res: Response): Promise<void> => {
-    await handleMultipleUpload(req, res, prisma);
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await handleMultipleUpload(req, res, next, prisma);
   }
 );
 
@@ -53,8 +53,8 @@ router.post(
 router.delete(
   '/attachments/:id',
   validateAttachmentExists,
-  async (req: Request, res: Response): Promise<void> => {
-    await deleteAttachment(req, res, prisma);
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await deleteAttachment(req, res, next, prisma);
   }
 );
 
@@ -62,8 +62,8 @@ router.delete(
 router.delete(
   '/attachments',
   deleteManyAttachmentMiddleware,
-  async (req: Request, res: Response): Promise<void> => {
-    await deleteManyAttachments(req, res, prisma);
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await deleteManyAttachments(req, res, next, prisma);
   }
 );
 
@@ -71,8 +71,8 @@ router.delete(
 router.get(
   '/attachments/:id/download',
   downloadSingleAttachmentMiddleware,
-  async (req: Request, res: Response): Promise<void> => {
-    await downloadSingleAttachment(req, res, prisma);
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await downloadSingleAttachment(req, res, next, prisma);
   }
 );
 
@@ -80,8 +80,8 @@ router.get(
 router.post(
   '/attachments/download',
   downloadMultipleAttachmentMiddleware,
-  async (req: Request, res: Response): Promise<void> => {
-    await downloadMultipleAttachments(req, res, prisma);
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await downloadMultipleAttachments(req, res, next, prisma);
   }
 );
 
