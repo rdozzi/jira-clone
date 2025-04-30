@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import prisma from '../lib/prisma';
 import {
   getAllBoards,
@@ -32,23 +32,26 @@ router.get(
 );
 
 // Create board
-router.post('/boards', async (req: Request, res: Response): Promise<void> => {
-  await createBoard(req, res, prisma);
-});
+router.post(
+  '/boards',
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await createBoard(req, res, next, prisma);
+  }
+);
 
 // Update board
 router.patch(
   '/boards/:boardId',
-  async (req: Request, res: Response): Promise<void> => {
-    await updateBoard(req, res, prisma);
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await updateBoard(req, res, next, prisma);
   }
 );
 
 // Delete board
 router.delete(
   '/boards/:boardId',
-  async (req: Request, res: Response): Promise<void> => {
-    await deleteBoard(req, res, prisma);
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await deleteBoard(req, res, next, prisma);
   }
 );
 
