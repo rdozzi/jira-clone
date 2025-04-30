@@ -1,10 +1,12 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { handleFileUpload } from '../../services/uploadService';
 import { PrismaClient } from '@prisma/client';
+import { buildLogEvent } from '../../services/buildLogEvent';
 
 export async function handleSingleUpload(
   req: Request,
   res: Response,
+  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
@@ -30,10 +32,26 @@ export async function handleSingleUpload(
         storageType: metadata.storageType,
       },
     });
+
+    res.locals.logEvent = buildLogEvent({
+      userId: attachment.uploadedBy,
+      actorType: 'USER',
+      action: 'CREATE_ATTACHMENT',
+      targetId: attachment.id,
+      targetType: 'ATTACHMENT',
+      metadata: {
+        metadata,
+      },
+      ticketId: attachment.entityId,
+      boardId: null,
+      projectId: null,
+    });
+
     res.status(201).json({
       message: 'File uploaded successfully',
       attachment,
     });
+    next();
   } catch (error) {
     res.status(500).json({
       message: 'File upload failed',
@@ -45,6 +63,7 @@ export async function handleSingleUpload(
 export async function handleMultipleUpload(
   req: Request,
   res: Response,
+  next: NextFunction,
   prisma: PrismaClient
 ) {
   const files = req.files as Express.Multer.File[];
@@ -61,7 +80,7 @@ export async function handleMultipleUpload(
     const createdAttachments = await Promise.all(
       files.map(async (file) => {
         const metadata = await handleFileUpload(file);
-        return prisma.attachment.create({
+        const attachment = await prisma.attachment.create({
           data: {
             entityType,
             entityId: Number(entityId),
@@ -74,13 +93,36 @@ export async function handleMultipleUpload(
             storageType: metadata.storageType,
           },
         });
+        return attachment;
       })
     );
+
+    res.locals.logEvents = createdAttachments.map((attachment) => {
+      return buildLogEvent({
+        userId: attachment.uploadedBy,
+        actorType: 'USER',
+        action: 'CREATE_ATTACHMENT',
+        targetId: attachment.id,
+        targetType: 'ATTACHMENT',
+        metadata: {
+          fileName: attachment.fileName,
+          fileType: attachment.entityType,
+          fileSize: attachment.fileSize,
+          filePath: attachment.filePath,
+          fileUrl: attachment.fileUrl,
+          storageType: attachment.storageType,
+        },
+        ticketId: attachment.entityId,
+        boardId: null,
+        projectId: null,
+      });
+    });
 
     res.status(201).json({
       message: `${createdAttachments.length} uploaded successfully`,
       createdAttachments,
     });
+    next();
   } catch (error) {
     res.status(500).json({
       message: 'File upload failed',
