@@ -58,7 +58,7 @@ export async function createComment(
       },
       ticketId: comment.ticketId,
       boardId: null,
-      projectId: 1,
+      projectId: null,
     });
 
     res.status(200).json(comment);
