@@ -16,11 +16,15 @@ router.get('/projects/:id', async (req, res) => {
     await (0, projectController_1.getProjectById)(req, res, prisma_1.default);
 });
 // Create project
-router.post('/projects', async (req, res) => {
-    await (0, projectController_1.createProject)(req, res, prisma_1.default);
+router.post('/projects', async (req, res, next) => {
+    await (0, projectController_1.createProject)(req, res, next, prisma_1.default);
+});
+// Update project
+router.patch('/projects/:id', async (req, res, next) => {
+    await (0, projectController_1.updateProject)(req, res, next, prisma_1.default);
 });
 // Delete project
-router.delete('/projects/:id', async (req, res) => {
-    await (0, projectController_1.deleteProject)(req, res, prisma_1.default);
+router.delete('/projects/:id', async (req, res, next) => {
+    await (0, projectController_1.deleteProject)(req, res, next, prisma_1.default);
 });
 exports.default = router;
