@@ -1,9 +1,10 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import prisma from '../lib/prisma';
 import {
   getAllProjects,
   getProjectById,
   createProject,
+  updateProject,
   deleteProject,
 } from '../controllers/projectController';
 
@@ -23,15 +24,26 @@ router.get(
 );
 
 // Create project
-router.post('/projects', async (req: Request, res: Response): Promise<void> => {
-  await createProject(req, res, prisma);
-});
+router.post(
+  '/projects',
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await createProject(req, res, next, prisma);
+  }
+);
+
+// Update project
+router.patch(
+  '/projects/:id',
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await updateProject(req, res, next, prisma);
+  }
+);
 
 // Delete project
 router.delete(
   '/projects/:id',
-  async (req: Request, res: Response): Promise<void> => {
-    await deleteProject(req, res, prisma);
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await deleteProject(req, res, next, prisma);
   }
 );
 
