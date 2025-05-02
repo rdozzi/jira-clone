@@ -16,15 +16,15 @@ router.get('/comments/:ticketId', async (req, res) => {
     await (0, commentController_1.getAllCommentsById)(req, res, prisma_1.default);
 });
 // Create a comment
-router.post('/comments', async (req, res) => {
-    await (0, commentController_1.createComment)(req, res, prisma_1.default);
+router.post('/comments', async (req, res, next) => {
+    await (0, commentController_1.createComment)(req, res, next, prisma_1.default);
 });
 // Delete comment
-router.delete('/comments/:id', async (req, res) => {
-    await (0, commentController_1.deleteComment)(req, res, prisma_1.default);
+router.delete('/comments/:id', async (req, res, next) => {
+    await (0, commentController_1.deleteComment)(req, res, next, prisma_1.default);
 });
 // Update comment
-router.patch('/comments/:commentId', async (req, res) => {
-    await (0, commentController_1.updateComment)(req, res, prisma_1.default);
+router.patch('/comments/:commentId', async (req, res, next) => {
+    await (0, commentController_1.updateComment)(req, res, next, prisma_1.default);
 });
 exports.default = router;
