@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import prisma from '../lib/prisma';
 import {
   getAllLabels,
@@ -15,23 +15,26 @@ router.get('/labels', async (req: Request, res: Response): Promise<void> => {
 });
 
 // Create new Label
-router.post('/labels', async (req: Request, res: Response): Promise<void> => {
-  await createNewLabel(req, res, prisma);
-});
+router.post(
+  '/labels',
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await createNewLabel(req, res, next, prisma);
+  }
+);
 
 // Update Label
 router.patch(
   '/labels/:labelId',
-  async (req: Request, res: Response): Promise<void> => {
-    await updateLabel(req, res, prisma);
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await updateLabel(req, res, next, prisma);
   }
 );
 
 // Delete Label
 router.delete(
   '/labels/:labelId',
-  async (req: Request, res: Response): Promise<void> => {
-    await deleteLabel(req, res, prisma);
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await deleteLabel(req, res, next, prisma);
   }
 );
 
