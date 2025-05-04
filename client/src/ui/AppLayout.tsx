@@ -2,6 +2,8 @@ import { Outlet } from 'react-router-dom';
 import { Layout } from 'antd';
 import HeaderComp from './HeaderComp';
 import ThemeToggle from './ThemeToggle';
+import LogoutButton from './LogoutButton';
+import UserHomeButton from './UserHomeButton';
 
 const { Sider, Footer, Content } = Layout;
 
@@ -20,6 +22,12 @@ function AppLayout() {
         <div>Sider</div>
         <div>
           <ThemeToggle />
+        </div>
+        <div>
+          <LogoutButton />
+        </div>
+        <div>
+          <UserHomeButton />
         </div>
       </Sider>
       <Layout>
