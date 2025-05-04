@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { AuthContext } from './AuthContext';
-
-type UserRole = 'GUEST' | 'USER' | 'ADMIN' | null;
+import { UserRole } from '../types/UserRole';
 
 export function AuthProviderContext({
   children,
@@ -11,6 +10,7 @@ export function AuthProviderContext({
   const [userRole, setUserRole] = useState<UserRole>(null);
   const loginAs = (role: UserRole) => {
     setUserRole(role);
+    console.log(`Logged in as ${role}`);
   };
   const logout = () => {
     setUserRole(null);

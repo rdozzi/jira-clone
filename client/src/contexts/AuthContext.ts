@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
+import { UserRole } from '../types/UserRole';
 
-type UserRole = 'GUEST' | 'USER' | 'ADMIN' | null;
 type AuthContextType = {
   userRole: UserRole;
   loginAs: (_role: UserRole) => void;
