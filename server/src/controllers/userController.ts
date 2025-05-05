@@ -20,18 +20,42 @@ export async function getAllUsers(
 }
 
 // Get user by Id
-export async function getUserById(
+export async function getUser(
   req: Request,
   res: Response,
   prisma: PrismaClient
 ) {
-  const { id } = req.params;
   try {
-    const user = await prisma.user.findUnique({ where: { id: Number(id) } });
+    const { id, email } = req.query;
+    console.log('ID:', id, 'Email:', email);
+
+    if (!id && !email) {
+      return res.status(400).json({ error: 'User ID or email is required' });
+    }
+
+    let user;
+
+    if (id) {
+      const userId = parseInt(String(id), 10);
+      if (isNaN(userId)) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+      // Fetch user by ID
+      user = await prisma.user.findUnique({ where: { id: userId } });
+    } else if (email) {
+      user = await prisma.user.findUnique({
+        where: { email: typeof email === 'string' ? email : undefined },
+      });
+    }
+
+    if (!user || user.deletedAt) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
     res.status(200).json(user);
   } catch (error) {
     console.error('Error fetching users: ', error);
-    res.status(500).json({ error: 'Failed to fetch users' });
+    res.status(500).json({ error: 'Failed to fetch user' });
   }
 }
 
