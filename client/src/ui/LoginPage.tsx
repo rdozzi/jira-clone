@@ -120,15 +120,6 @@ function LoginPage() {
       </Content>
     </Layout>
   );
-  // <>
-  //   <h1>Login Page</h1>
-  //   <Button onClick={() => handleRoleChange('USER')}>Login as User</Button>
-  //   <Button onClick={() => handleRoleChange('ADMIN')}>Login as Admin</Button>
-  //   <Button onClick={() => handleRoleChange('GUEST')}>Login as Guest</Button>
-  //   <div>
-  //     <Button onClick={toHome}>Back to Home</Button>
-  //   </div>
-  // </>
 }
 
 export default LoginPage;
