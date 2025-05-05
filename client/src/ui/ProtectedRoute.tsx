@@ -1,13 +1,26 @@
+import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Loading from './Loading';
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { authState } = useAuth();
+type ProtectedRouteProps = {
+  children: React.ReactNode;
+  requireRole?: 'ADMIN' | 'USER' | 'GUEST';
+};
 
-  // Check if the user is logged in and has the required role
-  if (authState.isAuthenticated === false) {
+function ProtectedRoute({ children, requireRole }: ProtectedRouteProps) {
+  const { authState, isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <Loading />;
+  }
+  if (!isAuthenticated) {
     // If not logged in, redirect to the login page
     return <Navigate to='/login' replace />;
+  }
+
+  if (requireRole && authState?.userRole !== requireRole) {
+    return <Navigate to='/unauthorized' replace />;
   }
 
   return <>{children}</>;
