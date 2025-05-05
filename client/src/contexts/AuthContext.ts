@@ -1,9 +1,10 @@
 import { createContext, useContext } from 'react';
 import { UserRole } from '../types/UserRole';
+import { AuthState } from '../types/AuthState';
 
 type AuthContextType = {
-  userRole: UserRole;
-  loginAs: (_role: UserRole) => void;
+  authState: AuthState;
+  login: (_token: string, _userRole: UserRole, _userId: number) => void;
   logout: () => void;
 };
 
