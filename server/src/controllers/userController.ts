@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { hashPassword } from '../password';
+import { hashPassword } from '../utilities/password';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 
