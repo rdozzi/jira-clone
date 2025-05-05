@@ -6,6 +6,8 @@ type AuthContextType = {
   authState: AuthState;
   login: (_token: string, _userRole: UserRole, _userId: number) => void;
   logout: () => void;
+  isAuthenticated: boolean;
+  isLoading: boolean;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
