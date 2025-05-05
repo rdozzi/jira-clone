@@ -11,6 +11,7 @@ const commentRoutes_1 = __importDefault(require("./router/commentRoutes"));
 const attachmentRoutes_1 = __importDefault(require("./router/attachmentRoutes"));
 const boardRoutes_1 = __importDefault(require("./router/boardRoutes"));
 const labelRoutes_1 = __importDefault(require("./router/labelRoutes"));
+const authRoutes_1 = __importDefault(require("./router/authRoutes"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const logMiddleware_1 = require("./middleware/logMiddleware");
@@ -30,6 +31,7 @@ app.use('/api', commentRoutes_1.default);
 app.use('/api', attachmentRoutes_1.default);
 app.use('/api', boardRoutes_1.default);
 app.use('/api', labelRoutes_1.default);
+app.use('/api', authRoutes_1.default);
 app.listen(process.env.PORT, () => {
     console.log(`Server is Running on port ${process.env.PORT} with Nodemon!`);
 });
