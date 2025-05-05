@@ -8,10 +8,10 @@ import { ModalProviderContext } from './contexts/ModalProviderContext';
 import { TicketProviderContext } from './contexts/TicketProviderContext';
 import { AuthProviderContext } from './contexts/AuthProviderContext';
 
-import PublicHomepage from './ui/PublicHomepage';
-import LoginPage from './ui/LoginPage';
-import ProtectedRoute from './ui/ProtectedRoute';
-import UserHome from './ui/UserHome';
+import PublicHomepage from './pages/PublicHomepage';
+import LoginPage from './pages/LoginPage';
+import ProtectedRoute from './router/ProtectedRoute';
+import UserHome from './pages/UserHome';
 import NotFoundPage from './ui/NotFoundPage';
 import AppLayout from './ui/AppLayout';
 import TicketList from './pages/TicketList';
