@@ -8,18 +8,18 @@ import { Button } from 'antd';
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { loginAs } = useAuth();
+  const { login } = useAuth();
 
   function toHome() {
     navigate('/');
   }
 
-  function handleRoleChange(role: UserRole) {
-    loginAs(role);
-    console.log(`Logged in as ${role}`);
+  function handleRoleChange(userRole: UserRole) {
+    login('sample_token', userRole, 1); // token and userId are stubbed for now
+    console.log(`Logged in as ${userRole}`);
 
     const redirectPath =
-      role === 'ADMIN' || role === 'USER' || role === 'GUEST'
+      userRole === 'ADMIN' || userRole === 'USER' || userRole === 'GUEST'
         ? '/user-homepage'
         : '*';
     // role === 'ADMIN'
