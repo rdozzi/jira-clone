@@ -1,4 +1,4 @@
-import { hashPassword } from '../../src/password';
+import { hashPassword } from '../../src/utilities/password';
 import { PrismaClient } from '@prisma/client';
 import { logSeedUtility } from '../../src/utilities/logSeedUtility';
 
