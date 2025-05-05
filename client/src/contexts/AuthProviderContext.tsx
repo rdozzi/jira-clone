@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AuthContext } from './AuthContext';
 
 import { UserRole } from '../types/UserRole';
@@ -17,6 +17,16 @@ export function AuthProviderContext({
     userRole: null,
     userId: null,
   });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const authState = localStorage.getItem('auth');
+    if (authState) {
+      // Rehydrate state
+      setAuthState(JSON.parse(authState));
+    }
+    setIsLoading(false);
+  }, []);
 
   function login(token: string, userRole: UserRole, userId?: number) {
     setAuthState({
@@ -47,8 +57,17 @@ export function AuthProviderContext({
 
     localStorage.removeItem('auth');
   }
+
   return (
-    <AuthContext.Provider value={{ authState, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        authState,
+        login,
+        logout,
+        isAuthenticated: !!authState?.token,
+        isLoading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
