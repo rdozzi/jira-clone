@@ -181,7 +181,7 @@ enum GlobalRole {
 }
 
 enum ProjectRole {
-  GUEST
+  VIEWER
   USER
   ADMIN
 }
