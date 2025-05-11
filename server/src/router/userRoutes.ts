@@ -6,7 +6,9 @@ import {
   createUser,
   deleteUser,
   updateUser,
+  updateUserAvatar,
 } from '../controllers/userController';
+import { uploadSingleMiddleware } from '../middleware/uploadMiddleware';
 
 const router = Router();
 
@@ -41,6 +43,15 @@ router.patch(
   '/users/:id/update',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await updateUser(req, res, next, prisma);
+  }
+);
+
+// Update user avatar
+router.patch(
+  '/users/:id/avatar',
+  uploadSingleMiddleware,
+  async (req: Request, res: Response) => {
+    await updateUserAvatar(req, res, prisma);
   }
 );
 
