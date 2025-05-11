@@ -5,46 +5,58 @@ import { logSeedUtility } from '../../src/utilities/logSeedUtility';
 export async function seedUsers(prisma: PrismaClient) {
   const hashedPassword = await hashPassword('seedPassword123');
 
-  const seeds = [{ id: 1 }, { id: 2 }];
+  const seeds = [{ id: 4 }, { id: 5 }];
   const modelName = 'User';
   logSeedUtility({ seeds, modelName, prisma });
 
   // Seed Users
-  const user1 = await prisma.user.upsert({
-    where: { id: 1 },
-    update: { deletedAt: null },
+  // const user1 = await prisma.user.upsert({
+  //   where: { id: 1 },
+  //   update: { deletedAt: null, role: 'USER' },
+  //   create: {
+  //     email: 'user1@example.com',
+  //     first_name: 'Bob',
+  //     last_name: 'Newhart',
+  //     passwordHash: hashedPassword,
+  //     role: 'USER',
+  //   },
+  // });
+
+  // const user2 = await prisma.user.upsert({
+  //   where: { id: 2 },
+  //   update: { deletedAt: null },
+  //   create: {
+  //     email: 'user2@example.com',
+  //     first_name: 'Sally',
+  //     last_name: 'Fields',
+  //     passwordHash: hashedPassword,
+  //     role: 'USER',
+  //   },
+  // });
+
+  const user4 = await prisma.user.upsert({
+    where: { id: 4 },
+    update: { deletedAt: null, role: 'GUEST' },
     create: {
-      email: 'user1@example.com',
-      first_name: 'Bob',
-      last_name: 'Newhart',
+      email: 'fdrescher@example.com',
+      first_name: 'Fran',
+      last_name: 'Drescher',
       passwordHash: hashedPassword,
-      role: 'USER',
+      role: 'GUEST',
     },
   });
 
-  const user2 = await prisma.user.upsert({
-    where: { id: 2 },
-    update: { deletedAt: null },
+  const user5 = await prisma.user.upsert({
+    where: { id: 5 },
+    update: { deletedAt: null, role: 'ADMIN' },
     create: {
-      email: 'user2@example.com',
-      first_name: 'Sally',
-      last_name: 'Fields',
+      email: 'mfreeman@example.com',
+      first_name: 'Morgan',
+      last_name: 'Freeman',
       passwordHash: hashedPassword,
-      role: 'USER',
+      role: 'ADMIN',
     },
   });
 
-  const user3 = await prisma.user.upsert({
-    where: { id: 3 },
-    update: { deletedAt: null },
-    create: {
-      email: 'user5@example.com',
-      first_name: 'Jon',
-      last_name: 'Lovitz',
-      passwordHash: hashedPassword,
-      role: 'USER',
-    },
-  });
-
-  return { user1, user2, user3 };
+  return { user4, user5 };
 }
