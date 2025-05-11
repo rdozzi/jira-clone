@@ -25,8 +25,13 @@ model User {
   updatedAt    DateTime  @updatedAt @db.Timestamptz()
   deletedAt    DateTime? @db.Timestamptz()
 
-  //Relationships
-  projects       Project[] //One-to-many User-to-Project
+  //Ownership (One-to-Many)
+  ownedProjects Project[] @relation("ProjectOwner")
+
+  //Membership (Many-to-many through ProjectMember)
+  projectMemberships ProjectMember[]
+
+  //Other Relationships
   comments       Comment[]
   attachments    Attachment[]
   assigneeTicket Ticket[]     @relation("assignee")
@@ -37,13 +42,18 @@ model Project {
   id          Int           @id @default(autoincrement())
   name        String        @db.VarChar(255)
   description String?       @default("NA") @db.VarChar(255)
-  ownerId     Int?
   status      ProjectStatus
   createdAt   DateTime      @default(now()) @db.Timestamptz()
   updatedAt   DateTime      @updatedAt @db.Timestamptz()
 
+  //Owner
+  ownerId Int?
+  owner   User? @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  //Membership
+  members ProjectMember[]
+
   //Relationships
-  owner User?   @relation(fields: [ownerId], references: [id], onDelete: SetNull)
   Board Board[]
 }
 
@@ -147,6 +157,21 @@ model ActivityLog {
   projectId  Int?
   boardId    Int?
   createdAt  DateTime          @default(now()) @db.Timestamptz()
+}
+
+model ProjectMember {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  projectId Int
+  role      Role     @default(USER)
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt @db.Timestamptz()
+
+  //Relationships
+  user    User    @relation(fields: [userId], references: [id])
+  project Project @relation(fields: [projectId], references: [id])
+
+  @@unique([userId, projectId])
 }
 
 enum Role {
