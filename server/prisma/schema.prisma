@@ -16,11 +16,11 @@ datasource db {
 
 model User {
   id           Int        @id @default(autoincrement())
-  first_name   String     @db.VarChar(255)
-  last_name    String     @db.VarChar(255)
+  firstName    String     @db.VarChar(255)
+  lastName     String     @db.VarChar(255)
   email        String     @unique @db.VarChar(255)
   passwordHash String //Hashed by bcrypt in node
-  role         GlobalRole @default(USER)
+  globalRole   GlobalRole @default(USER)
   createdAt    DateTime   @default(now()) @db.Timestamptz()
   updatedAt    DateTime   @updatedAt @db.Timestamptz()
   deletedAt    DateTime?  @db.Timestamptz()
