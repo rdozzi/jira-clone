@@ -15,15 +15,15 @@ datasource db {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  first_name   String    @db.VarChar(255)
-  last_name    String    @db.VarChar(255)
-  email        String    @unique @db.VarChar(255)
+  id           Int        @id @default(autoincrement())
+  first_name   String     @db.VarChar(255)
+  last_name    String     @db.VarChar(255)
+  email        String     @unique @db.VarChar(255)
   passwordHash String //Hashed by bcrypt in node
-  role         Role      @default(USER)
-  createdAt    DateTime  @default(now()) @db.Timestamptz()
-  updatedAt    DateTime  @updatedAt @db.Timestamptz()
-  deletedAt    DateTime? @db.Timestamptz()
+  role         GlobalRole @default(USER)
+  createdAt    DateTime   @default(now()) @db.Timestamptz()
+  updatedAt    DateTime   @updatedAt @db.Timestamptz()
+  deletedAt    DateTime?  @db.Timestamptz()
 
   //Ownership (One-to-Many)
   ownedProjects Project[] @relation("ProjectOwner")
@@ -160,12 +160,12 @@ model ActivityLog {
 }
 
 model ProjectMember {
-  id        Int      @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   userId    Int
   projectId Int
-  role      Role     @default(USER)
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt @db.Timestamptz()
+  role      ProjectRole @default(USER)
+  createdAt DateTime    @default(now()) @db.Timestamptz()
+  updatedAt DateTime    @updatedAt @db.Timestamptz()
 
   //Relationships
   user    User    @relation(fields: [userId], references: [id])
@@ -174,7 +174,13 @@ model ProjectMember {
   @@unique([userId, projectId])
 }
 
-enum Role {
+enum GlobalRole {
+  GUEST
+  USER
+  ADMIN
+}
+
+enum ProjectRole {
   GUEST
   USER
   ADMIN
