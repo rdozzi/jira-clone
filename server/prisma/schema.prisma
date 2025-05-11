@@ -21,6 +21,7 @@ model User {
   email        String     @unique @db.VarChar(255)
   passwordHash String //Hashed by bcrypt in node
   globalRole   GlobalRole @default(USER)
+  avatarSource String?    @default("NA") @db.VarChar(255)
   createdAt    DateTime   @default(now()) @db.Timestamptz()
   updatedAt    DateTime   @updatedAt @db.Timestamptz()
   deletedAt    DateTime?  @db.Timestamptz()
