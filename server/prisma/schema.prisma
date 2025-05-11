@@ -161,12 +161,12 @@ model ActivityLog {
 }
 
 model ProjectMember {
-  id        Int         @id @default(autoincrement())
-  userId    Int
-  projectId Int
-  role      ProjectRole @default(USER)
-  createdAt DateTime    @default(now()) @db.Timestamptz()
-  updatedAt DateTime    @updatedAt @db.Timestamptz()
+  id          Int         @id @default(autoincrement())
+  userId      Int
+  projectId   Int
+  projectRole ProjectRole @default(USER)
+  createdAt   DateTime    @default(now()) @db.Timestamptz()
+  updatedAt   DateTime    @updatedAt @db.Timestamptz()
 
   //Relationships
   user    User    @relation(fields: [userId], references: [id])
