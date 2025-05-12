@@ -1,5 +1,6 @@
 import express, { Request, Response, Application } from 'express';
 import userRoutes from './router/userRoutes';
+import bannedEmailRoutes from './router/bannedEmailRoutes';
 import projectRoutes from './router/projectRoutes';
 import ticketRoutes from './router/ticketRoutes';
 import commentRoutes from './router/commentRoutes';
@@ -28,6 +29,8 @@ app.get('/', (req: Request, res: Response) => {
 app.use(globalLogMiddleware());
 
 app.use('/api', userRoutes);
+
+app.use('/api', bannedEmailRoutes);
 
 app.use('/api', projectRoutes);
 

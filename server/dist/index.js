@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const userRoutes_1 = __importDefault(require("./router/userRoutes"));
+const bannedEmailRoutes_1 = __importDefault(require("./router/bannedEmailRoutes"));
 const projectRoutes_1 = __importDefault(require("./router/projectRoutes"));
 const ticketRoutes_1 = __importDefault(require("./router/ticketRoutes"));
 const commentRoutes_1 = __importDefault(require("./router/commentRoutes"));
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 });
 app.use((0, logMiddleware_1.globalLogMiddleware)());
 app.use('/api', userRoutes_1.default);
+app.use('/api', bannedEmailRoutes_1.default);
 app.use('/api', projectRoutes_1.default);
 app.use('/api', ticketRoutes_1.default);
 app.use('/api', commentRoutes_1.default);
