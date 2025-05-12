@@ -1,9 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import { Role } from '@prisma/client';
+import { Response, NextFunction } from 'express';
+import { CustomRequest } from '../types/CustomRequest';
+import { GlobalRole } from '@prisma/client';
 import { hasRequiredRole } from '../lib/roles';
 
-export function authorize(requiredRole: Role) {
-  return (req: Request, res: Response, next: NextFunction) => {
+export function authorize(requiredRole: GlobalRole) {
+  return (req: CustomRequest, res: Response, next: NextFunction) => {
     const userRole = req.user?.role;
 
     if (!userRole) {
