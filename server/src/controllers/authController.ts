@@ -32,7 +32,7 @@ export async function loginUser(
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, email: user.email, globalRole: user.globalRole },
       process.env.JWT_SECRET as string,
       {
         expiresIn: Number(process.env.JWT_EXPIRATION),
@@ -43,7 +43,7 @@ export async function loginUser(
       message: 'Login successful',
       token,
       userId: user.id,
-      userRole: user.role,
+      userRole: user.globalRole,
       expiresIn: Date.now() + Number(process.env.JWT_EXPIRATION) * 1000,
     });
   } catch (error) {

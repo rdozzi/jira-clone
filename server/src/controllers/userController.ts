@@ -69,16 +69,16 @@ export async function createUser(
   prisma: PrismaClient
 ) {
   try {
-    const { email, first_name, last_name, passwordHash, role } = req.body;
+    const { email, firstName, lastName, passwordHash, role } = req.body;
     const hashedPassword = await hashPassword(passwordHash);
 
     const user = await prisma.user.create({
       data: {
         email: email,
-        first_name: first_name,
-        last_name: last_name,
+        firstName: firstName,
+        lastName: lastName,
         passwordHash: hashedPassword,
-        role: role,
+        globalRole: role,
       },
     });
 
@@ -89,8 +89,8 @@ export async function createUser(
       targetId: user.id,
       targetType: 'USER',
       metadata: {
-        role: `${user.role}`,
-        name: `${user.first_name}_${user.last_name}`,
+        role: `${user.globalRole}`,
+        name: `${user.firstName}_${user.lastName}`,
         email: `${user.email}`,
       },
     });
@@ -137,7 +137,7 @@ export async function updateUser(
       targetId: Number(id),
       targetType: 'USER',
       metadata: {
-        name: `${newUser.first_name}_${newUser.last_name}`,
+        name: `${newUser.firstName}_${newUser.lastName}`,
         changes,
       },
       ticketId: null,
@@ -188,7 +188,7 @@ export async function deleteUser(
       targetId: userId,
       targetType: 'USER',
       metadata: {
-        name: `${deletedUserData.first_name}_${deletedUserData.last_name}`,
+        name: `${deletedUserData.firstName}_${deletedUserData.lastName}`,
         deletedOn: `${deletedUserData.deletedAt}`,
       },
       ticketId: null,
