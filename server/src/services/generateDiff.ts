@@ -1,12 +1,17 @@
+import { ProjectStatus } from '@prisma/client';
+
 export type DiffResult = {
   [key: string]: {
-    before: string | number | Date | null;
-    after: string | number | Date | null;
+    before: string | number | Date | null | ProjectStatus | boolean | undefined;
+    after: string | number | Date | null | ProjectStatus | boolean | undefined;
   };
 };
 
 export function generateDiff<
-  T extends Record<string, string | number | Date | null>,
+  T extends Record<
+    string,
+    string | number | Date | null | ProjectStatus | boolean | undefined
+  >,
 >(before: T, after: T): DiffResult {
   const diff: DiffResult = {};
 
