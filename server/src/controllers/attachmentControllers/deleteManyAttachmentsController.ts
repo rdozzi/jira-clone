@@ -13,9 +13,10 @@ export async function deleteManyAttachments(
   const { ids } = req.body;
 
   if (!Array.isArray(ids) || ids.length === 0) {
-    return res
+    res
       .status(400)
       .json({ error: 'Invalid request: No attachments Ids provided' });
+    return;
   }
 
   try {
