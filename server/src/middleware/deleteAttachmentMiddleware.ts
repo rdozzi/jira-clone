@@ -1,24 +1,22 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { CustomRequest } from '../types/CustomRequest';
 import prisma from '../lib/prisma';
 
 export async function validateAttachmentExists(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   const { id } = req.params;
-
-  console.log('Validate AttachmentExists', id);
 
   try {
     const attachment = await prisma.attachment.findUnique({
       where: { id: Number(id) },
     });
 
-    console.log(attachment);
-
     if (!attachment) {
-      return res.status(404).json({ error: 'Attachment not found' });
+      res.status(404).json({ error: 'Attachment not found' });
+      return;
     }
 
     // Attach the found attachment to the request object for further use

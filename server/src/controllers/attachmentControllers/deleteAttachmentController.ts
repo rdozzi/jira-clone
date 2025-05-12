@@ -1,38 +1,38 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { CustomRequest } from '../../types/CustomRequest';
 import fs from 'fs/promises';
 import path from 'path';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Attachment } from '@prisma/client';
 import { buildLogEvent } from '../../services/buildLogEvent';
 
 export async function deleteAttachment(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ): Promise<void> {
-  console.log('Deleting attachment controller...');
   try {
-    const attachment = req.attachment;
-    const deletedAttachment = { ...req.attachment };
-    const storageType = attachment.storageType;
+    const attachment = req.attachment as Attachment;
+    const deletedAttachment = { ...req.attachment } as Attachment;
+    const storageType = attachment?.storageType;
     if (storageType === 'LOCAL') {
       const filePath = path.resolve(
         __dirname,
         '..',
         '..',
         'uploads',
-        attachment.filePath
+        attachment?.filePath || ''
       );
       await fs.unlink(filePath);
     } else if (storageType === 'CLOUD') {
       // await saveToCloud.deleteFile(attachment.path);
-      console.log('Deleting from cloud storage:', attachment.path);
+      console.log('Deleting from cloud storage:', attachment?.filePath);
       // Implement the logic to delete the file from cloud storage (Eventually!)
     }
 
     // Delete DB Record
     await prisma.attachment.delete({
-      where: { id: attachment.id },
+      where: { id: attachment?.id },
     });
 
     res.locals.logEvent = buildLogEvent({
