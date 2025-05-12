@@ -22,6 +22,7 @@ model User {
   passwordHash String //Hashed by bcrypt in node
   globalRole   GlobalRole @default(USER)
   avatarSource String?    @default("NA") @db.VarChar(255)
+  isBanned     Boolean    @default(false)
   createdAt    DateTime   @default(now()) @db.Timestamptz()
   updatedAt    DateTime   @updatedAt @db.Timestamptz()
   deletedAt    DateTime?  @db.Timestamptz()
@@ -37,6 +38,13 @@ model User {
   attachments    Attachment[]
   assigneeTicket Ticket[]     @relation("assignee")
   reporterTicket Ticket[]     @relation("reporter")
+}
+
+model BannedEmail {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique @db.VarChar(255)
+  reason    String    @db.VarChar(255)
+  createdAt DateTime? @default(now()) @db.Timestamptz() // null if active
 }
 
 model Project {
