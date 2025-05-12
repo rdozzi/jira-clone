@@ -14,8 +14,8 @@ export async function getAllTickets(
       include: {
         assignee: {
           select: {
-            first_name: true,
-            last_name: true,
+            firstName: true,
+            lastName: true,
           },
         },
       },

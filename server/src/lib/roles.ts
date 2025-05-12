@@ -1,6 +1,6 @@
-import { Role } from '@prisma/client';
+import { GlobalRole } from '@prisma/client';
 
-export const roleHierarchy = Object.values(Role);
+export const roleHierarchy = Object.values(GlobalRole);
 
 export type AppRole = (typeof roleHierarchy)[number];
 

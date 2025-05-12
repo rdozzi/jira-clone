@@ -15,10 +15,10 @@ export async function seedUsers(prisma: PrismaClient) {
   //   update: { deletedAt: null, role: 'USER' },
   //   create: {
   //     email: 'user1@example.com',
-  //     first_name: 'Bob',
-  //     last_name: 'Newhart',
+  //     firstName: 'Bob',
+  //     lastName: 'Newhart',
   //     passwordHash: hashedPassword,
-  //     role: 'USER',
+  //     globalRole: 'USER',
   //   },
   // });
 
@@ -27,34 +27,34 @@ export async function seedUsers(prisma: PrismaClient) {
   //   update: { deletedAt: null },
   //   create: {
   //     email: 'user2@example.com',
-  //     first_name: 'Sally',
-  //     last_name: 'Fields',
+  //     firstName: 'Sally',
+  //     lastName: 'Fields',
   //     passwordHash: hashedPassword,
-  //     role: 'USER',
+  //     globalRole: 'USER',
   //   },
   // });
 
   const user4 = await prisma.user.upsert({
     where: { id: 4 },
-    update: { deletedAt: null, role: 'GUEST' },
+    update: { deletedAt: null, globalRole: 'GUEST' },
     create: {
       email: 'fdrescher@example.com',
-      first_name: 'Fran',
-      last_name: 'Drescher',
+      firstName: 'Fran',
+      lastName: 'Drescher',
       passwordHash: hashedPassword,
-      role: 'GUEST',
+      globalRole: 'GUEST',
     },
   });
 
   const user5 = await prisma.user.upsert({
     where: { id: 5 },
-    update: { deletedAt: null, role: 'ADMIN' },
+    update: { deletedAt: null, globalRole: 'ADMIN' },
     create: {
       email: 'mfreeman@example.com',
-      first_name: 'Morgan',
-      last_name: 'Freeman',
+      firstName: 'Morgan',
+      lastName: 'Freeman',
       passwordHash: hashedPassword,
-      role: 'ADMIN',
+      globalRole: 'ADMIN',
     },
   });
 
