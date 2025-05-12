@@ -1,10 +1,16 @@
 import jwt from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
+import { Response, NextFunction } from 'express';
+import { CustomRequest } from '../types/CustomRequest';
+import { DecodedTokenPayload } from '../types/DecodedTokenPayload';
 
 dotenv.config();
 
-export function authenticate(req: Request, res: Response, next: NextFunction) {
+export function authenticate(
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -15,7 +21,11 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    req.user = decoded; // Assuming you have a user property in the request
+    const payload = decoded as DecodedTokenPayload;
+    req.user = {
+      id: payload.id,
+      role: payload.globalRole,
+    };
     next();
   } catch (error) {
     console.error('Token verification failed:', error);

@@ -1,10 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { CustomRequest } from '../../types/CustomRequest';
 import { handleFileUpload } from '../../services/uploadService';
 import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../../services/buildLogEvent';
 
 export async function handleSingleUpload(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
@@ -16,7 +17,7 @@ export async function handleSingleUpload(
       });
     }
     const { entityType, entityId } = req.body;
-    const uploadedBy = (req as any).user?.id || 1; // Will be replaced with the logged-in user ID eventually
+    const uploadedBy = req.user?.id || 1; // Will be replaced with the logged-in user ID eventually
     const metadata = await handleFileUpload(req.file as Express.Multer.File);
 
     const attachment = await prisma.attachment.create({
@@ -61,7 +62,7 @@ export async function handleSingleUpload(
 }
 
 export async function handleMultipleUpload(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
@@ -75,7 +76,7 @@ export async function handleMultipleUpload(
 
   try {
     const { entityType, entityId } = req.body;
-    const uploadedBy = (req as any).user?.id || 1; // Will be replaced with the logged-in user ID eventually
+    const uploadedBy = req.user?.id || 1; // Will be replaced with the logged-in user ID eventually
 
     const createdAttachments = await Promise.all(
       files.map(async (file) => {

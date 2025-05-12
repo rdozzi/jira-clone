@@ -1,5 +1,11 @@
-import { Router, Request, Response, NextFunction } from 'express';
-
+import {
+  Router,
+  Request,
+  Response,
+  NextFunction,
+  RequestHandler,
+} from 'express';
+import { CustomRequest } from '../types/CustomRequest';
 import prisma from '../lib/prisma';
 
 import {
@@ -36,7 +42,7 @@ router.post(
   '/attachments/single',
   uploadSingleMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await handleSingleUpload(req, res, next, prisma);
+    await handleSingleUpload(req as CustomRequest, res, next, prisma);
   }
 );
 
@@ -45,16 +51,16 @@ router.post(
   '/attachments/many',
   uploadMultipleMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await handleMultipleUpload(req, res, next, prisma);
+    await handleMultipleUpload(req as CustomRequest, res, next, prisma);
   }
 );
 
 // Delete attachment
 router.delete(
   '/attachments/:id',
-  validateAttachmentExists,
+  validateAttachmentExists as unknown as RequestHandler,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteAttachment(req, res, next, prisma);
+    await deleteAttachment(req as CustomRequest, res, next, prisma);
   }
 );
 
