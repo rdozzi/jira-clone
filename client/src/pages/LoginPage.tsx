@@ -2,7 +2,16 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLogin } from '../features/auth/useLogin';
 
-import { Layout, Card, Button, Checkbox, Form, Input, Space } from 'antd';
+import {
+  Button,
+  Card,
+  Checkbox,
+  Form,
+  Input,
+  Layout,
+  message,
+  Space,
+} from 'antd';
 // import { UserRole } from '../types/UserRole';
 // import type { FormProps } from 'antd';
 
@@ -28,6 +37,8 @@ interface OnFinishFailedErrorInfo {
 function LoginPage() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
+
   const { login } = useAuth();
   const { newLoginInfo, loginInfoLoading } = useLogin();
 
@@ -35,7 +46,12 @@ function LoginPage() {
     navigate('/');
   }
 
-  let userRole: string | null = null;
+  function error() {
+    messageApi.open({
+      type: 'error',
+      content: 'Login failed. Please check your credentials.',
+    });
+  }
 
   async function checkUserLoginInfo(email: string, password: string) {
     try {
@@ -56,7 +72,16 @@ function LoginPage() {
 
     console.log('Login Check Payload:', loginCheckPayload);
 
-    login('sample_token', (userRole = 'USER'), 1); // token and userId are stubbed for now
+    if (!loginCheckPayload) {
+      console.error('Login failed');
+      form.resetFields();
+      error();
+      return;
+    }
+
+    const { token, userId, userRole } = loginCheckPayload;
+
+    login(token, userRole, userId); // token and userId are stubbed for now
     console.log(`Logged in as ${userRole}`);
 
     const redirectPath =
@@ -86,6 +111,7 @@ function LoginPage() {
   return (
     <>
       <Layout style={{ minHeight: '100vh' }}>
+        {contextHolder} {/* Message API for error messages */}
         <Content
           style={{
             display: 'flex',
