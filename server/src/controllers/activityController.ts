@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient, ActorTypeActivity } from '@prisma/client';
 
 // Get all routes
-export async function getAllRoutes(
+export async function getAllLogs(
   req: Request,
   res: Response,
   prisma: PrismaClient
@@ -17,7 +17,7 @@ export async function getAllRoutes(
 }
 
 // Get logs by ticketId
-export async function getRoutebyTicketId(
+export async function getLogbyTicketId(
   req: Request,
   res: Response,
   prisma: PrismaClient
@@ -46,7 +46,7 @@ export async function getRoutebyTicketId(
 }
 
 // Get logs by userId
-export async function getRoutebyUserId(
+export async function getLogbyUserId(
   req: Request,
   res: Response,
   prisma: PrismaClient
