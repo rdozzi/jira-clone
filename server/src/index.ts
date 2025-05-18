@@ -8,6 +8,7 @@ import attachmentRoutes from './router/attachmentRoutes';
 import boardRoutes from './router/boardRoutes';
 import labelRoutes from './router/labelRoutes';
 import authRoutes from './router/authRoutes';
+import activityLogRoutes from './router/activityLogRoutes';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { globalLogMiddleware } from './middleware/logMiddleware';
@@ -45,6 +46,8 @@ app.use('/api', boardRoutes);
 app.use('/api', labelRoutes);
 
 app.use('/api', authRoutes);
+
+app.use('/api', activityLogRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is Running on port ${process.env.PORT} with Nodemon!`);
