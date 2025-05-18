@@ -3,6 +3,7 @@ import prisma from '../lib/prisma';
 import {
   getAllRoutes,
   getRoutebyTicketId,
+  getRoutebyUserId,
 } from '../controllers/activityController';
 
 const router = Router();
@@ -16,9 +17,17 @@ router.get(
 );
 
 router.get(
-  '/activity-logs/:ticketId',
+  '/activity-logs/:ticketId/ticket',
   async (req: Request, res: Response): Promise<void> => {
     await getRoutebyTicketId(req, res, prisma);
   }
 );
+
+router.get(
+  '/activity-logs/:userId/user',
+  async (req: Request, res: Response): Promise<void> => {
+    await getRoutebyUserId(req, res, prisma);
+  }
+);
+
 export default router;
