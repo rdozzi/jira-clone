@@ -1,9 +1,9 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import {
-  getAllRoutes,
-  getRoutebyTicketId,
-  getRoutebyUserId,
+  getAllLogs,
+  getLogbyTicketId,
+  getLogbyUserId,
 } from '../controllers/activityController';
 
 const router = Router();
@@ -12,21 +12,21 @@ const router = Router();
 router.get(
   '/activity-logs/all',
   async (req: Request, res: Response): Promise<void> => {
-    await getAllRoutes(req, res, prisma);
+    await getAllLogs(req, res, prisma);
   }
 );
 
 router.get(
   '/activity-logs/:ticketId/ticket',
   async (req: Request, res: Response): Promise<void> => {
-    await getRoutebyTicketId(req, res, prisma);
+    await getLogbyTicketId(req, res, prisma);
   }
 );
 
 router.get(
   '/activity-logs/:userId/user',
   async (req: Request, res: Response): Promise<void> => {
-    await getRoutebyUserId(req, res, prisma);
+    await getLogbyUserId(req, res, prisma);
   }
 );
 
