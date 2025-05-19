@@ -23,11 +23,11 @@ router.post('/projects', authenticate_1.authenticate, (0, authorize_1.authorize)
     await (0, projectController_1.createProject)(req, res, next, prisma_1.default);
 });
 // Update project
-router.patch('/projects/:id', async (req, res, next) => {
+router.patch('/projects/:id', authenticate_1.authenticate, (0, authorize_1.authorize)(client_1.GlobalRole.ADMIN), async (req, res, next) => {
     await (0, projectController_1.updateProject)(req, res, next, prisma_1.default);
 });
 // Delete project
-router.delete('/projects/:id', async (req, res, next) => {
+router.delete('/projects/:id', authenticate_1.authenticate, (0, authorize_1.authorize)(client_1.GlobalRole.ADMIN), async (req, res, next) => {
     await (0, projectController_1.deleteProject)(req, res, next, prisma_1.default);
 });
 exports.default = router;
