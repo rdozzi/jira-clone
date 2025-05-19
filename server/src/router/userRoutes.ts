@@ -48,6 +48,8 @@ router.patch(
 // Update user info
 router.patch(
   '/users/:id/update',
+  authenticate,
+  authorize(GlobalRole.USER),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await updateUser(req, res, next, prisma);
   }
@@ -56,6 +58,8 @@ router.patch(
 // Update user avatar
 router.patch(
   '/users/:id/avatar',
+  authenticate,
+  authorize(GlobalRole.USER),
   uploadSingleMiddleware,
   async (req: Request, res: Response) => {
     await updateUserAvatar(req, res, prisma);
