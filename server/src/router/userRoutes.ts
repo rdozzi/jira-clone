@@ -38,6 +38,8 @@ router.post(
 // Delete user
 router.patch(
   '/users/:id/soft-delete',
+  authenticate,
+  authorize(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteUser(req, res, next, prisma);
   }
