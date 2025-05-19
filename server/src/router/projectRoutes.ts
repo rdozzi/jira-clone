@@ -7,6 +7,9 @@ import {
   updateProject,
   deleteProject,
 } from '../controllers/projectController';
+import { authorize } from '../middleware/authorize';
+import { authenticate } from '../middleware/authenticate';
+import { GlobalRole } from '@prisma/client';
 
 const router = Router();
 
@@ -26,6 +29,8 @@ router.get(
 // Create project
 router.post(
   '/projects',
+  authenticate,
+  authorize(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await createProject(req, res, next, prisma);
   }
