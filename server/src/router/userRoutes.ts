@@ -9,6 +9,9 @@ import {
   updateUserAvatar,
 } from '../controllers/userController';
 import { uploadSingleMiddleware } from '../middleware/uploadMiddleware';
+import { authenticate } from '../middleware/authenticate';
+import { authorize } from '../middleware/authorize';
+import { GlobalRole } from '@prisma/client';
 
 const router = Router();
 
@@ -25,6 +28,8 @@ router.get('/users', async (req: Request, res: Response): Promise<void> => {
 // Create user
 router.post(
   '/users',
+  authenticate,
+  authorize(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await createUser(req, res, next, prisma);
   }
