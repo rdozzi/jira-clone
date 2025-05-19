@@ -1,16 +1,12 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { Response, NextFunction } from 'express';
+import { Response, NextFunction, RequestHandler } from 'express';
 import { CustomRequest } from '../types/CustomRequest';
 import { DecodedTokenPayload } from '../types/DecodedTokenPayload';
 
 dotenv.config();
 
-export function authenticate(
-  req: CustomRequest,
-  res: Response,
-  next: NextFunction
-) {
+function authenticateFn(req: CustomRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -26,9 +22,15 @@ export function authenticate(
       id: payload.id,
       role: payload.globalRole,
     };
+    console.log('Decoded token:', payload);
+    console.log('User ID:', req.user.id);
+    console.log('User role:', req.user.role);
+
     next();
   } catch (error) {
     console.error('Token verification failed:', error);
     return res.status(401).json({ message: 'Unauthorized. Invalid token' });
   }
 }
+
+export const authenticate = authenticateFn as unknown as RequestHandler;
