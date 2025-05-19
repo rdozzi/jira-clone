@@ -7,6 +7,9 @@ const express_1 = require("express");
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const userController_1 = require("../controllers/userController");
 const uploadMiddleware_1 = require("../middleware/uploadMiddleware");
+const authenticate_1 = require("../middleware/authenticate");
+const authorize_1 = require("../middleware/authorize");
+const client_1 = require("@prisma/client");
 const router = (0, express_1.Router)();
 // Get all users
 router.get('/users/all', async (req, res) => {
@@ -17,7 +20,7 @@ router.get('/users', async (req, res) => {
     await (0, userController_1.getUser)(req, res, prisma_1.default);
 });
 // Create user
-router.post('/users', async (req, res, next) => {
+router.post('/users', authenticate_1.authenticate, (0, authorize_1.authorize)(client_1.GlobalRole.ADMIN), async (req, res, next) => {
     await (0, userController_1.createUser)(req, res, next, prisma_1.default);
 });
 // Delete user
