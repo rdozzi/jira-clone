@@ -42,7 +42,7 @@ export async function loginUser(
     );
 
     res.locals.logEvent = buildLogEvent({
-      userId: null,
+      userId: user.id,
       actorType: 'USER',
       action: 'USER_LOGIN',
       targetId: user.id,
