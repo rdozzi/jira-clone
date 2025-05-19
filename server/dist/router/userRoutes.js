@@ -24,7 +24,7 @@ router.post('/users', authenticate_1.authenticate, (0, authorize_1.authorize)(cl
     await (0, userController_1.createUser)(req, res, next, prisma_1.default);
 });
 // Delete user
-router.patch('/users/:id/soft-delete', async (req, res, next) => {
+router.patch('/users/:id/soft-delete', authenticate_1.authenticate, (0, authorize_1.authorize)(client_1.GlobalRole.ADMIN), async (req, res, next) => {
     await (0, userController_1.deleteUser)(req, res, next, prisma_1.default);
 });
 // Update user info
