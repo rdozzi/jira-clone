@@ -5,6 +5,7 @@ import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { getStorageType } from '../config/storage';
 import { storageDispatcher } from '../utilities/storageDispatcher';
+import { CustomRequest } from '../types/CustomRequest';
 
 // Get all users
 export async function getAllUsers(
@@ -105,7 +106,7 @@ export async function createUser(
 
 // Update user
 export async function updateUser(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
@@ -113,6 +114,23 @@ export async function updateUser(
   try {
     const userData = req.body;
     const { id } = req.params;
+    const userId = parseInt(id, 10);
+
+    if (!req.user) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    // Check if a user is trying to change their own role
+    if ('globalRole' in req.body) {
+      const isAdmin = req.user?.role === 'ADMIN';
+      const isSelf = req.user?.id === userId;
+
+      if (!isAdmin || isSelf) {
+        return res.status(403).json({
+          error: "Unauthorized to change this user's global role",
+        });
+      }
+    }
 
     const oldUser = await prisma.user.findUnique({
       where: { id: Number(id) },
