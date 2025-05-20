@@ -28,11 +28,11 @@ router.patch('/users/:id/soft-delete', authenticate_1.authenticate, (0, authoriz
     await (0, userController_1.deleteUser)(req, res, next, prisma_1.default);
 });
 // Update user info
-router.patch('/users/:id/update', async (req, res, next) => {
+router.patch('/users/:id/update', authenticate_1.authenticate, (0, authorize_1.authorize)(client_1.GlobalRole.USER), async (req, res, next) => {
     await (0, userController_1.updateUser)(req, res, next, prisma_1.default);
 });
 // Update user avatar
-router.patch('/users/:id/avatar', uploadMiddleware_1.uploadSingleMiddleware, async (req, res) => {
+router.patch('/users/:id/avatar', authenticate_1.authenticate, (0, authorize_1.authorize)(client_1.GlobalRole.USER), uploadMiddleware_1.uploadSingleMiddleware, async (req, res) => {
     await (0, userController_1.updateUserAvatar)(req, res, prisma_1.default);
 });
 exports.default = router;
