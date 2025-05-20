@@ -12,6 +12,7 @@ import { uploadSingleMiddleware } from '../middleware/uploadMiddleware';
 import { authenticate } from '../middleware/authenticate';
 import { authorize } from '../middleware/authorize';
 import { GlobalRole } from '@prisma/client';
+import { CustomRequest } from '../types/CustomRequest';
 
 const router = Router();
 
@@ -51,7 +52,7 @@ router.patch(
   authenticate,
   authorize(GlobalRole.USER),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await updateUser(req, res, next, prisma);
+    await updateUser(req as CustomRequest, res, next, prisma);
   }
 );
 
