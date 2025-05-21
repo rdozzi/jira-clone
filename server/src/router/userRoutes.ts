@@ -9,7 +9,6 @@ import {
   updateUserAvatar,
 } from '../controllers/userController';
 import { uploadSingleMiddleware } from '../middleware/uploadMiddleware';
-import { authenticate } from '../middleware/authenticate';
 import { authorize } from '../middleware/authorize';
 import { GlobalRole } from '@prisma/client';
 import { CustomRequest } from '../types/CustomRequest';
@@ -29,7 +28,6 @@ router.get('/users', async (req: Request, res: Response): Promise<void> => {
 // Create user
 router.post(
   '/users',
-  authenticate,
   authorize(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await createUser(req, res, next, prisma);
@@ -39,7 +37,6 @@ router.post(
 // Delete user
 router.patch(
   '/users/:id/soft-delete',
-  authenticate,
   authorize(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteUser(req, res, next, prisma);
@@ -49,7 +46,6 @@ router.patch(
 // Update user info
 router.patch(
   '/users/:id/update',
-  authenticate,
   authorize(GlobalRole.USER),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await updateUser(req as CustomRequest, res, next, prisma);
@@ -59,7 +55,6 @@ router.patch(
 // Update user avatar
 router.patch(
   '/users/:id/avatar',
-  authenticate,
   authorize(GlobalRole.USER),
   uploadSingleMiddleware,
   async (req: Request, res: Response) => {
