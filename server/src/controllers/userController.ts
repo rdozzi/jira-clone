@@ -127,7 +127,7 @@ export async function updateUser(
 
       if (!isAdmin || isSelf) {
         return res.status(403).json({
-          error: "Unauthorized to change this user's global role",
+          error: 'Unauthorized to change your own global role.',
         });
       }
     }
