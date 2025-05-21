@@ -6,7 +6,6 @@ import {
   updateLabel,
   deleteLabel,
 } from '../controllers/labelController';
-import { authenticate } from '../middleware/authenticate';
 import { authorize } from '../middleware/authorize';
 import { GlobalRole } from '@prisma/client';
 
@@ -20,7 +19,6 @@ router.get('/labels', async (req: Request, res: Response): Promise<void> => {
 // Create new Label
 router.post(
   '/labels',
-  authenticate,
   authorize(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await createNewLabel(req, res, next, prisma);
@@ -30,7 +28,6 @@ router.post(
 // Update Label
 router.patch(
   '/labels/:labelId',
-  authenticate,
   authorize(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await updateLabel(req, res, next, prisma);
@@ -40,7 +37,6 @@ router.patch(
 // Delete Label
 router.delete(
   '/labels/:labelId',
-  authenticate,
   authorize(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteLabel(req, res, next, prisma);
