@@ -7,7 +7,7 @@ import {
   updateProject,
   deleteProject,
 } from '../controllers/projectController';
-import { authorize } from '../middleware/authorize';
+import { authorizeGlobalRole } from '../middleware/authorizeGlobalRole';
 import { GlobalRole } from '@prisma/client';
 
 const router = Router();
@@ -28,7 +28,7 @@ router.get(
 // Create project
 router.post(
   '/projects',
-  authorize(GlobalRole.ADMIN),
+  authorizeGlobalRole(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await createProject(req, res, next, prisma);
   }
@@ -37,7 +37,7 @@ router.post(
 // Update project
 router.patch(
   '/projects/:id',
-  authorize(GlobalRole.ADMIN),
+  authorizeGlobalRole(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await updateProject(req, res, next, prisma);
   }
@@ -46,7 +46,7 @@ router.patch(
 // Delete project
 router.delete(
   '/projects/:id',
-  authorize(GlobalRole.ADMIN),
+  authorizeGlobalRole(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteProject(req, res, next, prisma);
   }
