@@ -11,6 +11,7 @@ import authRoutes from './router/authRoutes';
 import activityLogRoutes from './router/activityLogRoutes';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { authenticate } from './middleware/authenticate';
 import { globalLogMiddleware } from './middleware/logMiddleware';
 
 dotenv.config();
@@ -29,6 +30,13 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use(globalLogMiddleware());
 
+// Public routes
+app.use('/api', authRoutes);
+
+// Authentication middleware (for protected routes)
+app.use(authenticate);
+
+// Protected routes
 app.use('/api', userRoutes);
 
 app.use('/api', bannedEmailRoutes);
@@ -44,8 +52,6 @@ app.use('/api', attachmentRoutes);
 app.use('/api', boardRoutes);
 
 app.use('/api', labelRoutes);
-
-app.use('/api', authRoutes);
 
 app.use('/api', activityLogRoutes);
 
