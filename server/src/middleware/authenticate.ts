@@ -22,9 +22,6 @@ function authenticateFn(req: CustomRequest, res: Response, next: NextFunction) {
       id: payload.id,
       role: payload.globalRole,
     };
-    console.log('Decoded token:', payload);
-    console.log('User ID:', req.user.id);
-    console.log('User role:', req.user.role);
 
     next();
   } catch (error) {
