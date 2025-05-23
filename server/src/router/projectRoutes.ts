@@ -9,6 +9,7 @@ import {
 } from '../controllers/projectController';
 import { authorizeGlobalRole } from '../middleware/authorizeGlobalRole';
 import { GlobalRole } from '@prisma/client';
+import { CustomRequest } from '../types/CustomRequest';
 
 const router = Router();
 
@@ -30,7 +31,7 @@ router.post(
   '/projects',
   authorizeGlobalRole(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await createProject(req, res, next, prisma);
+    await createProject(req as CustomRequest, res, next, prisma);
   }
 );
 

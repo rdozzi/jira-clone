@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { CustomRequest } from '../types/CustomRequest';
 import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
@@ -35,19 +36,29 @@ export async function getProjectById(
 }
 
 export async function createProject(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
     const projectData = req.body;
+    const data = {
+      name: projectData.name,
+      description: projectData.description,
+      ownerId: user.id,
+    };
     const project = await prisma.project.create({
-      data: projectData,
+      data,
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: null,
+      userId: user?.id,
       actorType: 'USER',
       action: 'CREATE_PROJECT',
       targetId: project.id,
