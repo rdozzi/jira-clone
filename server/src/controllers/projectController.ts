@@ -102,14 +102,18 @@ export async function updateProject(
       return res.status(400).json({ message: 'Invalid project ID' });
     }
 
-    const projectMember = await prisma.projectMember.findFirst({
-      where: {
-        userId: user.id,
-        projectId: projectId,
-      },
-    });
-    if (!projectMember) {
-      return res.status(403).json({ message: 'Forbidden: User Not a member' });
+    if (user.role === 'ADMIN') {
+      const projectMember = await prisma.projectMember.findFirst({
+        where: {
+          userId: user.id,
+          projectId: projectId,
+        },
+      });
+      if (!projectMember) {
+        return res
+          .status(403)
+          .json({ message: 'Forbidden: User Not a member' });
+      }
     }
 
     const projectData = req.body;
