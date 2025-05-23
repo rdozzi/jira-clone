@@ -85,12 +85,33 @@ export async function createProject(
 }
 
 export async function updateProject(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
+
+    const projectId = parseInt(req.params.id, 10);
+    if (isNaN(projectId)) {
+      return res.status(400).json({ message: 'Invalid project ID' });
+    }
+
+    const projectMember = await prisma.projectMember.findFirst({
+      where: {
+        userId: user.id,
+        projectId: projectId,
+      },
+    });
+    if (!projectMember) {
+      return res.status(403).json({ message: 'Forbidden: User Not a member' });
+    }
+
     const projectData = req.body;
     const { id } = req.params;
     const convertedId = parseInt(id, 10);

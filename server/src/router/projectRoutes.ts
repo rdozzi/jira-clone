@@ -40,7 +40,7 @@ router.patch(
   '/projects/:id',
   authorizeGlobalRole(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await updateProject(req, res, next, prisma);
+    await updateProject(req as CustomRequest, res, next, prisma);
   }
 );
 
