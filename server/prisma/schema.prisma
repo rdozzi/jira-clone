@@ -188,6 +188,7 @@ enum GlobalRole {
   GUEST
   USER
   ADMIN
+  SUPERADMIN
 }
 
 enum ProjectRole {
