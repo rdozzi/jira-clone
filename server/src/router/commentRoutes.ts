@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import { CustomRequest } from '../types/CustomRequest';
 import prisma from '../lib/prisma';
 import {
   getAllComments,
@@ -27,7 +28,7 @@ router.get(
 router.post(
   '/comments',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await createComment(req, res, next, prisma);
+    await createComment(req as CustomRequest, res, next, prisma);
   }
 );
 
@@ -35,7 +36,7 @@ router.post(
 router.delete(
   '/comments/:id',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteComment(req, res, next, prisma);
+    await deleteComment(req as CustomRequest, res, next, prisma);
   }
 );
 
@@ -43,7 +44,7 @@ router.delete(
 router.patch(
   '/comments/:commentId',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await updateComment(req, res, next, prisma);
+    await updateComment(req as CustomRequest, res, next, prisma);
   }
 );
 

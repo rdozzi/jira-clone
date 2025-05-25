@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { CustomRequest } from '../types/CustomRequest';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 
@@ -35,19 +36,25 @@ export async function getAllCommentsById(
 }
 
 export async function createComment(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
+
     const commentData = req.body;
     const comment = await prisma.comment.create({
       data: commentData,
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: 1,
+      userId: user.id,
       actorType: 'USER',
       action: 'CREATE_COMMENT',
       targetId: comment.id,
@@ -70,7 +77,7 @@ export async function createComment(
 }
 
 export async function deleteComment(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
@@ -79,8 +86,19 @@ export async function deleteComment(
     const { id } = req.params;
     const convertedId = parseInt(id, 10);
 
-    const oldComment = await prisma.comment.findUnique({
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
+
+    const oldComment = await prisma.comment.findUniqueOrThrow({
       where: { id: convertedId },
+      select: {
+        id: true,
+        authorId: true,
+        content: true,
+        ticketId: true,
+      },
     });
 
     const deleteComment = await prisma.comment.delete({
@@ -106,13 +124,19 @@ export async function deleteComment(
     res.status(200).json(deleteComment);
     next();
   } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2025'
+    ) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
     console.error('Error fetching tickets: ', error);
     res.status(500).json({ error: 'Failed to fetch tickets' });
   }
 }
 
 export async function updateComment(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
@@ -121,6 +145,11 @@ export async function updateComment(
     const { content } = req.body;
     const { commentId } = req.params;
     const convertedId = parseInt(commentId, 10);
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
 
     if (typeof content !== 'string' || content.trim() === '') {
       res.status(400).json({
@@ -129,8 +158,14 @@ export async function updateComment(
       return;
     }
 
-    const oldComment = await prisma.comment.findUnique({
+    const oldComment = await prisma.comment.findUniqueOrThrow({
       where: { id: convertedId },
+      select: {
+        id: true,
+        authorId: true,
+        content: true,
+        ticketId: true,
+      },
     });
 
     if (!oldComment) {
@@ -150,7 +185,7 @@ export async function updateComment(
         : {};
 
     res.locals.logEvent = buildLogEvent({
-      userId: null,
+      userId: user.id,
       actorType: 'USER',
       action: 'UPDATE_COMMENT',
       targetId: convertedId,
@@ -166,6 +201,12 @@ export async function updateComment(
     res.status(200).json(updateComment);
     next();
   } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2025'
+    ) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
     console.error('Error editing comment: ', error);
     res.status(500).json({ error: 'Failed to edit comment' });
   }
