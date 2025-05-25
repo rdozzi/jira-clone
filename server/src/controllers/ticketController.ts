@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
+import { CustomRequest } from '../types/CustomRequest';
 
 export async function getAllTickets(
   req: Request,
@@ -63,19 +64,38 @@ export async function getTicketByAssigneeId(
 }
 
 export async function createNewTicket(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
+
     const ticketData = req.body;
     const ticket = await prisma.ticket.create({
       data: ticketData,
     });
 
+    const projectInfo = await prisma.ticket.findUnique({
+      where: { id: ticket.id },
+      select: {
+        board: {
+          select: {
+            projectId: true,
+          },
+        },
+      },
+    });
+
+    const projectId = projectInfo?.board?.projectId;
+
     res.locals.logEvent = buildLogEvent({
-      userId: 1,
+      userId: user.id,
       actorType: 'USER',
       action: 'CREATE_TICKET',
       targetId: ticket.id,
@@ -86,7 +106,7 @@ export async function createNewTicket(
       },
       ticketId: ticket.id,
       boardId: ticket.boardId,
-      projectId: 1,
+      projectId: projectId,
     });
 
     res.status(201).json(ticket);
@@ -98,37 +118,62 @@ export async function createNewTicket(
 }
 
 export async function deleteTicket(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
+
     const { id } = req.params;
+    const convertedId = parseInt(id, 10);
 
-    // Check to see if comments exist/Delete if they exist
-    await prisma.comment.deleteMany({ where: { ticketId: Number(id) } });
-
-    // Check to see if Ticket Labels Exist/Delete if they exist
-    await prisma.ticketLabel.findMany({ where: { ticketId: Number(id) } });
-
-    const deleteTicket = await prisma.ticket.delete({
-      where: { id: Number(id) },
+    const oldTicket = await prisma.ticket.findUniqueOrThrow({
+      where: { id: convertedId },
+      select: { id: true, title: true, description: true, boardId: true },
     });
 
+    // Check to see if comments exist/Delete if they exist
+    await prisma.comment.deleteMany({ where: { ticketId: convertedId } });
+
+    // Check to see if Ticket Labels Exist/Delete if they exist
+    await prisma.ticketLabel.findMany({ where: { ticketId: convertedId } });
+
+    const deleteTicket = await prisma.ticket.delete({
+      where: { id: convertedId },
+    });
+
+    const projectInfo = await prisma.ticket.findUnique({
+      where: { id: oldTicket.id },
+      select: {
+        board: {
+          select: {
+            projectId: true,
+          },
+        },
+      },
+    });
+
+    const projectId = projectInfo?.board?.projectId;
+
     res.locals.logEvent = buildLogEvent({
-      userId: 1,
+      userId: user.id,
       actorType: 'USER',
       action: 'DELETE_TICKET',
-      targetId: deleteTicket.id,
+      targetId: oldTicket.id,
       targetType: 'TICKET',
       metadata: {
-        title: `${deleteTicket.title}`,
-        description: `${deleteTicket.description}`,
+        title: `${oldTicket.title}`,
+        description: `${oldTicket.description}`,
       },
-      ticketId: deleteTicket.id,
-      boardId: deleteTicket.boardId,
-      projectId: null,
+      ticketId: oldTicket.id,
+      boardId: oldTicket.boardId,
+      projectId: projectId,
     });
 
     res.status(200).json(deleteTicket);
@@ -140,12 +185,18 @@ export async function deleteTicket(
 }
 
 export async function updateTicket(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
+
     const ticketData = req.body;
     const { ticketId } = req.params;
 
@@ -165,8 +216,21 @@ export async function updateTicket(
 
     const changes = generateDiff(oldTicket, newTicket);
 
+    const projectInfo = await prisma.ticket.findUnique({
+      where: { id: oldTicket.id },
+      select: {
+        board: {
+          select: {
+            projectId: true,
+          },
+        },
+      },
+    });
+
+    const projectId = projectInfo?.board?.projectId;
+
     res.locals.logEvent = buildLogEvent({
-      userId: 1,
+      userId: user.id,
       actorType: 'USER',
       action: 'UPDATE_TICKET',
       targetId: newTicket.id,
@@ -178,7 +242,7 @@ export async function updateTicket(
       },
       ticketId: newTicket.id,
       boardId: newTicket.boardId,
-      projectId: null,
+      projectId: projectId,
     });
 
     res.status(200).json(newTicket);

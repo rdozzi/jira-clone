@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import { CustomRequest } from '../types/CustomRequest';
 import prisma from '../lib/prisma';
 import {
   getAllTickets,
@@ -36,7 +37,7 @@ router.get(
 router.post(
   '/tickets',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await createNewTicket(req, res, next, prisma);
+    await createNewTicket(req as CustomRequest, res, next, prisma);
   }
 );
 
@@ -44,7 +45,7 @@ router.post(
 router.delete(
   '/tickets/:id',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteTicket(req, res, next, prisma);
+    await deleteTicket(req as CustomRequest, res, next, prisma);
   }
 );
 
@@ -52,7 +53,7 @@ router.delete(
 router.patch(
   '/tickets/updateTicket/:ticketId',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await updateTicket(req, res, next, prisma);
+    await updateTicket(req as CustomRequest, res, next, prisma);
   }
 );
 
