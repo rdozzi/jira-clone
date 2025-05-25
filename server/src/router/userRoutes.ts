@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import { CustomRequest } from '../types/CustomRequest';
 import prisma from '../lib/prisma';
 import {
   getAllUsers,
@@ -11,7 +12,6 @@ import {
 import { uploadSingleMiddleware } from '../middleware/uploadMiddleware';
 import { authorizeGlobalRole } from '../middleware/authorizeGlobalRole';
 import { GlobalRole } from '@prisma/client';
-import { CustomRequest } from '../types/CustomRequest';
 
 const router = Router();
 

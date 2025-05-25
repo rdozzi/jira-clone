@@ -133,14 +133,14 @@ export async function updateUser(
     }
 
     const oldUser = await prisma.user.findUnique({
-      where: { id: Number(id) },
+      where: { id: userId },
     });
     if (!oldUser) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     const newUser = await prisma.user.update({
-      where: { id: Number(id) },
+      where: { id: userId },
       data: {
         ...userData,
       },
@@ -149,10 +149,10 @@ export async function updateUser(
     const changes = generateDiff(oldUser, newUser);
 
     res.locals.logEvent = buildLogEvent({
-      userId: Number(id),
+      userId: userId,
       actorType: 'USER',
       action: 'UPDATE_USER',
-      targetId: Number(id),
+      targetId: userId,
       targetType: 'USER',
       metadata: {
         name: `${newUser.firstName}_${newUser.lastName}`,
@@ -193,7 +193,7 @@ export async function deleteUser(
     }
 
     const deletedUserData = await prisma.user.update({
-      where: { id: Number(id) },
+      where: { id: userId },
       data: {
         deletedAt: new Date(),
       },
