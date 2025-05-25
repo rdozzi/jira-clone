@@ -51,10 +51,28 @@ export async function getTicketByAssigneeId(
   prisma: PrismaClient
 ) {
   const { userId } = req.params;
-  console.log(userId);
   try {
     const tickets = await prisma.ticket.findMany({
       where: { assigneeId: Number(userId) },
+    });
+    res.status(200).json(tickets);
+  } catch (error) {
+    console.log('Error fetching tickets: ', error);
+    res.status(500).json({ error: 'Failed to fetch tickets' });
+  }
+}
+
+export async function getTicketsByBoardId(
+  req: Request,
+  res: Response,
+  prisma: PrismaClient
+) {
+  const { boardId } = req.params;
+  const boardIdNumber = parseInt(boardId, 10);
+
+  try {
+    const tickets = await prisma.ticket.findMany({
+      where: { boardId: boardIdNumber },
     });
     res.status(200).json(tickets);
   } catch (error) {
