@@ -13,7 +13,7 @@ const router = Router();
 // Get all logs
 router.get(
   '/activity-logs/all',
-  authorizeGlobalRole(GlobalRole.ADMIN),
+  authorizeGlobalRole(GlobalRole.SUPERADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await getAllLogs(req, res, prisma);
   }
@@ -21,7 +21,7 @@ router.get(
 
 router.get(
   '/activity-logs/:ticketId/ticket',
-  authorizeGlobalRole(GlobalRole.ADMIN),
+  authorizeGlobalRole(GlobalRole.USER),
   async (req: Request, res: Response): Promise<void> => {
     await getLogbyTicketId(req, res, prisma);
   }
@@ -29,7 +29,7 @@ router.get(
 
 router.get(
   '/activity-logs/:userId/user',
-  authorizeGlobalRole(GlobalRole.ADMIN),
+  authorizeGlobalRole(GlobalRole.USER),
   async (req: Request, res: Response): Promise<void> => {
     await getLogbyUserId(req, res, prisma);
   }
