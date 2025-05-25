@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import { CustomRequest } from '../types/CustomRequest';
 import prisma from '../lib/prisma';
 import {
   getAllBoards,
@@ -35,7 +36,7 @@ router.get(
 router.post(
   '/boards',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await createBoard(req, res, next, prisma);
+    await createBoard(req as CustomRequest, res, next, prisma);
   }
 );
 
@@ -43,7 +44,7 @@ router.post(
 router.patch(
   '/boards/:boardId',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await updateBoard(req, res, next, prisma);
+    await updateBoard(req as CustomRequest, res, next, prisma);
   }
 );
 
@@ -51,7 +52,7 @@ router.patch(
 router.delete(
   '/boards/:boardId',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteBoard(req, res, next, prisma);
+    await deleteBoard(req as CustomRequest, res, next, prisma);
   }
 );
 
