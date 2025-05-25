@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { CustomRequest } from '../types/CustomRequest';
 import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
@@ -20,19 +21,24 @@ export async function getAllLabels(
 
 //Create a label
 export async function createNewLabel(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
     const labelData = req.body;
     const label = await prisma.label.create({
       data: labelData,
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: null,
+      userId: user.id,
       actorType: 'USER',
       action: 'CREATE_LABEL',
       targetId: label.id,
@@ -56,18 +62,25 @@ export async function createNewLabel(
 
 //Update a label
 export async function updateLabel(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
+
     const labelData = req.body;
     const { labelId } = req.params;
     const convertedId = parseInt(labelId, 10);
 
-    const oldLabel = await prisma.label.findUnique({
+    const oldLabel = await prisma.label.findUniqueOrThrow({
       where: { id: convertedId },
+      select: { id: true, name: true, color: true },
     });
 
     const newLabel = await prisma.label.update({
@@ -80,7 +93,7 @@ export async function updateLabel(
     const change = oldLabel && newLabel ? generateDiff(oldLabel, newLabel) : {};
 
     res.locals.logEvent = buildLogEvent({
-      userId: null,
+      userId: user.id,
       actorType: 'USER',
       action: 'UPDATE_LABEL',
       targetId: convertedId,
@@ -103,12 +116,18 @@ export async function updateLabel(
 
 //Delete a label
 export async function deleteLabel(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
+
     const { labelId } = req.params;
     const convertedId = parseInt(labelId, 10);
 
@@ -121,7 +140,7 @@ export async function deleteLabel(
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: null,
+      userId: user.id,
       actorType: 'USER',
       action: 'DELETE_LABEL',
       targetId: oldLabel?.id,
