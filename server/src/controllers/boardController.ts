@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { CustomRequest } from '../types/CustomRequest';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 
@@ -57,19 +58,23 @@ export async function getBoardsByProjectId(
 
 // Create board
 export async function createBoard(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
     const boardData = req.body;
     const board = await prisma.board.create({
       data: boardData,
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: 1,
+      userId: user.id,
       actorType: 'USER',
       action: 'CREATE_BOARD',
       targetId: board.id,
@@ -80,7 +85,7 @@ export async function createBoard(
       },
       ticketId: null,
       boardId: board.id,
-      projectId: 1,
+      projectId: board.projectId,
     });
 
     res.status(200).json(board);
@@ -93,23 +98,28 @@ export async function createBoard(
 
 // Update board
 export async function updateBoard(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
     const boardData = req.body;
     const { boardId } = req.params;
     const convertedBoardId = parseInt(boardId, 10);
 
-    const oldBoard = await prisma.board.findUnique({
+    const oldBoard = await prisma.board.findUniqueOrThrow({
       where: { id: convertedBoardId },
+      select: {
+        id: true,
+        name: true,
+        projectId: true,
+      },
     });
-
-    if (!oldBoard) {
-      res.status(404).json({ error: `Board not found` });
-    }
 
     const newBoard = await prisma.board.update({
       where: { id: convertedBoardId },
@@ -122,7 +132,7 @@ export async function updateBoard(
       oldBoard && newBoard ? generateDiff(oldBoard, newBoard) : {};
 
     res.locals.logEvent = buildLogEvent({
-      userId: null,
+      userId: user.id,
       actorType: 'USER',
       action: 'UPDATE_BOARD',
       targetId: convertedBoardId,
@@ -132,8 +142,8 @@ export async function updateBoard(
         changes,
       },
       ticketId: null,
-      boardId: boardData.id,
-      projectId: null,
+      boardId: oldBoard.id,
+      projectId: oldBoard.projectId,
     });
 
     res.status(200).json(newBoard);
@@ -146,7 +156,7 @@ export async function updateBoard(
 
 // Delete board
 export async function deleteBoard(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
@@ -154,9 +164,19 @@ export async function deleteBoard(
   try {
     const { boardId } = req.params;
     const convertedBoardId = parseInt(boardId, 10);
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
 
-    const oldBoard = await prisma.board.findUnique({
+    const oldBoard = await prisma.board.findUniqueOrThrow({
       where: { id: convertedBoardId },
+      select: {
+        id: true,
+        name: true,
+        projectId: true,
+        description: true,
+      },
     });
 
     if (!oldBoard) {
@@ -168,7 +188,7 @@ export async function deleteBoard(
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: null,
+      userId: user.id,
       actorType: 'USER',
       action: 'DELETE_BOARD',
       targetId: convertedBoardId,
@@ -179,13 +199,19 @@ export async function deleteBoard(
         description: oldBoard?.description,
       },
       ticketId: null,
-      boardId: convertedBoardId,
-      projectId: null,
+      boardId: oldBoard.id,
+      projectId: oldBoard.projectId,
     });
 
     res.status(200).json(deleteboard);
     next();
   } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2025'
+    ) {
+      return res.status(404).json({ message: 'Board not found' });
+    }
     console.error('Error deleting board: ', error);
     res.status(500).json({ error: 'Failed to delete board' });
   }
