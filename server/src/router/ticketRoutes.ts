@@ -8,6 +8,7 @@ import {
   createNewTicket,
   updateTicket,
   deleteTicket,
+  getTicketsByBoardId,
 } from '../controllers/ticketController';
 
 const router = Router();
@@ -30,6 +31,14 @@ router.get(
   '/tickets/assigneeId/:userId',
   async (req: Request, res: Response): Promise<void> => {
     await getTicketByAssigneeId(req, res, prisma);
+  }
+);
+
+// Get Tickets by Board Id
+router.get(
+  '/tickets/:boardId/board',
+  async (req: Request, res: Response): Promise<void> => {
+    await getTicketsByBoardId(req, res, prisma);
   }
 );
 

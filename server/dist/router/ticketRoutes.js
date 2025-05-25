@@ -19,6 +19,10 @@ router.get('/tickets/:id', async (req, res) => {
 router.get('/tickets/assigneeId/:userId', async (req, res) => {
     await (0, ticketController_1.getTicketByAssigneeId)(req, res, prisma_1.default);
 });
+// Get Tickets by Board Id
+router.get('/tickets/:boardId/board', async (req, res) => {
+    await (0, ticketController_1.getTicketsByBoardId)(req, res, prisma_1.default);
+});
 // Create new ticket
 router.post('/tickets', async (req, res, next) => {
     await (0, ticketController_1.createNewTicket)(req, res, next, prisma_1.default);
