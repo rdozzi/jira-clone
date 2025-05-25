@@ -49,7 +49,7 @@ router.delete(
   '/projects/:id',
   authorizeGlobalRole(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteProject(req, res, next, prisma);
+    await deleteProject(req as CustomRequest, res, next, prisma);
   }
 );
 

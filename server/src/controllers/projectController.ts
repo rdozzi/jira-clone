@@ -58,7 +58,7 @@ export async function createProject(
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: user?.id,
+      userId: user.id,
       actorType: 'USER',
       action: 'CREATE_PROJECT',
       targetId: project.id,
@@ -133,7 +133,7 @@ export async function updateProject(
       oldProject && newProject ? generateDiff(oldProject, newProject) : {};
 
     res.locals.logEvent = buildLogEvent({
-      userId: null,
+      userId: user.id,
       actorType: 'USER',
       action: 'UPDATE_PROJECT',
       targetId: convertedId,
@@ -157,12 +157,17 @@ export async function updateProject(
 }
 
 export async function deleteProject(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    }
     const { id } = req.params;
     const convertedId = parseInt(id, 10);
 
@@ -175,7 +180,7 @@ export async function deleteProject(
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: null,
+      userId: user.id,
       actorType: 'USER',
       action: 'DELETE_PROJECT',
       targetId: convertedId,
