@@ -1,7 +1,7 @@
 import { Response, NextFunction, RequestHandler } from 'express';
 import { CustomRequest } from '../types/CustomRequest';
 import { GlobalRole } from '@prisma/client';
-import { hasRequiredRole } from '../lib/roles';
+import { hasRequiredGlobalRole } from '../lib/roles';
 
 export function authorizeGlobalRole(requiredRole: GlobalRole) {
   return ((req: CustomRequest, res: Response, next: NextFunction) => {
@@ -11,7 +11,7 @@ export function authorizeGlobalRole(requiredRole: GlobalRole) {
       return res.status(403).json({ message: 'No role found' });
     }
 
-    if (!hasRequiredRole(userRole, requiredRole)) {
+    if (!hasRequiredGlobalRole(userRole, requiredRole)) {
       return res.status(403).json({ message: 'Insufficient Permissions' });
     }
 
