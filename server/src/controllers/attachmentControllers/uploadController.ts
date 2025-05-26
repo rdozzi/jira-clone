@@ -17,7 +17,7 @@ export async function handleSingleUpload(
       });
     }
     const { entityType, entityId } = req.body;
-    const uploadedBy = req.user?.id || 1; // Will be replaced with the logged-in user ID eventually
+    const uploadedBy = req.user?.id;
     const metadata = await handleFileUpload(req.file as Express.Multer.File);
 
     const attachment = await prisma.attachment.create({
@@ -76,7 +76,7 @@ export async function handleMultipleUpload(
 
   try {
     const { entityType, entityId } = req.body;
-    const uploadedBy = req.user?.id || 1; // Will be replaced with the logged-in user ID eventually
+    const uploadedBy = req.user?.id;
 
     const createdAttachments = await Promise.all(
       files.map(async (file) => {
