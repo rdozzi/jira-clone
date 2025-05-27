@@ -62,6 +62,42 @@ export async function getUser(
   }
 }
 
+// Get user by ProjectId
+export async function getUserByProjectId(
+  req: Request,
+  res: Response,
+  prisma: PrismaClient
+) {
+  try {
+    const { id } = req.params;
+    const projectIdNumber = parseInt(id, 10);
+    if (isNaN(projectIdNumber)) {
+      return res.status(400).json({ error: 'Invalid project ID' });
+    }
+    const users = await prisma.projectMember.findMany({
+      where: { projectId: projectIdNumber },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            globalRole: true,
+          },
+        },
+      },
+    });
+    if (!users || users.length === 0) {
+      return res.status(404).json({ error: 'No users found for this project' });
+    }
+    res.status(200).json(users.map((member) => member.user));
+  } catch (error) {
+    console.error('Error fetching users by project ID: ', error);
+    res.status(500).json({ error: 'Failed to fetch users by project ID' });
+  }
+}
+
 // Create user
 export async function createUser(
   req: Request,
