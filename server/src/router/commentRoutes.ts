@@ -1,5 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { CustomRequest } from '../types/CustomRequest';
+import { GlobalRole, ProjectRole } from '@prisma/client';
+import { authorizeGlobalRole } from '../middleware/authorizeGlobalRole';
+import { checkProjectMembership } from '../middleware/checkProjectMembership';
+import { checkProjectRole } from '../middleware/checkProjectRole';
+import { checkCommentOwnership } from '../middleware/checkCommentOwnership';
 import prisma from '../lib/prisma';
 import {
   getAllComments,
@@ -12,13 +17,20 @@ import {
 const router = Router();
 
 // Get all comments
-router.get('/comments', async (req: Request, res: Response): Promise<void> => {
-  await getAllComments(req, res, prisma);
-});
+router.get(
+  '/comments',
+  authorizeGlobalRole(GlobalRole.ADMIN),
+  async (req: Request, res: Response): Promise<void> => {
+    await getAllComments(req, res, prisma);
+  }
+);
 
 // Get comments for a specific ticket
 router.get(
   '/comments/:ticketId',
+  (req: Request, res: Response, next: NextFunction) =>
+    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response): Promise<void> => {
     await getAllCommentsById(req, res, prisma);
   }
@@ -27,6 +39,9 @@ router.get(
 // Create a comment
 router.post(
   '/comments',
+  (req: Request, res: Response, next: NextFunction) =>
+    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectRole(ProjectRole.USER),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await createComment(req as CustomRequest, res, next, prisma);
   }
@@ -35,6 +50,10 @@ router.post(
 // Delete comment
 router.delete(
   '/comments/:id',
+  (req: Request, res: Response, next: NextFunction) =>
+    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectRole(ProjectRole.USER),
+  checkCommentOwnership(prisma),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteComment(req as CustomRequest, res, next, prisma);
   }
@@ -43,6 +62,10 @@ router.delete(
 // Update comment
 router.patch(
   '/comments/:commentId',
+  (req: Request, res: Response, next: NextFunction) =>
+    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectRole(ProjectRole.USER),
+  checkCommentOwnership(prisma),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await updateComment(req as CustomRequest, res, next, prisma);
   }
