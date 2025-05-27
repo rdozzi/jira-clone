@@ -13,9 +13,13 @@ import { GlobalRole } from '@prisma/client';
 const router = Router();
 
 // Get all Labels
-router.get('/labels', async (req: Request, res: Response): Promise<void> => {
-  await getAllLabels(req, res, prisma);
-});
+router.get(
+  '/labels',
+  authorizeGlobalRole(GlobalRole.ADMIN),
+  async (req: Request, res: Response): Promise<void> => {
+    await getAllLabels(req, res, prisma);
+  }
+);
 
 // Create new Label
 router.post(
