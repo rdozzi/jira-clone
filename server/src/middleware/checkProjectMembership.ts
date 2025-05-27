@@ -9,11 +9,19 @@ export async function checkProjectMembership(
 ): Promise<void> {
   try {
     const userId = req.user?.id;
+    const userRole = req.user?.role;
     const ticketId = req.params.ticketId;
     const ticketIdNumber = parseInt(ticketId, 10);
 
     if (!userId) {
       res.status(403).json({ message: 'No User Id defined' });
+      return;
+    }
+
+    // If the user is a SUPERADMIN, allow access to all tickets
+    if (userRole === 'SUPERADMIN') {
+      res.locals.userRole = userRole;
+      return next();
     }
 
     const ticket = await prisma.ticket.findUnique({
