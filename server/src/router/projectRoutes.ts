@@ -14,13 +14,18 @@ import { CustomRequest } from '../types/CustomRequest';
 const router = Router();
 
 // Get all projects
-router.get('/projects', async (req: Request, res: Response): Promise<void> => {
-  await getAllProjects(req, res, prisma);
-});
+router.get(
+  '/projects',
+  authorizeGlobalRole(GlobalRole.ADMIN),
+  async (req: Request, res: Response): Promise<void> => {
+    await getAllProjects(req, res, prisma);
+  }
+);
 
 // Get project by Id
 router.get(
   '/projects/:id',
+  authorizeGlobalRole(GlobalRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await getProjectById(req, res, prisma);
   }

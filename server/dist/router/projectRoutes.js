@@ -10,11 +10,11 @@ const authorizeGlobalRole_1 = require("../middleware/authorizeGlobalRole");
 const client_1 = require("@prisma/client");
 const router = (0, express_1.Router)();
 // Get all projects
-router.get('/projects', async (req, res) => {
+router.get('/projects', (0, authorizeGlobalRole_1.authorizeGlobalRole)(client_1.GlobalRole.ADMIN), async (req, res) => {
     await (0, projectController_1.getAllProjects)(req, res, prisma_1.default);
 });
 // Get project by Id
-router.get('/projects/:id', async (req, res) => {
+router.get('/projects/:id', (0, authorizeGlobalRole_1.authorizeGlobalRole)(client_1.GlobalRole.ADMIN), async (req, res) => {
     await (0, projectController_1.getProjectById)(req, res, prisma_1.default);
 });
 // Create project
