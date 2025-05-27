@@ -216,17 +216,18 @@ export async function updateTicket(
     }
 
     const ticketData = req.body;
-    const { ticketId } = req.params;
+    const { id } = req.params;
+    const ticketId = parseInt(id, 10);
 
     const oldTicket = await prisma.ticket.findUnique({
-      where: { id: Number(ticketId) },
+      where: { id: ticketId },
     });
     if (!oldTicket) {
       return res.status(404).json({ error: 'Ticket not found' });
     }
 
     const newTicket = await prisma.ticket.update({
-      where: { id: Number(ticketId) },
+      where: { id: ticketId },
       data: {
         ...ticketData,
       },
