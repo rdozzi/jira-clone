@@ -4,8 +4,14 @@ import { PrismaClient } from '@prisma/client';
 
 export function checkAttachmentOwnership(prisma: PrismaClient) {
   return async (req: CustomRequest, res: Response, next: NextFunction) => {
-    const attachmentId = parseInt(req.params.id, 10);
     const userId = req.user?.id;
+    const userRole = req.user?.role;
+    const attachmentId = parseInt(req.params.id, 10);
+
+    // If the user is a SUPERADMIN, allow access to all attachments
+    if (userRole === 'SUPERADMIN') {
+      return next();
+    }
 
     const attachment = await prisma.attachment.findUnique({
       where: { id: attachmentId },
@@ -18,10 +24,16 @@ export function checkAttachmentOwnership(prisma: PrismaClient) {
   };
 }
 
-export function checkMultipleAttachmentOwnerShip(prisma: PrismaClient) {
+export function checkMultipleAttachmentOwnership(prisma: PrismaClient) {
   return async (req: CustomRequest, res: Response, next: NextFunction) => {
     const userId = req.user?.id;
+    const userRole = req.user?.role;
     const attachmentIds: number[] = req.body.ids;
+
+    // If the user is a SUPERADMIN, allow access to all attachments
+    if (userRole === 'SUPERADMIN') {
+      return next();
+    }
 
     if (!Array.isArray(attachmentIds) || attachmentIds.length === 0) {
       return res
