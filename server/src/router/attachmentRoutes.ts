@@ -13,7 +13,7 @@ import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
 import {
   checkAttachmentOwnership,
-  checkMultipleAttachmentOwnerShip,
+  checkMultipleAttachmentOwnership,
 } from '../middleware/checkAttachmentOwnershipMiddleware';
 
 import {
@@ -93,7 +93,7 @@ router.delete(
   (req: Request, res: Response, next: NextFunction) =>
     checkProjectMembership(req as CustomRequest, res, next),
   checkProjectRole(ProjectRole.USER),
-  checkMultipleAttachmentOwnerShip(prisma) as RequestHandler,
+  checkMultipleAttachmentOwnership(prisma) as RequestHandler,
   deleteManyAttachmentMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteManyAttachments(req, res, next, prisma);
