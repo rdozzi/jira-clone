@@ -9,9 +9,11 @@ import boardRoutes from './router/boardRoutes';
 import labelRoutes from './router/labelRoutes';
 import authRoutes from './router/authRoutes';
 import activityLogRoutes from './router/activityLogRoutes';
+import projectMemberRoutes from './router/projectMemberRoutes';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { authenticate } from './middleware/authenticate';
+import { loadUserProjects } from './middleware/loadUserProjects';
 import { globalLogMiddleware } from './middleware/logMiddleware';
 
 dotenv.config();
@@ -36,6 +38,9 @@ app.use('/api', authRoutes);
 // Authentication middleware (for protected routes)
 app.use(authenticate);
 
+// Get user project associations
+app.use(loadUserProjects);
+
 // Protected routes
 app.use('/api', userRoutes);
 
@@ -54,6 +59,8 @@ app.use('/api', boardRoutes);
 app.use('/api', labelRoutes);
 
 app.use('/api', activityLogRoutes);
+
+app.use('/api', projectMemberRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is Running on port ${process.env.PORT} with Nodemon!`);
