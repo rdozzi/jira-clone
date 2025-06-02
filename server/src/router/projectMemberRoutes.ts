@@ -1,0 +1,21 @@
+import { Router, Request, Response, NextFunction } from 'express';
+import { CustomRequest } from '../types/CustomRequest';
+import { ProjectRole } from '@prisma/client';
+import { checkProjectMembership } from '../middleware/checkProjectMembership';
+import { checkProjectRole } from '../middleware/checkProjectRole';
+import prisma from '../lib/prisma';
+import { viewProjectMembers } from '../controllers/projectMemberController';
+
+const router = Router();
+
+// View Project Members
+router.get(
+  '/projectMembers/:projectId/members',
+  (req: Request, res: Response, next: NextFunction) =>
+    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectRole(ProjectRole.VIEWER),
+  async (req: Request, res: Response): Promise<void> => {
+    await viewProjectMembers(req, res, prisma);
+  }
+);
+export default router;
