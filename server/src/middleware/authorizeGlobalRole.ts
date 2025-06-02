@@ -5,7 +5,7 @@ import { hasRequiredGlobalRole } from '../lib/roles';
 
 export function authorizeGlobalRole(requiredRole: GlobalRole) {
   return ((req: CustomRequest, res: Response, next: NextFunction) => {
-    const userRole = req.user?.role;
+    const userRole = req.user?.globalRole;
 
     if (!userRole) {
       return res.status(403).json({ message: 'No role found' });
