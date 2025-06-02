@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { CustomFile } from './CustomFile';
-import { Attachment, GlobalRole } from '@prisma/client';
+import { Attachment, GlobalRole, ProjectRole } from '@prisma/client';
 
 export interface CustomRequest extends Request {
   attachment?: CustomFile | Attachment;
@@ -10,6 +10,11 @@ export interface CustomRequest extends Request {
 
   user?: {
     id: number;
-    role: GlobalRole;
+    globalRole: GlobalRole;
   };
+
+  userProjects?: {
+    projectId: number;
+    projectRole: ProjectRole;
+  }[];
 }
