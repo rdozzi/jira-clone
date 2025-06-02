@@ -7,7 +7,7 @@ export function checkTicketOwnership(prisma: PrismaClient): RequestHandler {
     const customReq = req as unknown as CustomRequest;
 
     const userId = customReq.user?.id;
-    const userRole = customReq.user?.role;
+    const userRole = customReq.user?.globalRole;
     const ticketId = parseInt(customReq.params.id, 10);
 
     // If the user is a SUPERADMIN, allow access to all comments

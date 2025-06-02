@@ -20,7 +20,7 @@ function authenticateFn(req: CustomRequest, res: Response, next: NextFunction) {
     const payload = decoded as DecodedTokenPayload;
     req.user = {
       id: payload.id,
-      role: payload.globalRole,
+      globalRole: payload.globalRole,
     };
 
     next();

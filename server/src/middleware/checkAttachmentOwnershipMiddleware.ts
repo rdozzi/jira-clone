@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 export function checkAttachmentOwnership(prisma: PrismaClient) {
   return async (req: CustomRequest, res: Response, next: NextFunction) => {
     const userId = req.user?.id;
-    const userRole = req.user?.role;
+    const userRole = req.user?.globalRole;
     const attachmentId = parseInt(req.params.id, 10);
 
     // If the user is a SUPERADMIN, allow access to all attachments
@@ -27,7 +27,7 @@ export function checkAttachmentOwnership(prisma: PrismaClient) {
 export function checkMultipleAttachmentOwnership(prisma: PrismaClient) {
   return async (req: CustomRequest, res: Response, next: NextFunction) => {
     const userId = req.user?.id;
-    const userRole = req.user?.role;
+    const userRole = req.user?.globalRole;
     const attachmentIds: number[] = req.body.ids;
 
     // If the user is a SUPERADMIN, allow access to all attachments
