@@ -102,7 +102,7 @@ export async function updateProject(
       return res.status(400).json({ message: 'Invalid project ID' });
     }
 
-    if (user.role === 'ADMIN') {
+    if (user.globalRole === 'ADMIN') {
       const projectMember = await prisma.projectMember.findFirst({
         where: {
           userId: user.id,
