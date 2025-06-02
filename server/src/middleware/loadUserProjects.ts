@@ -10,13 +10,12 @@ async function loadUserProjectsFn(
   try {
     if (!req.user?.globalRole) {
       console.error('User role missing in user object');
-      res
-        .status(500)
-        .json({ message: 'User role is missing. Contact user support.' });
+      res.status(500).json({ message: 'User role is missing.' });
+      return;
     }
 
     if (req.user?.globalRole === 'SUPERADMIN') {
-      next();
+      return next();
     }
 
     const projectMemberships = await prisma.projectMember.findMany({
@@ -33,6 +32,7 @@ async function loadUserProjectsFn(
     res
       .status(500)
       .json({ message: 'Server error loading project membership' });
+    return;
   }
 }
 
