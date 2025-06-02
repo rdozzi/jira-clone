@@ -10,16 +10,21 @@ export function checkProjectRole(requiredRole: ProjectRole) {
       return next();
     }
 
-    const member = res.locals.projectMember;
+    const userProjectInfo:
+      | {
+          projectId: number;
+          projectRole: ProjectRole;
+        }
+      | undefined = res.locals.userProjectDetails;
 
-    if (!member) {
+    if (!userProjectInfo) {
       res
         .status(403)
         .json({ message: 'Forbidden: Not a member of this project' });
       return;
     }
 
-    const userProjectRole = member.projectRole;
+    const userProjectRole = userProjectInfo.projectRole;
 
     if (!hasRequiredProjectRole(userProjectRole, requiredRole)) {
       res
