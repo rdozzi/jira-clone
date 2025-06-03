@@ -4,7 +4,10 @@ import { ProjectRole } from '@prisma/client';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
 import prisma from '../lib/prisma';
-import { viewProjectMembers } from '../controllers/projectMemberController';
+import {
+  viewProjectMembers,
+  addProjectMember,
+} from '../controllers/projectMemberController';
 
 const router = Router();
 
@@ -19,3 +22,14 @@ router.get(
   }
 );
 export default router;
+
+// Add Project Member
+router.post(
+  '/projectMembers/:projectId/members',
+  (req: Request, res: Response, next: NextFunction) =>
+    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectRole(ProjectRole.VIEWER),
+  async (req: Request, res: Response): Promise<void> => {
+    await addProjectMember(req as CustomRequest, res, prisma);
+  }
+);
