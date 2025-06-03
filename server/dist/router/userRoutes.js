@@ -14,7 +14,7 @@ const userController_1 = require("../controllers/userController");
 const uploadMiddleware_1 = require("../middleware/uploadMiddleware");
 const router = (0, express_1.Router)();
 // Get all users
-router.get('/users/all', (0, authorizeGlobalRole_1.authorizeGlobalRole)(client_1.GlobalRole.ADMIN), async (req, res) => {
+router.get('/users/all', (0, authorizeGlobalRole_1.authorizeGlobalRole)(client_1.GlobalRole.USER), async (req, res) => {
     await (0, userController_1.getAllUsers)(req, res, prisma_1.default);
 });
 // Get user

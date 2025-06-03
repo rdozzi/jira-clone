@@ -28,7 +28,7 @@ const router = Router();
 // Get all users
 router.get(
   '/users/all',
-  authorizeGlobalRole(GlobalRole.ADMIN),
+  authorizeGlobalRole(GlobalRole.USER),
   async (req: Request, res: Response): Promise<void> => {
     await getAllUsers(req, res, prisma);
   }
