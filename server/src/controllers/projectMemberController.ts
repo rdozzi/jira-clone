@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { CustomRequest } from '../types/CustomRequest';
 import { PrismaClient, ProjectRole } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
@@ -182,5 +182,84 @@ export async function removeProjectMember(
   } catch (error) {
     console.error('Error removing project member:', error);
     res.status(500).json({ message: 'Failed to remove project member' });
+  }
+}
+
+// Update project member role
+export async function updateProjectMemberRole(
+  req: CustomRequest,
+  res: Response,
+  prisma: PrismaClient
+) {
+  try {
+    const { projectId, userId } = req.params;
+    const { projectRole } = req.body;
+
+    if (!projectId || !userId || !projectRole) {
+      res
+        .status(400)
+        .json({ message: 'Project ID, User ID, and role are required' });
+      return;
+    }
+
+    const projectIdParse = parseInt(projectId, 10);
+    const userIdParse = parseInt(userId, 10);
+
+    if (isNaN(projectIdParse) || isNaN(userIdParse)) {
+      res.status(400).json({ message: 'Invalid projectId or userId' });
+      return;
+    }
+
+    const projectMember = await prisma.projectMember.findUnique({
+      where: {
+        userId_projectId: { projectId: projectIdParse, userId: userIdParse },
+      },
+    });
+
+    if (!projectMember) {
+      res.status(404).json({ message: 'Project member not found' });
+      return;
+    }
+
+    const updatedProjectMember = await prisma.projectMember.update({
+      where: { id: projectMember.id },
+      data: { projectRole },
+    });
+
+    const userData = await prisma.user.findUnique({
+      where: { id: userIdParse },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+      },
+    });
+
+    res.locals.logEvent = buildLogEvent({
+      userId: res.locals.userId,
+      actorType: 'USER',
+      action: 'UPDATE_PROJECT_MEMBER_ROLE',
+      targetId: userIdParse,
+      targetType: 'PROJECT_MEMBER',
+      metadata: {
+        userId: userIdParse,
+        changes: generateDiff(
+          { projectRole: projectMember.projectRole },
+          { projectRole: updatedProjectMember.projectRole }
+        ),
+        firstName: userData?.firstName,
+        lastName: userData?.lastName,
+        email: userData?.email,
+      },
+      ticketId: null,
+      boardId: null,
+      projectId: projectIdParse,
+    });
+
+    res.status(200).json(updatedProjectMember);
+  } catch (error) {
+    console.error('Error updating project member role:', error);
+    res.status(500).json({ message: 'Failed to update project member role' });
   }
 }

@@ -8,6 +8,7 @@ import {
   viewProjectMembers,
   addProjectMember,
   removeProjectMember,
+  updateProjectMemberRole,
 } from '../controllers/projectMemberController';
 
 const router = Router();
@@ -43,5 +44,16 @@ router.delete(
   checkProjectRole(ProjectRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await removeProjectMember(req as CustomRequest, res, prisma);
+  }
+);
+
+// Update Project Member Role
+router.patch(
+  '/projectMembers/:projectId/members/:userId',
+  (req: Request, res: Response, next: NextFunction) =>
+    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectRole(ProjectRole.ADMIN),
+  async (req: Request, res: Response): Promise<void> => {
+    await updateProjectMemberRole(req as CustomRequest, res, prisma);
   }
 );
