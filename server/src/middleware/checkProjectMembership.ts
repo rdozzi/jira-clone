@@ -45,6 +45,7 @@ export async function checkProjectMembership(
     );
 
     res.locals.userProjectDetails = projectProfile;
+    res.locals.userGlobalRole = userGlobalRole;
 
     next();
   } catch (error) {
