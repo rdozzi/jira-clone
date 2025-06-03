@@ -131,9 +131,7 @@ export async function createUser(
         email: `${user.email}`,
       },
     });
-
     res.status(201).json(user);
-    next();
   } catch (error) {
     console.error('Error creating user: ', error);
     res.status(500).json({ error: 'Failed to create user' });
@@ -158,7 +156,7 @@ export async function updateUser(
 
     // Check if a user is trying to change their own role
     if ('globalRole' in req.body) {
-      const isAdmin = req.user?.role === 'ADMIN';
+      const isAdmin = req.user?.globalRole === 'ADMIN';
       const isSelf = req.user?.id === userId;
 
       if (!isAdmin || isSelf) {
