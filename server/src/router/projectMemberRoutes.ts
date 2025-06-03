@@ -7,6 +7,7 @@ import prisma from '../lib/prisma';
 import {
   viewProjectMembers,
   addProjectMember,
+  removeProjectMember,
 } from '../controllers/projectMemberController';
 
 const router = Router();
@@ -31,5 +32,16 @@ router.post(
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response): Promise<void> => {
     await addProjectMember(req as CustomRequest, res, prisma);
+  }
+);
+
+// Remove Project Member
+router.delete(
+  '/projectMembers/:projectId/members/:userId',
+  (req: Request, res: Response, next: NextFunction) =>
+    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectRole(ProjectRole.ADMIN),
+  async (req: Request, res: Response): Promise<void> => {
+    await removeProjectMember(req as CustomRequest, res, prisma);
   }
 );
