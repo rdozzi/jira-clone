@@ -22,6 +22,7 @@ export async function checkProjectMembership(
     // If the user is a SUPERADMIN, allow access to all tickets
     if (userGlobalRole === 'SUPERADMIN') {
       res.locals.userGlobalRole = userGlobalRole;
+      res.locals.userId = userId;
       return next();
     }
 
