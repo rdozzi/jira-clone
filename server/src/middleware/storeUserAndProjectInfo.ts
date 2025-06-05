@@ -1,7 +1,7 @@
-import { Response, NextFunction } from 'express';
+import { Response, NextFunction, RequestHandler } from 'express';
 import { CustomRequest } from '../types/CustomRequest';
 
-export function storeUserAndProjectInfo(
+function storeUserAndProjectInfoFn(
   req: CustomRequest,
   res: Response,
   next: NextFunction
@@ -15,7 +15,10 @@ export function storeUserAndProjectInfo(
     globalRole: userGlobalRole,
   };
 
-  res.locals.userProjectDetails = userProjects;
+  res.locals.userProject = userProjects;
 
   next();
 }
+
+export const storeUserAndProjectInfo =
+  storeUserAndProjectInfoFn as unknown as RequestHandler;
