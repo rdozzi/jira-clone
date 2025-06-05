@@ -15,6 +15,7 @@ import cors from 'cors';
 import { authenticate } from './middleware/authenticate';
 import { loadUserProjects } from './middleware/loadUserProjects';
 import { globalLogMiddleware } from './middleware/logMiddleware';
+import { storeUserAndProjectInfo } from './middleware/storeUserAndProjectInfo';
 
 dotenv.config();
 
@@ -40,6 +41,9 @@ app.use(authenticate);
 
 // Get user project associations
 app.use(loadUserProjects);
+
+// Store user and project info in response locals
+app.use(storeUserAndProjectInfo);
 
 // Protected routes
 app.use('/api', userRoutes);
