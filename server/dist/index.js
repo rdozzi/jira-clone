@@ -20,6 +20,7 @@ const cors_1 = __importDefault(require("cors"));
 const authenticate_1 = require("./middleware/authenticate");
 const loadUserProjects_1 = require("./middleware/loadUserProjects");
 const logMiddleware_1 = require("./middleware/logMiddleware");
+const storeUserAndProjectInfo_1 = require("./middleware/storeUserAndProjectInfo");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // Middleware
@@ -35,6 +36,8 @@ app.use('/api', authRoutes_1.default);
 app.use(authenticate_1.authenticate);
 // Get user project associations
 app.use(loadUserProjects_1.loadUserProjects);
+// Store user and project info in response locals
+app.use(storeUserAndProjectInfo_1.storeUserAndProjectInfo);
 // Protected routes
 app.use('/api', userRoutes_1.default);
 app.use('/api', bannedEmailRoutes_1.default);
