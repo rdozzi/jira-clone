@@ -28,8 +28,7 @@ export default router;
 // Add Project Member
 router.post(
   '/projectMembers/:projectId/members',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership,
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response): Promise<void> => {
     await addProjectMember(req as CustomRequest, res, prisma);
@@ -39,8 +38,7 @@ router.post(
 // Remove Project Member
 router.delete(
   '/projectMembers/:projectId/members/:userId',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership,
   checkProjectRole(ProjectRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await removeProjectMember(req as CustomRequest, res, prisma);
@@ -50,8 +48,7 @@ router.delete(
 // Update Project Member Role
 router.patch(
   '/projectMembers/:projectId/members/:userId',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership,
   checkProjectRole(ProjectRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await updateProjectMemberRole(req as CustomRequest, res, prisma);
