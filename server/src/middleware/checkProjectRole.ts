@@ -4,7 +4,9 @@ import { hasRequiredProjectRole } from '../lib/roles';
 
 export function checkProjectRole(requiredRole: ProjectRole) {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const userGlobalRole = res.locals.userGlobalRole as GlobalRole | undefined;
+    const userGlobalRole = res.locals.userInfo?.globalRole as
+      | GlobalRole
+      | undefined;
 
     if (userGlobalRole === GlobalRole.SUPERADMIN) {
       return next();
