@@ -17,7 +17,7 @@ export async function checkProjectMembership(
     const userProjects = res.locals.userProjects; // User project associations
 
     const { projectId } = req.params; // For ProjectMember specific selections
-    const requestedProjectId = parseInt(projectId, 10);
+    const requestedProjectId = res.locals.projectId || parseInt(projectId, 10);
 
     if (!userId) {
       res.status(403).json({ message: 'No User Id defined' });
