@@ -1,15 +1,20 @@
-import { Response, NextFunction } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
+import { Request, Response, NextFunction } from 'express';
+import { ProjectRole } from '@prisma/client';
+
+type UserProject = {
+  projectId: number;
+  projectRole: ProjectRole;
+};
 
 export async function checkProjectMembership(
-  req: CustomRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const userId = req.user?.id;
-    const userGlobalRole = req.user?.globalRole;
-    const userProjects = req.userProjects; // User project associations
+    const userId = res.locals.userInfo?.id;
+    const userGlobalRole = res.locals.userInfo?.globalRole;
+    const userProjects = res.locals.userProjects; // User project associations
 
     const { projectId } = req.params; // For ProjectMember specific selections
     const requestedProjectId = parseInt(projectId, 10);
@@ -31,8 +36,8 @@ export async function checkProjectMembership(
       return;
     }
 
-    const userProjectIds = userProjects.map(
-      (userProject) => userProject.projectId
+    const userProjectIds: number[] = userProjects.map(
+      (userProject: UserProject) => userProject.projectId
     );
 
     if (!userProjectIds?.includes(requestedProjectId)) {
@@ -42,11 +47,10 @@ export async function checkProjectMembership(
 
     // The specific user information pertaining to requestedProjectId
     const projectProfile = userProjects.find(
-      (project) => project.projectId === requestedProjectId
+      (userProject: UserProject) => userProject.projectId === requestedProjectId
     );
 
     res.locals.userProjectDetails = projectProfile;
-    res.locals.userGlobalRole = userGlobalRole;
 
     next();
   } catch (error) {
