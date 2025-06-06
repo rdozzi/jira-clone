@@ -9,6 +9,7 @@ import { authorizeGlobalRole } from '../middleware/authorizeGlobalRole';
 import { GlobalRole, ProjectRole } from '@prisma/client';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
+import { resolveProjectIdFromTicket } from '../middleware/resolveProjectIdFromTicket';
 
 const router = Router();
 
@@ -24,6 +25,7 @@ router.get(
 // Get Logs by TicketId
 router.get(
   '/activity-logs/:ticketId/ticket',
+  resolveProjectIdFromTicket,
   checkProjectMembership,
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response): Promise<void> => {
