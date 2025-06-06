@@ -15,7 +15,7 @@ function storeUserAndProjectInfoFn(
     globalRole: userGlobalRole,
   };
 
-  res.locals.userProject = userProjects;
+  res.locals.userProjects = userProjects;
 
   next();
 }
