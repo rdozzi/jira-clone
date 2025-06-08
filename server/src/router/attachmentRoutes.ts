@@ -14,16 +14,16 @@ import { checkProjectRole } from '../middleware/checkProjectRole';
 import {
   checkAttachmentOwnership,
   checkMultipleAttachmentOwnership,
-} from '../middleware/checkAttachmentOwnershipMiddleware';
+} from '../middleware/attachments/checkAttachmentOwnershipMiddleware';
 
 import {
   uploadSingleMiddleware,
   uploadMultipleMiddleware,
-} from '../middleware/uploadMiddleware';
-import { deleteManyAttachmentMiddleware } from '../middleware/deleteManyAttachmentMiddleware';
-import { validateAttachmentExists } from '../middleware/deleteAttachmentMiddleware';
-import { downloadSingleAttachmentMiddleware } from '../middleware/downloadSingleMiddleware';
-import { downloadMultipleAttachmentMiddleware } from '../middleware/downloadMultipleMiddleware';
+} from '../middleware/attachments/uploadMiddleware';
+import { deleteManyAttachmentMiddleware } from '../middleware/attachments/deleteManyAttachmentMiddleware';
+import { validateAttachmentExists } from '../middleware/attachments/deleteAttachmentMiddleware';
+import { downloadSingleAttachmentMiddleware } from '../middleware/attachments/downloadSingleMiddleware';
+import { downloadMultipleAttachmentMiddleware } from '../middleware/attachments/downloadMultipleMiddleware';
 
 import { getAllAttachments } from '../controllers/attachmentControllers/getAllAttachments';
 import {
