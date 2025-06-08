@@ -1,5 +1,5 @@
 import { NextFunction, Response } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
+import { CustomRequest } from '../../types/CustomRequest';
 import { PrismaClient } from '@prisma/client';
 
 export function checkAttachmentOwnership(prisma: PrismaClient) {
