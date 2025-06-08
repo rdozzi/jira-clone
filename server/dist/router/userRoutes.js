@@ -11,7 +11,7 @@ const checkProjectMembership_1 = require("../middleware/checkProjectMembership")
 const checkProjectRole_1 = require("../middleware/checkProjectRole");
 const authorizeSelfOrAdmin_1 = require("../middleware/authorizeSelfOrAdmin");
 const userController_1 = require("../controllers/userController");
-const uploadMiddleware_1 = require("../middleware/uploadMiddleware");
+const uploadMiddleware_1 = require("../middleware/attachments/uploadMiddleware");
 const router = (0, express_1.Router)();
 // Get all users
 router.get('/users/all', (0, authorizeGlobalRole_1.authorizeGlobalRole)(client_1.GlobalRole.USER), async (req, res) => {

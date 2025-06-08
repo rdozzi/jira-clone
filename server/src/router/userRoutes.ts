@@ -21,7 +21,7 @@ import {
   updateUser,
   updateUserAvatar,
 } from '../controllers/userController';
-import { uploadSingleMiddleware } from '../middleware/uploadMiddleware';
+import { uploadSingleMiddleware } from '../middleware/attachments/uploadMiddleware';
 
 const router = Router();
 
