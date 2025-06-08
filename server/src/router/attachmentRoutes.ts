@@ -37,10 +37,18 @@ import { downloadMultipleAttachments } from '../controllers/attachmentController
 
 const router = Router();
 
-// Get all attachments if Entity/Id is not provided
+// Get all attachments
 router.get(
   '/attachments',
   authorizeGlobalRole(GlobalRole.ADMIN),
+  async (req: Request, res: Response): Promise<void> => {
+    await getAllAttachments(req, res, prisma);
+  }
+);
+
+// Get all attachments by Entity/Id
+router.get(
+  '/attachments/:entityType/:entityId',
   async (req: Request, res: Response): Promise<void> => {
     await getAllAttachments(req, res, prisma);
   }
