@@ -2,7 +2,7 @@ import multer from 'multer';
 import { Request } from 'express';
 import path from 'path';
 import fs from 'fs';
-import { getStorageType } from '../config/storage';
+import { getStorageType } from '../../config/storage';
 
 const storageType = getStorageType();
 

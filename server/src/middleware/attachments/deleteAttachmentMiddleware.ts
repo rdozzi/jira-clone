@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
-import prisma from '../lib/prisma';
+import { CustomRequest } from '../../types/CustomRequest';
+import prisma from '../../lib/prisma';
 
 export async function validateAttachmentExists(
   req: CustomRequest,
