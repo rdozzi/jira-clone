@@ -5,7 +5,7 @@ import {
   getLogbyTicketId,
   getLogbyUserId,
 } from '../controllers/activityController';
-import { authorizeGlobalRole } from '../middleware/authorizeGlobalRole';
+import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { GlobalRole, ProjectRole } from '@prisma/client';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';

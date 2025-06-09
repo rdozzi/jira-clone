@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { CustomRequest } from '../types/CustomRequest';
 import { GlobalRole, ProjectRole } from '@prisma/client';
-import { authorizeGlobalRole } from '../middleware/authorizeGlobalRole';
+import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
 import { checkCommentOwnership } from '../middleware/checkCommentOwnership';

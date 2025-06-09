@@ -12,10 +12,10 @@ import activityLogRoutes from './router/activityLogRoutes';
 import projectMemberRoutes from './router/projectMemberRoutes';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import { authenticate } from './middleware/authenticate';
-import { loadUserProjects } from './middleware/loadUserProjects';
+import { authenticate } from './middleware/authAndLoadInfoMiddleware/authenticate';
+import { loadUserProjects } from './middleware/authAndLoadInfoMiddleware/loadUserProjects';
 import { globalLogMiddleware } from './middleware/logMiddleware';
-import { storeUserAndProjectInfo } from './middleware/storeUserAndProjectInfo';
+import { storeUserAndProjectInfo } from './middleware/authAndLoadInfoMiddleware/storeUserAndProjectInfo';
 
 dotenv.config();
 

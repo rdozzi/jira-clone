@@ -7,7 +7,7 @@ import {
   updateProject,
   deleteProject,
 } from '../controllers/projectController';
-import { authorizeGlobalRole } from '../middleware/authorizeGlobalRole';
+import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { GlobalRole } from '@prisma/client';
 import { CustomRequest } from '../types/CustomRequest';
 

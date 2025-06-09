@@ -8,10 +8,10 @@ import {
 import { CustomRequest } from '../types/CustomRequest';
 import prisma from '../lib/prisma';
 import { GlobalRole, ProjectRole } from '@prisma/client';
-import { authorizeGlobalRole } from '../middleware/authorizeGlobalRole';
+import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
-import { authorizeSelfOrAdmin } from '../middleware/authorizeSelfOrAdmin';
+import { authorizeSelfOrAdmin } from '../middleware/authAndLoadInfoMiddleware/authorizeSelfOrAdmin';
 import {
   getAllUsers,
   getUser,

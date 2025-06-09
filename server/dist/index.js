@@ -17,10 +17,10 @@ const activityLogRoutes_1 = __importDefault(require("./router/activityLogRoutes"
 const projectMemberRoutes_1 = __importDefault(require("./router/projectMemberRoutes"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
-const authenticate_1 = require("./middleware/authenticate");
-const loadUserProjects_1 = require("./middleware/loadUserProjects");
+const authenticate_1 = require("./middleware/authAndLoadInfoMiddleware/authenticate");
+const loadUserProjects_1 = require("./middleware/authAndLoadInfoMiddleware/loadUserProjects");
 const logMiddleware_1 = require("./middleware/logMiddleware");
-const storeUserAndProjectInfo_1 = require("./middleware/storeUserAndProjectInfo");
+const storeUserAndProjectInfo_1 = require("./middleware/authAndLoadInfoMiddleware/storeUserAndProjectInfo");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // Middleware

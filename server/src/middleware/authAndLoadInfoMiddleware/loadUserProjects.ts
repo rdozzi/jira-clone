@@ -1,6 +1,6 @@
 import { Response, NextFunction, RequestHandler } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
-import prisma from '../lib/prisma';
+import { CustomRequest } from '../../types/CustomRequest';
+import prisma from '../../lib/prisma';
 
 async function loadUserProjectsFn(
   req: CustomRequest,

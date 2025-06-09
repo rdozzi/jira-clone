@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const client_1 = require("@prisma/client");
-const authorizeGlobalRole_1 = require("../middleware/authorizeGlobalRole");
+const authorizeGlobalRole_1 = require("../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole");
 const checkProjectMembership_1 = require("../middleware/checkProjectMembership");
 const checkProjectRole_1 = require("../middleware/checkProjectRole");
 const ticketController_1 = require("../controllers/ticketController");

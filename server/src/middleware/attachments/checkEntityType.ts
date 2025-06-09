@@ -62,6 +62,8 @@ export async function checkEntityType(
 
     res.locals.projectId = projectId; // This res.locals.projectId goes to checkProjectMembership
 
+    res.locals.entityType = attachment.entityType; // This res.locals.entityType goes to middleware to check for ticket or comment ownership
+
     next();
   } catch (error) {
     console.error('Error checking entity type: ', error);

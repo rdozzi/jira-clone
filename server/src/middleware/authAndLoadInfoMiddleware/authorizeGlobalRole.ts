@@ -1,7 +1,7 @@
 import { Response, NextFunction, RequestHandler } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
+import { CustomRequest } from '../../types/CustomRequest';
 import { GlobalRole } from '@prisma/client';
-import { hasRequiredGlobalRole } from '../lib/roles';
+import { hasRequiredGlobalRole } from '../../lib/roles';
 
 export function authorizeGlobalRole(requiredRole: GlobalRole) {
   return ((req: CustomRequest, res: Response, next: NextFunction) => {

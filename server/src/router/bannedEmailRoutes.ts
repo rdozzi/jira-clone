@@ -5,7 +5,7 @@ import {
   getBannedEmailById,
   createBannedEmail,
 } from '../controllers/bannedEmailController';
-import { authorizeGlobalRole } from '../middleware/authorizeGlobalRole';
+import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { GlobalRole } from '@prisma/client';
 
 const router = Router();
