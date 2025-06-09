@@ -1,6 +1,7 @@
 import { Response, NextFunction, RequestHandler } from 'express';
 import { CustomRequest } from '../../types/CustomRequest';
 
+// Top level function to store user and project information relevant to auth middleware in to res.locals variables
 function storeUserAndProjectInfoFn(
   req: CustomRequest,
   res: Response,
