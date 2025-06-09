@@ -3,6 +3,7 @@ import { CustomRequest } from '../../types/CustomRequest';
 import fs from 'fs/promises';
 import path from 'path';
 import { PrismaClient, Attachment } from '@prisma/client';
+import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { buildLogEvent } from '../../services/buildLogEvent';
 
 export async function deleteAttachment(
@@ -30,6 +31,11 @@ export async function deleteAttachment(
       // Implement the logic to delete the file from cloud storage (Eventually!)
     }
 
+    const logEntityId = generateEntityIdForLog(
+      attachment.entityType,
+      attachment.entityId
+    );
+
     // Delete DB Record
     await prisma.attachment.delete({
       where: { id: attachment?.id },
@@ -49,9 +55,9 @@ export async function deleteAttachment(
         fileUrl: deletedAttachment.fileUrl,
         storageType: deletedAttachment.storageType,
       },
-      ticketId: deletedAttachment.entityId,
-      boardId: null,
-      projectId: null,
+      ticketId: logEntityId.ticketId,
+      boardId: logEntityId.boardId,
+      projectId: logEntityId.projectId,
     });
 
     res.status(200).json({ message: 'Attachment deleted successfully' });
