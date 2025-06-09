@@ -1,23 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
-import { GlobalRole, ProjectRole } from '@prisma/client';
+import { ProjectRole } from '@prisma/client';
 import { hasRequiredProjectRole } from '../lib/roles';
 
-export function checkProjectRole(requiredRole: ProjectRole) {
+export function checkProjectRole(
+  requiredRole: ProjectRole,
+  options?: { allowGlobalSuperAdmin?: boolean }
+) {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const userGlobalRole = res.locals.userInfo?.globalRole as
-      | GlobalRole
-      | undefined;
-
-    if (userGlobalRole === GlobalRole.SUPERADMIN) {
-      return next();
-    }
-
     const userProjectInfo:
       | {
           projectId: number;
           projectRole: ProjectRole;
         }
       | undefined = res.locals.userProjectDetails;
+
+    const isSuperAdmin: boolean = res.locals.isGlobalSuperAdmin;
+
+    if (options?.allowGlobalSuperAdmin && isSuperAdmin) {
+      next();
+    }
 
     if (!userProjectInfo) {
       res
