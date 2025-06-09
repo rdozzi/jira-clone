@@ -1,8 +1,10 @@
 import { Response, NextFunction } from 'express';
 import { CustomRequest } from '../../types/CustomRequest';
 import { handleFileUpload } from '../../services/uploadService';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, AttachmentEntityType } from '@prisma/client';
+import { validateEntityAndId } from '../../utilities/validateEntityAndId';
 import { buildLogEvent } from '../../services/buildLogEvent';
+import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 
 export async function handleSingleUpload(
   req: CustomRequest,
@@ -17,13 +19,29 @@ export async function handleSingleUpload(
       });
     }
     const { entityType, entityId } = req.body;
-    const uploadedBy = req.user?.id;
+    const uploadedBy = res.locals.userInfo.id;
+    const entityIdParsed = parseInt(entityId, 10);
+
+    const entityRecord = await validateEntityAndId(
+      entityType as AttachmentEntityType,
+      entityIdParsed,
+      prisma
+    );
+
+    if (!entityRecord) {
+      return res.status(404).json({
+        message: `Record for entity: ${entityType} with id: ${entityId} was not found`,
+      });
+    }
+
+    const logEntityId = generateEntityIdForLog(entityType, entityIdParsed);
+
     const metadata = await handleFileUpload(req.file as Express.Multer.File);
 
     const attachment = await prisma.attachment.create({
       data: {
         entityType,
-        entityId: Number(entityId),
+        entityId: entityIdParsed,
         uploadedBy,
         fileName: metadata.filename,
         fileType: metadata.mimetype,
@@ -43,18 +61,17 @@ export async function handleSingleUpload(
       metadata: {
         metadata,
       },
-      ticketId: attachment.entityId,
-      boardId: null,
-      projectId: null,
+      ticketId: logEntityId?.ticketId,
+      boardId: logEntityId?.boardId,
+      projectId: logEntityId?.projectId,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: 'File uploaded successfully',
       attachment,
     });
-    next();
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'File upload failed',
       error: (error as Error).message,
     });
@@ -76,7 +93,22 @@ export async function handleMultipleUpload(
 
   try {
     const { entityType, entityId } = req.body;
-    const uploadedBy = req.user?.id;
+    const uploadedBy = res.locals.userInfo.id;
+    const entityIdParsed = parseInt(entityId, 10);
+
+    const entityRecord = await validateEntityAndId(
+      entityType as AttachmentEntityType,
+      entityIdParsed,
+      prisma
+    );
+
+    if (!entityRecord) {
+      return res.status(404).json({
+        message: `Record for entity: ${entityType} wit id: ${entityId} not found`,
+      });
+    }
+
+    const logEntityId = generateEntityIdForLog(entityType, entityIdParsed);
 
     const createdAttachments = await Promise.all(
       files.map(async (file) => {
@@ -84,7 +116,7 @@ export async function handleMultipleUpload(
         const attachment = await prisma.attachment.create({
           data: {
             entityType,
-            entityId: Number(entityId),
+            entityId: entityIdParsed,
             uploadedBy,
             fileName: metadata.filename,
             fileType: metadata.mimetype,
@@ -113,19 +145,18 @@ export async function handleMultipleUpload(
           fileUrl: attachment.fileUrl,
           storageType: attachment.storageType,
         },
-        ticketId: attachment.entityId,
-        boardId: null,
-        projectId: null,
+        ticketId: logEntityId?.ticketId,
+        boardId: logEntityId?.boardId,
+        projectId: logEntityId?.projectId,
       });
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: `${createdAttachments.length} uploaded successfully`,
       createdAttachments,
     });
-    next();
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'File upload failed',
       error: (error as Error).message,
     });
