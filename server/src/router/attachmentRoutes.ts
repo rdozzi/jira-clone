@@ -15,6 +15,8 @@ import {
   checkAttachmentOwnership,
   checkMultipleAttachmentOwnership,
 } from '../middleware/attachments/checkAttachmentOwnershipMiddleware';
+import { checkEntityType } from '../middleware/attachments/checkEntityType';
+import { checkIfGlobalSuperAdmin } from '../middleware/checkIfGlobalSuperAdmin';
 
 import {
   uploadSingleMiddleware,
@@ -49,6 +51,11 @@ router.get(
 // Get all attachments by Entity/Id
 router.get(
   '/attachments/:entityType/:entityId',
+  authorizeGlobalRole(GlobalRole.USER),
+  checkEntityType,
+  checkIfGlobalSuperAdmin,
+  checkProjectMembership({ allowGlobalSuperAdmin: true }),
+  checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
   async (req: Request, res: Response): Promise<void> => {
     await getAllAttachments(req, res, prisma);
   }
@@ -58,8 +65,8 @@ router.get(
 router.post(
   '/attachments/single',
   authorizeGlobalRole(GlobalRole.USER),
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkEntityType,
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   uploadSingleMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -71,8 +78,8 @@ router.post(
 router.post(
   '/attachments/many',
   authorizeGlobalRole(GlobalRole.USER),
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkEntityType,
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   uploadMultipleMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -84,9 +91,9 @@ router.post(
 router.delete(
   '/attachments/:id',
   authorizeGlobalRole(GlobalRole.USER),
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
-  checkProjectRole(ProjectRole.USER),
+  checkEntityType,
+  checkProjectMembership({ allowGlobalSuperAdmin: true }),
+  checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
   checkAttachmentOwnership(prisma) as RequestHandler,
   validateAttachmentExists as unknown as RequestHandler,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -98,9 +105,9 @@ router.delete(
 router.delete(
   '/attachments',
   authorizeGlobalRole(GlobalRole.USER),
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
-  checkProjectRole(ProjectRole.USER),
+  checkEntityType,
+  checkProjectMembership({ allowGlobalSuperAdmin: true }),
+  checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
   checkMultipleAttachmentOwnership(prisma) as RequestHandler,
   deleteManyAttachmentMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -111,9 +118,10 @@ router.delete(
 // Download attachment
 router.get(
   '/attachments/:id/download',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
-  checkProjectRole(ProjectRole.USER),
+  authorizeGlobalRole(GlobalRole.USER),
+  checkEntityType,
+  checkProjectMembership({ allowGlobalSuperAdmin: true }),
+  checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
   downloadSingleAttachmentMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await downloadSingleAttachment(req, res, next, prisma);
@@ -123,9 +131,10 @@ router.get(
 // Download multiple attachments by Entity/Id
 router.post(
   '/attachments/download',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
-  checkProjectRole(ProjectRole.USER),
+  authorizeGlobalRole(GlobalRole.USER),
+  checkEntityType,
+  checkProjectMembership({ allowGlobalSuperAdmin: true }),
+  checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
   downloadMultipleAttachmentMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await downloadMultipleAttachments(req, res, next, prisma);
