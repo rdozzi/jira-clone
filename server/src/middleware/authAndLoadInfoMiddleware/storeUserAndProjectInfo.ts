@@ -1,5 +1,5 @@
 import { Response, NextFunction, RequestHandler } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
+import { CustomRequest } from '../../types/CustomRequest';
 
 function storeUserAndProjectInfoFn(
   req: CustomRequest,

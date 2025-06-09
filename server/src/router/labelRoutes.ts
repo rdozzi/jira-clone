@@ -7,7 +7,7 @@ import {
   updateLabel,
   deleteLabel,
 } from '../controllers/labelController';
-import { authorizeGlobalRole } from '../middleware/authorizeGlobalRole';
+import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { GlobalRole } from '@prisma/client';
 
 const router = Router();
