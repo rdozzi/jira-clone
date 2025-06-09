@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs/promises';
 import { PrismaClient } from '@prisma/client';
+import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { buildLogEvent } from '../../services/buildLogEvent';
 
 export async function deleteManyAttachments(
@@ -48,6 +49,11 @@ export async function deleteManyAttachments(
         );
       }
     }
+
+    const attachmentLogEntityIds = attachments.map((attachment) =>
+      generateEntityIdForLog(attachment.entityType, attachment.entityId)
+    );
+
     await prisma.attachment.deleteMany({
       where: {
         id: {
@@ -56,7 +62,9 @@ export async function deleteManyAttachments(
       },
     });
 
-    res.locals.logEvents = deletedAttachments.map((attachment) => {
+    res.locals.logEvents = deletedAttachments.map((attachment, index) => {
+      const logEntityId = attachmentLogEntityIds[index];
+
       return buildLogEvent({
         userId: attachment.uploadedBy,
         actorType: 'USER',
@@ -71,9 +79,9 @@ export async function deleteManyAttachments(
           fileUrl: attachment.fileUrl,
           storageType: attachment.storageType,
         },
-        ticketId: attachment.entityId,
-        boardId: null,
-        projectId: null,
+        ticketId: logEntityId.ticketId,
+        boardId: logEntityId.boardId,
+        projectId: logEntityId.projectId,
       });
     });
 
