@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { Response, NextFunction, RequestHandler } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
-import { DecodedTokenPayload } from '../types/DecodedTokenPayload';
+import { CustomRequest } from '../../types/CustomRequest';
+import { DecodedTokenPayload } from '../../types/DecodedTokenPayload';
 
 dotenv.config();
 
