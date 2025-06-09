@@ -2,6 +2,7 @@ import { Response, NextFunction, RequestHandler } from 'express';
 import { CustomRequest } from '../../types/CustomRequest';
 import prisma from '../../lib/prisma';
 
+// Top level middleware that follows authenticate; used to load project associations pertinent to user
 async function loadUserProjectsFn(
   req: CustomRequest,
   res: Response,
@@ -12,10 +13,6 @@ async function loadUserProjectsFn(
       console.error('User role missing in user object');
       res.status(500).json({ message: 'User role is missing.' });
       return;
-    }
-
-    if (req.user?.globalRole === 'SUPERADMIN') {
-      return next();
     }
 
     const projectMemberships = await prisma.projectMember.findMany({
