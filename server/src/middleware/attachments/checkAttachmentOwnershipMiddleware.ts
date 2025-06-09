@@ -1,39 +1,28 @@
-import { NextFunction, Response } from 'express';
-import { CustomRequest } from '../../types/CustomRequest';
+import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 
 export function checkAttachmentOwnership(prisma: PrismaClient) {
-  return async (req: CustomRequest, res: Response, next: NextFunction) => {
-    const userId = req.user?.id;
-    const userRole = req.user?.globalRole;
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const userId = res.locals.userInfo.id;
     const attachmentId = parseInt(req.params.id, 10);
-
-    // If the user is a SUPERADMIN, allow access to all attachments
-    if (userRole === 'SUPERADMIN') {
-      return next();
-    }
 
     const attachment = await prisma.attachment.findUnique({
       where: { id: attachmentId },
     });
 
     if (!attachment || attachment.uploadedBy !== userId) {
-      return res.status(403).json({ message: 'Forbidden: Not our attachment' });
+      return res
+        .status(403)
+        .json({ message: 'Forbidden: Not your attachment' });
     }
     next();
   };
 }
 
 export function checkMultipleAttachmentOwnership(prisma: PrismaClient) {
-  return async (req: CustomRequest, res: Response, next: NextFunction) => {
-    const userId = req.user?.id;
-    const userRole = req.user?.globalRole;
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const userId = res.locals.userInfo.id;
     const attachmentIds: number[] = req.body.ids;
-
-    // If the user is a SUPERADMIN, allow access to all attachments
-    if (userRole === 'SUPERADMIN') {
-      return next();
-    }
 
     if (!Array.isArray(attachmentIds) || attachmentIds.length === 0) {
       return res
