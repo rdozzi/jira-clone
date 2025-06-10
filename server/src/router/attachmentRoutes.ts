@@ -7,17 +7,15 @@ import {
 } from 'express';
 import { CustomRequest } from '../types/CustomRequest';
 import { GlobalRole, ProjectRole } from '@prisma/client';
-import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import prisma from '../lib/prisma';
+
+// Middleware imports
+import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
-import {
-  checkAttachmentOwnership,
-  checkMultipleAttachmentOwnership,
-} from '../middleware/attachments/checkAttachmentOwnershipMiddleware';
+
 import { checkEntityType } from '../middleware/attachments/checkEntityType';
 import { checkIfGlobalSuperAdmin } from '../middleware/checkIfGlobalSuperAdmin';
-
 import {
   uploadSingleMiddleware,
   uploadMultipleMiddleware,
@@ -26,7 +24,10 @@ import { deleteManyAttachmentMiddleware } from '../middleware/attachments/delete
 import { validateAttachmentExists } from '../middleware/attachments/deleteAttachmentMiddleware';
 import { downloadSingleAttachmentMiddleware } from '../middleware/attachments/downloadSingleMiddleware';
 import { downloadMultipleAttachmentMiddleware } from '../middleware/attachments/downloadMultipleMiddleware';
+import { checkTicketOrCommentOwnershipForAttachments } from '../middleware/attachments/checkTicketAndCommentOwnershipForAttachments';
+import { checkBoardAndProjectAccess } from '../middleware/attachments/checkBoardAndProjectAccess';
 
+// Controller Functions
 import { getAllAttachments } from '../controllers/attachmentControllers/getAllAttachments';
 import {
   handleSingleUpload,
@@ -68,6 +69,8 @@ router.post(
   checkEntityType,
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
+  checkTicketOrCommentOwnershipForAttachments,
+  checkBoardAndProjectAccess,
   uploadSingleMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await handleSingleUpload(req as CustomRequest, res, next, prisma);
@@ -81,6 +84,8 @@ router.post(
   checkEntityType,
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
+  checkTicketOrCommentOwnershipForAttachments,
+  checkBoardAndProjectAccess,
   uploadMultipleMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await handleMultipleUpload(req as CustomRequest, res, next, prisma);
@@ -89,12 +94,13 @@ router.post(
 
 // Delete attachment
 router.delete(
-  '/attachments/:id',
+  '/attachments/:entityId',
   authorizeGlobalRole(GlobalRole.USER),
   checkEntityType,
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
-  checkAttachmentOwnership(prisma) as RequestHandler,
+  checkTicketOrCommentOwnershipForAttachments,
+  checkBoardAndProjectAccess,
   validateAttachmentExists as unknown as RequestHandler,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteAttachment(req as CustomRequest, res, next, prisma);
@@ -108,16 +114,17 @@ router.delete(
   checkEntityType,
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
-  checkMultipleAttachmentOwnership(prisma) as RequestHandler,
+  checkTicketOrCommentOwnershipForAttachments,
+  checkBoardAndProjectAccess,
   deleteManyAttachmentMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteManyAttachments(req, res, next, prisma);
   }
 );
 
-// Download attachment
+// Download attachment by EntityId
 router.get(
-  '/attachments/:id/download',
+  '/attachments/:entityId/download',
   authorizeGlobalRole(GlobalRole.USER),
   checkEntityType,
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
@@ -128,7 +135,7 @@ router.get(
   }
 );
 
-// Download multiple attachments by Entity/Id
+// Download multiple attachments by EntityId
 router.post(
   '/attachments/download',
   authorizeGlobalRole(GlobalRole.USER),
