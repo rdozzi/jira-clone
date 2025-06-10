@@ -15,7 +15,7 @@ export function checkProjectMembership(options?: {
       const userProjects = res.locals.userProjects; // User project associations
       const isSuperAdmin: boolean = res.locals.isGlobalSuperAdmin;
 
-      const { projectId } = req.params; // For ProjectMember specific selections
+      const { projectId } = req.params || req.body; // For ProjectMember specific selections
       const requestedProjectId =
         res.locals.projectId || parseInt(projectId, 10);
 
