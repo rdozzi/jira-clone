@@ -26,7 +26,7 @@ router.get(
 router.get(
   '/activity-logs/:ticketId/ticket',
   resolveProjectIdFromTicket,
-  checkProjectMembership,
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response): Promise<void> => {
     await getLogbyTicketId(req, res, prisma);

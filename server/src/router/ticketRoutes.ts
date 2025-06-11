@@ -30,8 +30,7 @@ router.get(
 // Get Ticket by Id
 router.get(
   '/tickets/:id',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await getTicketById(req, res, prisma);
@@ -41,8 +40,7 @@ router.get(
 // Get all Tickets by User Id
 router.get(
   '/tickets/assigneeId/:userId',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   async (req: Request, res: Response): Promise<void> => {
     await getTicketByAssigneeId(req, res, prisma);
@@ -52,8 +50,7 @@ router.get(
 // Get Tickets by Board Id
 router.get(
   '/tickets/:boardId/board',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response): Promise<void> => {
     await getTicketsByBoardId(req, res, prisma);
@@ -63,8 +60,7 @@ router.get(
 // Create new ticket
 router.post(
   '/tickets',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await createNewTicket(req as CustomRequest, res, next, prisma);
@@ -74,8 +70,7 @@ router.post(
 // Delete ticket
 router.delete(
   '/tickets/:id',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   checkTicketOwnership(prisma),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -86,8 +81,7 @@ router.delete(
 // Update a ticket
 router.patch(
   '/tickets/updateTicket/:id',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   checkTicketOwnership(prisma),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {

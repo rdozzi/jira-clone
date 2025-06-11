@@ -22,7 +22,7 @@ router.get('/users', (0, authorizeGlobalRole_1.authorizeGlobalRole)(client_1.Glo
     await (0, userController_1.getUser)(req, res, prisma_1.default);
 });
 // Get user by project
-router.get('/users/:id/project', (req, res, next) => (0, checkProjectMembership_1.checkProjectMembership)(req, res, next), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.VIEWER), async (req, res) => {
+router.get('/users/:id/project', (0, checkProjectMembership_1.checkProjectMembership)(), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.VIEWER), async (req, res) => {
     await (0, userController_1.getUserByProjectId)(req, res, prisma_1.default);
 });
 // Create user
