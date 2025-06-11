@@ -28,8 +28,7 @@ router.get(
 // Get comments for a specific ticket
 router.get(
   '/comments/:ticketId',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response): Promise<void> => {
     await getAllCommentsById(req, res, prisma);
@@ -39,8 +38,7 @@ router.get(
 // Create a comment
 router.post(
   '/comments',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await createComment(req as CustomRequest, res, next, prisma);
@@ -50,8 +48,7 @@ router.post(
 // Delete comment
 router.delete(
   '/comments/:id',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   checkCommentOwnership(prisma),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -62,8 +59,7 @@ router.delete(
 // Update comment
 router.patch(
   '/comments/:commentId',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   checkCommentOwnership(prisma),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {

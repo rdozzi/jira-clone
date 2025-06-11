@@ -46,8 +46,7 @@ router.get(
 // Get user by project
 router.get(
   '/users/:id/project',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response) => {
     await getUserByProjectId(req as CustomRequest, res, prisma);

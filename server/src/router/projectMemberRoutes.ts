@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response } from 'express';
 import { CustomRequest } from '../types/CustomRequest';
 import { ProjectRole } from '@prisma/client';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
@@ -16,8 +16,7 @@ const router = Router();
 // View Project Members
 router.get(
   '/projectMembers/:projectId/members',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response): Promise<void> => {
     await viewProjectMembers(req, res, prisma);
@@ -28,7 +27,7 @@ export default router;
 // Add Project Member
 router.post(
   '/projectMembers/:projectId/members',
-  checkProjectMembership,
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response): Promise<void> => {
     await addProjectMember(req as CustomRequest, res, prisma);
@@ -38,7 +37,7 @@ router.post(
 // Remove Project Member
 router.delete(
   '/projectMembers/:projectId/members/:userId',
-  checkProjectMembership,
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await removeProjectMember(req as CustomRequest, res, prisma);
@@ -48,7 +47,7 @@ router.delete(
 // Update Project Member Role
 router.patch(
   '/projectMembers/:projectId/members/:userId',
-  checkProjectMembership,
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await updateProjectMemberRole(req as CustomRequest, res, prisma);
