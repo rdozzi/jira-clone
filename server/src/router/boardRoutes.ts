@@ -1,5 +1,4 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
 import { GlobalRole, ProjectRole } from '@prisma/client';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
@@ -36,9 +35,8 @@ router.get(
 // Get boards by Project Id
 router.get(
   '/boards/:projectId/project',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
-  checkProjectRole(ProjectRole.VIEWER),
+  checkProjectMembership({ allowGlobalSuperAdmin: true }),
+  checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
   async (req: Request, res: Response): Promise<void> => {
     await getBoardsByProjectId(req, res, prisma);
   }
@@ -47,33 +45,30 @@ router.get(
 // Create board
 router.post(
   '/boards',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await createBoard(req as CustomRequest, res, next, prisma);
+    await createBoard(req, res, next, prisma);
   }
 );
 
 // Update board
 router.patch(
   '/boards/:boardId',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
+  checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await updateBoard(req as CustomRequest, res, next, prisma);
+    await updateBoard(req, res, next, prisma);
   }
 );
 
 // Delete board
 router.delete(
   '/boards/:boardId',
-  (req: Request, res: Response, next: NextFunction) =>
-    checkProjectMembership(req as CustomRequest, res, next),
-  checkProjectRole(ProjectRole.ADMIN),
+  checkProjectMembership({ allowGlobalSuperAdmin: true }),
+  checkProjectRole(ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteBoard(req as CustomRequest, res, next, prisma);
+    await deleteBoard(req, res, next, prisma);
   }
 );
 
