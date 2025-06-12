@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { ProjectRole } from '@prisma/client';
+import { GlobalRole, ProjectRole } from '@prisma/client';
+import { resolveProjectIdFromEntity } from '../utilities/resolveProjectIdFromEntity';
 
 type UserProject = {
   projectId: number;
@@ -9,15 +10,27 @@ type UserProject = {
 export function checkProjectMembership(options?: {
   allowGlobalSuperAdmin?: boolean;
 }) {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const userId = res.locals.userInfo?.id;
       const userProjects = res.locals.userProjects; // User project associations
-      const isSuperAdmin: boolean = res.locals.isGlobalSuperAdmin;
+      const globalRole = res.locals.userInfo.globalRole;
 
-      const { projectId } = req.params || req.body; // For ProjectMember specific selections
-      const requestedProjectId =
-        res.locals.projectId || parseInt(projectId, 10);
+      let projectId = req.params.projectId || req.body.projectId;
+
+      if (!projectId) {
+        const { boardId } = req.params;
+
+        projectId = await resolveProjectIdFromEntity(
+          'BOARD',
+          parseInt(boardId, 10)
+        );
+      }
+      const requestedProjectId = parseInt(projectId, 10);
 
       if (!userId) {
         res.status(403).json({ message: 'No User Id defined' });
@@ -25,9 +38,11 @@ export function checkProjectMembership(options?: {
       }
 
       // SuperAdmin bypass check
-
-      if (options?.allowGlobalSuperAdmin && isSuperAdmin) {
-        next();
+      if (
+        options?.allowGlobalSuperAdmin &&
+        globalRole === GlobalRole.SUPERADMIN
+      ) {
+        return next();
       }
 
       if (!userProjects) {
