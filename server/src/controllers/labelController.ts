@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
 import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
@@ -21,13 +20,13 @@ export async function getAllLabels(
 
 //Create a label
 export async function createNewLabel(
-  req: CustomRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
-    const user = req.user;
+    const user = res.locals.userInfo;
 
     if (!user) {
       return res.status(401).json({ message: 'Unauthorized: User Not found' });
@@ -62,13 +61,13 @@ export async function createNewLabel(
 
 //Update a label
 export async function updateLabel(
-  req: CustomRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
-    const user = req.user;
+    const user = res.locals.userInfo;
 
     if (!user) {
       return res.status(401).json({ message: 'Unauthorized: User Not found' });
@@ -116,13 +115,13 @@ export async function updateLabel(
 
 //Delete a label
 export async function deleteLabel(
-  req: CustomRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
-    const user = req.user;
+    const user = res.locals.userInfo;
 
     if (!user) {
       return res.status(401).json({ message: 'Unauthorized: User Not found' });
