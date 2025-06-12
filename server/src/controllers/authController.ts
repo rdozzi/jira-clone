@@ -66,7 +66,6 @@ export async function loginUser(
       userRole: user.globalRole,
       expiresIn: Date.now() + Number(process.env.JWT_EXPIRATION) * 1000,
     });
-    next();
   } catch (error) {
     console.error('Error logging in user: ', error);
     res.status(500).json({ error: 'Failed to log in user' });
