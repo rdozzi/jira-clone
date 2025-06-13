@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { AttachmentEntityType } from '@prisma/client';
 import prisma from '../../lib/prisma';
-import { getProjectIdByTicket } from '../../utilities/getProjectIDByEntityUtilities/getProjectIdByTicket';
-import { getProjectIdByBoard } from '../../utilities/getProjectIDByEntityUtilities/getProjectByBoard';
-import { getProjectIdByComment } from '../../utilities/getProjectIDByEntityUtilities/getProjectByComment';
+import { getProjectIdByTicket } from '../../utilities/getProjectIDByEntityUtilitiesForAttachments/getProjectIdByTicket';
+import { getProjectIdByBoard } from '../../utilities/getProjectIDByEntityUtilitiesForAttachments/getProjectByBoard';
+import { getProjectIdByComment } from '../../utilities/getProjectIDByEntityUtilitiesForAttachments/getProjectByComment';
 
 // Route level middleware to get the project id for all entities except user. The project id will then allow for association and authorization checks at the project level. User entities will have logic that isn't related to projects.
 
