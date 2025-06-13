@@ -24,10 +24,11 @@ export async function getBoardById(
   res: Response,
   prisma: PrismaClient
 ) {
-  const { id } = req.params;
+  const { boardId } = req.params;
+  const convertedBoardId = parseInt(boardId, 10);
   try {
     const board = await prisma.board.findUnique({
-      where: { id: Number(id) },
+      where: { id: convertedBoardId },
     });
     res.status(200).json(board);
   } catch (error) {
