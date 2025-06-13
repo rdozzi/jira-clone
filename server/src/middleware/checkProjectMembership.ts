@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { GlobalRole, ProjectRole } from '@prisma/client';
-import { resolveProjectIdFromEntity } from '../utilities/resolveProjectIdFromEntity';
 
 type UserProject = {
   projectId: number;
@@ -19,17 +18,8 @@ export function checkProjectMembership(options?: {
       const userId = res.locals.userInfo?.id;
       const userProjects = res.locals.userProjects; // User project associations
       const globalRole = res.locals.userInfo.globalRole;
+      const projectId = res.locals.projectId; // Derived from resolveProjectIdFrom[Entity: Board, Ticket, Comment, Project]
 
-      let projectId = req.params.projectId || req.body.projectId;
-
-      if (!projectId) {
-        const { boardId } = req.params;
-
-        projectId = await resolveProjectIdFromEntity(
-          'BOARD',
-          parseInt(boardId, 10)
-        );
-      }
       const requestedProjectId = parseInt(projectId, 10);
 
       if (!userId) {
