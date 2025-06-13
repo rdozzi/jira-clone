@@ -28,9 +28,6 @@ export async function createNewLabel(
   try {
     const user = res.locals.userInfo;
 
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized: User Not found' });
-    }
     const labelData = req.body;
     const label = await prisma.label.create({
       data: labelData,
@@ -68,10 +65,6 @@ export async function updateLabel(
 ) {
   try {
     const user = res.locals.userInfo;
-
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized: User Not found' });
-    }
 
     const labelData = req.body;
     const { labelId } = req.params;
@@ -122,10 +115,6 @@ export async function deleteLabel(
 ) {
   try {
     const user = res.locals.userInfo;
-
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized: User Not found' });
-    }
 
     const { labelId } = req.params;
     const convertedId = parseInt(labelId, 10);
