@@ -58,7 +58,7 @@ model Project {
 
   //Owner
   ownerId Int?
-  owner   User? @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  owner   User? @relation("ProjectOwner", fields: [ownerId], references: [id])
 
   //Membership
   members ProjectMember[]
@@ -96,8 +96,8 @@ model Ticket {
 
   //Relationship
   board        Board         @relation(fields: [boardId], references: [id])
-  assignee     User?         @relation(name: "assignee", fields: [assigneeId], references: [id], onDelete: SetNull)
-  reporter     User?         @relation(name: "reporter", fields: [reporterId], references: [id], onDelete: SetNull)
+  assignee     User?         @relation(name: "assignee", fields: [assigneeId], references: [id])
+  reporter     User?         @relation(name: "reporter", fields: [reporterId], references: [id])
   comments     Comment[]
   ticketLabels TicketLabel[]
 }
@@ -112,7 +112,7 @@ model Comment {
 
   //Relationship
   ticket Ticket @relation(fields: [ticketId], references: [id])
-  author User?  @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  author User?  @relation(fields: [authorId], references: [id])
 }
 
 model Attachment {
@@ -130,7 +130,7 @@ model Attachment {
   storageType StorageType          @default(LOCAL)
 
   //Relationships
-  uploaded User? @relation(fields: [uploadedBy], references: [id], onDelete: SetNull)
+  uploaded User? @relation(fields: [uploadedBy], references: [id])
 
   //Relationship
   @@index([entityType, entityId])
