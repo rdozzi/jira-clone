@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, ProjectRole } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 
@@ -23,10 +22,12 @@ export async function getProjectById(
   res: Response,
   prisma: PrismaClient
 ) {
-  const { id } = req.params;
+  const { projectId } = req.params;
+  const projectIdParsed = parseInt(projectId, 10);
+
   try {
     const projects = await prisma.project.findUnique({
-      where: { id: Number(id) },
+      where: { id: projectIdParsed },
     });
     res.status(200).json(projects);
   } catch (error) {
@@ -36,17 +37,14 @@ export async function getProjectById(
 }
 
 export async function createProject(
-  req: CustomRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
-    const user = req.user;
+    const user = res.locals.userInfo;
 
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized: User Not found' });
-    }
     const projectData = req.body;
     const data = {
       name: projectData.name,
@@ -55,6 +53,14 @@ export async function createProject(
     };
     const project = await prisma.project.create({
       data,
+    });
+
+    const projectMember = await prisma.projectMember.create({
+      data: {
+        userId: user.id,
+        projectId: project.id,
+        projectRole: ProjectRole.ADMIN,
+      },
     });
 
     res.locals.logEvent = buildLogEvent({
@@ -67,6 +73,8 @@ export async function createProject(
         projectName: project.name,
         projectDescription: project.description,
         projectOwnerId: project.ownerId,
+        projectId: project.id,
+        projectRole: projectMember.projectRole,
       },
       ticketId: null,
       boardId: null,
@@ -85,40 +93,22 @@ export async function createProject(
 }
 
 export async function updateProject(
-  req: CustomRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
-    const user = req.user;
+    const user = res.locals.userInfo;
 
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized: User Not found' });
-    }
+    const { projectId } = req.params;
+    const convertedId = parseInt(projectId, 10);
 
-    const projectId = parseInt(req.params.id, 10);
-    if (isNaN(projectId)) {
+    if (isNaN(convertedId)) {
       return res.status(400).json({ message: 'Invalid project ID' });
     }
 
-    if (user.globalRole === 'ADMIN') {
-      const projectMember = await prisma.projectMember.findFirst({
-        where: {
-          userId: user.id,
-          projectId: projectId,
-        },
-      });
-      if (!projectMember) {
-        return res
-          .status(403)
-          .json({ message: 'Forbidden: User Not a member' });
-      }
-    }
-
     const projectData = req.body;
-    const { id } = req.params;
-    const convertedId = parseInt(id, 10);
 
     const oldProject = await prisma.project.findUnique({
       where: { id: convertedId },
@@ -157,19 +147,20 @@ export async function updateProject(
 }
 
 export async function deleteProject(
-  req: CustomRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
-    const user = req.user;
+    const user = res.locals.userInfo;
 
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized: User Not found' });
+    const { projectId } = req.params;
+    const convertedId = parseInt(projectId, 10);
+
+    if (isNaN(convertedId)) {
+      return res.status(400).json({ message: 'Invalid project ID' });
     }
-    const { id } = req.params;
-    const convertedId = parseInt(id, 10);
 
     const oldProject = await prisma.project.findUnique({
       where: { id: convertedId },
