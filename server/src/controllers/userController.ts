@@ -6,6 +6,7 @@ import { generateDiff } from '../services/generateDiff';
 import { getStorageType } from '../config/storage';
 import { storageDispatcher } from '../utilities/storageDispatcher';
 import { CustomRequest } from '../types/CustomRequest';
+import { deleteUserCascade } from '../services/deletionServices/deleteUserCascade';
 
 // Get all users
 export async function getAllUsers(
@@ -226,29 +227,7 @@ export async function deleteUser(
         .json({ error: `User with ID ${userIdParsed} not found.` });
     }
 
-    await prisma.$transaction([
-      prisma.project.updateMany({
-        where: { ownerId: userIdParsed },
-        data: { ownerId: null },
-      }),
-      prisma.ticket.updateMany({
-        where: { assigneeId: userIdParsed },
-        data: { assigneeId: null },
-      }),
-      prisma.ticket.updateMany({
-        where: { reporterId: userIdParsed },
-        data: { assigneeId: null },
-      }),
-      prisma.comment.updateMany({
-        where: { authorId: userIdParsed },
-        data: { authorId: null },
-      }),
-      prisma.attachment.updateMany({
-        where: { uploadedBy: userIdParsed },
-        data: { uploadedBy: null },
-      }),
-      // projectMember table is retained
-    ]);
+    await deleteUserCascade(userIdParsed);
 
     const deletedUserData = await prisma.user.update({
       where: { id: userIdParsed },
