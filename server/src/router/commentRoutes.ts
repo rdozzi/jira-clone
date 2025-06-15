@@ -1,5 +1,4 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
 import { GlobalRole, ProjectRole } from '@prisma/client';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
@@ -41,18 +40,18 @@ router.post(
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await createComment(req as CustomRequest, res, next, prisma);
+    await createComment(req, res, next, prisma);
   }
 );
 
 // Delete comment
 router.delete(
-  '/comments/:id',
+  '/comments/:commentId',
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   checkCommentOwnership(prisma),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteComment(req as CustomRequest, res, next, prisma);
+    await deleteComment(req, res, next, prisma);
   }
 );
 
@@ -63,7 +62,7 @@ router.patch(
   checkProjectRole(ProjectRole.USER),
   checkCommentOwnership(prisma),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await updateComment(req as CustomRequest, res, next, prisma);
+    await updateComment(req, res, next, prisma);
   }
 );
 
