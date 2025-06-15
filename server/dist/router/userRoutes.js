@@ -17,12 +17,12 @@ const router = (0, express_1.Router)();
 router.get('/users/all', (0, authorizeGlobalRole_1.authorizeGlobalRole)(client_1.GlobalRole.USER), async (req, res) => {
     await (0, userController_1.getAllUsers)(req, res, prisma_1.default);
 });
-// Get user
+// Get user by id
 router.get('/users', (0, authorizeGlobalRole_1.authorizeGlobalRole)(client_1.GlobalRole.ADMIN), async (req, res) => {
     await (0, userController_1.getUser)(req, res, prisma_1.default);
 });
 // Get user by project
-router.get('/users/:id/project', (0, checkProjectMembership_1.checkProjectMembership)(), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.VIEWER), async (req, res) => {
+router.get('/users/:userId/project', (0, checkProjectMembership_1.checkProjectMembership)(), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.VIEWER), async (req, res) => {
     await (0, userController_1.getUserByProjectId)(req, res, prisma_1.default);
 });
 // Create user
@@ -30,7 +30,7 @@ router.post('/users', (0, authorizeGlobalRole_1.authorizeGlobalRole)(client_1.Gl
     await (0, userController_1.createUser)(req, res, next, prisma_1.default);
 });
 // Delete user
-router.patch('/users/:id/soft-delete', (0, authorizeGlobalRole_1.authorizeGlobalRole)(client_1.GlobalRole.ADMIN), async (req, res, next) => {
+router.patch('/users/:userId/soft-delete', (0, authorizeGlobalRole_1.authorizeGlobalRole)(client_1.GlobalRole.ADMIN), async (req, res, next) => {
     await (0, userController_1.deleteUser)(req, res, next, prisma_1.default);
 });
 // Update user info

@@ -34,7 +34,7 @@ router.get(
   }
 );
 
-// Get user
+// Get user by id
 router.get(
   '/users',
   authorizeGlobalRole(GlobalRole.ADMIN),
@@ -45,7 +45,7 @@ router.get(
 
 // Get user by project
 router.get(
-  '/users/:id/project',
+  '/users/:userId/project',
   checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response) => {
@@ -64,7 +64,7 @@ router.post(
 
 // Delete user
 router.patch(
-  '/users/:id/soft-delete',
+  '/users/:userId/soft-delete',
   authorizeGlobalRole(GlobalRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteUser(req, res, next, prisma);
