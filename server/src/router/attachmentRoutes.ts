@@ -15,7 +15,6 @@ import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
 
 import { checkEntityType } from '../middleware/attachments/checkEntityType';
-import { checkIfGlobalSuperAdmin } from '../middleware/checkIfGlobalSuperAdmin';
 import {
   uploadSingleMiddleware,
   uploadMultipleMiddleware,
@@ -54,7 +53,6 @@ router.get(
   '/attachments/:entityType/:entityId',
   authorizeGlobalRole(GlobalRole.USER),
   checkEntityType,
-  checkIfGlobalSuperAdmin,
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
   async (req: Request, res: Response): Promise<void> => {
