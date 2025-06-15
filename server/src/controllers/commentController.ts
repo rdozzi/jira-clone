@@ -46,7 +46,7 @@ export async function createComment(
 
     const commentData = req.body;
     const comment = await prisma.comment.create({
-      data: commentData,
+      data: { ...commentData, authorId: userId },
     });
 
     // The entityId for the purpose of logging is the ticketId for comments
