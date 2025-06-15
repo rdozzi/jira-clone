@@ -26,6 +26,7 @@ model User {
   createdAt    DateTime   @default(now()) @db.Timestamptz()
   updatedAt    DateTime   @updatedAt @db.Timestamptz()
   deletedAt    DateTime?  @db.Timestamptz()
+  isDeleted    Boolean?   @default(false)
 
   //Ownership (One-to-Many)
   ownedProjects Project[] @relation("ProjectOwner")
