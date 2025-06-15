@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient, AttachmentEntityType } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
+import { generateEntityIdForLog } from '../utilities/generateEntityIdForLog';
 
 export async function getAllComments(
   req: Request,
@@ -36,25 +36,27 @@ export async function getAllCommentsById(
 }
 
 export async function createComment(
-  req: CustomRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
-    const user = req.user;
-
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized: User Not found' });
-    }
+    const userId = res.locals.userInfo.id;
 
     const commentData = req.body;
     const comment = await prisma.comment.create({
       data: commentData,
     });
 
+    // The entityId for the purpose of logging is the ticketId for comments
+    const logIdObject = generateEntityIdForLog(
+      AttachmentEntityType.COMMENT,
+      comment.ticketId
+    );
+
     res.locals.logEvent = buildLogEvent({
-      userId: user.id,
+      userId: userId,
       actorType: 'USER',
       action: 'CREATE_COMMENT',
       targetId: comment.id,
@@ -62,37 +64,36 @@ export async function createComment(
       metadata: {
         authorId: `${comment.authorId}`,
         content: `${comment.content}`,
+        ticketId: `${comment.ticketId}`,
       },
-      ticketId: comment.ticketId,
-      boardId: null,
-      projectId: null,
+      ticketId: logIdObject.ticketId,
+      boardId: logIdObject.boardId,
+      projectId: logIdObject.projectId,
     });
 
     res.status(200).json(comment);
-    next();
+    return;
   } catch (error) {
     console.error('Error creating comment: ', error);
     res.status(500).json({ error: 'Failed to create comment' });
+    return;
   }
 }
 
 export async function deleteComment(
-  req: CustomRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
-    const { id } = req.params;
-    const convertedId = parseInt(id, 10);
+    const userId = res.locals.userInfo.id;
 
-    const user = req.user;
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized: User Not found' });
-    }
+    const { commentId } = req.params;
+    const commentIdParsed = parseInt(commentId, 10);
 
     const oldComment = await prisma.comment.findUniqueOrThrow({
-      where: { id: convertedId },
+      where: { id: commentIdParsed },
       select: {
         id: true,
         authorId: true,
@@ -102,23 +103,29 @@ export async function deleteComment(
     });
 
     const deleteComment = await prisma.comment.delete({
-      where: { id: Number(id) },
+      where: { id: commentIdParsed },
     });
 
+    // The entityId for the purpose of logging is the ticketId for comments
+    const logIdObject = generateEntityIdForLog(
+      AttachmentEntityType.COMMENT,
+      oldComment.ticketId
+    );
+
     res.locals.logEvent = buildLogEvent({
-      userId: null,
+      userId: userId,
       actorType: 'USER',
       action: 'DELETE_COMMENT',
-      targetId: convertedId,
+      targetId: commentIdParsed,
       targetType: 'COMMENT',
       metadata: {
         id: oldComment?.id,
         authorId: oldComment?.authorId,
         content: oldComment?.content,
       },
-      ticketId: oldComment?.ticketId,
-      boardId: null,
-      projectId: null,
+      ticketId: logIdObject.ticketId,
+      boardId: logIdObject.boardId,
+      projectId: logIdObject.projectId,
     });
 
     res.status(200).json(deleteComment);
@@ -130,13 +137,13 @@ export async function deleteComment(
     ) {
       return res.status(404).json({ message: 'Comment not found' });
     }
-    console.error('Error fetching tickets: ', error);
-    res.status(500).json({ error: 'Failed to fetch tickets' });
+    console.error('Error fetching comment: ', error);
+    res.status(500).json({ error: 'Failed to fetch comment' });
   }
 }
 
 export async function updateComment(
-  req: CustomRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
   prisma: PrismaClient
@@ -144,12 +151,8 @@ export async function updateComment(
   try {
     const { content } = req.body;
     const { commentId } = req.params;
-    const convertedId = parseInt(commentId, 10);
-    const user = req.user;
-
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized: User Not found' });
-    }
+    const commentIdParsed = parseInt(commentId, 10);
+    const userId = res.locals.userInfo.id;
 
     if (typeof content !== 'string' || content.trim() === '') {
       res.status(400).json({
@@ -159,7 +162,7 @@ export async function updateComment(
     }
 
     const oldComment = await prisma.comment.findUniqueOrThrow({
-      where: { id: convertedId },
+      where: { id: commentIdParsed },
       select: {
         id: true,
         authorId: true,
@@ -184,22 +187,27 @@ export async function updateComment(
         ? generateDiff(oldComment, updateComment)
         : {};
 
+    // The entityId for the purpose of logging is the ticketId for comments
+    const logIdObject = generateEntityIdForLog(
+      AttachmentEntityType.COMMENT,
+      updateComment.ticketId
+    );
+
     res.locals.logEvent = buildLogEvent({
-      userId: user.id,
+      userId: userId,
       actorType: 'USER',
       action: 'UPDATE_COMMENT',
-      targetId: convertedId,
+      targetId: commentIdParsed,
       targetType: 'COMMENT',
       metadata: {
         changes,
       },
-      ticketId: updateComment.ticketId,
-      boardId: null,
-      projectId: null,
+      ticketId: logIdObject.ticketId,
+      boardId: logIdObject.boardId,
+      projectId: logIdObject.projectId,
     });
 
     res.status(200).json(updateComment);
-    next();
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
