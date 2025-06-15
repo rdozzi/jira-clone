@@ -8,7 +8,7 @@ const storageType = getStorageType();
 
 let upload: multer.Multer;
 if (storageType === 'LOCAL') {
-  const localUploadPath = path.join(__dirname, '..', '..', 'uploads');
+  const localUploadPath = path.join(process.cwd(), 'uploads');
 
   if (!fs.existsSync(localUploadPath)) {
     fs.mkdirSync(localUploadPath, { recursive: true });
