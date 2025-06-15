@@ -3,7 +3,7 @@ import { GlobalRole, ProjectRole } from '@prisma/client';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
-import { checkCommentOwnership } from '../middleware/checkCommentOwnership';
+import { checkCommentOwnership } from '../middleware/commentMiddleware/checkCommentOwnership';
 import prisma from '../lib/prisma';
 import {
   getAllComments,
@@ -12,6 +12,7 @@ import {
   deleteComment,
   updateComment,
 } from '../controllers/commentController';
+import { resolveProjectIdFromComment } from '../middleware/commentMiddleware/resolveProjectIdFromComment';
 
 const router = Router();
 
@@ -27,8 +28,9 @@ router.get(
 // Get comments for a specific ticket
 router.get(
   '/comments/:ticketId',
-  checkProjectMembership(),
-  checkProjectRole(ProjectRole.VIEWER),
+  resolveProjectIdFromComment(),
+  checkProjectMembership({ allowGlobalSuperAdmin: true }),
+  checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
   async (req: Request, res: Response): Promise<void> => {
     await getAllCommentsById(req, res, prisma);
   }
@@ -37,6 +39,7 @@ router.get(
 // Create a comment
 router.post(
   '/comments',
+  resolveProjectIdFromComment(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -47,9 +50,10 @@ router.post(
 // Delete comment
 router.delete(
   '/comments/:commentId',
-  checkProjectMembership(),
-  checkProjectRole(ProjectRole.USER),
-  checkCommentOwnership(prisma),
+  resolveProjectIdFromComment(),
+  checkProjectMembership({ allowGlobalSuperAdmin: true }),
+  checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
+  checkCommentOwnership({ allowGlobalSuperAdmin: true }),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteComment(req, res, next, prisma);
   }
@@ -58,9 +62,10 @@ router.delete(
 // Update comment
 router.patch(
   '/comments/:commentId',
-  checkProjectMembership(),
-  checkProjectRole(ProjectRole.USER),
-  checkCommentOwnership(prisma),
+  resolveProjectIdFromComment(),
+  checkProjectMembership({ allowGlobalSuperAdmin: true }),
+  checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
+  checkCommentOwnership({ allowGlobalSuperAdmin: true }),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await updateComment(req, res, next, prisma);
   }
