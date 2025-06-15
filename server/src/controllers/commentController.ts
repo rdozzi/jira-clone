@@ -3,6 +3,7 @@ import { Prisma, PrismaClient, AttachmentEntityType } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { generateEntityIdForLog } from '../utilities/generateEntityIdForLog';
+import { deleteCommentCascade } from '../services/deletionServices/deleteCommentCascade';
 
 export async function getAllComments(
   req: Request,
@@ -101,6 +102,8 @@ export async function deleteComment(
         ticketId: true,
       },
     });
+
+    await deleteCommentCascade(req, res, prisma, commentIdParsed);
 
     const deleteComment = await prisma.comment.delete({
       where: { id: commentIdParsed },
