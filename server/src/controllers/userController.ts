@@ -69,8 +69,8 @@ export async function getUserByProjectId(
   prisma: PrismaClient
 ) {
   try {
-    const { id } = req.params;
-    const projectIdNumber = parseInt(id, 10);
+    const { userId } = req.params;
+    const projectIdNumber = parseInt(userId, 10);
     if (isNaN(projectIdNumber)) {
       return res.status(400).json({ error: 'Invalid project ID' });
     }
@@ -213,31 +213,53 @@ export async function deleteUser(
   prisma: PrismaClient
 ) {
   try {
-    const { id } = req.params;
-    const userId = parseInt(id, 10);
+    const { userId } = req.params;
+    const userIdParsed = parseInt(userId, 10);
 
     const existingUser = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userIdParsed },
     });
 
     if (!existingUser) {
       return res
         .status(404)
-        .json({ error: `User with ID ${userId} not found.` });
+        .json({ error: `User with ID ${userIdParsed} not found.` });
     }
 
+    await prisma.$transaction([
+      prisma.project.updateMany({
+        where: { ownerId: userIdParsed },
+        data: { ownerId: null },
+      }),
+      prisma.ticket.updateMany({
+        where: { assigneeId: userIdParsed },
+        data: { assigneeId: null },
+      }),
+      prisma.ticket.updateMany({
+        where: { reporterId: userIdParsed },
+        data: { assigneeId: null },
+      }),
+      prisma.comment.updateMany({
+        where: { authorId: userIdParsed },
+        data: { authorId: null },
+      }),
+      prisma.attachment.updateMany({
+        where: { uploadedBy: userIdParsed },
+        data: { uploadedBy: null },
+      }),
+      // projectMember table is retained
+    ]);
+
     const deletedUserData = await prisma.user.update({
-      where: { id: userId },
-      data: {
-        deletedAt: new Date(),
-      },
+      where: { id: userIdParsed },
+      data: { isDeleted: true, deletedAt: new Date() },
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: userId,
+      userId: userIdParsed,
       actorType: 'USER',
       action: 'DELETE_USER',
-      targetId: userId,
+      targetId: userIdParsed,
       targetType: 'USER',
       metadata: {
         name: `${deletedUserData.firstName}_${deletedUserData.lastName}`,
