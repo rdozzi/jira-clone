@@ -43,7 +43,7 @@ export async function checkTicketOrCommentOwnershipForAttachments(
       return next();
     }
 
-    //If comment, check if assigneeId === res.locals.userInfo.id, fail auth if not, next if so
+    //If comment, check if authorId === res.locals.userInfo.id, fail auth if not, next if so
     else if (entityType === AttachmentEntityType.COMMENT) {
       const comment = await prisma.comment.findFirst({
         where: { id: entityId },
