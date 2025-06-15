@@ -13,7 +13,6 @@ import {
 
 // Middleware
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
-import { checkIfGlobalSuperAdmin } from '../middleware/checkIfGlobalSuperAdmin';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
 
@@ -31,7 +30,6 @@ router.get(
 // Get project by Id
 router.get(
   '/projects/:projectId',
-  checkIfGlobalSuperAdmin,
   resolveProjectIdFromProject(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
@@ -52,7 +50,6 @@ router.post(
 // Update project
 router.patch(
   '/projects/:projectId',
-  checkIfGlobalSuperAdmin,
   resolveProjectIdFromProject(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }),
@@ -64,7 +61,6 @@ router.patch(
 // Delete project
 router.delete(
   '/projects/:projectId',
-  checkIfGlobalSuperAdmin,
   resolveProjectIdFromProject(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }),
