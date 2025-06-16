@@ -11,23 +11,39 @@ export async function deleteManyAttachments(
   next: NextFunction,
   prisma: PrismaClient
 ): Promise<void> {
-  const { ids } = req.body;
-
-  if (!Array.isArray(ids) || ids.length === 0) {
-    res
-      .status(400)
-      .json({ error: 'Invalid request: No attachments Ids provided' });
-    return;
-  }
+  // Variables derived from validateAndSetAttachmentDeleteParams
+  const attachmentIds = res.locals.attachmentIds;
+  const entityId = res.locals.entityId;
+  const entityType = res.locals.entityType;
 
   try {
     const attachments = await prisma.attachment.findMany({
       where: {
         id: {
-          in: ids,
+          in: attachmentIds,
         },
+        entityType,
+        entityId,
       },
     });
+
+    console.log('deleteController', 'attachments.length', attachments.length);
+    console.log(
+      'deleteController',
+      'attachmentIds.length',
+      attachmentIds.length
+    );
+
+    if (attachments.length !== attachmentIds.length) {
+      res.status(403).json({
+        message: 'One or more attachments do not match the specified entity.',
+      });
+      return;
+    }
+
+    const attachmentLogEntityIds = attachments.map((attachment) =>
+      generateEntityIdForLog(attachment.entityType, attachment.entityId)
+    );
 
     const deletedAttachments: typeof attachments = JSON.parse(
       JSON.stringify(attachments)
@@ -38,29 +54,19 @@ export async function deleteManyAttachments(
         if (attachment.storageType === 'LOCAL') {
           const filePath = path.resolve(attachment.filePath || '');
           await fs.unlink(filePath);
+          await prisma.attachment.delete({ where: { id: attachment.id } });
         } else if (attachment.storageType === 'CLOUD') {
           // await saveToCloud.deleteFile(attachment.path);
           console.log('Deleting from cloud storage:', attachment.fileUrl);
         }
       } catch (error) {
-        console.error(
-          `Failed to delete file for attachment ${attachment.filePath}:`,
-          error
-        );
+        res.status(500).json({
+          message: `Failed to delete file for attachment ${attachment.filePath}: ${error}`,
+          error: error instanceof Error ? error.message : String(error),
+        });
+        return;
       }
     }
-
-    const attachmentLogEntityIds = attachments.map((attachment) =>
-      generateEntityIdForLog(attachment.entityType, attachment.entityId)
-    );
-
-    await prisma.attachment.deleteMany({
-      where: {
-        id: {
-          in: ids,
-        },
-      },
-    });
 
     res.locals.logEvents = deletedAttachments.map((attachment, index) => {
       const logEntityId = attachmentLogEntityIds[index];
