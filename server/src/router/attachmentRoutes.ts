@@ -1,12 +1,6 @@
-import {
-  Router,
-  Request,
-  Response,
-  NextFunction,
-  RequestHandler,
-} from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { CustomRequest } from '../types/CustomRequest';
-import { GlobalRole, ProjectRole } from '@prisma/client';
+import { AttachmentEntityType, GlobalRole, ProjectRole } from '@prisma/client';
 import prisma from '../lib/prisma';
 
 // Middleware imports
@@ -14,17 +8,20 @@ import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/aut
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
 
-import { checkEntityType } from '../middleware/attachments/checkEntityType';
+import { resolveProjectIdForCreateAttachment } from '../middleware/attachments/resolveProjectIdForCreateAttachment';
+import { resolveProjectIdForGetAttachments } from '../middleware/attachments/resolveProjectIdForGetAttachments';
+import { resolveProjectIdForSingleDeletionAndDownload } from '../middleware/attachments/resolveProjectIdForSingleDeletionAndDownload';
+import { resolveProjectIdForMultipleDeletionAndDownload } from '../middleware/attachments/resolveProjectIdForMultipleDeletionAndDownload';
 import {
   uploadSingleMiddleware,
   uploadMultipleMiddleware,
 } from '../middleware/attachments/uploadMiddleware';
-import { deleteManyAttachmentMiddleware } from '../middleware/attachments/deleteManyAttachmentMiddleware';
-import { validateAttachmentExists } from '../middleware/attachments/deleteAttachmentMiddleware';
-import { downloadSingleAttachmentMiddleware } from '../middleware/attachments/downloadSingleMiddleware';
-import { downloadMultipleAttachmentMiddleware } from '../middleware/attachments/downloadMultipleMiddleware';
+import { validateAttachmentExistsAndStore } from '../middleware/attachments/validateAttachmentExistsAndStore';
 import { checkTicketOrCommentOwnershipForAttachments } from '../middleware/attachments/checkTicketAndCommentOwnershipForAttachments';
 import { checkBoardAndProjectAccess } from '../middleware/attachments/checkBoardAndProjectAccess';
+import { loadEntityIdAndEntityTypeForUpload } from '../middleware/attachments/loadEntityIdAndEntityTypeForUpload';
+import { loadEntityIdAndEntityTypeForSingleDeletion } from '../middleware/attachments/loadEntityIdAndEntityTypeForSingleDeletion';
+import { validateAndSetAttachmentDeleteAndDownloadParams } from '../middleware/attachments/validateAndSetAttachmentDeleteAndDownloadParams';
 
 // Controller Functions
 import { getAllAttachments } from '../controllers/attachmentControllers/getAllAttachments';
@@ -35,11 +32,12 @@ import {
 import { deleteManyAttachments } from '../controllers/attachmentControllers/deleteManyAttachmentsController';
 import { deleteAttachment } from '../controllers/attachmentControllers/deleteAttachmentController';
 import { downloadSingleAttachment } from '../controllers/attachmentControllers/downloadController';
-import { downloadMultipleAttachments } from '../controllers/attachmentControllers/downloadMultipleController';
+import { downloadMultipleAttachments } from '../controllers/attachmentControllers/downloadMultipleAttachmentsController';
 
 const router = Router();
 
 // Get all attachments
+// No payload. Database call only. Get all
 router.get(
   '/attachments',
   authorizeGlobalRole(GlobalRole.ADMIN),
@@ -49,10 +47,13 @@ router.get(
 );
 
 // Get all attachments by Entity/Id
+// params: {"entityType": Entity, "entityId": Number}
+
+const enumPattern = Object.values(AttachmentEntityType).join('|');
 router.get(
-  '/attachments/:entityType/:entityId',
+  `/attachments/:entityType(${enumPattern})/:entityId(\\d+)`,
   authorizeGlobalRole(GlobalRole.USER),
-  checkEntityType,
+  resolveProjectIdForGetAttachments(prisma),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
   async (req: Request, res: Response): Promise<void> => {
@@ -61,86 +62,95 @@ router.get(
 );
 
 // Create single attachment
+// Body/Form-Data (Multer Required): {file, entityType, entityId}
 router.post(
   '/attachments/single',
   authorizeGlobalRole(GlobalRole.USER),
-  checkEntityType,
+  uploadSingleMiddleware,
+  resolveProjectIdForCreateAttachment(prisma),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
+  loadEntityIdAndEntityTypeForUpload,
   checkTicketOrCommentOwnershipForAttachments,
   checkBoardAndProjectAccess,
-  uploadSingleMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await handleSingleUpload(req as CustomRequest, res, next, prisma);
   }
 );
 
 // Create several attachments
+// Body/Form-Data (Multer Required): {files, entityType, entityId}
 router.post(
   '/attachments/many',
   authorizeGlobalRole(GlobalRole.USER),
-  checkEntityType,
+  uploadMultipleMiddleware,
+  resolveProjectIdForCreateAttachment(prisma),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
+  loadEntityIdAndEntityTypeForUpload,
   checkTicketOrCommentOwnershipForAttachments,
   checkBoardAndProjectAccess,
-  uploadMultipleMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await handleMultipleUpload(req as CustomRequest, res, next, prisma);
   }
 );
 
-// Delete attachment
+// Delete attachment by attachmentId
+// Params: :attachmentId
 router.delete(
-  '/attachments/:entityId',
+  '/attachments/:attachmentId',
   authorizeGlobalRole(GlobalRole.USER),
-  checkEntityType,
+  validateAttachmentExistsAndStore,
+  resolveProjectIdForSingleDeletionAndDownload(prisma),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
+  loadEntityIdAndEntityTypeForSingleDeletion,
   checkTicketOrCommentOwnershipForAttachments,
   checkBoardAndProjectAccess,
-  validateAttachmentExists as unknown as RequestHandler,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteAttachment(req as CustomRequest, res, next, prisma);
   }
 );
 
 // Delete many attachments
+// Body: Array of Id values (attachmentIds), entityId, entityType
 router.delete(
   '/attachments',
   authorizeGlobalRole(GlobalRole.USER),
-  checkEntityType,
+  validateAndSetAttachmentDeleteAndDownloadParams,
+  resolveProjectIdForMultipleDeletionAndDownload(prisma),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
   checkTicketOrCommentOwnershipForAttachments,
   checkBoardAndProjectAccess,
-  deleteManyAttachmentMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteManyAttachments(req, res, next, prisma);
   }
 );
 
-// Download attachment by EntityId
+// Download attachment by attachmentId
+// Params: :attachmentId
 router.get(
-  '/attachments/:entityId/download',
+  '/attachments/:attachmentId(\\d+)/download',
   authorizeGlobalRole(GlobalRole.USER),
-  checkEntityType,
+  validateAttachmentExistsAndStore,
+  resolveProjectIdForSingleDeletionAndDownload(prisma),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
-  downloadSingleAttachmentMiddleware,
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await downloadSingleAttachment(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await downloadSingleAttachment(req, res);
   }
 );
 
 // Download multiple attachments by EntityId
+// Body: Array of Ids (attachmentIds), entityId, entityType
 router.post(
   '/attachments/download',
   authorizeGlobalRole(GlobalRole.USER),
-  checkEntityType,
+  validateAndSetAttachmentDeleteAndDownloadParams,
+  resolveProjectIdForMultipleDeletionAndDownload(prisma),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
-  downloadMultipleAttachmentMiddleware,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await downloadMultipleAttachments(req, res, next, prisma);
   }
