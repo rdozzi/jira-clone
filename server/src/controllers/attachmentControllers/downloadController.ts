@@ -5,9 +5,6 @@ import { Attachment } from '@prisma/client';
 import { buildLogEvent } from '../../services/buildLogEvent';
 
 export async function downloadSingleAttachment(req: Request, res: Response) {
-  const { attachmentId } = req.params;
-  const attachmentIdParsed = parseInt(attachmentId, 10);
-  console.log(attachmentIdParsed);
   try {
     const attachment: Attachment = res.locals.attachment;
 
