@@ -15,10 +15,13 @@ export function checkProjectMembership(options?: {
     next: NextFunction
   ): Promise<void> => {
     try {
+      // User id and globalRole from storeUserAndProjectInfo
       const userId = res.locals.userInfo?.id;
-      const userProjects = res.locals.userProjects; // User project associations
       const globalRole = res.locals.userInfo.globalRole;
-      const projectId = res.locals.projectId; // Derived from resolveProjectIdFrom[Entity: Board, Ticket, Comment, Project]
+      // User project associations from loadUserProjects
+      const userProjects = res.locals.userProjects;
+      // Current projectId from resolveProjectIdFor[route]
+      const projectId = res.locals.projectId;
 
       const requestedProjectId = parseInt(projectId, 10);
 
