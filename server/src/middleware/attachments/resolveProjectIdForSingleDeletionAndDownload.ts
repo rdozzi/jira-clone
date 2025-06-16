@@ -1,17 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import { AttachmentEntityType, PrismaClient, Attachment } from '@prisma/client';
 
-export function resolveProjectIdForSingleDeletion(prisma: PrismaClient) {
+export function resolveProjectIdForSingleDeletionAndDownload(
+  prisma: PrismaClient
+) {
   return async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
-    // For the single attachment deletion route, res.locals.attachment comes from validateAttachmentExistsAndStore
+    // For the single attachment deletion and download routes, res.locals.attachment comes from validateAttachmentExistsAndStore
     const attachment: Attachment = res.locals.attachment;
 
-    const entityId = attachment.entityId;
-    const entityType = attachment.entityType;
+    const entityId: number = attachment.entityId;
+    const entityType: AttachmentEntityType = attachment.entityType;
+
+    console.log('resolveProjectIdFor...', 'entityId:', entityId);
+    console.log('resolveProjectIdFor...', 'entityType:', entityType);
 
     if (!entityId || isNaN(entityId)) {
       res.status(404).json({ message: 'Entity Id is not valid' });
