@@ -13,27 +13,6 @@ export async function checkTicketOrCommentOwnershipForAttachments(
     const userId: number = parseInt(res.locals.userInfo.id, 10);
     const userGlobalRole = res.locals.userInfo.globalRole;
 
-    console.log(
-      'checkTicketAndCommentOwnerShip',
-      'entityType:',
-      res.locals.entityType
-    );
-    console.log(
-      'checkTicketAndCommentOwnerShip',
-      'entityId:',
-      res.locals.entityId
-    );
-    console.log(
-      'checkTicketAndCommentOwnerShip',
-      'userId:',
-      res.locals.userInfo.id
-    );
-    console.log(
-      'checkTicketAndCommentOwnerShip',
-      'userGlobalRole:',
-      res.locals.userInfo.globalRole
-    );
-
     //If user is a SuperAdmin or the entityType is neither ticket or comment, go next
     if (userGlobalRole === GlobalRole.SUPERADMIN) {
       next();
@@ -47,8 +26,6 @@ export async function checkTicketOrCommentOwnershipForAttachments(
     }
     //If ticket, check if assigneeId === res.locals.userInfo.id, fail auth if not, next if so
 
-    console.log(entityType === AttachmentEntityType.TICKET);
-    console.log(entityType === AttachmentEntityType.COMMENT);
     if (entityType === AttachmentEntityType.TICKET) {
       const ticket = await prisma.ticket.findFirst({
         where: { id: entityId },
@@ -73,20 +50,11 @@ export async function checkTicketOrCommentOwnershipForAttachments(
         where: { id: entityId },
       });
 
-      console.log('checkTicketAndCommentOwnership', 'comment', comment);
-
       if (!comment) {
         res.status(404).json({ message: 'Comment not found.' });
         return;
       }
 
-      console.log(comment?.authorId !== userId);
-      console.log(
-        'checkTicketAndCommentOwnership',
-        'AuthorId from comment',
-        comment?.authorId
-      );
-      console.log('checkTicketAndCommentOwnership', 'userId', userId);
       if (comment?.authorId !== userId) {
         res.status(401).json({ message: 'You do not own this comment' });
         return;

@@ -10,12 +10,6 @@ export async function validateAttachmentExistsAndStore(
   const { attachmentId } = req.params;
   const attachmentIdParsed = parseInt(attachmentId, 10);
 
-  console.log(
-    'validateAttachmentExists',
-    'attachmentIdParsed',
-    attachmentIdParsed
-  );
-
   try {
     const attachment = await prisma.attachment.findUnique({
       where: { id: attachmentIdParsed },
@@ -28,11 +22,6 @@ export async function validateAttachmentExistsAndStore(
 
     // Attach the existing attachment to the res.locals for downstream use
     res.locals.attachment = attachment as Attachment;
-    console.log(
-      'validateAttachmentExists',
-      'res.locals.attachment:',
-      res.locals.attachment
-    );
 
     next();
     return;

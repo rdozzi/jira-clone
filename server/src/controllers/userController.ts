@@ -31,7 +31,6 @@ export async function getUser(
 ) {
   try {
     const { id, email } = req.query;
-    console.log('ID:', id, 'Email:', email);
 
     if (!id && !email) {
       return res.status(400).json({ error: 'User ID or email is required' });
