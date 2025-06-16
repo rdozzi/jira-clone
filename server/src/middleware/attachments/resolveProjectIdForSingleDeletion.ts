@@ -1,15 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { AttachmentEntityType, PrismaClient, Attachment } from '@prisma/client';
 
-export function resolveProjectIdForDeleteSingleAttachment(
-  prisma: PrismaClient
-) {
+export function resolveProjectIdForSingleDeletion(prisma: PrismaClient) {
   return async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
-    // res.locals.attachment comes from validateAttachmentExistsAndStore
+    // For the single attachment deletion route, res.locals.attachment comes from validateAttachmentExistsAndStore
     const attachment: Attachment = res.locals.attachment;
 
     const entityId = attachment.entityId;
