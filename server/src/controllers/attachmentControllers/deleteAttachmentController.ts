@@ -1,7 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { CustomRequest } from '../../types/CustomRequest';
 import fs from 'fs/promises';
-import path from 'path';
 import { PrismaClient, Attachment } from '@prisma/client';
 import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { buildLogEvent } from '../../services/buildLogEvent';
@@ -13,22 +12,22 @@ export async function deleteAttachment(
   prisma: PrismaClient
 ): Promise<void> {
   try {
-    const attachment = req.attachment as Attachment;
-    const deletedAttachment = { ...req.attachment } as Attachment;
+    const attachment: Attachment = res.locals.attachment;
+    const deletedAttachment: Attachment = { ...attachment };
     const storageType = attachment?.storageType;
     if (storageType === 'LOCAL') {
-      const filePath = path.resolve(
-        __dirname,
-        '..',
-        '..',
-        'uploads',
-        attachment?.filePath || ''
-      );
-      await fs.unlink(filePath);
+      // Improve for safety later
+      const filePath = attachment?.filePath;
+
+      if (filePath) {
+        await fs.unlink(filePath);
+      } else {
+        throw new Error('File path is missing for local attachment.');
+      }
     } else if (storageType === 'CLOUD') {
       // await saveToCloud.deleteFile(attachment.path);
       console.log('Deleting from cloud storage:', attachment?.filePath);
-      // Implement the logic to delete the file from cloud storage (Eventually!)
+      // Implement the logic to delete the file from cloud storage (Eventua lly!)
     }
 
     const logEntityId = generateEntityIdForLog(
