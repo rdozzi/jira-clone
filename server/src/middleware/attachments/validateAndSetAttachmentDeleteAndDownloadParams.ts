@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AttachmentEntityType } from '@prisma/client';
 
-export function validateAndSetAttachmentDeleteParams(
+export function validateAndSetAttachmentDeleteAndDownloadParams(
   req: Request,
   res: Response,
   next: NextFunction
