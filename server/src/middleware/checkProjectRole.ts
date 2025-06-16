@@ -7,6 +7,7 @@ export function checkProjectRole(
   options?: { allowGlobalSuperAdmin?: boolean }
 ) {
   return (req: Request, res: Response, next: NextFunction): void => {
+    // res.locals.userProjectDetails derived from checkProjectMembership
     const userProjectInfo:
       | {
           projectId: number;
@@ -14,13 +15,15 @@ export function checkProjectRole(
         }
       | undefined = res.locals.userProjectDetails;
 
+    // res.locals.userInfo.globalRole derived from storeUserAndProjectInfo
     const globalRole = res.locals.userInfo.globalRole;
 
     if (
       options?.allowGlobalSuperAdmin &&
       globalRole === GlobalRole.SUPERADMIN
     ) {
-      return next();
+      next();
+      return;
     }
 
     if (!userProjectInfo) {
@@ -40,5 +43,6 @@ export function checkProjectRole(
     }
 
     next();
+    return;
   };
 }
