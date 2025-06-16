@@ -15,9 +15,6 @@ export function resolveProjectIdForSingleDeletionAndDownload(
     const entityId: number = attachment.entityId;
     const entityType: AttachmentEntityType = attachment.entityType;
 
-    console.log('resolveProjectIdFor...', 'entityId:', entityId);
-    console.log('resolveProjectIdFor...', 'entityType:', entityType);
-
     if (!entityId || isNaN(entityId)) {
       res.status(404).json({ message: 'Entity Id is not valid' });
       return;

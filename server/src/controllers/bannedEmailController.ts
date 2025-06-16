@@ -25,7 +25,6 @@ export async function getBannedEmailById(
 ) {
   try {
     const { id } = req.params;
-    console.log('ID:', id);
 
     if (!id) {
       return res.status(400).json({ error: 'Banned email ID is required' });
@@ -93,11 +92,6 @@ export async function createBannedEmail(
         reason: `${newBannedEmail.reason}`,
         email: `${newBannedEmail.email}`,
       },
-    });
-
-    console.log({
-      newBannedEmail: newBannedEmail,
-      message: 'Banned email created successfully',
     });
 
     res.status(201).json({

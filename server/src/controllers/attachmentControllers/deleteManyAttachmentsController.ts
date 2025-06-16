@@ -27,13 +27,6 @@ export async function deleteManyAttachments(
       },
     });
 
-    console.log('deleteController', 'attachments.length', attachments.length);
-    console.log(
-      'deleteController',
-      'attachmentIds.length',
-      attachmentIds.length
-    );
-
     if (attachments.length !== attachmentIds.length) {
       res.status(403).json({
         message: 'One or more attachments do not match the specified entity.',
