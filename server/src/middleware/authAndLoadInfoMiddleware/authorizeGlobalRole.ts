@@ -5,15 +5,25 @@ import { hasRequiredGlobalRole } from '../../lib/roles';
 export function authorizeGlobalRole(requiredRole: GlobalRole) {
   return ((req: Request, res: Response, next: NextFunction) => {
     const userRole = res.locals.userInfo.globalRole;
+    console.log('authorizeGlobalRole', 'userRole:', userRole);
+    console.log('authorizeGlobalRole', '!userRole:', !userRole);
+    console.log(
+      'authorizeGlobalRole',
+      '!hasRequiredGlobalRole(userRole, requiredRole)',
+      !hasRequiredGlobalRole(userRole, requiredRole)
+    );
 
     if (!userRole) {
-      return res.status(403).json({ message: 'No role found' });
+      res.status(403).json({ message: 'No role found' });
+      return;
     }
 
     if (!hasRequiredGlobalRole(userRole, requiredRole)) {
-      return res.status(403).json({ message: 'Insufficient Permissions' });
+      res.status(403).json({ message: 'Insufficient Permissions' });
+      return;
     }
 
     next();
+    return;
   }) as unknown as RequestHandler;
 }
