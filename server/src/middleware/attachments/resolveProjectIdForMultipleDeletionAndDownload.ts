@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient, AttachmentEntityType } from '@prisma/client';
 
-export function resolveProjectIdForMultipleDeletion(prisma: PrismaClient) {
+export function resolveProjectIdForMultipleDeletionAndDownload(
+  prisma: PrismaClient
+) {
   return async (req: Request, res: Response, next: NextFunction) => {
-    // Obtained from validateAndSetAttachmentDeleteParams
+    // Obtained from validateAndSetAttachmentDeleteAndDownloadParams
     const entityId: number = res.locals.entityId;
     const entityType: AttachmentEntityType = res.locals.entityType;
 
@@ -74,5 +76,3 @@ export function resolveProjectIdForMultipleDeletion(prisma: PrismaClient) {
     }
   };
 }
-
-export default resolveProjectIdForMultipleDeletion;
