@@ -10,6 +10,7 @@ import labelRoutes from './router/labelRoutes';
 import authRoutes from './router/authRoutes';
 import activityLogRoutes from './router/activityLogRoutes';
 import projectMemberRoutes from './router/projectMemberRoutes';
+import ticketLabelRoutes from './router/ticketLabelRoutes';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { authenticate } from './middleware/authAndLoadInfoMiddleware/authenticate';
@@ -66,7 +67,7 @@ app.use('/api', activityLogRoutes);
 
 app.use('/api', projectMemberRoutes);
 
-app.use('/api', ticketRoutes);
+app.use('/api', ticketLabelRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is Running on port ${process.env.PORT} with Nodemon!`);

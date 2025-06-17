@@ -15,6 +15,7 @@ const labelRoutes_1 = __importDefault(require("./router/labelRoutes"));
 const authRoutes_1 = __importDefault(require("./router/authRoutes"));
 const activityLogRoutes_1 = __importDefault(require("./router/activityLogRoutes"));
 const projectMemberRoutes_1 = __importDefault(require("./router/projectMemberRoutes"));
+const ticketLabelRoutes_1 = __importDefault(require("./router/ticketLabelRoutes"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const authenticate_1 = require("./middleware/authAndLoadInfoMiddleware/authenticate");
@@ -49,7 +50,7 @@ app.use('/api', boardRoutes_1.default);
 app.use('/api', labelRoutes_1.default);
 app.use('/api', activityLogRoutes_1.default);
 app.use('/api', projectMemberRoutes_1.default);
-app.use('/api', ticketRoutes_1.default);
+app.use('/api', ticketLabelRoutes_1.default);
 app.listen(process.env.PORT, () => {
     console.log(`Server is Running on port ${process.env.PORT} with Nodemon!`);
 });
