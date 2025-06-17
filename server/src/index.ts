@@ -66,6 +66,8 @@ app.use('/api', activityLogRoutes);
 
 app.use('/api', projectMemberRoutes);
 
+app.use('/api', ticketRoutes);
+
 app.listen(process.env.PORT, () => {
   console.log(`Server is Running on port ${process.env.PORT} with Nodemon!`);
 });
