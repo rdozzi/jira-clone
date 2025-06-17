@@ -6,6 +6,7 @@ import { checkProjectRole } from '../middleware/checkProjectRole';
 import {
   getLabelByTicket,
   addLabelToTicket,
+  deleteLabelFromTicket,
 } from '../controllers/ticketLabelController';
 import prisma from '../lib/prisma';
 
@@ -17,9 +18,7 @@ router.get(
   resolveProjectIdFromTicket(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
-  async (): Promise<void> => {
-    await getLabelByTicket(prisma);
-  }
+  getLabelByTicket(prisma)
 );
 
 // Add label to ticket
@@ -28,10 +27,16 @@ router.post(
   resolveProjectIdFromTicket(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
-  async (): Promise<void> => {
-    await addLabelToTicket(prisma);
-  }
+  addLabelToTicket(prisma)
 );
+
 // Remove label from ticket
+router.delete(
+  '/ticket-labels/:ticketId/:labelId',
+  resolveProjectIdFromTicket(),
+  checkProjectMembership({ allowGlobalSuperAdmin: true }),
+  checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
+  deleteLabelFromTicket(prisma)
+);
 
 export default router;
