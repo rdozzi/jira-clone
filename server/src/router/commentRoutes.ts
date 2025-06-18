@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response } from 'express';
 import { GlobalRole, ProjectRole } from '@prisma/client';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
@@ -42,8 +42,8 @@ router.post(
   resolveProjectIdFromComment(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await createComment(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await createComment(req, res, prisma);
   }
 );
 
@@ -54,8 +54,8 @@ router.delete(
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
   checkCommentOwnership({ allowGlobalSuperAdmin: true }),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteComment(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await deleteComment(req, res, prisma);
   }
 );
 
@@ -66,8 +66,8 @@ router.patch(
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
   checkCommentOwnership({ allowGlobalSuperAdmin: true }),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await updateComment(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await updateComment(req, res, prisma);
   }
 );
 
