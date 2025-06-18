@@ -1,5 +1,4 @@
 import { Router, Request, Response } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
 import { ProjectRole } from '@prisma/client';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
@@ -30,7 +29,7 @@ router.post(
   checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response): Promise<void> => {
-    await addProjectMember(req as CustomRequest, res, prisma);
+    await addProjectMember(req, res, prisma);
   }
 );
 
@@ -40,7 +39,7 @@ router.delete(
   checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
-    await removeProjectMember(req as CustomRequest, res, prisma);
+    await removeProjectMember(req, res, prisma);
   }
 );
 
@@ -50,6 +49,6 @@ router.patch(
   checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
-    await updateProjectMemberRole(req as CustomRequest, res, prisma);
+    await updateProjectMemberRole(req, res, prisma);
   }
 );

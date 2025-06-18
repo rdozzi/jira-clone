@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
 import { PrismaClient, ProjectRole } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
@@ -12,10 +11,10 @@ export async function viewProjectMembers(
 ) {
   try {
     const { projectId } = req.params;
-    const projectIdParse = parseInt(projectId, 10);
+    const projectIdParsed = parseInt(projectId, 10);
 
     const projectMemberRecords = await prisma.projectMember.findMany({
-      where: { projectId: projectIdParse },
+      where: { projectId: projectIdParsed },
       include: {
         user: {
           select: {
@@ -39,14 +38,19 @@ export async function viewProjectMembers(
     }));
 
     res.status(200).json(projectUserPayload);
+    return;
   } catch (error) {
-    console.error(error);
+    res
+      .status(500)
+      .json({ message: 'Could not get users in the project', error });
+    console.error('Could not get users in the specified project', error);
+    return;
   }
 }
 
 // Add project member
 export async function addProjectMember(
-  req: CustomRequest,
+  req: Request,
   res: Response,
   prisma: PrismaClient
 ) {
@@ -58,10 +62,10 @@ export async function addProjectMember(
       return;
     }
 
-    const projectIdParse = parseInt(projectId, 10);
+    const projectIdParsed = parseInt(projectId, 10);
 
     const projectExists = await prisma.project.findUnique({
-      where: { id: projectIdParse },
+      where: { id: projectIdParsed },
       select: { id: true },
     });
     if (!projectExists) {
@@ -73,7 +77,7 @@ export async function addProjectMember(
       req.body;
 
     const newProjectMember = await prisma.projectMember.create({
-      data: { ...newProjectMemberData, projectId: projectIdParse },
+      data: { ...newProjectMemberData, projectId: projectIdParsed },
     });
 
     const userData = await prisma.user.findUnique({
@@ -88,34 +92,32 @@ export async function addProjectMember(
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: res.locals.userId,
+      userId: userData?.id,
       actorType: 'USER',
       action: 'ADD_PROJECT_MEMBER',
-      targetId: newProjectMember.userId,
+      targetId: projectIdParsed,
       targetType: 'PROJECT_MEMBER',
       metadata: {
-        userId: userData?.id,
-        firstName: userData?.firstName,
-        lastName: userData?.lastName,
+        firstName_lastName: `${userData?.firstName}_${userData?.lastName}`,
         email: userData?.email,
-        avatarURL: userData?.avatarSource,
         projectRole: newProjectMember.projectRole,
       },
-      ticketId: null,
-      boardId: null,
-      projectId: newProjectMember.projectId,
     });
 
-    res.status(201).json(newProjectMember);
+    res
+      .status(201)
+      .json({ message: 'Project member added successfully', newProjectMember });
+    return;
   } catch (error) {
     console.error('Error adding project member:', error);
     res.status(500).json({ message: 'Failed to add project member' });
+    return;
   }
 }
 
 // Remove project member
 export async function removeProjectMember(
-  req: CustomRequest,
+  req: Request,
   res: Response,
   prisma: PrismaClient
 ) {
@@ -161,33 +163,33 @@ export async function removeProjectMember(
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: res.locals.userId,
+      userId: userIdParse,
       actorType: 'USER',
       action: 'REMOVE_PROJECT_MEMBER',
-      targetId: userIdParse,
+      targetId: projectIdParse,
       targetType: 'PROJECT_MEMBER',
       metadata: {
         userId: userIdParse,
         projectRole: projectMember.projectRole,
-        firstName: userData?.firstName,
-        lastName: userData?.lastName,
+        firstName_lastName: `${userData?.firstName}_${userData?.lastName}`,
         email: userData?.email,
       },
-      ticketId: null,
-      boardId: null,
-      projectId: projectIdParse,
     });
 
-    res.status(200).json({ message: 'Project member removed successfully' });
+    res
+      .status(200)
+      .json({ message: 'Project member removed successfully', userData });
+    return;
   } catch (error) {
     console.error('Error removing project member:', error);
     res.status(500).json({ message: 'Failed to remove project member' });
+    return;
   }
 }
 
 // Update project member role
 export async function updateProjectMemberRole(
-  req: CustomRequest,
+  req: Request,
   res: Response,
   prisma: PrismaClient
 ) {
@@ -226,40 +228,28 @@ export async function updateProjectMemberRole(
       data: { projectRole },
     });
 
-    const userData = await prisma.user.findUnique({
-      where: { id: userIdParse },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-      },
-    });
-
     res.locals.logEvent = buildLogEvent({
-      userId: res.locals.userId,
+      userId: userIdParse,
       actorType: 'USER',
       action: 'UPDATE_PROJECT_MEMBER_ROLE',
-      targetId: userIdParse,
+      targetId: projectIdParse,
       targetType: 'PROJECT_MEMBER',
       metadata: {
-        userId: userIdParse,
         changes: generateDiff(
           { projectRole: projectMember.projectRole },
           { projectRole: updatedProjectMember.projectRole }
         ),
-        firstName: userData?.firstName,
-        lastName: userData?.lastName,
-        email: userData?.email,
       },
-      ticketId: null,
-      boardId: null,
-      projectId: projectIdParse,
     });
 
-    res.status(200).json(updatedProjectMember);
+    res.status(200).json({
+      message: "Project member's role updated successfully",
+      updatedProjectMember,
+    });
+    return;
   } catch (error) {
     console.error('Error updating project member role:', error);
     res.status(500).json({ message: 'Failed to update project member role' });
+    return;
   }
 }
