@@ -22,15 +22,15 @@ router.get('/projects/:projectId', (0, resolveProjectIdFromProject_1.resolveProj
     await (0, projectController_1.getProjectById)(req, res, prisma_1.default);
 });
 // Create project (Become a member of project)
-router.post('/projects', (0, authorizeGlobalRole_1.authorizeGlobalRole)(client_1.GlobalRole.ADMIN), async (req, res, next) => {
-    await (0, projectController_1.createProject)(req, res, next, prisma_1.default);
+router.post('/projects', (0, authorizeGlobalRole_1.authorizeGlobalRole)(client_1.GlobalRole.ADMIN), async (req, res) => {
+    await (0, projectController_1.createProject)(req, res, prisma_1.default);
 });
 // Update project
-router.patch('/projects/:projectId', (0, resolveProjectIdFromProject_1.resolveProjectIdFromProject)(), (0, checkProjectMembership_1.checkProjectMembership)({ allowGlobalSuperAdmin: true }), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }), async (req, res, next) => {
-    await (0, projectController_1.updateProject)(req, res, next, prisma_1.default);
+router.patch('/projects/:projectId', (0, resolveProjectIdFromProject_1.resolveProjectIdFromProject)(), (0, checkProjectMembership_1.checkProjectMembership)({ allowGlobalSuperAdmin: true }), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }), async (req, res) => {
+    await (0, projectController_1.updateProject)(req, res, prisma_1.default);
 });
 // Delete project
-router.delete('/projects/:projectId', (0, resolveProjectIdFromProject_1.resolveProjectIdFromProject)(), (0, checkProjectMembership_1.checkProjectMembership)({ allowGlobalSuperAdmin: true }), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }), async (req, res, next) => {
-    await (0, projectController_1.deleteProject)(req, res, next, prisma_1.default);
+router.delete('/projects/:projectId', (0, resolveProjectIdFromProject_1.resolveProjectIdFromProject)(), (0, checkProjectMembership_1.checkProjectMembership)({ allowGlobalSuperAdmin: true }), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }), async (req, res) => {
+    await (0, projectController_1.deleteProject)(req, res, prisma_1.default);
 });
 exports.default = router;
