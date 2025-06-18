@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { PrismaClient, ProjectRole } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
@@ -11,9 +11,11 @@ export async function getAllProjects(
   try {
     const projects = await prisma.project.findMany();
     res.status(200).json(projects);
+    return;
   } catch (error) {
     console.error('Error fetching projects: ', error);
     res.status(500).json({ error: 'Failed to fetch projects' });
+    return;
   }
 }
 
@@ -30,16 +32,17 @@ export async function getProjectById(
       where: { id: projectIdParsed },
     });
     res.status(200).json(projects);
+    return;
   } catch (error) {
     console.error('Error fetching projects: ', error);
     res.status(500).json({ error: 'Failed to fetch projects' });
+    return;
   }
 }
 
 export async function createProject(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
@@ -73,49 +76,46 @@ export async function createProject(
         projectName: project.name,
         projectDescription: project.description,
         projectOwnerId: project.ownerId,
-        projectId: project.id,
         projectRole: projectMember.projectRole,
       },
-      ticketId: null,
-      boardId: null,
-      projectId: project.id,
     });
 
     res.status(200).json({
       message: `Project ${project.name} created successfully`,
       project,
     });
-    next();
+    return;
   } catch (error) {
     console.error('Error creating project: ', error);
     res.status(500).json({ error: 'Failed to create project' });
+    return;
   }
 }
 
 export async function updateProject(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
     const user = res.locals.userInfo;
 
     const { projectId } = req.params;
-    const convertedId = parseInt(projectId, 10);
+    const projectIdParsed = parseInt(projectId, 10);
 
-    if (isNaN(convertedId)) {
-      return res.status(400).json({ message: 'Invalid project ID' });
+    if (isNaN(projectIdParsed)) {
+      res.status(400).json({ message: 'Invalid project ID' });
+      return;
     }
 
     const projectData = req.body;
 
     const oldProject = await prisma.project.findUnique({
-      where: { id: convertedId },
+      where: { id: projectIdParsed },
     });
 
     const newProject = await prisma.project.update({
-      where: { id: convertedId },
+      where: { id: projectIdParsed },
       data: { ...projectData },
     });
 
@@ -126,73 +126,69 @@ export async function updateProject(
       userId: user.id,
       actorType: 'USER',
       action: 'UPDATE_PROJECT',
-      targetId: convertedId,
+      targetId: projectIdParsed,
       targetType: 'PROJECT',
       metadata: {
         change,
       },
-      ticketId: null,
-      boardId: null,
-      projectId: newProject.id,
     });
 
     res.status(201).json({
       message: `Project ${newProject.id} updated successfully`,
       newProject,
     });
+    return;
   } catch (error) {
     console.error('Error creating project: ', error);
     res.status(500).json({ error: 'Failed to create project' });
+    return;
   }
 }
 
 export async function deleteProject(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
     const user = res.locals.userInfo;
 
     const { projectId } = req.params;
-    const convertedId = parseInt(projectId, 10);
+    const projectIdParsed = parseInt(projectId, 10);
 
-    if (isNaN(convertedId)) {
+    if (isNaN(projectIdParsed)) {
       return res.status(400).json({ message: 'Invalid project ID' });
     }
 
     const oldProject = await prisma.project.findUnique({
-      where: { id: convertedId },
+      where: { id: projectIdParsed },
     });
 
     const deletedProject = await prisma.project.delete({
-      where: { id: convertedId },
+      where: { id: projectIdParsed },
     });
 
     res.locals.logEvent = buildLogEvent({
       userId: user.id,
       actorType: 'USER',
       action: 'DELETE_PROJECT',
-      targetId: convertedId,
+      targetId: projectIdParsed,
       targetType: 'PROJECT',
       metadata: {
         name: oldProject?.name,
         description: oldProject?.description,
         owner: oldProject?.ownerId,
       },
-      ticketId: null,
-      boardId: null,
-      projectId: oldProject?.id,
     });
 
     res.status(200).json({
       message: `Project ${deletedProject.name} deleted successfully`,
       deletedProject,
     });
-    next();
+    return;
   } catch (error) {
     console.error('Error fetching project: ', error);
     res.status(500).json({ error: 'Failed to fetch project' });
+    return;
   }
 }

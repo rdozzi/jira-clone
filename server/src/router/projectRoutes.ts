@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response } from 'express';
 import { GlobalRole, ProjectRole } from '@prisma/client';
 import { resolveProjectIdFromProject } from '../middleware/projectMiddleware/resolveProjectIdFromProject';
 import prisma from '../lib/prisma';
@@ -42,8 +42,8 @@ router.get(
 router.post(
   '/projects',
   authorizeGlobalRole(GlobalRole.ADMIN),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await createProject(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await createProject(req, res, prisma);
   }
 );
 
@@ -53,8 +53,8 @@ router.patch(
   resolveProjectIdFromProject(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await updateProject(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await updateProject(req, res, prisma);
   }
 );
 
@@ -64,8 +64,8 @@ router.delete(
   resolveProjectIdFromProject(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteProject(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await deleteProject(req, res, prisma);
   }
 );
 
