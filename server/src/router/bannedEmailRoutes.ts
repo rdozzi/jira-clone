@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import {
   getAllBannedEmails,
@@ -21,7 +21,7 @@ router.get(
 
 // Get banned email by Id
 router.get(
-  '/bannedEmails/:id',
+  '/bannedEmails/:bannedEmailId',
   authorizeGlobalRole(GlobalRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await getBannedEmailById(req, res, prisma);
@@ -32,8 +32,8 @@ router.get(
 router.post(
   '/bannedEmails',
   authorizeGlobalRole(GlobalRole.ADMIN),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await createBannedEmail(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await createBannedEmail(req, res, prisma);
   }
 );
 

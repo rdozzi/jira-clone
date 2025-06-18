@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 
@@ -10,10 +10,10 @@ export async function getAllBannedEmails(
 ) {
   try {
     const bannedEmail = await prisma.bannedEmail.findMany();
-    res.status(200).json(bannedEmail);
+    return res.status(200).json(bannedEmail);
   } catch (error) {
     console.error('Error fetching bannedEmail: ', error);
-    res.status(500).json({ error: 'Failed to fetch bannedEmail' });
+    return res.status(500).json({ error: 'Failed to fetch bannedEmail' });
   }
 }
 
@@ -24,31 +24,31 @@ export async function getBannedEmailById(
   prisma: PrismaClient
 ) {
   try {
-    const { id } = req.params;
+    const { bannedEmailId } = req.params;
 
-    if (!id) {
+    if (!bannedEmailId) {
       return res.status(400).json({ error: 'Banned email ID is required' });
     }
 
-    const bannedEmailId = parseInt(String(id), 10);
+    const bannedEmailIdParsed = parseInt(String(bannedEmailId), 10);
 
-    if (isNaN(bannedEmailId)) {
+    if (isNaN(bannedEmailIdParsed)) {
       return res.status(400).json({ error: 'Invalid banned email ID' });
     }
 
     // Fetch banned email by ID
     const bannedEmail = await prisma.bannedEmail.findUnique({
-      where: { id: bannedEmailId },
+      where: { id: bannedEmailIdParsed },
     });
 
     if (!bannedEmail) {
       return res.status(404).json({ error: 'Banned email not found' });
     }
 
-    res.status(200).json({ bannedEmail: bannedEmail });
+    return res.status(200).json({ bannedEmail: bannedEmail });
   } catch (error) {
     console.error('Error fetching banned email: ', error);
-    res.status(500).json({ error: 'Failed to fetch banned email' });
+    return res.status(500).json({ error: 'Failed to fetch banned email' });
   }
 }
 
@@ -56,7 +56,6 @@ export async function getBannedEmailById(
 export async function createBannedEmail(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
@@ -94,13 +93,12 @@ export async function createBannedEmail(
       },
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       newBannedEmail: newBannedEmail,
       message: 'Banned email created successfully',
     });
-    next();
   } catch (error) {
     console.error('Error creating banned email: ', error);
-    res.status(500).json({ error: 'Failed to create banned email' });
+    return res.status(500).json({ error: 'Failed to create banned email' });
   }
 }
