@@ -1,5 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
-import { CustomRequest } from '../types/CustomRequest';
+import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { GlobalRole, ProjectRole } from '@prisma/client';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
@@ -29,7 +28,7 @@ router.get(
 
 // Get Ticket by Id
 router.get(
-  '/tickets/:id',
+  '/tickets/:ticketId',
   checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
@@ -62,19 +61,19 @@ router.post(
   '/tickets',
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await createNewTicket(req as CustomRequest, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await createNewTicket(req, res, prisma);
   }
 );
 
 // Delete ticket
 router.delete(
-  '/tickets/:id',
+  '/tickets/:ticketId',
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   checkTicketOwnership(prisma),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteTicket(req as CustomRequest, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await deleteTicket(req, res, prisma);
   }
 );
 
@@ -84,8 +83,8 @@ router.patch(
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   checkTicketOwnership(prisma),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await updateTicket(req as CustomRequest, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await updateTicket(req, res, prisma);
   }
 );
 

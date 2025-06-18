@@ -1,8 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { Request, Response } from 'express';
+import { PrismaClient, GlobalRole } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
-import { CustomRequest } from '../types/CustomRequest';
 
 export async function getAllTickets(
   req: Request,
@@ -22,9 +21,11 @@ export async function getAllTickets(
       },
     });
     res.status(200).json(tickets);
+    return;
   } catch (error) {
     console.error('Error fetching tickets: ', error);
     res.status(500).json({ error: 'Failed to fetch tickets' });
+    return;
   }
 }
 
@@ -33,15 +34,18 @@ export async function getTicketById(
   res: Response,
   prisma: PrismaClient
 ) {
-  const { id } = req.params;
+  const { ticketId } = req.params;
+  const ticketIdParsed = parseInt(ticketId, 10);
   try {
     const tickets = await prisma.ticket.findUnique({
-      where: { id: Number(id) },
+      where: { id: ticketIdParsed },
     });
     res.status(200).json(tickets);
+    return;
   } catch (error) {
     console.error('Error fetching tickets: ', error);
     res.status(500).json({ error: 'Failed to fetch tickets' });
+    return;
   }
 }
 
@@ -51,14 +55,17 @@ export async function getTicketByAssigneeId(
   prisma: PrismaClient
 ) {
   const { userId } = req.params;
+  const userIdParsed = parseInt(userId, 10);
   try {
     const tickets = await prisma.ticket.findMany({
-      where: { assigneeId: Number(userId) },
+      where: { assigneeId: userIdParsed },
     });
     res.status(200).json(tickets);
+    return;
   } catch (error) {
     console.log('Error fetching tickets: ', error);
     res.status(500).json({ error: 'Failed to fetch tickets' });
+    return;
   }
 }
 
@@ -68,29 +75,31 @@ export async function getTicketsByBoardId(
   prisma: PrismaClient
 ) {
   const { boardId } = req.params;
-  const boardIdNumber = parseInt(boardId, 10);
+  const boardIdParsed = parseInt(boardId, 10);
 
   try {
     const tickets = await prisma.ticket.findMany({
-      where: { boardId: boardIdNumber },
+      where: { boardId: boardIdParsed },
     });
     res.status(200).json(tickets);
+    return;
   } catch (error) {
     console.log('Error fetching tickets: ', error);
     res.status(500).json({ error: 'Failed to fetch tickets' });
+    return;
   }
 }
 
 export async function createNewTicket(
-  req: CustomRequest,
+  req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
-    const user = req.user;
+    const userInfo: { id: number; globalRole: GlobalRole } =
+      res.locals.userInfo;
 
-    if (!user) {
+    if (!userInfo || Object.keys(userInfo).length === 0) {
       return res.status(401).json({ message: 'Unauthorized: User Not found' });
     }
 
@@ -99,21 +108,8 @@ export async function createNewTicket(
       data: ticketData,
     });
 
-    const projectInfo = await prisma.ticket.findUnique({
-      where: { id: ticket.id },
-      select: {
-        board: {
-          select: {
-            projectId: true,
-          },
-        },
-      },
-    });
-
-    const projectId = projectInfo?.board?.projectId;
-
     res.locals.logEvent = buildLogEvent({
-      userId: user.id,
+      userId: userInfo.id,
       actorType: 'USER',
       action: 'CREATE_TICKET',
       targetId: ticket.id,
@@ -121,66 +117,52 @@ export async function createNewTicket(
       metadata: {
         title: `${ticket.title}`,
         description: `${ticket.description}`,
+        boardId: ticket.boardId,
       },
-      ticketId: ticket.id,
-      boardId: ticket.boardId,
-      projectId: projectId,
     });
 
-    res.status(201).json(ticket);
-    next();
+    res.status(201).json({ message: 'Created ticket successfully', ticket });
+    return;
   } catch (error) {
     console.error('Error creating ticket: ', error);
     res.status(500).json({ error: 'Failed to create ticket' });
+    return;
   }
 }
 
 export async function deleteTicket(
-  req: CustomRequest,
+  req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
-    const user = req.user;
+    const userInfo: { id: number; globalRole: GlobalRole } =
+      res.locals.userInfo;
 
-    if (!user) {
+    if (!userInfo || Object.keys(userInfo).length === 0) {
       return res.status(401).json({ message: 'Unauthorized: User Not found' });
     }
 
-    const { id } = req.params;
-    const convertedId = parseInt(id, 10);
+    const { ticketId } = req.params;
+    const ticketIdParsed = parseInt(ticketId, 10);
 
     const oldTicket = await prisma.ticket.findUniqueOrThrow({
-      where: { id: convertedId },
+      where: { id: ticketIdParsed },
       select: { id: true, title: true, description: true, boardId: true },
     });
 
     // Check to see if comments exist/Delete if they exist
-    await prisma.comment.deleteMany({ where: { ticketId: convertedId } });
+    await prisma.comment.deleteMany({ where: { ticketId: ticketIdParsed } });
 
     // Check to see if Ticket Labels Exist/Delete if they exist
-    await prisma.ticketLabel.findMany({ where: { ticketId: convertedId } });
+    await prisma.ticketLabel.findMany({ where: { ticketId: ticketIdParsed } });
 
     const deleteTicket = await prisma.ticket.delete({
-      where: { id: convertedId },
+      where: { id: ticketIdParsed },
     });
-
-    const projectInfo = await prisma.ticket.findUnique({
-      where: { id: oldTicket.id },
-      select: {
-        board: {
-          select: {
-            projectId: true,
-          },
-        },
-      },
-    });
-
-    const projectId = projectInfo?.board?.projectId;
 
     res.locals.logEvent = buildLogEvent({
-      userId: user.id,
+      userId: userInfo.id,
       actorType: 'USER',
       action: 'DELETE_TICKET',
       targetId: oldTicket.id,
@@ -188,46 +170,47 @@ export async function deleteTicket(
       metadata: {
         title: `${oldTicket.title}`,
         description: `${oldTicket.description}`,
+        boardId: oldTicket.boardId,
       },
-      ticketId: oldTicket.id,
-      boardId: oldTicket.boardId,
-      projectId: projectId,
     });
 
-    res.status(200).json(deleteTicket);
-    next();
+    res
+      .status(200)
+      .json({ message: 'Ticket deleted successfully', deleteTicket });
+    return;
   } catch (error) {
     console.error('Error fetching tickets: ', error);
     res.status(500).json({ error: 'Failed to fetch tickets' });
+    return;
   }
 }
 
 export async function updateTicket(
-  req: CustomRequest,
+  req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
-    const user = req.user;
+    const userInfo: { id: number; globalRole: GlobalRole } =
+      res.locals.userInfo;
 
-    if (!user) {
+    if (!userInfo || Object.keys(userInfo).length === 0) {
       return res.status(401).json({ message: 'Unauthorized: User Not found' });
     }
 
     const ticketData = req.body;
-    const { id } = req.params;
-    const ticketId = parseInt(id, 10);
+    const { ticketId } = req.params;
+    const ticketIdParsed = parseInt(ticketId, 10);
 
     const oldTicket = await prisma.ticket.findUnique({
-      where: { id: ticketId },
+      where: { id: ticketIdParsed },
     });
     if (!oldTicket) {
       return res.status(404).json({ error: 'Ticket not found' });
     }
 
     const newTicket = await prisma.ticket.update({
-      where: { id: ticketId },
+      where: { id: ticketIdParsed },
       data: {
         ...ticketData,
       },
@@ -235,21 +218,8 @@ export async function updateTicket(
 
     const changes = generateDiff(oldTicket, newTicket);
 
-    const projectInfo = await prisma.ticket.findUnique({
-      where: { id: oldTicket.id },
-      select: {
-        board: {
-          select: {
-            projectId: true,
-          },
-        },
-      },
-    });
-
-    const projectId = projectInfo?.board?.projectId;
-
     res.locals.logEvent = buildLogEvent({
-      userId: user.id,
+      userId: userInfo.id,
       actorType: 'USER',
       action: 'UPDATE_TICKET',
       targetId: newTicket.id,
@@ -258,22 +228,15 @@ export async function updateTicket(
         ticketDescription: `${newTicket.description}`,
         title: `${newTicket.title}`,
         changes,
+        boardId: newTicket.boardId,
       },
-      ticketId: newTicket.id,
-      boardId: newTicket.boardId,
-      projectId: projectId,
     });
 
     res.status(200).json(newTicket);
-    console.log(
-      'status',
-      res.status,
-      'res.locals.logEvent',
-      res.locals.logEvent
-    );
-    next();
+    return;
   } catch (error) {
     console.error('Error editing ticket: ', error);
     res.status(500).json({ error: 'Failed to edit ticket' });
+    return;
   }
 }
