@@ -9,9 +9,6 @@ export async function createActivityLog({
   targetId,
   targetType,
   metadata,
-  ticketId,
-  projectId,
-  boardId,
 }: LogEventPayload): Promise<ActivityLog | null> {
   try {
     return await prisma.activityLog.create({
@@ -22,9 +19,6 @@ export async function createActivityLog({
         targetId,
         targetType,
         metadata,
-        ticketId,
-        projectId,
-        boardId,
       },
     });
   } catch (error) {
