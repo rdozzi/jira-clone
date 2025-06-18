@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 
 import { verifyPassword } from '../utilities/password';
@@ -11,7 +11,6 @@ dotenv.config();
 export async function loginUser(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
@@ -52,31 +51,25 @@ export async function loginUser(
         name: `${user.firstName}_${user.lastName}`,
         email: user.email,
         globalRole: user.globalRole,
-        token: token,
+        timestamp: new Date().toISOString(),
       },
-      ticketId: null,
-      boardId: null,
-      projectId: null,
     });
 
     res.status(200).json({
       message: 'Login successful',
-      token,
       userId: user.id,
+      email: user.email,
       userRole: user.globalRole,
+      token: token,
       expiresIn: Date.now() + Number(process.env.JWT_EXPIRATION) * 1000,
     });
   } catch (error) {
     console.error('Error logging in user: ', error);
-    res.status(500).json({ error: 'Failed to log in user' });
+    return res.status(500).json({ error: 'Failed to log in user' });
   }
 }
 
-export async function logoutUser(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function logoutUser(req: Request, res: Response) {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) {
     return res.status(401).json({ error: 'No token provided' });
@@ -93,17 +86,13 @@ export async function logoutUser(
       targetType: 'AUTHENTICATION',
       metadata: {
         id: userId,
-        token: token,
+        timestamp: new Date().toISOString(),
       },
-      ticketId: null,
-      boardId: null,
-      projectId: null,
     });
 
-    next();
-    res.status(200).json({ message: 'Logout successful' });
+    return res.status(200).json({ message: 'Logout successful' });
   } catch (error) {
     console.error('Error logging out user: ', error);
-    res.status(500).json({ error: 'Failed to log out user' });
+    return res.status(500).json({ error: 'Failed to log out user' });
   }
 }
