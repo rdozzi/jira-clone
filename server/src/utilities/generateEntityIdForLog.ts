@@ -1,6 +1,7 @@
 import { AttachmentEntityType } from '@prisma/client';
 
 interface LogIdObject {
+  commentId: number | null;
   ticketId: number | null;
   boardId: number | null;
   projectId: number | null;
@@ -11,6 +12,7 @@ export function generateEntityIdForLog(
   entityId: number
 ) {
   const logIdObject: LogIdObject = {
+    commentId: null,
     ticketId: null,
     boardId: null,
     projectId: null,
@@ -21,7 +23,7 @@ export function generateEntityIdForLog(
       logIdObject.ticketId = entityId;
       break;
     case 'COMMENT':
-      logIdObject.ticketId = entityId;
+      logIdObject.commentId = entityId;
       break;
     case 'BOARD':
       logIdObject.boardId = entityId;
@@ -30,7 +32,7 @@ export function generateEntityIdForLog(
       logIdObject.projectId = entityId;
       break;
     default:
-      // No User entity present in multiple uploads
+      // User entity does not apply
       console.log('User or invalid entity');
   }
 
