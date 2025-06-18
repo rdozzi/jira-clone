@@ -22,15 +22,15 @@ router.get('/comments/:ticketId', (0, resolveProjectIdFromComment_1.resolveProje
     await (0, commentController_1.getAllCommentsById)(req, res, prisma_1.default);
 });
 // Create a comment
-router.post('/comments', (0, resolveProjectIdFromComment_1.resolveProjectIdFromComment)(), (0, checkProjectMembership_1.checkProjectMembership)(), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.USER), async (req, res, next) => {
-    await (0, commentController_1.createComment)(req, res, next, prisma_1.default);
+router.post('/comments', (0, resolveProjectIdFromComment_1.resolveProjectIdFromComment)(), (0, checkProjectMembership_1.checkProjectMembership)(), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.USER), async (req, res) => {
+    await (0, commentController_1.createComment)(req, res, prisma_1.default);
 });
 // Delete comment
-router.delete('/comments/:commentId', (0, resolveProjectIdFromComment_1.resolveProjectIdFromComment)(), (0, checkProjectMembership_1.checkProjectMembership)({ allowGlobalSuperAdmin: true }), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.USER, { allowGlobalSuperAdmin: true }), (0, checkCommentOwnership_1.checkCommentOwnership)({ allowGlobalSuperAdmin: true }), async (req, res, next) => {
-    await (0, commentController_1.deleteComment)(req, res, next, prisma_1.default);
+router.delete('/comments/:commentId', (0, resolveProjectIdFromComment_1.resolveProjectIdFromComment)(), (0, checkProjectMembership_1.checkProjectMembership)({ allowGlobalSuperAdmin: true }), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.USER, { allowGlobalSuperAdmin: true }), (0, checkCommentOwnership_1.checkCommentOwnership)({ allowGlobalSuperAdmin: true }), async (req, res) => {
+    await (0, commentController_1.deleteComment)(req, res, prisma_1.default);
 });
 // Update comment
-router.patch('/comments/:commentId', (0, resolveProjectIdFromComment_1.resolveProjectIdFromComment)(), (0, checkProjectMembership_1.checkProjectMembership)({ allowGlobalSuperAdmin: true }), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.USER, { allowGlobalSuperAdmin: true }), (0, checkCommentOwnership_1.checkCommentOwnership)({ allowGlobalSuperAdmin: true }), async (req, res, next) => {
-    await (0, commentController_1.updateComment)(req, res, next, prisma_1.default);
+router.patch('/comments/:commentId', (0, resolveProjectIdFromComment_1.resolveProjectIdFromComment)(), (0, checkProjectMembership_1.checkProjectMembership)({ allowGlobalSuperAdmin: true }), (0, checkProjectRole_1.checkProjectRole)(client_1.ProjectRole.USER, { allowGlobalSuperAdmin: true }), (0, checkCommentOwnership_1.checkCommentOwnership)({ allowGlobalSuperAdmin: true }), async (req, res) => {
+    await (0, commentController_1.updateComment)(req, res, prisma_1.default);
 });
 exports.default = router;

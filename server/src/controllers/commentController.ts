@@ -1,8 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
-import { Prisma, PrismaClient, AttachmentEntityType } from '@prisma/client';
+import { Request, Response } from 'express';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
-import { generateEntityIdForLog } from '../utilities/generateEntityIdForLog';
 import { deleteCommentCascade } from '../services/deletionServices/deleteCommentCascade';
 
 export async function getAllComments(
@@ -13,9 +12,11 @@ export async function getAllComments(
   try {
     const comments = await prisma.comment.findMany();
     res.status(200).json(comments);
+    return;
   } catch (error) {
     console.error('Error fetching comments: ', error);
     res.status(500).json({ error: 'Failed to fetch comments' });
+    return;
   }
 }
 
@@ -30,16 +31,17 @@ export async function getAllCommentsById(
       where: { ticketId: Number(ticketId) },
     });
     res.status(200).json(ticketComments);
+    return;
   } catch (error) {
     console.error('Error fetching comments: ', error);
     res.status(500).json({ error: 'Failed to fetch comments' });
+    return;
   }
 }
 
 export async function createComment(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
@@ -49,12 +51,6 @@ export async function createComment(
     const comment = await prisma.comment.create({
       data: { ...commentData, authorId: userId },
     });
-
-    // The entityId for the purpose of logging is the ticketId for comments
-    const logIdObject = generateEntityIdForLog(
-      AttachmentEntityType.COMMENT,
-      comment.ticketId
-    );
 
     res.locals.logEvent = buildLogEvent({
       userId: userId,
@@ -67,9 +63,6 @@ export async function createComment(
         content: `${comment.content}`,
         ticketId: `${comment.ticketId}`,
       },
-      ticketId: logIdObject.ticketId,
-      boardId: logIdObject.boardId,
-      projectId: logIdObject.projectId,
     });
 
     res.status(200).json(comment);
@@ -84,7 +77,6 @@ export async function createComment(
 export async function deleteComment(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
@@ -110,10 +102,6 @@ export async function deleteComment(
     });
 
     // The entityId for the purpose of logging is the ticketId for comments
-    const logIdObject = generateEntityIdForLog(
-      AttachmentEntityType.COMMENT,
-      oldComment.id
-    );
 
     res.locals.logEvent = buildLogEvent({
       userId: userId,
@@ -125,31 +113,31 @@ export async function deleteComment(
         id: oldComment?.id,
         authorId: oldComment?.authorId,
         content: oldComment?.content,
-        commentId: logIdObject.commentId,
       },
-      ticketId: oldComment.ticketId,
-      boardId: logIdObject.boardId,
-      projectId: logIdObject.projectId,
     });
 
-    res.status(200).json(deleteComment);
-    next();
+    res.status(200).json({
+      message: 'Comment deleted successfully',
+      deleteComment: deleteComment,
+    });
+    return;
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === 'P2025'
     ) {
-      return res.status(404).json({ message: 'Comment not found' });
+      res.status(404).json({ message: 'Comment not found' });
+      return;
     }
     console.error('Error fetching comment: ', error);
     res.status(500).json({ error: 'Failed to fetch comment' });
+    return;
   }
 }
 
 export async function updateComment(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
@@ -177,10 +165,11 @@ export async function updateComment(
 
     if (!oldComment) {
       res.status(404).json({ error: `Comment not found` });
+      return;
     }
 
     const updateComment = await prisma.comment.update({
-      where: { id: Number(commentId) },
+      where: { id: commentIdParsed },
       data: {
         content,
       },
@@ -191,12 +180,6 @@ export async function updateComment(
         ? generateDiff(oldComment, updateComment)
         : {};
 
-    // The entityId for the purpose of logging is the ticketId for comments
-    const logIdObject = generateEntityIdForLog(
-      AttachmentEntityType.COMMENT,
-      updateComment.ticketId
-    );
-
     res.locals.logEvent = buildLogEvent({
       userId: userId,
       actorType: 'USER',
@@ -206,20 +189,21 @@ export async function updateComment(
       metadata: {
         changes,
       },
-      ticketId: logIdObject.ticketId,
-      boardId: logIdObject.boardId,
-      projectId: logIdObject.projectId,
     });
 
-    res.status(200).json(updateComment);
+    res
+      .status(200)
+      .json({ message: 'Comment updated successfully', updateComment });
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === 'P2025'
     ) {
-      return res.status(404).json({ message: 'Comment not found' });
+      res.status(404).json({ message: 'Comment not found' });
+      return;
     }
     console.error('Error editing comment: ', error);
     res.status(500).json({ error: 'Failed to edit comment' });
+    return;
   }
 }
