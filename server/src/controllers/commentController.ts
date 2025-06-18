@@ -112,7 +112,7 @@ export async function deleteComment(
     // The entityId for the purpose of logging is the ticketId for comments
     const logIdObject = generateEntityIdForLog(
       AttachmentEntityType.COMMENT,
-      oldComment.ticketId
+      oldComment.id
     );
 
     res.locals.logEvent = buildLogEvent({
@@ -125,8 +125,9 @@ export async function deleteComment(
         id: oldComment?.id,
         authorId: oldComment?.authorId,
         content: oldComment?.content,
+        commentId: logIdObject.commentId,
       },
-      ticketId: logIdObject.ticketId,
+      ticketId: oldComment.ticketId,
       boardId: logIdObject.boardId,
       projectId: logIdObject.projectId,
     });
