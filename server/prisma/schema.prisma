@@ -164,9 +164,6 @@ model ActivityLog {
   targetId   Int?
   targetType String            @db.VarChar(255)
   metadata   Json?
-  ticketId   Int?
-  projectId  Int?
-  boardId    Int?
   createdAt  DateTime          @default(now()) @db.Timestamptz()
 }
 
