@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import {
   getAllLabels,
@@ -24,8 +24,8 @@ router.get(
 router.post(
   '/labels',
   authorizeGlobalRole(GlobalRole.ADMIN),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await createNewLabel(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await createNewLabel(req, res, prisma);
   }
 );
 
@@ -33,8 +33,8 @@ router.post(
 router.patch(
   '/labels/:labelId',
   authorizeGlobalRole(GlobalRole.ADMIN),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await updateLabel(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await updateLabel(req, res, prisma);
   }
 );
 
@@ -42,8 +42,8 @@ router.patch(
 router.delete(
   '/labels/:labelId',
   authorizeGlobalRole(GlobalRole.ADMIN),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteLabel(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await deleteLabel(req, res, prisma);
   }
 );
 

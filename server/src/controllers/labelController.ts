@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
@@ -22,7 +22,6 @@ export async function getAllLabels(
 export async function createNewLabel(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
@@ -43,16 +42,14 @@ export async function createNewLabel(
         name: `${label.name}`,
         color: `${label.color}`,
       },
-      ticketId: null,
-      boardId: null,
-      projectId: null,
     });
 
     res.status(200).json({ message: 'Label successfully created', label });
-    next();
+    return;
   } catch (error) {
     console.error('Error creating label: ', error);
     res.status(500).json({ error: 'Failed to create label' });
+    return;
   }
 }
 
@@ -60,7 +57,6 @@ export async function createNewLabel(
 export async function updateLabel(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
@@ -68,10 +64,10 @@ export async function updateLabel(
 
     const labelData = req.body;
     const { labelId } = req.params;
-    const convertedId = parseInt(labelId, 10);
+    const labelIdParsed = parseInt(labelId, 10);
 
     const oldLabel = await prisma.label.findUniqueOrThrow({
-      where: { id: convertedId },
+      where: { id: labelIdParsed },
       select: { id: true, name: true, color: true },
     });
 
@@ -88,18 +84,15 @@ export async function updateLabel(
       userId: user.id,
       actorType: 'USER',
       action: 'UPDATE_LABEL',
-      targetId: convertedId,
+      targetId: labelIdParsed,
       targetType: 'LABEL',
       metadata: {
         change,
       },
-      ticketId: null,
-      boardId: null,
-      projectId: null,
     });
 
     res.status(200).json({ message: 'Label successfully updated', newLabel });
-    next();
+    return;
   } catch (error) {
     console.error('Error editing label: ', error);
     res.status(500).json({ error: 'Failed to edit label' });
@@ -110,21 +103,20 @@ export async function updateLabel(
 export async function deleteLabel(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
     const user = res.locals.userInfo;
 
     const { labelId } = req.params;
-    const convertedId = parseInt(labelId, 10);
+    const labelIdParsed = parseInt(labelId, 10);
 
     const oldLabel = await prisma.label.findUnique({
-      where: { id: convertedId },
+      where: { id: labelIdParsed },
     });
 
     const deleteLabel = await prisma.label.delete({
-      where: { id: convertedId },
+      where: { id: labelIdParsed },
     });
 
     res.locals.logEvent = buildLogEvent({
@@ -137,17 +129,15 @@ export async function deleteLabel(
         name: `${oldLabel?.name}`,
         color: `${oldLabel?.color}`,
       },
-      ticketId: null,
-      boardId: null,
-      projectId: null,
     });
 
     res
       .status(200)
       .json({ message: 'Label successfully deleted', deleteLabel });
-    next();
+    return;
   } catch (error) {
     console.error('Error delete label: ', error);
     res.status(500).json({ error: 'Failed to delete label' });
+    return;
   }
 }
