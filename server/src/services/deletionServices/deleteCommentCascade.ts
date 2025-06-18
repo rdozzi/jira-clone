@@ -43,13 +43,13 @@ export async function deleteCommentCascade(
     }
 
     await prisma.attachment.deleteMany({
-      where: { entityType: AttachmentEntityType.COMMENT },
+      where: { entityType: AttachmentEntityType.COMMENT, entityId: commentId },
     });
 
     const logEvents = deletedAttachments.map((attachment) => {
       const logEntityId = generateEntityIdForLog(
         attachment.entityType,
-        attachment.entityId
+        commentId
       );
 
       return buildLogEvent({
@@ -65,7 +65,7 @@ export async function deleteCommentCascade(
           filePath: attachment.filePath,
           fileUrl: attachment.fileUrl,
           storageType: attachment.storageType,
-          commentId: commentId,
+          commentId: logEntityId.commentId,
         },
         ticketId: logEntityId.ticketId,
         boardId: logEntityId.boardId,
