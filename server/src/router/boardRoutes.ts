@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response } from 'express';
 import { GlobalRole, ProjectRole } from '@prisma/client';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
@@ -50,8 +50,8 @@ router.post(
   resolveProjectIdFromBoard(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await createBoard(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await createBoard(req, res, prisma);
   }
 );
 
@@ -61,8 +61,8 @@ router.patch(
   resolveProjectIdFromBoard(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await updateBoard(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await updateBoard(req, res, prisma);
   }
 );
 
@@ -72,8 +72,8 @@ router.delete(
   resolveProjectIdFromBoard(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteBoard(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await deleteBoard(req, res, prisma);
   }
 );
 

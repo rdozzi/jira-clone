@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
@@ -12,9 +12,11 @@ export async function getAllBoards(
   try {
     const boards = await prisma.board.findMany();
     res.status(200).json(boards);
+    return;
   } catch (error) {
     console.error('Error fetching boards: ', error);
     res.status(500).json({ error: 'Failed to fetch boards' });
+    return;
   }
 }
 
@@ -31,9 +33,11 @@ export async function getBoardById(
       where: { id: convertedBoardId },
     });
     res.status(200).json(board);
+    return;
   } catch (error) {
     console.error('Error fetching board: ', error);
     res.status(500).json({ error: 'Failed to fetch board' });
+    return;
   }
 }
 
@@ -44,10 +48,10 @@ export async function getBoardsByProjectId(
   prisma: PrismaClient
 ): Promise<void> {
   const { projectId } = req.params;
-  const projectIdParse = parseInt(projectId, 10);
+  const projectIdParsed = parseInt(projectId, 10);
   try {
     const projectBoards = await prisma.board.findMany({
-      where: { projectId: projectIdParse },
+      where: { projectId: projectIdParsed },
     });
 
     if (projectBoards.length === 0) {
@@ -58,6 +62,7 @@ export async function getBoardsByProjectId(
     }
 
     res.status(200).json(projectBoards);
+    return;
   } catch (error) {
     console.error(`Error fetching boards for project ${projectId}: `, error);
     res
@@ -71,7 +76,6 @@ export async function getBoardsByProjectId(
 export async function createBoard(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
@@ -92,15 +96,14 @@ export async function createBoard(
         name: `${board.name}`,
         description: `${board.description}`,
       },
-      ticketId: null,
-      boardId: board.id,
-      projectId: board.projectId,
     });
-    next();
+
     res.status(200).json(board);
+    return;
   } catch (error) {
     console.error('Error creating board: ', error);
     res.status(500).json({ error: 'Failed to create board' });
+    return;
   }
 }
 
@@ -108,17 +111,16 @@ export async function createBoard(
 export async function updateBoard(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
     const userInfo = res.locals.userInfo;
     const boardData = req.body;
     const { boardId } = req.params;
-    const convertedBoardId = parseInt(boardId, 10);
+    const boardIdParsed = parseInt(boardId, 10);
 
     const oldBoard = await prisma.board.findUniqueOrThrow({
-      where: { id: convertedBoardId },
+      where: { id: boardIdParsed },
       select: {
         id: true,
         name: true,
@@ -127,7 +129,7 @@ export async function updateBoard(
     });
 
     const newBoard = await prisma.board.update({
-      where: { id: convertedBoardId },
+      where: { id: boardIdParsed },
       data: {
         ...boardData,
       },
@@ -140,21 +142,19 @@ export async function updateBoard(
       userId: userInfo.id,
       actorType: 'USER',
       action: 'UPDATE_BOARD',
-      targetId: convertedBoardId,
+      targetId: boardIdParsed,
       targetType: 'BOARD',
       metadata: {
         name: boardData.name,
         changes,
       },
-      ticketId: null,
-      boardId: oldBoard.id,
-      projectId: oldBoard.projectId,
     });
-    next();
     res.status(200).json(newBoard);
+    return;
   } catch (error) {
     console.error('Error editing board: ', error);
     res.status(500).json({ error: 'Failed to edit board' });
+    return;
   }
 }
 
@@ -162,16 +162,15 @@ export async function updateBoard(
 export async function deleteBoard(
   req: Request,
   res: Response,
-  next: NextFunction,
   prisma: PrismaClient
 ) {
   try {
     const user = res.locals.userInfo;
     const { boardId } = req.params;
-    const convertedBoardId = parseInt(boardId, 10);
+    const boardIdParsed = parseInt(boardId, 10);
 
     const oldBoard = await prisma.board.findUniqueOrThrow({
-      where: { id: convertedBoardId },
+      where: { id: boardIdParsed },
       select: {
         id: true,
         name: true,
@@ -185,34 +184,34 @@ export async function deleteBoard(
     }
 
     const deleteboard = await prisma.board.delete({
-      where: { id: convertedBoardId },
+      where: { id: boardIdParsed },
     });
 
     res.locals.logEvent = buildLogEvent({
       userId: user.id,
       actorType: 'USER',
       action: 'DELETE_BOARD',
-      targetId: convertedBoardId,
+      targetId: boardIdParsed,
       targetType: 'BOARD',
       metadata: {
-        id: oldBoard?.id,
         name: oldBoard?.name,
         description: oldBoard?.description,
       },
-      ticketId: null,
-      boardId: oldBoard.id,
-      projectId: oldBoard.projectId,
     });
-    next();
-    res.status(200).json(deleteboard);
+    res
+      .status(200)
+      .json({ message: 'Board deleted successfully', deleteboard });
+    return;
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === 'P2025'
     ) {
-      return res.status(404).json({ message: 'Board not found' });
+      res.status(404).json({ message: 'Board not found' });
+      return;
     }
     console.error('Error deleting board: ', error);
     res.status(500).json({ error: 'Failed to delete board' });
+    return;
   }
 }
