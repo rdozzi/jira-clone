@@ -1,11 +1,4 @@
-import {
-  Router,
-  Request,
-  Response,
-  NextFunction,
-  RequestHandler,
-} from 'express';
-import { CustomRequest } from '../types/CustomRequest';
+import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { GlobalRole, ProjectRole } from '@prisma/client';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
@@ -34,9 +27,9 @@ router.get(
   }
 );
 
-// Get user by id
+// Get user by id or email
 router.get(
-  '/users',
+  '/users/:userId/:userEmail',
   authorizeGlobalRole(GlobalRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await getUser(req, res, prisma);
@@ -45,11 +38,11 @@ router.get(
 
 // Get user by project
 router.get(
-  '/users/:userId/project',
+  '/users/:projectId/project',
   checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response) => {
-    await getUserByProjectId(req as CustomRequest, res, prisma);
+    await getUserByProjectId(req, res, prisma);
   }
 );
 
@@ -57,8 +50,8 @@ router.get(
 router.post(
   '/users',
   authorizeGlobalRole(GlobalRole.ADMIN),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await createUser(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await createUser(req, res, prisma);
   }
 );
 
@@ -66,24 +59,24 @@ router.post(
 router.patch(
   '/users/:userId/soft-delete',
   authorizeGlobalRole(GlobalRole.ADMIN),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteUser(req, res, next, prisma);
+  async (req: Request, res: Response): Promise<void> => {
+    await deleteUser(req, res, prisma);
   }
 );
 
 // Update user info
 router.patch(
-  '/users/:id/update',
-  authorizeSelfOrAdmin as unknown as RequestHandler,
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await updateUser(req as CustomRequest, res, next, prisma);
+  '/users/:userId/update',
+  authorizeSelfOrAdmin(),
+  async (req: Request, res: Response): Promise<void> => {
+    await updateUser(req, res, prisma);
   }
 );
 
 // Update user avatar
 router.patch(
-  '/users/:id/avatar',
-  authorizeSelfOrAdmin as unknown as RequestHandler,
+  '/users/:userId/avatar',
+  authorizeSelfOrAdmin(),
   uploadSingleMiddleware,
   async (req: Request, res: Response) => {
     await updateUserAvatar(req, res, prisma);
