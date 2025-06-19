@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
+import { deleteLabelCascade } from '../services/deletionServices/deleteLabelCascade';
 
 //Get all labels
 export async function getAllLabels(
@@ -115,8 +116,11 @@ export async function deleteLabel(
       where: { id: labelIdParsed },
     });
 
-    const deleteLabel = await prisma.label.delete({
-      where: { id: labelIdParsed },
+    prisma.$transaction(async (tx) => {
+      await deleteLabelCascade(tx, labelIdParsed);
+      await tx.label.delete({
+        where: { id: labelIdParsed },
+      });
     });
 
     res.locals.logEvent = buildLogEvent({
@@ -133,7 +137,7 @@ export async function deleteLabel(
 
     res
       .status(200)
-      .json({ message: 'Label successfully deleted', deleteLabel });
+      .json({ message: 'Label successfully deleted', deletedLabel: oldLabel });
     return;
   } catch (error) {
     console.error('Error delete label: ', error);
