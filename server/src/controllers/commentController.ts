@@ -95,10 +95,11 @@ export async function deleteComment(
       },
     });
 
-    await deleteCommentCascade(req, res, prisma, commentIdParsed);
-
-    const deleteComment = await prisma.comment.delete({
-      where: { id: commentIdParsed },
+    prisma.$transaction(async (tx) => {
+      await deleteCommentCascade(res, tx, commentIdParsed);
+      await tx.comment.delete({
+        where: { id: commentIdParsed },
+      });
     });
 
     // The entityId for the purpose of logging is the ticketId for comments
