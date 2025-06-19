@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { PrismaClient, AttachmentEntityType } from '@prisma/client';
+import { Response } from 'express';
+import { Prisma, AttachmentEntityType } from '@prisma/client';
 import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { buildLogEvent } from '../buildLogEvent';
 import path from 'path';
@@ -8,13 +8,12 @@ import fs from 'fs/promises';
 // Comments may have attachments associated with them. The attachment and associated record must be deleted.
 
 export async function deleteCommentCascade(
-  req: Request,
   res: Response,
-  prisma: PrismaClient,
+  tx: Prisma.TransactionClient,
   commentId: number
 ) {
   try {
-    const attachments = await prisma.attachment.findMany({
+    const attachments = await tx.attachment.findMany({
       where: { entityType: AttachmentEntityType.COMMENT, entityId: commentId },
     });
 
@@ -42,7 +41,7 @@ export async function deleteCommentCascade(
       }
     }
 
-    await prisma.attachment.deleteMany({
+    await tx.attachment.deleteMany({
       where: { entityType: AttachmentEntityType.COMMENT, entityId: commentId },
     });
 
@@ -67,9 +66,6 @@ export async function deleteCommentCascade(
           storageType: attachment.storageType,
           commentId: logEntityId.commentId,
         },
-        ticketId: logEntityId.ticketId,
-        boardId: logEntityId.boardId,
-        projectId: logEntityId.projectId,
       });
     });
 
