@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
-import { deleteLabelCascade } from '../services/deletionServices/deleteLabelCascade';
+import { deleteLabelDependencies } from '../services/deletionServices/deleteLabelDependencies';
 
 //Get all labels
 export async function getAllLabels(
@@ -117,7 +117,7 @@ export async function deleteLabel(
     });
 
     prisma.$transaction(async (tx) => {
-      await deleteLabelCascade(tx, labelIdParsed);
+      await deleteLabelDependencies(tx, labelIdParsed, null);
       await tx.label.delete({
         where: { id: labelIdParsed },
       });
