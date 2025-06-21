@@ -1,7 +1,12 @@
 import { Request, Response } from 'express';
-import { PrismaClient, ProjectRole } from '@prisma/client';
+import {
+  AttachmentEntityType,
+  PrismaClient,
+  ProjectRole,
+} from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
+import { deleteProjectDependencies } from '../services/deletionServices/deleteProjectDependencies';
 
 export async function getAllProjects(
   req: Request,
@@ -151,7 +156,7 @@ export async function deleteProject(
   prisma: PrismaClient
 ) {
   try {
-    const user = res.locals.userInfo;
+    const userId = res.locals.userInfo.id;
 
     const { projectId } = req.params;
     const projectIdParsed = parseInt(projectId, 10);
@@ -164,26 +169,40 @@ export async function deleteProject(
       where: { id: projectIdParsed },
     });
 
-    const deletedProject = await prisma.project.delete({
-      where: { id: projectIdParsed },
+    if (!oldProject) {
+      res.status(400).json({ message: 'No project found.' });
+      return;
+    }
+
+    prisma.$transaction(async (tx) => {
+      await deleteProjectDependencies(
+        res,
+        tx,
+        AttachmentEntityType.PROJECT,
+        projectIdParsed,
+        userId
+      );
+      await tx.project.delete({
+        where: { id: projectIdParsed },
+      });
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: user.id,
+      userId: userId,
       actorType: 'USER',
       action: 'DELETE_PROJECT',
       targetId: projectIdParsed,
       targetType: 'PROJECT',
       metadata: {
-        name: oldProject?.name,
+        name: oldProject.name,
         description: oldProject?.description,
-        owner: oldProject?.ownerId,
+        owner: oldProject.ownerId,
       },
     });
 
     res.status(200).json({
-      message: `Project ${deletedProject.name} deleted successfully`,
-      deletedProject,
+      message: `Project ${oldProject.name} deleted successfully`,
+      oldProject,
     });
     return;
   } catch (error) {
