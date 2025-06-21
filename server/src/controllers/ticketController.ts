@@ -173,9 +173,7 @@ export async function deleteTicket(
       },
     });
 
-    res
-      .status(200)
-      .json({ message: 'Ticket deleted successfully', deleteTicket });
+    res.status(200).json({ message: 'Ticket deleted successfully', oldTicket });
     return;
   } catch (error) {
     console.error('Error fetching tickets: ', error);
