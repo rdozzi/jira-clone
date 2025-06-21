@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient, AttachmentEntityType } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
-import { deleteCommentCascade } from '../services/deletionServices/deleteCommentCascade';
+import { deleteCommentDependencies } from '../services/deletionServices/deleteCommentDependencies';
 
 export async function getAllComments(
   req: Request,
@@ -96,7 +96,13 @@ export async function deleteComment(
     });
 
     prisma.$transaction(async (tx) => {
-      await deleteCommentCascade(res, tx, commentIdParsed);
+      await deleteCommentDependencies(
+        res,
+        tx,
+        AttachmentEntityType.COMMENT,
+        commentIdParsed,
+        userId
+      );
       await tx.comment.delete({
         where: { id: commentIdParsed },
       });
