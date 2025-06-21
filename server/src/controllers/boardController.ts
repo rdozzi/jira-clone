@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
+import { deleteBoardDependencies } from '../services/deletionServices/deleteBoardDependencies';
 
 // Get all Boards
 export async function getAllBoards(
@@ -165,7 +166,7 @@ export async function deleteBoard(
   prisma: PrismaClient
 ) {
   try {
-    const user = res.locals.userInfo;
+    const userId = res.locals.userInfo.id;
     const { boardId } = req.params;
     const boardIdParsed = parseInt(boardId, 10);
 
@@ -183,12 +184,15 @@ export async function deleteBoard(
       res.status(404).json({ error: `Board not found` });
     }
 
-    const deleteboard = await prisma.board.delete({
-      where: { id: boardIdParsed },
+    prisma.$transaction(async (tx) => {
+      deleteBoardDependencies(res, tx, 'BOARD', boardIdParsed, userId);
+      await tx.board.delete({
+        where: { id: boardIdParsed },
+      });
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: user.id,
+      userId: userId,
       actorType: 'USER',
       action: 'DELETE_BOARD',
       targetId: boardIdParsed,
@@ -198,9 +202,7 @@ export async function deleteBoard(
         description: oldBoard?.description,
       },
     });
-    res
-      .status(200)
-      .json({ message: 'Board deleted successfully', deleteboard });
+    res.status(200).json({ message: 'Board deleted successfully', oldBoard });
     return;
   } catch (error) {
     if (
