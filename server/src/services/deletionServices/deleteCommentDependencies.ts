@@ -7,14 +7,14 @@ import { deleteAttachmentsService } from './deleteAttachmentsService';
 export async function deleteCommentDependencies(
   res: Response,
   tx: Prisma.TransactionClient,
-  attachmentEntity: AttachmentEntityType,
+  commentEntity: AttachmentEntityType, // COMMENT
   commentId: number,
   userId: number
 ) {
   await deleteAttachmentsService(
     res,
     tx,
-    attachmentEntity, // COMMENT
+    commentEntity, // COMMENT
     commentId,
     userId
   );
