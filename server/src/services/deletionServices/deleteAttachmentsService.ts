@@ -50,7 +50,7 @@ export async function deleteAttachmentsService(
     return buildLogEvent({
       userId: userId,
       actorType: 'USER',
-      action: 'DELETE_ATTACHMENT-COMMENT_DELETION',
+      action: 'DELETE_ATTACHMENT',
       targetId: attachment.id,
       targetType: 'ATTACHMENT',
       metadata: {
