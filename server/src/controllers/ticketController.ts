@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient, GlobalRole } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
+import { deleteTicketDependencies } from '../services/deletionServices/deleteTicketDependencies';
 
 export async function getAllTickets(
   req: Request,
@@ -143,6 +144,8 @@ export async function deleteTicket(
       return res.status(401).json({ message: 'Unauthorized: User Not found' });
     }
 
+    const userId = userInfo.id;
+
     const { ticketId } = req.params;
     const ticketIdParsed = parseInt(ticketId, 10);
 
@@ -151,14 +154,11 @@ export async function deleteTicket(
       select: { id: true, title: true, description: true, boardId: true },
     });
 
-    // Check to see if comments exist/Delete if they exist
-    await prisma.comment.deleteMany({ where: { ticketId: ticketIdParsed } });
-
-    // Check to see if Ticket Labels Exist/Delete if they exist
-    await prisma.ticketLabel.findMany({ where: { ticketId: ticketIdParsed } });
-
-    const deleteTicket = await prisma.ticket.delete({
-      where: { id: ticketIdParsed },
+    prisma.$transaction(async (tx) => {
+      await deleteTicketDependencies(res, tx, 'TICKET', ticketIdParsed, userId);
+      await tx.ticket.delete({
+        where: { id: ticketIdParsed },
+      });
     });
 
     res.locals.logEvent = buildLogEvent({
@@ -170,7 +170,6 @@ export async function deleteTicket(
       metadata: {
         title: `${oldTicket.title}`,
         description: `${oldTicket.description}`,
-        boardId: oldTicket.boardId,
       },
     });
 
