@@ -6,7 +6,6 @@ import { buildLogEvent } from '../buildLogEvent';
 export async function deleteCommentService(
   res: Response,
   tx: Prisma.TransactionClient,
-  entityType: AttachmentEntityType,
   entityId: number,
   userId: number
 ) {
@@ -22,7 +21,7 @@ export async function deleteCommentService(
       await deleteCommentDependencies(
         res,
         tx,
-        entityType,
+        AttachmentEntityType.TICKET,
         commentObj.id,
         userId
       );
