@@ -3,6 +3,7 @@ import path from 'path';
 import { generateSignedCloudUrl } from '../../utilities/generateSignedCloudUrl';
 import { Attachment } from '@prisma/client';
 import { buildLogEvent } from '../../services/buildLogEvent';
+import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 
 export async function downloadSingleAttachment(req: Request, res: Response) {
   try {
@@ -30,6 +31,11 @@ export async function downloadSingleAttachment(req: Request, res: Response) {
 }
 
 function generatePayload(attachment: Attachment) {
+  const logEntityId = generateEntityIdForLog(
+    attachment.entityType,
+    attachment.entityId
+  );
+
   return buildLogEvent({
     userId: attachment.uploadedBy,
     actorType: 'USER',
@@ -43,9 +49,10 @@ function generatePayload(attachment: Attachment) {
       filePath: attachment.filePath,
       fileUrl: attachment.fileUrl,
       storageType: attachment.storageType,
+      ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
+      ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
+      ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
+      ...(logEntityId.projectId && { projectId: logEntityId.projectId }),
     },
-    ticketId: attachment.entityId,
-    boardId: null,
-    projectId: null,
   });
 }
