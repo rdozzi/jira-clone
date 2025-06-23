@@ -1,4 +1,5 @@
 import { PrismaClient, GlobalRole } from '@prisma/client';
+import { hashPassword } from '../password';
 
 export async function createGlobalGuest(prismaTest: PrismaClient) {
   const email = 'globalGuest@example.com';
@@ -13,7 +14,7 @@ export async function createGlobalGuest(prismaTest: PrismaClient) {
       email: 'globalGuest@example.com',
       firstName: 'Global.Guest',
       lastName: null,
-      passwordHash: 'seedPassword123',
+      passwordHash: await hashPassword('seedPassword123'),
       globalRole: GlobalRole.GUEST,
     },
   });
@@ -32,7 +33,7 @@ export async function createGlobalUser(prismaTest: PrismaClient) {
       email: 'globalUser@example.com',
       firstName: 'Global.User',
       lastName: null,
-      passwordHash: 'seedPassword123',
+      passwordHash: await hashPassword('seedPassword123'),
       globalRole: GlobalRole.USER,
     },
   });
@@ -51,7 +52,7 @@ export async function createGlobalAdmin(prismaTest: PrismaClient) {
       email: 'globalAdmin@example.com',
       firstName: 'Global.Admin',
       lastName: null,
-      passwordHash: 'seedPassword123',
+      passwordHash: await hashPassword('seedPassword123'),
       globalRole: GlobalRole.ADMIN,
     },
   });
@@ -70,7 +71,7 @@ export async function createGlobalSuperAdmin(prismaTest: PrismaClient) {
       email: 'globalSuperAdmin@example.com',
       firstName: 'Global.SuperAdmin',
       lastName: null,
-      passwordHash: 'seedPassword123',
+      passwordHash: await hashPassword('seedPassword123'),
       globalRole: GlobalRole.SUPERADMIN,
     },
   });
