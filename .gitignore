@@ -1,5 +1,6 @@
 node_modules
 .env
+.env.test
 server/uploads/*
 
 logs
@@ -23,4 +24,4 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+*.sw?.env.test
