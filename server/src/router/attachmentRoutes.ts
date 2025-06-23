@@ -31,7 +31,7 @@ import {
 } from '../controllers/attachmentControllers/uploadController';
 import { deleteManyAttachments } from '../controllers/attachmentControllers/deleteManyAttachmentsController';
 import { deleteAttachment } from '../controllers/attachmentControllers/deleteAttachmentController';
-import { downloadSingleAttachment } from '../controllers/attachmentControllers/downloadController';
+import { downloadSingleAttachment } from '../controllers/attachmentControllers/downloadSingleAttachment';
 import { downloadMultipleAttachments } from '../controllers/attachmentControllers/downloadMultipleAttachmentsController';
 
 const router = Router();
