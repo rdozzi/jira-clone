@@ -1,6 +1,7 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
-import { User } from '@prisma/client';
 import request from 'supertest';
+
+import { User } from '@prisma/client';
 import { app } from '../src/app';
 import { prismaTest } from '../src/lib/prismaTestClient';
 import { createGlobalGuest } from '../src/utilities/testUtilities/createUserProfile';
@@ -13,11 +14,11 @@ import { resetTestDatabase } from '../src/utilities/testUtilities/resetTestDatab
 // 2) Failed Login: Enter wrong information for non-exisent user
 
 describe('Login Auth Route', () => {
-  let globalGuest: User;
+  let user: User;
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
-    globalGuest = await createGlobalGuest(prismaTest);
+    user = await createGlobalGuest(prismaTest);
   });
   afterAll(async () => {
     await resetTestDatabase();
@@ -29,9 +30,26 @@ describe('Login Auth Route', () => {
   it('should log in successfully with valid credentials', async () => {
     const res = await request(app)
       .post('/api/auth/login')
-      .send({ email: globalGuest.email, password: globalGuest.passwordHash });
+      .send({ email: user.email, password: 'seedPassword123' });
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('token');
     expect(typeof res.body.token).toBe('string');
+  });
+
+  // Negative Results:
+  // 1) Unsuccessful Login: Bad password
+  it('should fail because of a bad password', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({ email: user.email, password: 'incorrectPassword' });
+    expect(res.status).toBe(401);
+  });
+
+  // 2) Unsuccessful Login: Bad email/User doesn't exist.
+  it('should fail because of a bad email', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({ email: 'idontexist@example.com', password: 'seedPassword123' });
+    expect(res.status).toBe(401);
   });
 });
