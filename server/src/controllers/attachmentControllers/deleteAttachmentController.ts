@@ -53,10 +53,11 @@ export async function deleteAttachment(
         filePath: deletedAttachment.filePath,
         fileUrl: deletedAttachment.fileUrl,
         storageType: deletedAttachment.storageType,
+        ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
+        ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
+        ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
+        ...(logEntityId.projectId && { projectId: logEntityId.projectId }),
       },
-      ticketId: logEntityId.ticketId,
-      boardId: logEntityId.boardId,
-      projectId: logEntityId.projectId,
     });
 
     res.status(200).json({ message: 'Attachment deleted successfully' });
