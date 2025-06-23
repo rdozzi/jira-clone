@@ -98,10 +98,11 @@ export async function downloadMultipleAttachments(
           filePath: attachment.filePath,
           fileUrl: attachment.fileUrl,
           storageType: attachment.storageType,
+          ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
+          ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
+          ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
+          ...(logEntityId.projectId && { projectId: logEntityId.projectId }),
         },
-        ticketId: logEntityId.ticketId,
-        boardId: logEntityId.boardId,
-        projectId: logEntityId.projectId,
       });
     });
 

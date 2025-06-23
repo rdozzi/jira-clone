@@ -60,10 +60,11 @@ export async function handleSingleUpload(
       targetType: 'ATTACHMENT',
       metadata: {
         metadata,
+        ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
+        ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
+        ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
+        ...(logEntityId.projectId && { projectId: logEntityId.projectId }),
       },
-      ticketId: logEntityId?.ticketId,
-      boardId: logEntityId?.boardId,
-      projectId: logEntityId?.projectId,
     });
 
     return res.status(201).json({
@@ -144,10 +145,11 @@ export async function handleMultipleUpload(
           filePath: attachment.filePath,
           fileUrl: attachment.fileUrl,
           storageType: attachment.storageType,
+          ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
+          ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
+          ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
+          ...(logEntityId.projectId && { projectId: logEntityId.projectId }),
         },
-        ticketId: logEntityId?.ticketId,
-        boardId: logEntityId?.boardId,
-        projectId: logEntityId?.projectId,
       });
     });
 
