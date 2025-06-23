@@ -1,6 +1,12 @@
 import { prismaTest } from '../../lib/prismaTestClient';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export async function resetTestDatabase() {
+  if (!process.env.DATABASE_URL?.includes('test')) {
+    throw new Error('Not using a test database! Aborting reset.');
+  }
   await prismaTest.$transaction(async (tx) => {
     await tx.projectMember.deleteMany();
     await tx.activityLog.deleteMany();
