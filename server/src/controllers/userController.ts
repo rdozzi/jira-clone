@@ -118,7 +118,7 @@ export async function createUser(
   prisma: PrismaClient
 ) {
   try {
-    const { email, firstName, lastName, password, role } = req.body;
+    const { email, firstName, lastName, password, globalRole } = req.body;
     const hashedPassword = await hashPassword(password);
 
     const user = await prisma.user.create({
@@ -127,7 +127,7 @@ export async function createUser(
         firstName: firstName,
         lastName: lastName,
         passwordHash: hashedPassword,
-        globalRole: role,
+        globalRole: globalRole,
       },
     });
 
