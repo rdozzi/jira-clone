@@ -7,9 +7,6 @@ export function buildLogEvent({
   targetId,
   targetType,
   metadata,
-  ticketId,
-  projectId,
-  boardId,
 }: LogEventPayload) {
   return {
     userId: userId || null,
@@ -18,8 +15,5 @@ export function buildLogEvent({
     targetId: targetId || null,
     targetType: targetType,
     metadata: metadata || {},
-    ticketId: ticketId || null,
-    projectId: projectId || null,
-    boardId: boardId || null,
   };
 }

@@ -10,7 +10,4 @@ export type LogEventPayload = {
   targetId?: number | null;
   targetType: string;
   metadata: Json;
-  ticketId?: number | null;
-  boardId?: number | null;
-  projectId?: number | null;
 };
