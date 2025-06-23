@@ -1,6 +1,13 @@
 import { PrismaClient, GlobalRole } from '@prisma/client';
 
 export async function createGlobalGuest(prismaTest: PrismaClient) {
+  const email = 'globalGuest@example.com';
+  const existing = await prismaTest.user.findUnique({
+    where: { email: email },
+  });
+
+  if (existing) return existing;
+
   return await prismaTest.user.create({
     data: {
       email: 'globalGuest@example.com',
@@ -13,6 +20,13 @@ export async function createGlobalGuest(prismaTest: PrismaClient) {
 }
 
 export async function createGlobalUser(prismaTest: PrismaClient) {
+  const email = 'globalUser@example.com';
+  const existing = await prismaTest.user.findUnique({
+    where: { email: email },
+  });
+
+  if (existing) return existing;
+
   return await prismaTest.user.create({
     data: {
       email: 'globalUser@example.com',
@@ -25,6 +39,13 @@ export async function createGlobalUser(prismaTest: PrismaClient) {
 }
 
 export async function createGlobalAdmin(prismaTest: PrismaClient) {
+  const email = 'globalAdmin@example.com';
+  const existing = await prismaTest.user.findUnique({
+    where: { email: email },
+  });
+
+  if (existing) return existing;
+
   return await prismaTest.user.create({
     data: {
       email: 'globalAdmin@example.com',
@@ -37,6 +58,13 @@ export async function createGlobalAdmin(prismaTest: PrismaClient) {
 }
 
 export async function createGlobalSuperAdmin(prismaTest: PrismaClient) {
+  const email = 'globalSuperAdmin@example.com';
+  const existing = await prismaTest.user.findUnique({
+    where: { email: email },
+  });
+
+  if (existing) return existing;
+
   return await prismaTest.user.create({
     data: {
       email: 'globalSuperAdmin@example.com',
