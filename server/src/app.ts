@@ -1,21 +1,27 @@
+// Libraries
 import express, { Application } from 'express';
-import userRoutes from './router/userRoutes';
-import bannedEmailRoutes from './router/bannedEmailRoutes';
-import projectRoutes from './router/projectRoutes';
-import ticketRoutes from './router/ticketRoutes';
-import commentRoutes from './router/commentRoutes';
-import attachmentRoutes from './router/attachmentRoutes';
-import boardRoutes from './router/boardRoutes';
-import labelRoutes from './router/labelRoutes';
-import authRoutes from './router/authRoutes';
-import activityLogRoutes from './router/activityLogRoutes';
-import projectMemberRoutes from './router/projectMemberRoutes';
-import ticketLabelRoutes from './router/ticketLabelRoutes';
 import cors from 'cors';
+
+// Middleware
 import { authenticate } from './middleware/authAndLoadInfoMiddleware/authenticate';
-import { loadUserProjects } from './middleware/authAndLoadInfoMiddleware/loadUserProjects';
 import { globalLogMiddleware } from './middleware/logMiddleware';
+import { loadUserProjects } from './middleware/authAndLoadInfoMiddleware/loadUserProjects';
 import { storeUserAndProjectInfo } from './middleware/authAndLoadInfoMiddleware/storeUserAndProjectInfo';
+
+// Routes
+import attachmentRoutes from './router/attachmentRoutes';
+import activityLogRoutes from './router/activityLogRoutes';
+import authRoutes from './router/authRoutes';
+import bannedEmailRoutes from './router/bannedEmailRoutes';
+import boardRoutes from './router/boardRoutes';
+import commentRoutes from './router/commentRoutes';
+import labelRoutes from './router/labelRoutes';
+import projectMemberRoutes from './router/projectMemberRoutes';
+import projectRoutes from './router/projectRoutes';
+import setupRoutes from './router/setupRoutes';
+import ticketLabelRoutes from './router/ticketLabelRoutes';
+import ticketRoutes from './router/ticketRoutes';
+import userRoutes from './router/userRoutes';
 
 export const app: Application = express();
 
@@ -26,6 +32,7 @@ app.use(cors());
 app.use(globalLogMiddleware());
 
 // Public routes
+app.use('/api', setupRoutes);
 app.use('/api', authRoutes);
 
 // Authentication middleware (for protected routes)
