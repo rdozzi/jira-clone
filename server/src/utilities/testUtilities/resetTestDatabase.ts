@@ -1,7 +1,7 @@
 import { prismaTest } from '../../lib/prismaTestClient';
 
 export async function resetTestDatabase() {
-  prismaTest.$transaction(async (tx) => {
+  await prismaTest.$transaction(async (tx) => {
     await tx.projectMember.deleteMany();
     await tx.activityLog.deleteMany();
     await tx.ticketLabel.deleteMany();
