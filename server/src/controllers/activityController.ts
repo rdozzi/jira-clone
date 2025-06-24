@@ -17,7 +17,7 @@ export async function getAllLogs(
 }
 
 // Get logs by ticketId
-export async function getLogbyTicketId(
+export async function getLogByTicketId(
   req: Request,
   res: Response,
   prisma: PrismaClient

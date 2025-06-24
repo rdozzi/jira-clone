@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import {
   getAllLogs,
-  getLogbyTicketId,
+  getLogByTicketId,
   getLogbyUserId,
 } from '../controllers/activityController';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
@@ -29,7 +29,7 @@ router.get(
   checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response): Promise<void> => {
-    await getLogbyTicketId(req, res, prisma);
+    await getLogByTicketId(req, res, prisma);
   }
 );
 
