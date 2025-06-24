@@ -4,7 +4,7 @@ import request from 'supertest';
 import { User } from '@prisma/client';
 import { app } from '../src/app';
 import { prismaTest } from '../src/lib/prismaTestClient';
-import { createGlobalGuest } from '../src/utilities/testUtilities/createUserProfile';
+import { createGlobalAdmin } from '../src/utilities/testUtilities/createUserProfile';
 import { resetTestDatabase } from '../src/utilities/testUtilities/resetTestDatabase';
 
 // Positive Result:
@@ -18,10 +18,9 @@ describe('Login Auth Route', () => {
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
-    user = await createGlobalGuest(prismaTest);
+    user = await createGlobalAdmin(prismaTest);
   });
   afterAll(async () => {
-    await resetTestDatabase();
     await prismaTest.$disconnect();
   });
 
