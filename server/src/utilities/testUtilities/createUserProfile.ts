@@ -7,17 +7,21 @@ export async function createGlobalGuest(prismaTest: PrismaClient) {
     where: { email: email },
   });
 
-  if (existing) return existing;
-
-  return await prismaTest.user.create({
-    data: {
-      email: 'globalGuest@example.com',
-      firstName: 'Global.Guest',
-      lastName: null,
-      passwordHash: await hashPassword('seedPassword123'),
-      globalRole: GlobalRole.GUEST,
-    },
-  });
+  if (existing) {
+    return existing;
+  } else {
+    return await prismaTest.user.upsert({
+      where: { email },
+      update: {},
+      create: {
+        email: 'globalGuest@example.com',
+        firstName: 'Global.Guest',
+        lastName: null,
+        passwordHash: await hashPassword('seedPassword123'),
+        globalRole: GlobalRole.GUEST,
+      },
+    });
+  }
 }
 
 export async function createGlobalUser(prismaTest: PrismaClient) {
@@ -26,17 +30,21 @@ export async function createGlobalUser(prismaTest: PrismaClient) {
     where: { email: email },
   });
 
-  if (existing) return existing;
-
-  return await prismaTest.user.create({
-    data: {
-      email: 'globalUser@example.com',
-      firstName: 'Global.User',
-      lastName: null,
-      passwordHash: await hashPassword('seedPassword123'),
-      globalRole: GlobalRole.USER,
-    },
-  });
+  if (existing) {
+    return existing;
+  } else {
+    return await prismaTest.user.upsert({
+      where: { email },
+      update: {},
+      create: {
+        email: 'globalUser@example.com',
+        firstName: 'Global.User',
+        lastName: null,
+        passwordHash: await hashPassword('seedPassword123'),
+        globalRole: GlobalRole.USER,
+      },
+    });
+  }
 }
 
 export async function createGlobalAdmin(prismaTest: PrismaClient) {
@@ -45,17 +53,21 @@ export async function createGlobalAdmin(prismaTest: PrismaClient) {
     where: { email: email },
   });
 
-  if (existing) return existing;
-
-  return await prismaTest.user.create({
-    data: {
-      email: 'globalAdmin@example.com',
-      firstName: 'Global.Admin',
-      lastName: null,
-      passwordHash: await hashPassword('seedPassword123'),
-      globalRole: GlobalRole.ADMIN,
-    },
-  });
+  if (existing) {
+    return existing;
+  } else {
+    return await prismaTest.user.upsert({
+      where: { email },
+      update: {},
+      create: {
+        email: email,
+        firstName: 'Global.Admin',
+        lastName: null,
+        passwordHash: await hashPassword('seedPassword123'),
+        globalRole: GlobalRole.ADMIN,
+      },
+    });
+  }
 }
 
 export async function createGlobalSuperAdmin(prismaTest: PrismaClient) {
@@ -64,15 +76,19 @@ export async function createGlobalSuperAdmin(prismaTest: PrismaClient) {
     where: { email: email },
   });
 
-  if (existing) return existing;
-
-  return await prismaTest.user.create({
-    data: {
-      email: 'globalSuperAdmin@example.com',
-      firstName: 'Global.SuperAdmin',
-      lastName: null,
-      passwordHash: await hashPassword('seedPassword123'),
-      globalRole: GlobalRole.SUPERADMIN,
-    },
-  });
+  if (existing) {
+    return existing;
+  } else {
+    return await prismaTest.user.upsert({
+      where: { email },
+      update: {},
+      create: {
+        email: 'globalSuperAdmin@example.com',
+        firstName: 'Global.SuperAdmin',
+        lastName: null,
+        passwordHash: await hashPassword('seedPassword123'),
+        globalRole: GlobalRole.SUPERADMIN,
+      },
+    });
+  }
 }
