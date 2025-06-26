@@ -1,10 +1,10 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
-import { User } from '@prisma/client';
+import { GlobalRole, User } from '@prisma/client';
 import { app } from '../src/app';
 import { prismaTest } from '../src/lib/prismaTestClient';
-import { createGlobalAdmin } from '../src/utilities/testUtilities/createUserProfile';
+import { createUserProfile } from '../src/utilities/testUtilities/createUserProfile';
 import { resetTestDatabase } from '../src/utilities/testUtilities/resetTestDatabase';
 
 // Positive Result:
@@ -14,11 +14,16 @@ import { resetTestDatabase } from '../src/utilities/testUtilities/resetTestDatab
 // 2) Failed Login: Enter wrong information for non-exisent user
 
 describe('Login Auth Route', () => {
+  const testDescription = 'Login_Auth_Route';
   let user: User;
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
-    user = await createGlobalAdmin(prismaTest);
+    user = await createUserProfile(
+      prismaTest,
+      testDescription,
+      GlobalRole.ADMIN
+    );
   });
   afterAll(async () => {
     await prismaTest.$disconnect();
