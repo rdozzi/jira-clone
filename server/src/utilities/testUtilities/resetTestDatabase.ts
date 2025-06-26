@@ -9,24 +9,24 @@ export async function resetTestDatabase() {
   }
 
   const tablesInOrder = [
-    'bannedEmail',
-    'projectMember',
-    'activityLog',
-    'ticketLabel',
-    'label',
-    'attachment',
-    'user',
-    'comment',
-    'ticket',
-    'board',
-    'project',
+    'BannedEmail',
+    'ProjectMember',
+    'ActivityLog',
+    'TicketLabel',
+    'Label',
+    'Attachment',
+    'User',
+    'Comment',
+    'Ticket',
+    'Board',
+    'Project',
   ];
 
   await prismaTest.$transaction(async (tx) => {
-    tablesInOrder.map((table) => {
-      tx.$executeRawUnsafe(
+    for (const table of tablesInOrder) {
+      await tx.$executeRawUnsafe(
         `TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE`
       );
-    });
+    }
   });
 }
