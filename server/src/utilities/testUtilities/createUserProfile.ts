@@ -1,94 +1,29 @@
-import { PrismaClient, GlobalRole } from '@prisma/client';
+import { GlobalRole, Prisma, PrismaClient } from '@prisma/client';
 import { hashPassword } from '../password';
 
-export async function createGlobalGuest(prismaTest: PrismaClient) {
-  const email = 'globalGuest@example.com';
-  const existing = await prismaTest.user.findUnique({
+export async function createUserProfile(
+  prismaTest: PrismaClient | Prisma.TransactionClient,
+  testDescription: string,
+  globalRole: GlobalRole
+) {
+  const email = `global_${globalRole}_${testDescription}@example.com`;
+  const user = await prismaTest.user.findUnique({
     where: { email: email },
   });
 
-  if (existing) {
-    return existing;
+  if (user) {
+    console.log(user);
+    return user;
   } else {
-    return await prismaTest.user.upsert({
-      where: { email },
-      update: {},
-      create: {
-        email: 'globalGuest@example.com',
-        firstName: 'Global.Guest',
-        lastName: null,
+    const user = await prismaTest.user.create({
+      data: {
+        email: `global_${globalRole}_${testDescription}@example.com`,
+        firstName: `User_${testDescription}`,
         passwordHash: await hashPassword('seedPassword123'),
-        globalRole: GlobalRole.GUEST,
+        globalRole: globalRole,
       },
     });
-  }
-}
-
-export async function createGlobalUser(prismaTest: PrismaClient) {
-  const email = 'globalUser@example.com';
-  const existing = await prismaTest.user.findUnique({
-    where: { email: email },
-  });
-
-  if (existing) {
-    return existing;
-  } else {
-    return await prismaTest.user.upsert({
-      where: { email },
-      update: {},
-      create: {
-        email: 'globalUser@example.com',
-        firstName: 'Global.User',
-        lastName: null,
-        passwordHash: await hashPassword('seedPassword123'),
-        globalRole: GlobalRole.USER,
-      },
-    });
-  }
-}
-
-export async function createGlobalAdmin(prismaTest: PrismaClient) {
-  const email = 'globalAdmin@example.com';
-  const existing = await prismaTest.user.findUnique({
-    where: { email: email },
-  });
-
-  if (existing) {
-    return existing;
-  } else {
-    return await prismaTest.user.upsert({
-      where: { email },
-      update: {},
-      create: {
-        email: email,
-        firstName: 'Global.Admin',
-        lastName: null,
-        passwordHash: await hashPassword('seedPassword123'),
-        globalRole: GlobalRole.ADMIN,
-      },
-    });
-  }
-}
-
-export async function createGlobalSuperAdmin(prismaTest: PrismaClient) {
-  const email = 'globalSuperAdmin@example.com';
-  const existing = await prismaTest.user.findUnique({
-    where: { email: email },
-  });
-
-  if (existing) {
-    return existing;
-  } else {
-    return await prismaTest.user.upsert({
-      where: { email },
-      update: {},
-      create: {
-        email: 'globalSuperAdmin@example.com',
-        firstName: 'Global.SuperAdmin',
-        lastName: null,
-        passwordHash: await hashPassword('seedPassword123'),
-        globalRole: GlobalRole.SUPERADMIN,
-      },
-    });
+    console.log(user);
+    return user;
   }
 }
