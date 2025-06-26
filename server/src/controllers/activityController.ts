@@ -42,7 +42,7 @@ export async function getLogByTicketId(
 }
 
 // Get logs by userId
-export async function getLogbyUserId(
+export async function getLogByUserId(
   req: Request,
   res: Response,
   prisma: PrismaClient
