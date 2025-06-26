@@ -1,31 +1,30 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-import { User } from '@prisma/client';
+import { GlobalRole, User } from '@prisma/client';
 import { app } from '../src/app';
 import { prismaTest } from '../src/lib/prismaTestClient';
-import { createGlobalAdmin } from '../src/utilities/testUtilities/createUserProfile';
+import { createUserProfile } from '../src/utilities/testUtilities/createUserProfile';
 import { resetTestDatabase } from '../src/utilities/testUtilities/resetTestDatabase';
+import { generateJwtToken } from '../src/utilities/testUtilities/generateJwtToken';
 
 dotenv.config();
 
 describe('getAllLogs', () => {
+  const testDescription = 'getAllLogs';
   let user: User;
   let token: string;
 
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
-    user = await createGlobalAdmin(prismaTest);
-    token = jwt.sign(
-      { id: user.id, globalRole: user.globalRole },
-      process.env.JWT_SECRET!,
-      { expiresIn: '1hr' }
+    user = await createUserProfile(
+      prismaTest,
+      testDescription,
+      GlobalRole.ADMIN
     );
-
-    console.log(token);
+    token = generateJwtToken(user.id, user.globalRole);
   });
   afterAll(async () => {
     await prismaTest.$disconnect();
