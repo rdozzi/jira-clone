@@ -63,6 +63,7 @@ export function checkProjectMembership(options?: {
       res.locals.userProjectDetails = projectProfile;
 
       next();
+      return;
     } catch (error) {
       console.error('Auth Error:', error);
       res.status(500).json({ message: 'Server error during auth check' });
