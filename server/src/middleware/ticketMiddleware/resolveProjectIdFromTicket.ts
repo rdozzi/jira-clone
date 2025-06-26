@@ -12,6 +12,7 @@ export function resolveProjectIdFromTicket() {
 
       if (!ticketId) {
         res.status(400).json({ message: 'No ticket Id provided' });
+        return;
       }
 
       const ticketIdParse = parseInt(ticketId, 10);
