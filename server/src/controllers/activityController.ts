@@ -26,18 +26,13 @@ export async function getLogByTicketId(
     const { ticketId } = req.params;
     const ticketIdParsed = parseInt(ticketId, 10);
 
-    if (!ticketId) {
-      return res.status(400).json({ error: 'Ticket ID is required' });
+    if (isNaN(ticketIdParsed)) {
+      return res.status(400).json({ error: 'Invalid ticket ID' });
     }
 
     const logs = await prisma.activityLog.findMany({
-      where: { metadata: { path: ['ticketId'], equals: ticketIdParsed } },
-      orderBy: { createdAt: 'desc' },
+      where: { targetId: ticketIdParsed, targetType: 'TICKET' },
     });
-
-    if (!logs) {
-      return res.status(404).json({ error: 'No logs found' });
-    }
 
     return res.status(200).json(logs);
   } catch (error) {
