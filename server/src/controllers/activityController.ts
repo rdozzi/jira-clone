@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient, ActorTypeActivity } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 // Get all routes
 export async function getAllLogs(
@@ -49,23 +49,22 @@ export async function getLogByUserId(
 ) {
   try {
     const { userId } = req.params;
-    const userIdNumber = parseInt(userId, 10);
+    const userIdParse = parseInt(userId, 10);
 
-    if (!userId) {
-      return res.status(400).json({ error: 'User ID is required' });
+    if (isNaN(userIdParse)) {
+      res.status(400).json({ error: 'User ID is required' });
+      return;
     }
 
     const logs = await prisma.activityLog.findMany({
-      where: { userId: userIdNumber, actorType: ActorTypeActivity.USER },
+      where: { userId: userIdParse },
     });
 
-    if (!logs) {
-      return res.status(404).json({ error: 'No logs found' });
-    }
-
-    return res.status(200).json(logs);
+    res.status(200).json(logs);
+    return;
   } catch (error) {
     console.error('Error fetching logs by user ID: ', error);
-    return res.status(500).json({ error: 'Failed to fetch logs' });
+    res.status(500).json({ error: 'Failed to fetch logs' });
+    return;
   }
 }
