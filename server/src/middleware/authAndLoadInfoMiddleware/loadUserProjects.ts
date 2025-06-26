@@ -24,6 +24,7 @@ async function loadUserProjectsFn(
       return { projectId: m.projectId, projectRole: m.projectRole };
     });
     next();
+    return;
   } catch (error) {
     console.error('Error loading user projects: ', error);
     res
