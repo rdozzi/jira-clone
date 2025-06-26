@@ -3,7 +3,7 @@ import prisma from '../lib/prisma';
 import {
   getAllLogs,
   getLogByTicketId,
-  getLogbyUserId,
+  getLogByUserId,
 } from '../controllers/activityController';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { GlobalRole, ProjectRole } from '@prisma/client';
@@ -37,7 +37,7 @@ router.get(
   '/activity-logs/:userId/user',
   authorizeGlobalRole(GlobalRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
-    await getLogbyUserId(req, res, prisma);
+    await getLogByUserId(req, res, prisma);
   }
 );
 
