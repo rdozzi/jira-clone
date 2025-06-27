@@ -13,7 +13,6 @@ export async function createActivityLog(
     where: { action: `${targetType}_${testDescription}_${count}` },
   });
   if (activityLog) {
-    console.log(activityLog);
     return activityLog;
   } else {
     const activityLog = await prismaTest.activityLog.create({
@@ -26,7 +25,6 @@ export async function createActivityLog(
         metadata: { count },
       },
     });
-    console.log(activityLog);
 
     return activityLog;
   }

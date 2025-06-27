@@ -8,7 +8,6 @@ export async function createProject(
     where: { name: `Project_${testDescription}` },
   });
   if (project) {
-    console.log(project);
     return project;
   } else {
     const project = await prismaTest.project.create({
