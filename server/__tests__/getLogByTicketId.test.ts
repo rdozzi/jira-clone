@@ -9,17 +9,17 @@ import {
   ActorTypeActivity,
   Ticket,
 } from '@prisma/client';
-import { app } from '../../src/app';
-import { prismaTest } from '../../src/lib/prismaTestClient';
+import { app } from '../src/app';
+import { prismaTest } from '../src/lib/prismaTestClient';
 
-import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
-import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
-import { createProject } from '../../src/utilities/testUtilities/createProject';
-import { createBoard } from '../../src/utilities/testUtilities/createBoard';
-import { createTicket } from '../../src/utilities/testUtilities/createTicket';
-import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
-import { createActivityLog } from '../../src/utilities/testUtilities/createActivityLog';
-import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { resetTestDatabase } from '../src/utilities/testUtilities/resetTestDatabase';
+import { createUserProfile } from '../src/utilities/testUtilities/createUserProfile';
+import { createProject } from '../src/utilities/testUtilities/createProject';
+import { createBoard } from '../src/utilities/testUtilities/createBoard';
+import { createTicket } from '../src/utilities/testUtilities/createTicket';
+import { createProjectMember } from '../src/utilities/testUtilities/createProjectMember';
+import { createActivityLog } from '../src/utilities/testUtilities/createActivityLog';
+import { generateJwtToken } from '../src/utilities/testUtilities/generateJwtToken';
 
 dotenv.config();
 
