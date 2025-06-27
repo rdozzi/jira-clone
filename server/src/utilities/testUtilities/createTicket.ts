@@ -8,7 +8,6 @@ export async function createTicket(
     where: { title: `Ticket_${testDescription}` },
   });
   if (ticket) {
-    console.log(ticket);
     return ticket;
   } else {
     const user = await prismaTest.user.findFirst({
@@ -36,8 +35,6 @@ export async function createTicket(
         boardId: board.id,
       },
     });
-
-    console.log(ticket);
 
     return ticket;
   }

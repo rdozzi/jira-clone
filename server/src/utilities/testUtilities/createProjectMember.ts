@@ -15,7 +15,6 @@ export async function createProjectMember(
   });
 
   if (projectMember) {
-    console.log(projectMember);
     return projectMember;
   } else {
     const projectMember = await prismaTest.projectMember.create({
@@ -25,7 +24,7 @@ export async function createProjectMember(
         projectRole: projectRole,
       },
     });
-    console.log(projectMember);
+
     return projectMember;
   }
 }

@@ -8,7 +8,6 @@ export async function createBoard(
     where: { name: `Board_${testDescription}` },
   });
   if (board) {
-    console.log(board);
     return board;
   } else {
     const project = await prismaTest.project.findFirst({
@@ -27,8 +26,6 @@ export async function createBoard(
         projectId: project?.id,
       },
     });
-
-    console.log(board);
 
     return board;
   }

@@ -23,7 +23,6 @@ export async function createUserProfile(
         globalRole: globalRole,
       },
     });
-    console.log(user);
     return user;
   }
 }

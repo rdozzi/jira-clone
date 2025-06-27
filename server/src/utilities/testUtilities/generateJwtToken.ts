@@ -7,8 +7,6 @@ export function generateJwtToken(userId: number, globalRole: GlobalRole) {
     process.env.JWT_SECRET!,
     { expiresIn: '1hr' }
   );
-
-  console.log(token);
   return token;
 }
 
