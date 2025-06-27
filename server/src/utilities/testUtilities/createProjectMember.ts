@@ -6,25 +6,13 @@ export async function createProjectMember(
   userId: number,
   projectRole: ProjectRole
 ) {
-  const projectMember = await prismaTest.projectMember.findFirst({
-    where: {
+  const projectMember = await prismaTest.projectMember.create({
+    data: {
       projectId: projectId,
       userId: userId,
       projectRole: projectRole,
     },
   });
 
-  if (projectMember) {
-    return projectMember;
-  } else {
-    const projectMember = await prismaTest.projectMember.create({
-      data: {
-        projectId: projectId,
-        userId: userId,
-        projectRole: projectRole,
-      },
-    });
-
-    return projectMember;
-  }
+  return projectMember;
 }
