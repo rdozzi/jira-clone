@@ -14,12 +14,10 @@ export function globalLogMiddleware() {
             await Promise.all(
               logEvents.map((logEvent) => {
                 createActivityLog(logEvent);
-                console.log('Log event successful', logEvent);
               })
             );
           } else if (logEvent) {
             createActivityLog(logEvent);
-            console.log('Log event successful', logEvent);
           }
         } catch (error) {
           console.error('Error creating activity log(s): ', error);
