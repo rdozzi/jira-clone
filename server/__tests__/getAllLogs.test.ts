@@ -2,7 +2,12 @@ import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 import dotenv from 'dotenv';
 
-import { GlobalRole, User, ActorTypeActivity } from '@prisma/client';
+import {
+  GlobalRole,
+  User,
+  ActorTypeActivity,
+  ActivityLog,
+} from '@prisma/client';
 import { app } from '../src/app';
 import { prismaTest } from '../src/lib/prismaTestClient';
 import { createUserProfile } from '../src/utilities/testUtilities/createUserProfile';
@@ -53,8 +58,11 @@ describe('getAllLogs', () => {
     const res = await request(app)
       .get('/api/activity-logs/all')
       .set('Authorization', `Bearer ${token}`);
+    const logs: ActivityLog = res.body.filter((log: ActivityLog) =>
+      ['TICKET_getAllLogs_1', 'BOARD_getAllLogs_2'].includes(log.action)
+    );
     expect(res.status).toBe(200);
-    expect(res.body).toEqual(
+    expect(logs).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ action: 'TICKET_getAllLogs_1' }),
         expect.objectContaining({ action: 'BOARD_getAllLogs_2' }),
