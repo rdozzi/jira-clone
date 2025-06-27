@@ -29,9 +29,14 @@ describe('getLogsByUserId', () => {
       GlobalRole.ADMIN
     );
     token = generateJwtToken(user.id, user.globalRole);
-    await createProject(prismaTest, testDescription);
-    await createBoard(prismaTest, testDescription);
-    const ticket = await createTicket(prismaTest, testDescription);
+    const project = await createProject(prismaTest, testDescription);
+    const board = await createBoard(prismaTest, testDescription, project.id);
+    const ticket = await createTicket(
+      prismaTest,
+      testDescription,
+      board.id,
+      user.id
+    );
     await createActivityLog(
       prismaTest,
       testDescription,

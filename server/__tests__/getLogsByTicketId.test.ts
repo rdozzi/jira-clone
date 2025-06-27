@@ -39,11 +39,8 @@ describe('getLogByTicketId', () => {
     );
     token = generateJwtToken(user.id, user.globalRole);
     const project = await createProject(prismaTest, testDescription);
-    await createBoard(prismaTest, testDescription);
-    ticket = await createTicket(prismaTest, testDescription);
-    if (!ticket) {
-      throw Error('Ticket is undefined');
-    }
+    const board = await createBoard(prismaTest, testDescription, project.id);
+    ticket = await createTicket(prismaTest, testDescription, board.id, user.id);
     await createProjectMember(
       prismaTest,
       project.id,
