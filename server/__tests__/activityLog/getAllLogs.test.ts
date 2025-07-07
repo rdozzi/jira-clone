@@ -8,12 +8,12 @@ import {
   ActorTypeActivity,
   ActivityLog,
 } from '@prisma/client';
-import { app } from '../src/app';
-import { prismaTest } from '../src/lib/prismaTestClient';
-import { createUserProfile } from '../src/utilities/testUtilities/createUserProfile';
-import { createActivityLog } from '../src/utilities/testUtilities/createActivityLog';
-import { resetTestDatabase } from '../src/utilities/testUtilities/resetTestDatabase';
-import { generateJwtToken } from '../src/utilities/testUtilities/generateJwtToken';
+import { app } from '../../src/app';
+import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
+import { createActivityLog } from '../../src/utilities/testUtilities/createActivityLog';
+import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
+import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 
 dotenv.config();
 
