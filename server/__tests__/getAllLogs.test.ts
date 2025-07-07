@@ -64,8 +64,22 @@ describe('getAllLogs', () => {
     expect(res.status).toBe(200);
     expect(logs).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ action: 'TICKET_getAllLogs_1' }),
-        expect.objectContaining({ action: 'BOARD_getAllLogs_2' }),
+        expect.objectContaining({
+          userId: expect.any(Number),
+          actorType: expect.any(String),
+          action: 'TICKET_getAllLogs_1',
+          targetId: expect.any(Number),
+          targetType: expect.any(String),
+          metadata: expect.objectContaining({ count: expect.any(Number) }),
+        }),
+        expect.objectContaining({
+          userId: expect.any(Number),
+          actorType: expect.any(String),
+          action: 'BOARD_getAllLogs_2',
+          targetId: expect.any(Number),
+          targetType: expect.any(String),
+          metadata: expect.objectContaining({ count: expect.any(Number) }),
+        }),
       ])
     );
   });
