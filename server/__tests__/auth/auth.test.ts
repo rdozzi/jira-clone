@@ -2,10 +2,10 @@ import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
 import { GlobalRole, User } from '@prisma/client';
-import { app } from '../src/app';
-import { prismaTest } from '../src/lib/prismaTestClient';
-import { createUserProfile } from '../src/utilities/testUtilities/createUserProfile';
-import { resetTestDatabase } from '../src/utilities/testUtilities/resetTestDatabase';
+import { app } from '../../src/app';
+import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
+import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 
 // Positive Result:
 // 1) Successful Login: Create credential, use credential to log in.
