@@ -36,8 +36,14 @@ describe('Login Auth Route', () => {
       .post('/api/auth/login')
       .send({ email: user.email, password: 'seedPassword123' });
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('token');
-    expect(typeof res.body.token).toBe('string');
+    expect(res.body).toMatchObject({
+      message: 'Login successful',
+      userId: expect.any(Number),
+      email: expect.any(String),
+      userRole: expect.any(String),
+      token: expect.any(String),
+      expiresIn: expect.any(Number),
+    });
   });
 
   // Negative Results:
