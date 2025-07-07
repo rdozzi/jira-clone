@@ -110,12 +110,14 @@ describe('handleSingleUpload', () => {
       __dirname,
       '../../src/utilities/testUtilities/__fixtures__/image2.png'
     );
-    const res = await request(app)
+    const req = request(app)
       .post(`/api/attachments/single`)
       .set('Authorization', `Bearer ${token}`)
       .field('entityType', 'COMMENT')
       .field('entityId', comment2.id)
       .attach('file', filePathUpload);
+
+    const res = await req;
     expect(res.status).toBe(401);
     expect(res.body.message).toBe('You do not own this comment');
     uploadedFileName2 = res.body.attachment;
