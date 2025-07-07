@@ -79,8 +79,22 @@ describe('getLogByTicketId', () => {
     expect(res.body[0]).toHaveProperty('action');
     expect(res.body).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ action: 'TICKET_getLogByTicketId_1' }),
-        expect.objectContaining({ action: 'TICKET_getLogByTicketId_2' }),
+        expect.objectContaining({
+          userId: expect.any(Number),
+          actorType: expect.any(String),
+          action: 'TICKET_getLogByTicketId_1',
+          targetId: expect.any(Number),
+          targetType: expect.any(String),
+          metadata: expect.objectContaining({ count: expect.any(Number) }),
+        }),
+        expect.objectContaining({
+          userId: expect.any(Number),
+          actorType: expect.any(String),
+          action: 'TICKET_getLogByTicketId_2',
+          targetId: expect.any(Number),
+          targetType: expect.any(String),
+          metadata: expect.objectContaining({ count: expect.any(Number) }),
+        }),
       ])
     );
   });
