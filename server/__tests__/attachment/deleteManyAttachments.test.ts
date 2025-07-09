@@ -27,8 +27,8 @@ import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtT
 
 dotenv.config();
 
-describe('handleSingleUpload', () => {
-  const testDescription = 'handleSingleUpload';
+describe('deleteManyAttachments', () => {
+  const testDescription = 'deleteManyAttachments';
   let attachments: Attachment[];
   let user1: User;
   let token: string;
@@ -71,11 +71,12 @@ describe('handleSingleUpload', () => {
       testDescription,
       comment.id,
       AttachmentEntityType.COMMENT,
-      user1.id
+      user1.id,
+      'pdf'
     );
   });
 
-  it('should delete a single attachment', async () => {
+  it('should delete many attachments', async () => {
     const attachmentIds = attachments.map((attachment) => {
       return attachment.id;
     });
@@ -83,7 +84,7 @@ describe('handleSingleUpload', () => {
       .delete(`/api/attachments`)
       .send({
         attachmentIds: attachmentIds,
-        entityId: 1,
+        entityId: comment.id,
         entityType: 'COMMENT',
       })
       .set('Authorization', `Bearer ${token}`);
