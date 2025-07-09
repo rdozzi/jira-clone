@@ -16,8 +16,8 @@ export async function downloadSingleAttachment(req: Request, res: Response) {
     } else if (attachment.storageType === 'CLOUD') {
       const signedUrl = await generateSignedCloudUrl(attachment);
       res.locals.logEvent = generatePayload(attachment);
-      res.status(201).json({
-        message: `Signed URL generated successfully: ${signedUrl}`,
+      res.status(200).json({
+        message: `Download Successful; ${signedUrl} created successfully`,
       });
     } else {
       res.status(400).json({ error: 'Invalid storage type' });
