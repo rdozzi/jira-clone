@@ -27,8 +27,8 @@ import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtT
 
 dotenv.config();
 
-describe('handleSingleUpload', () => {
-  const testDescription = 'handleSingleUpload';
+describe('deleteAttachment', () => {
+  const testDescription = 'deleteAttachment';
   let attachment: Attachment;
   let user1: User;
   let token: string;
@@ -70,7 +70,8 @@ describe('handleSingleUpload', () => {
       testDescription,
       comment.id,
       AttachmentEntityType.COMMENT,
-      user1.id
+      user1.id,
+      'txt'
     );
   });
 
