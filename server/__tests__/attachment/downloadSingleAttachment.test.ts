@@ -72,7 +72,13 @@ describe('downloadSingleAttachment', () => {
   it('should download a single attachment', async () => {
     const req = request(app)
       .get(`/api/attachments/${attachment.id}/download`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Authorization', `Bearer ${token}`)
+      .buffer()
+      .parse((res, cb) => {
+        const chunks: Uint8Array[] = [];
+        res.on('data', (chunk) => chunks.push(chunk));
+        res.on('end', () => cb(null, Buffer.concat(chunks)));
+      });
 
     const res = await req;
     console.log('Response Headers', res.header);
@@ -84,6 +90,7 @@ describe('downloadSingleAttachment', () => {
     expect(contentType).toBe(expectedMime);
     expect(res.header['content-disposition']).toMatch(/attachment/);
     expect(res.body instanceof Buffer || res.body instanceof Object).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
   });
   afterAll(async () => {
     if (attachment.filePath) await unlink(attachment.filePath);
