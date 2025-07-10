@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { access } from 'fs/promises';
 import path from 'path';
 import { generateSignedCloudUrl } from '../../utilities/generateSignedCloudUrl';
 import { Attachment } from '@prisma/client';
@@ -12,6 +13,9 @@ export async function downloadSingleAttachment(req: Request, res: Response) {
     if (attachment.storageType === 'LOCAL') {
       const filePath = path.resolve(attachment.filePath || '');
       res.locals.logEvent = generatePayload(attachment);
+
+      await access(filePath);
+
       return res.download(filePath, attachment.fileName);
     } else if (attachment.storageType === 'CLOUD') {
       const signedUrl = await generateSignedCloudUrl(attachment);
@@ -24,9 +28,15 @@ export async function downloadSingleAttachment(req: Request, res: Response) {
       return;
     }
   } catch (error) {
-    console.error('Error downloading attachment: ', error);
-    res.status(500).json({ error: 'Failed to download attachment' });
-    return;
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      res.status(404).json({ message: 'File not found on disk', error: error });
+    } else {
+      console.error('Error downloading attachment: ', error);
+      res
+        .status(500)
+        .json({ message: 'Failed to download attachment', error: error });
+      return;
+    }
   }
 }
 
