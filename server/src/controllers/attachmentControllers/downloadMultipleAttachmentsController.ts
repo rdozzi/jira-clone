@@ -19,6 +19,9 @@ export async function downloadMultipleAttachments(
     const attachmentIds = res.locals.attachmentIds;
     const entityId = res.locals.entityId;
     const entityType = res.locals.entityType;
+    let successCount = 0;
+    const missingFiles: string[] = [];
+    const missingFileIds: number[] = [];
 
     if (!Array.isArray(attachmentIds) || attachmentIds.length === 0) {
       res.status(400).json({ error: 'No attachment Ids provided.' });
@@ -62,8 +65,11 @@ export async function downloadMultipleAttachments(
         const fullpath = path.resolve(filePath || '');
         if (fs.existsSync(fullpath)) {
           archive.file(fullpath, { name: fileName });
+          successCount++;
         } else {
-          console.warn('Local file not found: ${fullpath}');
+          console.warn(`Local file not found: ${fullpath}`);
+          missingFiles.push(attachment.fileName);
+          missingFileIds.push(attachment.id);
         }
       } else if (storageType === 'CLOUD') {
         try {
@@ -82,26 +88,39 @@ export async function downloadMultipleAttachments(
       }
     }
 
+    if (successCount === 0) {
+      res.status(404).json({ message: 'No files are available for download' });
+    }
+
+    if (missingFiles.length > 0) {
+      const missingSummary =
+        'The following files were not included:\n' + missingFiles.join('\n');
+      archive.append(missingSummary, { name: 'MISSING_FILES.txt' });
+    }
+
     res.locals.logEvents = attachments.map((attachment, index) => {
       const logEntityId = attachmentLogEntityIds[index];
 
       return buildLogEvent({
         userId: attachment.uploadedBy,
         actorType: 'USER',
-        action: 'DELETE_ATTACHMENT',
+        action: 'DOWNLOAD_ATTACHMENT',
         targetId: attachment.id,
         targetType: 'ATTACHMENT',
         metadata: {
-          fileName: attachment.fileName,
-          fileType: attachment.entityType,
-          fileSize: attachment.fileSize,
-          filePath: attachment.filePath,
-          fileUrl: attachment.fileUrl,
-          storageType: attachment.storageType,
+          fileName: attachment?.fileName,
+          fileType: attachment?.entityType,
+          fileSize: attachment?.fileSize,
+          filePath: attachment?.filePath,
+          fileUrl: attachment?.fileUrl,
+          storageType: attachment?.storageType,
           ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
           ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
           ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
           ...(logEntityId.projectId && { projectId: logEntityId.projectId }),
+          ...(missingFileIds.includes(attachment.id) && {
+            MESSAGE: 'File was not downloaded.',
+          }),
         },
       });
     });
