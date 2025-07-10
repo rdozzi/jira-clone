@@ -19,7 +19,12 @@ export async function loginUser(
       where: { email: userData.email },
     });
 
-    if (!user || user.deletedAt) {
+    const fakeHash =
+      '$2a$12$lI.goTb7KK0ctewAzqHcteO65M7Su2esatiZjxuP3FMsvDwHB1Qme';
+    // 'FaKEHAshMKXI#*()&%#%!$)' was hashed with 12 rounds from https://bcrypt-generator.com
+
+    if (!user || !userData.password || user.deletedAt) {
+      await verifyPassword('fakePassword', fakeHash);
       return res.status(401).json({ error: 'No user found' });
     }
 
