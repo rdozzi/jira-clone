@@ -9,8 +9,8 @@ export async function getAllBannedEmails(
   prisma: PrismaClient
 ) {
   try {
-    const bannedEmail = await prisma.bannedEmail.findMany();
-    return res.status(200).json(bannedEmail);
+    const bannedEmails = await prisma.bannedEmail.findMany();
+    return res.status(200).json(bannedEmails);
   } catch (error) {
     console.error('Error fetching bannedEmail: ', error);
     return res.status(500).json({ error: 'Failed to fetch bannedEmail' });
