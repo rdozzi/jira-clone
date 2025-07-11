@@ -1,6 +1,5 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
-import dotenv from 'dotenv';
 
 import {
   GlobalRole,
@@ -14,8 +13,6 @@ import { createUserProfile } from '../../src/utilities/testUtilities/createUserP
 import { createActivityLog } from '../../src/utilities/testUtilities/createActivityLog';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
-
-dotenv.config();
 
 describe('getAllLogs', () => {
   const testDescription = 'getAllLogs';
