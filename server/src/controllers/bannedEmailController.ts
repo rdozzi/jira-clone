@@ -75,7 +75,7 @@ export async function createBannedEmail(
     }
 
     // Create a new banned email
-    const newBannedEmail = await prisma.bannedEmail.create({
+    const bannedEmail = await prisma.bannedEmail.create({
       data: { email, reason },
     });
 
@@ -87,14 +87,15 @@ export async function createBannedEmail(
       targetId: null,
       targetType: 'USER',
       metadata: {
-        createdAt: `${newBannedEmail.createdAt}`,
-        reason: `${newBannedEmail.reason}`,
-        email: `${newBannedEmail.email}`,
+        createdAt: `${bannedEmail.createdAt}`,
+        reason: `${bannedEmail.reason}`,
+        email: `${bannedEmail.email}`,
       },
     });
 
     return res.status(201).json({
-      newBannedEmail: newBannedEmail,
+      bannedEmail: bannedEmail.email,
+      reason: bannedEmail.reason,
       message: 'Banned email created successfully',
     });
   } catch (error) {
