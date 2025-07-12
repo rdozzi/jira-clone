@@ -28,9 +28,36 @@ export async function createNewLabel(
   try {
     const user = res.locals.userInfo;
 
-    const labelData = req.body;
+    let { name, color } = req.body;
+
+    name =
+      typeof name === 'string'
+        ? name
+            .trim()
+            .replace(
+              /\w\S*/g,
+              (txt) => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase()
+            )
+        : '';
+
+    color = typeof color === 'string' ? color.toUpperCase() : '';
+
+    // Validate name
+    if (!name || name.length > 25) {
+      return res.status(400).json({
+        error: 'Label name is required and must be 25 characters or fewer.',
+      });
+    }
+
+    // Validate color
+    if (!/^#[0-9A-F]{6}$/.test(color)) {
+      return res.status(400).json({
+        error: 'Color must be a valid 6-digit hex code (e.g., #AABBCC).',
+      });
+    }
+
     const label = await prisma.label.create({
-      data: labelData,
+      data: { name: name, color: color },
     });
 
     res.locals.logEvent = buildLogEvent({
