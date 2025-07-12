@@ -138,10 +138,12 @@ model Attachment {
 }
 
 model Label {
-  id          Int           @id @default(autoincrement())
-  name        String        @db.VarChar(255)
-  color       String        @db.VarChar(255)
-  createdAt   DateTime      @default(now()) @db.Timestamptz()
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  color     String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamptz()
+
+  //Relationship
   TicketLabel TicketLabel[]
 }
 
