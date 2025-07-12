@@ -2,15 +2,15 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 
-// Get all banned emails
+// Get all banned email records
 export async function getAllBannedEmails(
   req: Request,
   res: Response,
   prisma: PrismaClient
 ) {
   try {
-    const bannedEmails = await prisma.bannedEmail.findMany();
-    return res.status(200).json(bannedEmails);
+    const bannedEmailRecords = await prisma.bannedEmail.findMany();
+    return res.status(200).json(bannedEmailRecords);
   } catch (error) {
     console.error('Error fetching bannedEmail: ', error);
     return res.status(500).json({ error: 'Failed to fetch bannedEmail' });
@@ -36,16 +36,16 @@ export async function getBannedEmailById(
       return res.status(400).json({ error: 'Invalid banned email ID' });
     }
 
-    // Fetch banned email by ID
-    const bannedEmail = await prisma.bannedEmail.findUnique({
+    // Fetch banned email record by ID
+    const bannedEmailRecord = await prisma.bannedEmail.findUnique({
       where: { id: bannedEmailIdParsed },
     });
 
-    if (!bannedEmail) {
+    if (!bannedEmailRecord) {
       return res.status(404).json({ error: 'Banned email not found' });
     }
 
-    return res.status(200).json({ bannedEmail: bannedEmail });
+    return res.status(200).json(bannedEmailRecord);
   } catch (error) {
     console.error('Error fetching banned email: ', error);
     return res.status(500).json({ error: 'Failed to fetch banned email' });
