@@ -12,7 +12,7 @@ const router = Router();
 
 // Get all banned emails
 router.get(
-  '/bannedEmails/all',
+  '/bannedEmails',
   authorizeGlobalRole(GlobalRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await getAllBannedEmails(req, res, prisma);
