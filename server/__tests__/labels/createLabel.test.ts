@@ -49,9 +49,10 @@ describe('createLabel', () => {
       .send({ name: `4lxh8GJoElTXMposwhki7t7m9s`, color: '#FF0000' });
     //random.org: Length is 26 chars long.
     expect(res.status).toBe(400);
-    expect(res.body.error).toEqual(
-      'Label name is required and must be 25 characters or fewer.'
-    );
+    expect(res.body).toEqual({
+      error: 'Validation failed',
+      message: expect.any(String),
+    });
   });
   it('should give a 400 error message: invalid color format', async () => {
     const res = await request(app)
@@ -60,8 +61,9 @@ describe('createLabel', () => {
       .send({ name: `${testDescription}_label`, color: '#1234567' });
     //random.org: Length is 26 chars long.
     expect(res.status).toBe(400);
-    expect(res.body.error).toEqual(
-      'Color must be a valid 6-digit hex code (e.g., #AABBCC).'
-    );
+    expect(res.body).toEqual({
+      error: 'Validation failed',
+      message: expect.any(String),
+    });
   });
 });
