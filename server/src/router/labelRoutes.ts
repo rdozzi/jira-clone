@@ -9,6 +9,7 @@ import {
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { GlobalRole } from '@prisma/client';
 import { validateCreateLabel } from '../middleware/labelMiddleware/validateCreateLabel';
+import { validateUpdateLabel } from '../middleware/labelMiddleware/validateUpdateLabel';
 
 const router = Router();
 
@@ -35,6 +36,7 @@ router.post(
 router.patch(
   '/labels/:labelId',
   authorizeGlobalRole(GlobalRole.ADMIN),
+  validateUpdateLabel,
   async (req: Request, res: Response): Promise<void> => {
     await updateLabel(req, res, prisma);
   }
