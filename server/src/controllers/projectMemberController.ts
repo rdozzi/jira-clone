@@ -55,7 +55,11 @@ export async function addProjectMember(
   prisma: PrismaClient
 ) {
   try {
+    // From storeUserAndProjectInfo
+    const userInfo = res.locals.userInfo;
     const { projectId } = req.params;
+    const newProjectMemberData: { userId: number; projectRole: ProjectRole } =
+      req.body;
 
     if (!projectId) {
       res.status(401).json({ message: 'No project found' });
@@ -73,14 +77,11 @@ export async function addProjectMember(
       return;
     }
 
-    const newProjectMemberData: { userId: number; projectRole: ProjectRole } =
-      req.body;
-
     const newProjectMember = await prisma.projectMember.create({
       data: { ...newProjectMemberData, projectId: projectIdParsed },
     });
 
-    const userData = await prisma.user.findUnique({
+    const newUserData = await prisma.user.findUnique({
       where: { id: newProjectMember.userId },
       select: {
         id: true,
@@ -92,14 +93,14 @@ export async function addProjectMember(
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: userData?.id,
+      userId: userInfo?.id,
       actorType: 'USER',
       action: 'ADD_PROJECT_MEMBER',
       targetId: projectIdParsed,
       targetType: 'PROJECT_MEMBER',
       metadata: {
-        firstName_lastName: `${userData?.firstName}_${userData?.lastName}`,
-        email: userData?.email,
+        firstName_lastName: `${newUserData?.firstName}_${newUserData?.lastName}`,
+        email: newUserData?.email,
         projectRole: newProjectMember.projectRole,
       },
     });
@@ -122,6 +123,8 @@ export async function removeProjectMember(
   prisma: PrismaClient
 ) {
   try {
+    // From storeUserAndProjectInfo
+    const userInfo = res.locals.userInfo;
     const { projectId, userId } = req.params;
 
     if (!projectId || !userId) {
@@ -152,7 +155,7 @@ export async function removeProjectMember(
       where: { id: projectMember.id },
     });
 
-    const userData = await prisma.user.findUnique({
+    const removedUserData = await prisma.user.findUnique({
       where: { id: userIdParse },
       select: {
         id: true,
@@ -163,22 +166,22 @@ export async function removeProjectMember(
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: userIdParse,
+      userId: userInfo?.id,
       actorType: 'USER',
       action: 'REMOVE_PROJECT_MEMBER',
-      targetId: projectIdParse,
+      targetId: removedUserData?.id,
       targetType: 'PROJECT_MEMBER',
       metadata: {
-        userId: userIdParse,
         projectRole: projectMember.projectRole,
-        firstName_lastName: `${userData?.firstName}_${userData?.lastName}`,
-        email: userData?.email,
+        firstName_lastName: `${removedUserData?.firstName}_${removedUserData?.lastName}`,
+        email: removedUserData?.email,
       },
     });
 
-    res
-      .status(200)
-      .json({ message: 'Project member removed successfully', userData });
+    res.status(200).json({
+      message: 'Project member removed successfully',
+      removedUserData,
+    });
     return;
   } catch (error) {
     console.error('Error removing project member:', error);
@@ -194,6 +197,8 @@ export async function updateProjectMemberRole(
   prisma: PrismaClient
 ) {
   try {
+    // From storeUserAndProjectInfo
+    const userInfo = res.locals.userInfo;
     const { projectId, userId } = req.params;
     const { projectRole } = req.body;
 
@@ -229,7 +234,7 @@ export async function updateProjectMemberRole(
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: userIdParse,
+      userId: userInfo.id,
       actorType: 'USER',
       action: 'UPDATE_PROJECT_MEMBER_ROLE',
       targetId: projectIdParse,
