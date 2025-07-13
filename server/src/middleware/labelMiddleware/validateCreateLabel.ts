@@ -19,6 +19,6 @@ export function validateCreateLabel(
     return;
   }
 
-  res.locals.validatedParams = result.data;
+  res.locals.validatedBody = result.data;
   next();
 }

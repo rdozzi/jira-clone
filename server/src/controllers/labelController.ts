@@ -29,7 +29,7 @@ export async function createNewLabel(
     const user = res.locals.userInfo;
 
     // From validateCreateLabel Middleware
-    const { name, color } = res.locals.validatedParams;
+    const { name, color } = res.locals.validatedBody;
 
     const label = await prisma.label.create({
       data: { name: name, color: color },
@@ -65,8 +65,10 @@ export async function updateLabel(
   try {
     const user = res.locals.userInfo;
 
-    const labelData = req.body;
+    // From validateCreateLabel Middleware
+    const labelData = res.locals.validatedBody;
     const { labelId } = req.params;
+
     const labelIdParsed = parseInt(labelId, 10);
 
     const oldLabel = await prisma.label.findUniqueOrThrow({
