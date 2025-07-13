@@ -8,6 +8,7 @@ import {
 } from '../controllers/labelController';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { GlobalRole } from '@prisma/client';
+import { validateCreateLabel } from '../middleware/labelMiddleware/validateCreateLabel';
 
 const router = Router();
 
@@ -24,6 +25,7 @@ router.get(
 router.post(
   '/labels',
   authorizeGlobalRole(GlobalRole.ADMIN),
+  validateCreateLabel,
   async (req: Request, res: Response): Promise<void> => {
     await createNewLabel(req, res, prisma);
   }
