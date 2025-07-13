@@ -7,7 +7,7 @@ import { prismaTest } from '../../src/lib/prismaTestClient';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createBannedEmail } from '../../src/utilities/testUtilities/createBannedEmail';
-import { normalizeBannedEmail } from '../../src/utilities/testUtilities/normalizeBannedEmail';
+import { normalizeEntity } from '../../src/utilities/testUtilities/normalizeEntity';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 
 describe('getBannedEmailRecords', () => {
@@ -50,8 +50,8 @@ describe('getBannedEmailRecords', () => {
     expect(res.status).toBe(200);
     expect(res.body).toHaveLength(2);
     expect(res.body).toEqual([
-      normalizeBannedEmail(bannedEmail_1),
-      normalizeBannedEmail(bannedEmail_2),
+      normalizeEntity(bannedEmail_1),
+      normalizeEntity(bannedEmail_2),
     ]);
   });
   it('should return one banned email record', async () => {
@@ -60,7 +60,7 @@ describe('getBannedEmailRecords', () => {
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
     expect(res.body).toBeInstanceOf(Object);
-    expect(res.body).toEqual(normalizeBannedEmail(bannedEmail_1));
+    expect(res.body).toEqual(normalizeEntity(bannedEmail_1));
   });
   it('should return 404 for a non-existent record', async () => {
     const res = await request(app)
