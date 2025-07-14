@@ -7,7 +7,7 @@ import { checkCommentOwnership } from '../middleware/commentMiddleware/checkComm
 import prisma from '../lib/prisma';
 import {
   getAllComments,
-  getAllCommentsById,
+  getCommentsByTicketId,
   createComment,
   deleteComment,
   updateComment,
@@ -32,7 +32,7 @@ router.get(
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
   async (req: Request, res: Response): Promise<void> => {
-    await getAllCommentsById(req, res, prisma);
+    await getCommentsByTicketId(req, res, prisma);
   }
 );
 
