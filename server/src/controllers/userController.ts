@@ -136,8 +136,6 @@ export async function createUser(
       },
     });
 
-    console.log(user);
-
     res.locals.logEvent = buildLogEvent({
       userId: userInfo.id,
       actorType: 'USER',
