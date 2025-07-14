@@ -4,7 +4,8 @@ import { GlobalRole, ProjectRole } from '@prisma/client';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
-import { authorizeSelfOrAdmin } from '../middleware/authAndLoadInfoMiddleware/authorizeSelfOrAdmin';
+import { authorizeSelfOrAdminWithRoleCheck } from '../middleware/userMiddleware/authorizeSelfOrAdminWithRoleCheck';
+import { resolveProjectIdForUserRoutes } from '../middleware/userMiddleware/resolveProjectIdForUserRoutes';
 import {
   getAllUsers,
   getUser,
@@ -27,18 +28,19 @@ router.get(
   }
 );
 
-// Get user by id or email
+// Get users by id or email
 router.get(
-  '/users/:userId/:userEmail',
+  `/users`,
   authorizeGlobalRole(GlobalRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await getUser(req, res, prisma);
   }
 );
 
-// Get user by project
+// Get users by project
 router.get(
   '/users/:projectId/project',
+  resolveProjectIdForUserRoutes(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response) => {
@@ -67,7 +69,7 @@ router.patch(
 // Update user info
 router.patch(
   '/users/:userId/update',
-  authorizeSelfOrAdmin(),
+  authorizeSelfOrAdminWithRoleCheck(),
   async (req: Request, res: Response): Promise<void> => {
     await updateUser(req, res, prisma);
   }
@@ -76,7 +78,7 @@ router.patch(
 // Update user avatar
 router.patch(
   '/users/:userId/avatar',
-  authorizeSelfOrAdmin(),
+  authorizeSelfOrAdminWithRoleCheck(),
   uploadSingleMiddleware,
   async (req: Request, res: Response) => {
     await updateUserAvatar(req, res, prisma);
