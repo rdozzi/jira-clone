@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient, GlobalRole } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../utilities/password';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
@@ -15,7 +15,7 @@ export async function getAllUsers(
 ) {
   try {
     const users = await prisma.user.findMany();
-    res.status(200).json({ data: users });
+    res.status(200).json({ message: 'Users fetched successfully', users });
     return;
   } catch (error) {
     console.error('Error fetching users: ', error);
@@ -31,7 +31,8 @@ export async function getUser(
   prisma: PrismaClient
 ) {
   try {
-    const { userId, userEmail } = req.params;
+    const queryParams = req.query;
+    const { userId, userEmail } = queryParams;
 
     if (!userId && !userEmail) {
       return res.status(400).json({ error: 'User ID or email is required' });
@@ -40,11 +41,13 @@ export async function getUser(
     let user;
 
     if (userId) {
-      const userIdParsed = parseInt(userId, 10);
+      const userIdParsed = parseInt(String(userId), 10);
+
       if (isNaN(userIdParsed)) {
         res.status(400).json({ error: 'Invalid user ID' });
         return;
       }
+
       // Fetch user by ID
       user = await prisma.user.findUnique({ where: { id: userIdParsed } });
     } else if (userEmail) {
@@ -118,6 +121,8 @@ export async function createUser(
   prisma: PrismaClient
 ) {
   try {
+    // From storeUserAndProjectInfo
+    const userInfo = res.locals.userInfo;
     const { email, firstName, lastName, password, globalRole } = req.body;
     const hashedPassword = await hashPassword(password);
 
@@ -131,8 +136,10 @@ export async function createUser(
       },
     });
 
+    console.log(user);
+
     res.locals.logEvent = buildLogEvent({
-      userId: user.id,
+      userId: userInfo.id,
       actorType: 'USER',
       action: 'CREATE_USER',
       targetId: user.id,
@@ -159,26 +166,13 @@ export async function updateUser(
   prisma: PrismaClient
 ) {
   // Information about the user performing this action
-  const userInfo: { id: number; globalRole: GlobalRole } = res.locals.userInfo;
+  // const userInfo: { id: number; globalRole: GlobalRole } = res.locals.userInfo;
+  const userInfo = res.locals.userInfo;
 
   // Pertains to userId payload sent to endpoint
   const { userId } = req.params;
   const userIdParsed = parseInt(userId, 10);
-
-  // Check if a user is trying to change their own role
-  const isAdmin =
-    userInfo.globalRole === GlobalRole.ADMIN ||
-    userInfo.globalRole === GlobalRole.SUPERADMIN;
-  const isSelf = userInfo.id === userIdParsed;
-
   const userData = req.body;
-
-  if (!isAdmin || isSelf)
-    if (userData?.globalRole) {
-      return res.status(403).json({
-        error: 'Unauthorized to change your own global role.',
-      });
-    }
 
   try {
     const oldUser = await prisma.user.findUnique({
@@ -199,7 +193,7 @@ export async function updateUser(
     const changes = generateDiff(oldUser, newUser);
 
     res.locals.logEvent = buildLogEvent({
-      userId: userIdParsed,
+      userId: userInfo.id,
       actorType: 'USER',
       action: 'UPDATE_USER',
       targetId: userIdParsed,
@@ -210,7 +204,7 @@ export async function updateUser(
       },
     });
 
-    res.status(200).json(newUser);
+    res.status(200).json({ message: 'User updated successfully', newUser });
     return;
   } catch (error) {
     console.error('Error editing user: ', error);
@@ -226,6 +220,8 @@ export async function deleteUser(
   prisma: PrismaClient
 ) {
   try {
+    // From storeUserAndProjectInfo
+    const userInfo = res.locals.userInfo;
     const { userId } = req.params;
     const userIdParsed = parseInt(userId, 10);
 
@@ -248,7 +244,7 @@ export async function deleteUser(
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: userIdParsed,
+      userId: userInfo.id,
       actorType: 'USER',
       action: 'DELETE_USER',
       targetId: userIdParsed,
