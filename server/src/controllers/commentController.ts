@@ -11,7 +11,9 @@ export async function getAllComments(
 ) {
   try {
     const comments = await prisma.comment.findMany();
-    res.status(200).json(comments);
+    res
+      .status(200)
+      .json({ message: 'Comments were fetched successfully', data: comments });
     return;
   } catch (error) {
     console.error('Error fetching comments: ', error);
@@ -20,17 +22,21 @@ export async function getAllComments(
   }
 }
 
-export async function getAllCommentsById(
+export async function getCommentsByTicketId(
   req: Request,
   res: Response,
   prisma: PrismaClient
 ) {
   const { ticketId } = req.params;
+  const ticketIdParsed = parseInt(ticketId, 10);
   try {
     const ticketComments = await prisma.comment.findMany({
-      where: { ticketId: Number(ticketId) },
+      where: { ticketId: ticketIdParsed },
     });
-    res.status(200).json(ticketComments);
+    res.status(200).json({
+      message: 'Comments were fetched successfully',
+      data: ticketComments,
+    });
     return;
   } catch (error) {
     console.error('Error fetching comments: ', error);
@@ -65,7 +71,9 @@ export async function createComment(
       },
     });
 
-    res.status(200).json(comment);
+    res
+      .status(200)
+      .json({ message: 'Comment uploaded successfully', comment: comment });
     return;
   } catch (error) {
     console.error('Error creating comment: ', error);
@@ -125,7 +133,7 @@ export async function deleteComment(
 
     res.status(200).json({
       message: 'Comment deleted successfully',
-      deleteComment: deleteComment,
+      deletedComment: oldComment,
     });
     return;
   } catch (error) {
@@ -175,7 +183,7 @@ export async function updateComment(
       return;
     }
 
-    const updateComment = await prisma.comment.update({
+    const updatedComment = await prisma.comment.update({
       where: { id: commentIdParsed },
       data: {
         content,
@@ -183,8 +191,8 @@ export async function updateComment(
     });
 
     const changes =
-      oldComment && updateComment
-        ? generateDiff(oldComment, updateComment)
+      oldComment && updatedComment
+        ? generateDiff(oldComment, updatedComment)
         : {};
 
     res.locals.logEvent = buildLogEvent({
@@ -200,7 +208,7 @@ export async function updateComment(
 
     res
       .status(200)
-      .json({ message: 'Comment updated successfully', updateComment });
+      .json({ message: 'Comment updated successfully', updatedComment });
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
