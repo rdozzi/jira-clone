@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { ProjectRole } from '@prisma/client';
-import { resolveProjectIdFromTicket } from '../middleware/ticketMiddleware/resolveProjectIdFromTicket';
+import { resolveProjectIdForTicketRoute } from '../middleware/ticketMiddleware/resolveProjectIdForTicketRoute';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
 import {
@@ -15,7 +15,7 @@ const router = Router();
 // View ticket_label relationship by ticket
 router.get(
   '/ticket-labels/:ticketId',
-  resolveProjectIdFromTicket(),
+  resolveProjectIdForTicketRoute(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
   getLabelByTicket(prisma)
@@ -24,7 +24,7 @@ router.get(
 // Add label to ticket
 router.post(
   '/ticket-labels/:ticketId/:labelId',
-  resolveProjectIdFromTicket(),
+  resolveProjectIdForTicketRoute(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   addLabelToTicket(prisma)
@@ -33,7 +33,7 @@ router.post(
 // Remove label from ticket
 router.delete(
   '/ticket-labels/:ticketId/:labelId',
-  resolveProjectIdFromTicket(),
+  resolveProjectIdForTicketRoute(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
   deleteLabelFromTicket(prisma)
