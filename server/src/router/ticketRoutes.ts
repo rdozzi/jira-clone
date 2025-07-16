@@ -7,13 +7,14 @@ import { checkProjectRole } from '../middleware/checkProjectRole';
 import {
   getAllTickets,
   getTicketById,
-  getTicketByAssigneeId,
+  // getTicketByAssigneeId,
   createNewTicket,
   updateTicket,
   deleteTicket,
   getTicketsByBoardId,
 } from '../controllers/ticketController';
-import { checkTicketOwnership } from '../middleware/checkTicketOwnership';
+import { checkTicketOwnership } from '../middleware/ticketMiddleware/checkTicketOwnership';
+import { resolveProjectIdForTicketRoute } from '../middleware/ticketMiddleware/resolveProjectIdForTicketRoute';
 
 const router = Router();
 
@@ -29,6 +30,7 @@ router.get(
 // Get Ticket by Id
 router.get(
   '/tickets/:ticketId',
+  resolveProjectIdForTicketRoute(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
@@ -37,18 +39,21 @@ router.get(
 );
 
 // Get all Tickets by User Id
-router.get(
-  '/tickets/assigneeId/:userId',
-  checkProjectMembership(),
-  checkProjectRole(ProjectRole.USER),
-  async (req: Request, res: Response): Promise<void> => {
-    await getTicketByAssigneeId(req, res, prisma);
-  }
-);
+// Deprecated. Use get all ticket params with query to get tickets for specific users by assigneeId or reporterId.
+// router.get(
+//   '/tickets/:userId/assigneeId',
+//   resolveProjectIdForTicketRoute(),
+//   checkProjectMembership(),
+//   checkProjectRole(ProjectRole.USER),
+//   async (req: Request, res: Response): Promise<void> => {
+//     await getTicketByAssigneeId(req, res, prisma);
+//   }
+// );
 
 // Get Tickets by Board Id
 router.get(
   '/tickets/:boardId/board',
+  resolveProjectIdForTicketRoute(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
   async (req: Request, res: Response): Promise<void> => {
@@ -59,6 +64,7 @@ router.get(
 // Create new ticket
 router.post(
   '/tickets',
+  resolveProjectIdForTicketRoute(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   async (req: Request, res: Response): Promise<void> => {
@@ -69,6 +75,7 @@ router.post(
 // Delete ticket
 router.delete(
   '/tickets/:ticketId',
+  resolveProjectIdForTicketRoute(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   checkTicketOwnership(prisma),
@@ -79,7 +86,8 @@ router.delete(
 
 // Update a ticket
 router.patch(
-  '/tickets/updateTicket/:id',
+  '/tickets/:ticketId/update',
+  resolveProjectIdForTicketRoute(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   checkTicketOwnership(prisma),
