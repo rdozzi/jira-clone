@@ -10,18 +10,22 @@ export async function getAllTickets(
   prisma: PrismaClient
 ) {
   try {
+    const { assigneeId, reporterId } = req.query;
+
+    const assigneeIdParsed =
+      typeof assigneeId === 'string' ? parseInt(assigneeId, 10) : undefined;
+    const reporterIdParsed =
+      typeof reporterId === 'string' ? parseInt(reporterId, 10) : undefined;
+
     const tickets = await prisma.ticket.findMany({
-      relationLoadStrategy: 'query',
-      include: {
-        assignee: {
-          select: {
-            firstName: true,
-            lastName: true,
-          },
-        },
+      where: {
+        ...(assigneeIdParsed ? { assigneeId: assigneeIdParsed } : {}),
+        ...(reporterIdParsed ? { reporterId: reporterIdParsed } : {}),
       },
     });
-    res.status(200).json(tickets);
+    res
+      .status(200)
+      .json({ message: 'Tickets fetched successfully', data: tickets });
     return;
   } catch (error) {
     console.error('Error fetching tickets: ', error);
@@ -38,10 +42,16 @@ export async function getTicketById(
   const { ticketId } = req.params;
   const ticketIdParsed = parseInt(ticketId, 10);
   try {
-    const tickets = await prisma.ticket.findUnique({
+    const ticket = await prisma.ticket.findUnique({
       where: { id: ticketIdParsed },
     });
-    res.status(200).json(tickets);
+    if (!ticket) {
+      res.status(404).json({ message: 'Ticket not found' });
+      return;
+    }
+    res
+      .status(200)
+      .json({ message: 'Ticket fetched successfully', data: ticket });
     return;
   } catch (error) {
     console.error('Error fetching tickets: ', error);
@@ -50,25 +60,28 @@ export async function getTicketById(
   }
 }
 
-export async function getTicketByAssigneeId(
-  req: Request,
-  res: Response,
-  prisma: PrismaClient
-) {
-  const { userId } = req.params;
-  const userIdParsed = parseInt(userId, 10);
-  try {
-    const tickets = await prisma.ticket.findMany({
-      where: { assigneeId: userIdParsed },
-    });
-    res.status(200).json(tickets);
-    return;
-  } catch (error) {
-    console.log('Error fetching tickets: ', error);
-    res.status(500).json({ error: 'Failed to fetch tickets' });
-    return;
-  }
-}
+// This function is deprecated. Searching strictly by parameters that doesn't necessitate project association will be used with query terms in the getAllTickets.
+// export async function getTicketByAssigneeId(
+//   req: Request,
+//   res: Response,
+//   prisma: PrismaClient
+// ) {
+//   const { userId } = req.params;
+//   const userIdParsed = parseInt(userId, 10);
+//   try {
+//     const tickets = await prisma.ticket.findMany({
+//       where: { assigneeId: userIdParsed },
+//     });
+//     res
+//       .status(200)
+//       .json({ message: 'Ticket fetched successfully', data: tickets });
+//     return;
+//   } catch (error) {
+//     console.log('Error fetching tickets: ', error);
+//     res.status(500).json({ error: 'Failed to fetch tickets' });
+//     return;
+//   }
+// }
 
 export async function getTicketsByBoardId(
   req: Request,
@@ -82,7 +95,9 @@ export async function getTicketsByBoardId(
     const tickets = await prisma.ticket.findMany({
       where: { boardId: boardIdParsed },
     });
-    res.status(200).json(tickets);
+    res
+      .status(200)
+      .json({ message: 'Tickets fetched successfully', data: tickets });
     return;
   } catch (error) {
     console.log('Error fetching tickets: ', error);
@@ -122,7 +137,9 @@ export async function createNewTicket(
       },
     });
 
-    res.status(201).json({ message: 'Created ticket successfully', ticket });
+    res
+      .status(201)
+      .json({ message: 'Created ticket successfully', data: ticket });
     return;
   } catch (error) {
     console.error('Error creating ticket: ', error);
@@ -173,7 +190,9 @@ export async function deleteTicket(
       },
     });
 
-    res.status(200).json({ message: 'Ticket deleted successfully', oldTicket });
+    res
+      .status(200)
+      .json({ message: 'Ticket deleted successfully', data: oldTicket });
     return;
   } catch (error) {
     console.error('Error fetching tickets: ', error);
@@ -229,7 +248,9 @@ export async function updateTicket(
       },
     });
 
-    res.status(200).json(newTicket);
+    res
+      .status(200)
+      .json({ message: 'Ticket updated successfully', data: newTicket });
     return;
   } catch (error) {
     console.error('Error editing ticket: ', error);
