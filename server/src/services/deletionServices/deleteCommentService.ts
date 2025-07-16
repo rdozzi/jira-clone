@@ -21,7 +21,7 @@ export async function deleteCommentService(
       await deleteCommentDependencies(
         res,
         tx,
-        AttachmentEntityType.TICKET,
+        AttachmentEntityType.COMMENT,
         commentObj.id,
         userId
       );
