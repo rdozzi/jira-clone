@@ -12,13 +12,13 @@ export async function deleteTicketDependencies(
   userId: number
 ) {
   // Delete related comments
-  deleteCommentService(res, tx, ticketId, userId);
-
-  // Delete TicketLabel Associations (Signature uses ticketId for entityId)
-  // Labels have no dependencies, no service is needed
-  await deleteLabelDependencies(tx, null, ticketId);
+  await deleteCommentService(res, tx, ticketId, userId);
 
   // Delete related Attachments
   // entityType for this service is the entity type sent from the service. In this case it should be "TICKET"
   await deleteAttachmentsService(res, tx, ticketEntity, ticketId, userId);
+
+  // Delete TicketLabel Associations (Signature uses ticketId for entityId)
+  // Labels have no dependencies, no service is needed
+  await deleteLabelDependencies(tx, null, ticketId);
 }
