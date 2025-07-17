@@ -7,7 +7,7 @@ import { resolveProjectIdFromBoard } from '../middleware/boardMiddleware/resolve
 import prisma from '../lib/prisma';
 import {
   getAllBoards,
-  getBoardById,
+  // getBoardById,
   getBoardsByProjectId,
   createBoard,
   updateBoard,
@@ -26,13 +26,14 @@ router.get(
 );
 
 // Get board by Id
-router.get(
-  '/boards/:boardId',
-  authorizeGlobalRole(GlobalRole.ADMIN),
-  async (req: Request, res: Response): Promise<void> => {
-    await getBoardById(req, res, prisma);
-  }
-);
+// router.get(
+//   '/boards/:boardId',
+//   authorizeGlobalRole(GlobalRole.ADMIN),
+//   async (req: Request, res: Response): Promise<void> => {
+//     await getBoardById(req, res, prisma);
+//   }
+// );
+
 // Get boards by Project Id
 router.get(
   '/boards/:projectId/project',
