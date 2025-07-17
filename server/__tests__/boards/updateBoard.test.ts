@@ -26,7 +26,7 @@ describe('Update Board', () => {
       testDescription,
       GlobalRole.ADMIN
     );
-    project = await createProject(prismaTest, testDescription);
+    project = await createProject(prismaTest, testDescription, user.id);
     board = await createBoard(prismaTest, testDescription, project.id);
     await createProjectMember(
       prismaTest,

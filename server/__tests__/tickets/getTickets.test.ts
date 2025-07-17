@@ -25,7 +25,7 @@ describe('Get all tickets', () => {
       `${testDescription}_1`,
       GlobalRole.ADMIN
     );
-    const project = await createProject(prismaTest, testDescription);
+    const project = await createProject(prismaTest, testDescription, user.id);
     const board = await createBoard(prismaTest, testDescription, project.id);
     ticket1 = await createTicket(
       prismaTest,

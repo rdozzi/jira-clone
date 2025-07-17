@@ -35,7 +35,7 @@ describe('Update Ticket', () => {
       testDescription,
       GlobalRole.ADMIN
     );
-    project = await createProject(prismaTest, testDescription);
+    project = await createProject(prismaTest, testDescription, user.id);
     board = await createBoard(prismaTest, testDescription, project.id);
     ticket = await createTicket(prismaTest, testDescription, board.id, user.id);
     await createProjectMember(

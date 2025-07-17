@@ -62,7 +62,7 @@ describe('getAllAttachment', () => {
 
     tokenUser1 = generateJwtToken(user1.id, user1.globalRole);
     tokenUser3 = generateJwtToken(user2.id, user2.globalRole);
-    const project = await createProject(prismaTest, testDescription);
+    const project = await createProject(prismaTest, testDescription, user1.id);
     const board = await createBoard(prismaTest, testDescription, project.id);
     ticket = await createTicket(
       prismaTest,

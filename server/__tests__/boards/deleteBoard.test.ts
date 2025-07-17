@@ -50,7 +50,7 @@ describe('Delete a board', () => {
       testDescription,
       GlobalRole.USER
     );
-    project = await createProject(prismaTest, testDescription);
+    project = await createProject(prismaTest, testDescription, user.id);
     project = { ...project, ownerId: user.id };
     board = await createBoard(prismaTest, testDescription, project.id);
     ticket = await createTicket(prismaTest, testDescription, board.id, user.id);
