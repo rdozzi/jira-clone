@@ -19,14 +19,14 @@ import { createProjectMember } from '../../src/utilities/testUtilities/createPro
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 
-describe('Update Comment', () => {
+describe('Update Ticket', () => {
   let token: string;
   let user: User;
   let project: Project;
   let board: Board;
   let ticket: Ticket;
 
-  const testDescription = 'updateComment';
+  const testDescription = 'updateTicket';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
