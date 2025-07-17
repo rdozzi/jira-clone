@@ -24,7 +24,7 @@ describe('Get boards', () => {
       `${testDescription}_1`,
       GlobalRole.ADMIN
     );
-    project = await createProject(prismaTest, testDescription);
+    project = await createProject(prismaTest, testDescription, user.id);
     await createBoard(prismaTest, `${testDescription}_1`, project.id);
     await createBoard(prismaTest, `${testDescription}_2`, project.id);
     await createBoard(prismaTest, `${testDescription}_3`, project.id);

@@ -25,7 +25,7 @@ describe('Get ticket by board id', () => {
       `${testDescription}_1`,
       GlobalRole.USER
     );
-    const project = await createProject(prismaTest, testDescription);
+    const project = await createProject(prismaTest, testDescription, user.id);
     board = await createBoard(prismaTest, testDescription, project.id);
     await createTicket(prismaTest, `${testDescription}_1`, board.id, user.id);
     await createTicket(prismaTest, `${testDescription}_2`, board.id, user.id);

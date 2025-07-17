@@ -43,7 +43,7 @@ describe('downloadMultipleAttachments', () => {
       GlobalRole.USER
     );
     token = generateJwtToken(user1.id, user1.globalRole);
-    const project = await createProject(prismaTest, testDescription);
+    const project = await createProject(prismaTest, testDescription, user1.id);
     const board = await createBoard(prismaTest, testDescription, project.id);
     ticket = await createTicket(
       prismaTest,

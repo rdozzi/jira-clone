@@ -25,7 +25,7 @@ describe('Create a board', () => {
       GlobalRole.USER
     );
     token = generateJwtToken(user.id, user.globalRole);
-    project = await createProject(prismaTest, testDescription);
+    project = await createProject(prismaTest, testDescription, user.id);
     await createProjectMember(
       prismaTest,
       project.id,

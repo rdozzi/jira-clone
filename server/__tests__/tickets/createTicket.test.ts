@@ -34,7 +34,7 @@ describe('Create a ticket', () => {
       GlobalRole.USER
     );
     token = generateJwtToken(user.id, user.globalRole);
-    const project = await createProject(prismaTest, testDescription);
+    const project = await createProject(prismaTest, testDescription, user.id);
     board = await createBoard(prismaTest, testDescription, project.id);
     await createProjectMember(
       prismaTest,
