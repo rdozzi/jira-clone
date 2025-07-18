@@ -5,7 +5,7 @@ import prisma from '../lib/prisma';
 
 import {
   getAllProjects,
-  getProjectById,
+  // getProjectById,
   createProject,
   updateProject,
   deleteProject,
@@ -28,15 +28,15 @@ router.get(
 );
 
 // Get project by Id
-router.get(
-  '/projects/:projectId',
-  resolveProjectIdFromProject(),
-  checkProjectMembership({ allowGlobalSuperAdmin: true }),
-  checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
-  async (req: Request, res: Response): Promise<void> => {
-    await getProjectById(req, res, prisma);
-  }
-);
+// router.get(
+//   '/projects/:projectId',
+//   resolveProjectIdFromProject(),
+//   checkProjectMembership({ allowGlobalSuperAdmin: true }),
+//   checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
+//   async (req: Request, res: Response): Promise<void> => {
+//     await getProjectById(req, res, prisma);
+//   }
+// );
 
 // Create project (Become a member of project)
 router.post(
