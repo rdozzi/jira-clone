@@ -15,7 +15,9 @@ export async function getAllProjects(
 ) {
   try {
     const projects = await prisma.project.findMany();
-    res.status(200).json(projects);
+    res
+      .status(200)
+      .json({ message: 'Projects fetched succesfully', data: projects });
     return;
   } catch (error) {
     console.error('Error fetching projects: ', error);
@@ -24,26 +26,27 @@ export async function getAllProjects(
   }
 }
 
-export async function getProjectById(
-  req: Request,
-  res: Response,
-  prisma: PrismaClient
-) {
-  const { projectId } = req.params;
-  const projectIdParsed = parseInt(projectId, 10);
+// Deprecated.
+// export async function getProjectById(
+//   req: Request,
+//   res: Response,
+//   prisma: PrismaClient
+// ) {
+//   const { projectId } = req.params;
+//   const projectIdParsed = parseInt(projectId, 10);
 
-  try {
-    const projects = await prisma.project.findUnique({
-      where: { id: projectIdParsed },
-    });
-    res.status(200).json(projects);
-    return;
-  } catch (error) {
-    console.error('Error fetching projects: ', error);
-    res.status(500).json({ error: 'Failed to fetch projects' });
-    return;
-  }
-}
+//   try {
+//     const projects = await prisma.project.findUnique({
+//       where: { id: projectIdParsed },
+//     });
+//     res.status(200).json(projects);
+//     return;
+//   } catch (error) {
+//     console.error('Error fetching projects: ', error);
+//     res.status(500).json({ error: 'Failed to fetch projects' });
+//     return;
+//   }
+// }
 
 export async function createProject(
   req: Request,
@@ -85,9 +88,9 @@ export async function createProject(
       },
     });
 
-    res.status(200).json({
-      message: `Project ${project.name} created successfully`,
-      project,
+    res.status(201).json({
+      message: `Project created successfully`,
+      data: project,
     });
     return;
   } catch (error) {
@@ -138,9 +141,9 @@ export async function updateProject(
       },
     });
 
-    res.status(201).json({
-      message: `Project ${newProject.id} updated successfully`,
-      newProject,
+    res.status(200).json({
+      message: `Project updated successfully`,
+      data: newProject,
     });
     return;
   } catch (error) {
@@ -201,8 +204,8 @@ export async function deleteProject(
     });
 
     res.status(200).json({
-      message: `Project ${oldProject.name} deleted successfully`,
-      oldProject,
+      message: `Project deleted successfully`,
+      data: oldProject,
     });
     return;
   } catch (error) {
