@@ -26,6 +26,29 @@ export async function getAllProjects(
   }
 }
 
+export async function getProjectsByUserId(
+  req: Request,
+  res: Response,
+  prisma: PrismaClient
+) {
+  try {
+    const userId = res.locals.userInfo.id;
+
+    const projects = await prisma.projectMember.findMany({
+      where: { userId: userId },
+      select: { project: true, projectRole: true },
+    });
+
+    res
+      .status(200)
+      .json({ message: 'Projects fetched successfully', data: projects });
+  } catch (error) {
+    console.error('Error fetching projects: ', error);
+    res.status(500).json({ error: 'Failed to fetch projects' });
+    return;
+  }
+}
+
 // Deprecated.
 // export async function getProjectById(
 //   req: Request,
