@@ -9,6 +9,7 @@ import {
   createProject,
   updateProject,
   deleteProject,
+  getProjectsByUserId,
 } from '../controllers/projectController';
 
 // Middleware
@@ -27,6 +28,14 @@ router.get(
   }
 );
 
+// Get projects by userId
+router.get(
+  '/projects/my-projects',
+  authorizeGlobalRole(GlobalRole.GUEST),
+  async (req: Request, res: Response): Promise<void> => {
+    await getProjectsByUserId(req, res, prisma);
+  }
+);
 // Get project by Id
 // router.get(
 //   '/projects/:projectId',
