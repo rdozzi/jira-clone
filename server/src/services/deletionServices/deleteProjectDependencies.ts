@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { Prisma, AttachmentEntityType } from '@prisma/client';
 import { deleteBoardService } from './deleteBoardService';
 import { deleteAttachmentsService } from './deleteAttachmentsService';
+import { deleteProjectMemberService } from './deleteProjectMemberService';
 
 export async function deleteProjectDependencies(
   res: Response,
@@ -15,4 +16,7 @@ export async function deleteProjectDependencies(
 
   // Delete any attachments with a 'PROJECT' entityType and projectId as the entityId
   await deleteAttachmentsService(res, tx, entityType, entityId, userId);
+
+  // Delete project member associations related to this project
+  await deleteProjectMemberService(res, tx, entityId);
 }
