@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { loginUser, logoutUser } from '../controllers/authController';
+import { validateAuthBody } from '../middleware/authAndLoadInfoMiddleware/validateAuthBody';
 import { loginRateLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
@@ -9,6 +10,7 @@ const router = Router();
 router.post(
   '/auth/login',
   loginRateLimiter,
+  validateAuthBody,
   async (req: Request, res: Response): Promise<void> => {
     await loginUser(req, res, prisma);
   }

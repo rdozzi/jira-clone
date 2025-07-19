@@ -14,24 +14,21 @@ export async function loginUser(
   prisma: PrismaClient
 ) {
   try {
-    const userData = req.body;
+    const { email, password } = res.locals.validatedBody;
     const user = await prisma.user.findUnique({
-      where: { email: userData.email },
+      where: { email: email },
     });
 
     const fakeHash =
       '$2a$12$lI.goTb7KK0ctewAzqHcteO65M7Su2esatiZjxuP3FMsvDwHB1Qme';
     // 'FaKEHAshMKXI#*()&%#%!$)' was hashed with 12 rounds from https://bcrypt-generator.com
 
-    if (!user || !userData.password || user.deletedAt) {
+    if (!user || !password || user.deletedAt) {
       await verifyPassword('fakePassword', fakeHash);
       return res.status(401).json({ error: 'No user found' });
     }
 
-    const isPasswordValid = await verifyPassword(
-      userData.password,
-      user.passwordHash
-    );
+    const isPasswordValid = await verifyPassword(password, user.passwordHash);
 
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid password' });
