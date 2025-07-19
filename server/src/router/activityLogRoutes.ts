@@ -4,12 +4,13 @@ import {
   getAllLogs,
   getLogByTicketId,
   getLogByUserId,
-} from '../controllers/activityController';
+} from '../controllers/activityLogController';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { GlobalRole, ProjectRole } from '@prisma/client';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
 import { resolveProjectIdForTicketRoute } from '../middleware/ticketMiddleware/resolveProjectIdForTicketRoute';
+import { validateParams } from '../middleware/validation/validateParams';
 
 const router = Router();
 
@@ -28,6 +29,7 @@ router.get(
   resolveProjectIdForTicketRoute(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await getLogByTicketId(req, res, prisma);
   }
@@ -36,6 +38,7 @@ router.get(
 router.get(
   '/activity-logs/:userId/user',
   authorizeGlobalRole(GlobalRole.ADMIN),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await getLogByUserId(req, res, prisma);
   }
