@@ -8,8 +8,8 @@ export async function getAllLogs(
   prisma: PrismaClient
 ) {
   try {
-    const routes = await prisma.activityLog.findMany();
-    return res.status(200).json(routes);
+    const logs = await prisma.activityLog.findMany();
+    return res.status(200).json(logs);
   } catch (error) {
     console.error('Error fetching routes: ', error);
     return res.status(500).json({ error: 'Failed to fetch routes' });
@@ -23,15 +23,10 @@ export async function getLogByTicketId(
   prisma: PrismaClient
 ) {
   try {
-    const { ticketId } = req.params;
-    const ticketIdParsed = parseInt(ticketId, 10);
-
-    if (isNaN(ticketIdParsed)) {
-      return res.status(400).json({ error: 'Invalid ticket ID' });
-    }
+    const ticketId = res.locals.validatedParam;
 
     const logs = await prisma.activityLog.findMany({
-      where: { targetId: ticketIdParsed, targetType: 'TICKET' },
+      where: { targetId: ticketId, targetType: 'TICKET' },
     });
 
     return res.status(200).json(logs);
@@ -48,16 +43,10 @@ export async function getLogByUserId(
   prisma: PrismaClient
 ) {
   try {
-    const { userId } = req.params;
-    const userIdParse = parseInt(userId, 10);
-
-    if (isNaN(userIdParse)) {
-      res.status(400).json({ error: 'User ID is required' });
-      return;
-    }
+    const userId = res.locals.validatedParam;
 
     const logs = await prisma.activityLog.findMany({
-      where: { userId: userIdParse },
+      where: { userId: userId },
     });
 
     res.status(200).json(logs);
