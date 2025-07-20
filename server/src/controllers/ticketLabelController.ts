@@ -4,16 +4,15 @@ import { PrismaClient, Prisma } from '@prisma/client';
 export function getLabelByTicket(prisma: PrismaClient) {
   return async (req: Request, res: Response) => {
     try {
-      const { ticketId } = req.params;
-      const ticketIdParsed = parseInt(ticketId);
+      const ticketId = res.locals.validatedParam;
 
       const ticketLabels = await prisma.ticketLabel.findMany({
-        where: { ticketId: ticketIdParsed },
-        include: { label: true },
+        where: { ticketId: ticketId },
+        select: { ticketId: true, labelId: true },
       });
 
       res.status(200).json({
-        message: 'Get TicketLabel Successful (Note: Might be empty)',
+        message: 'Label fetch successful (Note: Might be empty)',
         ticketLabelPair: ticketLabels,
       });
       return;
@@ -28,17 +27,10 @@ export function getLabelByTicket(prisma: PrismaClient) {
 export function addLabelToTicket(prisma: PrismaClient) {
   return async (req: Request, res: Response): Promise<void> => {
     try {
-      const { ticketId, labelId } = req.params;
-      const ticketIdParsed = parseInt(ticketId, 10);
-      const labelIdParsed = parseInt(labelId, 10);
-
-      if (isNaN(ticketIdParsed) || isNaN(labelIdParsed)) {
-        res.status(400).json({ error: 'Invalid ticketId or labelId' });
-        return;
-      }
+      const { ticketId, labelId } = res.locals.validatedParams;
 
       const ticketLabel = await prisma.ticketLabel.create({
-        data: { ticketId: ticketIdParsed, labelId: labelIdParsed },
+        data: { ticketId: ticketId, labelId: labelId },
       });
       res.status(201).json({
         message: 'Label addition to ticket successful',
@@ -65,20 +57,13 @@ export function addLabelToTicket(prisma: PrismaClient) {
 export function deleteLabelFromTicket(prisma: PrismaClient) {
   return async (req: Request, res: Response): Promise<void> => {
     try {
-      const { ticketId, labelId } = req.params;
-      const ticketIdParsed = parseInt(ticketId, 10);
-      const labelIdParsed = parseInt(labelId, 10);
-
-      if (isNaN(ticketIdParsed) || isNaN(labelIdParsed)) {
-        res.status(400).json({ error: 'Invalid ticketId or labelId' });
-        return;
-      }
+      const { ticketId, labelId } = res.locals.validatedParams;
 
       const removedTicketLabel = await prisma.ticketLabel.delete({
         where: {
           ticketId_labelId: {
-            ticketId: ticketIdParsed,
-            labelId: labelIdParsed,
+            ticketId: ticketId,
+            labelId: labelId,
           },
         },
       });
