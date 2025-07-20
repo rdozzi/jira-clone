@@ -35,7 +35,7 @@ describe('Create a user', () => {
         email: 'createAUser@example.com',
         firstName: 'Leonard',
         lastName: 'Nimoy',
-        password: 'test1234',
+        password: 'Test1234!',
         globalRole: GlobalRole.USER,
       });
     expect(res.status).toBe(201);
