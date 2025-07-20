@@ -10,11 +10,10 @@ export async function viewProjectMembers(
   prisma: PrismaClient
 ) {
   try {
-    const { projectId } = req.params;
-    const projectIdParsed = parseInt(projectId, 10);
+    const projectId = res.locals.validatedParam;
 
     const projectMemberRecords = await prisma.projectMember.findMany({
-      where: { projectId: projectIdParsed },
+      where: { projectId: projectId },
       include: {
         user: {
           select: {
@@ -125,24 +124,11 @@ export async function removeProjectMember(
   try {
     // From storeUserAndProjectInfo
     const userInfo = res.locals.userInfo;
-    const { projectId, userId } = req.params;
-
-    if (!projectId || !userId) {
-      res.status(400).json({ message: 'Project ID and User ID are required' });
-      return;
-    }
-
-    const projectIdParse = parseInt(projectId, 10);
-    const userIdParse = parseInt(userId, 10);
-
-    if (isNaN(projectIdParse) || isNaN(userIdParse)) {
-      res.status(400).json({ message: 'Invalid projectId or userId' });
-      return;
-    }
+    const { projectId, userId } = res.locals.validatedParams;
 
     const projectMember = await prisma.projectMember.findUnique({
       where: {
-        userId_projectId: { projectId: projectIdParse, userId: userIdParse },
+        userId_projectId: { projectId: projectId, userId: userId },
       },
     });
 
@@ -156,7 +142,7 @@ export async function removeProjectMember(
     });
 
     const removedUserData = await prisma.user.findUnique({
-      where: { id: userIdParse },
+      where: { id: userId },
       select: {
         id: true,
         firstName: true,
@@ -175,6 +161,7 @@ export async function removeProjectMember(
         projectRole: projectMember.projectRole,
         firstName_lastName: `${removedUserData?.firstName}_${removedUserData?.lastName}`,
         email: removedUserData?.email,
+        projectId: projectId,
       },
     });
 
@@ -199,27 +186,12 @@ export async function updateProjectMemberRole(
   try {
     // From storeUserAndProjectInfo
     const userInfo = res.locals.userInfo;
-    const { projectId, userId } = req.params;
-    const { projectRole } = req.body;
-
-    if (!projectId || !userId || !projectRole) {
-      res
-        .status(400)
-        .json({ message: 'Project ID, User ID, and role are required' });
-      return;
-    }
-
-    const projectIdParse = parseInt(projectId, 10);
-    const userIdParse = parseInt(userId, 10);
-
-    if (isNaN(projectIdParse) || isNaN(userIdParse)) {
-      res.status(400).json({ message: 'Invalid projectId or userId' });
-      return;
-    }
+    const { projectId, userId } = res.locals.validatedParams;
+    const { projectRole } = res.locals.validatedBody;
 
     const projectMember = await prisma.projectMember.findUnique({
       where: {
-        userId_projectId: { projectId: projectIdParse, userId: userIdParse },
+        userId_projectId: { projectId: projectId, userId: userId },
       },
     });
 
@@ -237,7 +209,7 @@ export async function updateProjectMemberRole(
       userId: userInfo.id,
       actorType: 'USER',
       action: 'UPDATE_PROJECT_MEMBER_ROLE',
-      targetId: projectIdParse,
+      targetId: projectId,
       targetType: 'PROJECT_MEMBER',
       metadata: {
         changes: generateDiff(

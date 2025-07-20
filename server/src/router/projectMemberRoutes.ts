@@ -10,6 +10,10 @@ import {
   removeProjectMember,
   updateProjectMemberRole,
 } from '../controllers/projectMemberController';
+import { validateParams } from '../middleware/validation/validateParams';
+import { validateMultipleParams } from '../middleware/validation/validateMultipleParams';
+import { validateBody } from '../middleware/validation/validateBody';
+import { projectMemberUpdateSchema } from '../schemas/projectMember.schema';
 
 const router = Router();
 
@@ -30,6 +34,7 @@ router.post(
   resolveProjectIdFromProject(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await addProjectMember(req, res, prisma);
   }
@@ -41,6 +46,7 @@ router.delete(
   resolveProjectIdFromProject(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
+  validateMultipleParams,
   async (req: Request, res: Response): Promise<void> => {
     await removeProjectMember(req, res, prisma);
   }
@@ -52,6 +58,8 @@ router.patch(
   resolveProjectIdFromProject(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
+  validateMultipleParams,
+  validateBody(projectMemberUpdateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await updateProjectMemberRole(req, res, prisma);
   }
