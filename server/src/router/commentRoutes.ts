@@ -13,6 +13,10 @@ import {
   updateComment,
 } from '../controllers/commentController';
 import { resolveProjectIdFromComment } from '../middleware/commentMiddleware/resolveProjectIdFromComment';
+import { validateBody } from '../middleware/validation/validateBody';
+import { createCommentSchema } from '../schemas/comment.schema';
+import { updateUserSchema } from '../schemas/comment.schema';
+import { validateParams } from '../middleware/validation/validateParams';
 
 const router = Router();
 
@@ -31,6 +35,7 @@ router.get(
   resolveProjectIdFromComment(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await getCommentsByTicketId(req, res, prisma);
   }
@@ -42,6 +47,7 @@ router.post(
   resolveProjectIdFromComment(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
+  validateBody(createCommentSchema),
   async (req: Request, res: Response): Promise<void> => {
     await createComment(req, res, prisma);
   }
@@ -54,6 +60,7 @@ router.delete(
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
   checkCommentOwnership({ allowGlobalSuperAdmin: true }),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await deleteComment(req, res, prisma);
   }
@@ -66,6 +73,8 @@ router.patch(
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
   checkCommentOwnership({ allowGlobalSuperAdmin: true }),
+  validateParams,
+  validateBody(updateUserSchema),
   async (req: Request, res: Response): Promise<void> => {
     await updateComment(req, res, prisma);
   }
