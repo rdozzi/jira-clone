@@ -27,7 +27,7 @@ describe('Get all comments', () => {
       GlobalRole.ADMIN
     );
     token = generateJwtToken(user.id, user.globalRole);
-    const project = await createProject(prismaTest, testDescription);
+    const project = await createProject(prismaTest, testDescription, user.id);
     const board = await createBoard(prismaTest, testDescription, project.id);
     ticket = await createTicket(prismaTest, testDescription, board.id, user.id);
     await createComment(prismaTest, testDescription, ticket.id, user.id);
