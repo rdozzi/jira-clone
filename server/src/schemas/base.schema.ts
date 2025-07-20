@@ -1,5 +1,9 @@
 import { z } from 'zod';
 import { GlobalRole, ProjectRole, AttachmentEntityType } from '@prisma/client';
+import LeoProfanity from 'leo-profanity';
+
+const filter = LeoProfanity;
+const badWordsList = filter.list();
 
 export const attachmentEntityTypeSchema = z
   .string('A string is required')
@@ -11,6 +15,20 @@ export const attachmentEntityTypeSchema = z
     {
       message: 'Invalid entity type',
     }
+  );
+
+export const commentContentSchema = z
+  .string('Comment content is rquired')
+  .trim()
+  .min(1, 'Comment cannot be empty')
+  .max(500, 'Comment cannot exceed 500 characters including spaces')
+  .transform((val) => val.replace(/\s+/g, ' ').trim())
+  .refine(
+    (val) =>
+      !badWordsList.some((word) =>
+        val.toLowerCase().includes(word.toLowerCase())
+      ),
+    { error: 'Comment contains prohibited language.' }
   );
 
 export const emailAuthSchema = z
