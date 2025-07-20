@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const numberParamSchema = z.coerce
+export const numberIdSchema = z.coerce
   .number({
     error: 'Entity ID must be a valid number',
   })
