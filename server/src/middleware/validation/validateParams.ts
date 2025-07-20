@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { numberParamSchema } from '../../schemas/numberParam.schema';
+import { numberIdSchema } from '../../schemas/numberId.schema';
 import { z, ZodError } from 'zod';
 
 export function validateParams(
@@ -9,7 +9,7 @@ export function validateParams(
 ) {
   const entitykey = Object.keys(req.params)[0];
 
-  const result = numberParamSchema.safeParse(req.params[entitykey]);
+  const result = numberIdSchema.safeParse(req.params[entitykey]);
 
   if (!result!.success) {
     const error: ZodError = result!.error;
