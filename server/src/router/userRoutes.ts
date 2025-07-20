@@ -16,7 +16,10 @@ import {
   updateUserAvatar,
 } from '../controllers/userController';
 import { uploadSingleMiddleware } from '../middleware/attachments/uploadMiddleware';
-
+import { validateQuery } from '../middleware/validation/validateQuery';
+import { validateParams } from '../middleware/validation/validateParams';
+import { validateBody } from '../middleware/validation/validateBody';
+import { createUserSchema, updateUserSchema } from '../schemas/user.schema';
 const router = Router();
 
 // Get all users
@@ -32,6 +35,7 @@ router.get(
 router.get(
   `/users`,
   authorizeGlobalRole(GlobalRole.ADMIN),
+  validateQuery,
   async (req: Request, res: Response): Promise<void> => {
     await getUser(req, res, prisma);
   }
@@ -43,6 +47,7 @@ router.get(
   resolveProjectIdForUserRoutes(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
+  validateParams,
   async (req: Request, res: Response) => {
     await getUserByProjectId(req, res, prisma);
   }
@@ -52,6 +57,7 @@ router.get(
 router.post(
   '/users',
   authorizeGlobalRole(GlobalRole.ADMIN),
+  validateBody(createUserSchema),
   async (req: Request, res: Response): Promise<void> => {
     await createUser(req, res, prisma);
   }
@@ -61,6 +67,7 @@ router.post(
 router.patch(
   '/users/:userId/soft-delete',
   authorizeGlobalRole(GlobalRole.ADMIN),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await deleteUser(req, res, prisma);
   }
@@ -70,6 +77,8 @@ router.patch(
 router.patch(
   '/users/:userId/update',
   authorizeSelfOrAdminWithRoleCheck(),
+  validateParams,
+  validateBody(updateUserSchema),
   async (req: Request, res: Response): Promise<void> => {
     await updateUser(req, res, prisma);
   }
@@ -80,6 +89,7 @@ router.patch(
   '/users/:userId/avatar',
   authorizeSelfOrAdminWithRoleCheck(),
   uploadSingleMiddleware,
+  validateParams,
   async (req: Request, res: Response) => {
     await updateUserAvatar(req, res, prisma);
   }

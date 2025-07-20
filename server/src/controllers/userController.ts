@@ -31,7 +31,7 @@ export async function getUser(
   prisma: PrismaClient
 ) {
   try {
-    const { query, data } = res.locals.validatedParam;
+    const { query, data } = res.locals.validatedQuery;
     let user;
 
     if (query !== 'userId' && query !== 'userEmail') {
@@ -69,14 +69,10 @@ export async function getUserByProjectId(
   prisma: PrismaClient
 ) {
   try {
-    const { projectId } = req.params;
-    const projectIdParsed = parseInt(projectId, 10);
-    if (isNaN(projectIdParsed)) {
-      res.status(400).json({ error: 'Invalid project ID' });
-      return;
-    }
+    const projectId = res.locals.validatedParam;
+
     const users = await prisma.projectMember.findMany({
-      where: { projectId: projectIdParsed },
+      where: { projectId: projectId },
       include: {
         user: {
           select: {
@@ -113,7 +109,8 @@ export async function createUser(
   try {
     // From storeUserAndProjectInfo
     const userInfo = res.locals.userInfo;
-    const { email, firstName, lastName, password, globalRole } = req.body;
+    const { email, firstName, lastName, password, globalRole } =
+      res.locals.validatedBody;
     const hashedPassword = await hashPassword(password);
 
     const user = await prisma.user.create({
@@ -158,13 +155,12 @@ export async function updateUser(
   const userInfo = res.locals.userInfo;
 
   // Pertains to userId payload sent to endpoint
-  const { userId } = req.params;
-  const userIdParsed = parseInt(userId, 10);
-  const userData = req.body;
+  const userId = res.locals.validatedParam;
+  const userData = res.locals.validatedBody;
 
   try {
     const oldUser = await prisma.user.findUnique({
-      where: { id: userIdParsed },
+      where: { id: userId },
     });
     if (!oldUser) {
       res.status(404).json({ error: 'User not found' });
@@ -172,7 +168,7 @@ export async function updateUser(
     }
 
     const newUser = await prisma.user.update({
-      where: { id: userIdParsed },
+      where: { id: userId },
       data: {
         ...userData,
       },
@@ -184,7 +180,7 @@ export async function updateUser(
       userId: userInfo.id,
       actorType: 'USER',
       action: 'UPDATE_USER',
-      targetId: userIdParsed,
+      targetId: userId,
       targetType: 'USER',
       metadata: {
         name: `${newUser.firstName}_${newUser.lastName}`,
@@ -210,24 +206,21 @@ export async function deleteUser(
   try {
     // From storeUserAndProjectInfo
     const userInfo = res.locals.userInfo;
-    const { userId } = req.params;
-    const userIdParsed = parseInt(userId, 10);
+    const userId = res.locals.validatedParam;
 
     const existingUser = await prisma.user.findUnique({
-      where: { id: userIdParsed },
+      where: { id: userId },
     });
 
     if (!existingUser || existingUser.isDeleted === true) {
-      res
-        .status(404)
-        .json({ error: `User with ID ${userIdParsed} not found.` });
+      res.status(404).json({ error: `User with ID ${userId} not found.` });
       return;
     }
 
-    await deleteUserCascade(userIdParsed);
+    await deleteUserCascade(userId);
 
     const deletedUserData = await prisma.user.update({
-      where: { id: userIdParsed },
+      where: { id: userId },
       data: { isDeleted: true, deletedAt: new Date() },
     });
 
@@ -235,7 +228,7 @@ export async function deleteUser(
       userId: userInfo.id,
       actorType: 'USER',
       action: 'DELETE_USER',
-      targetId: userIdParsed,
+      targetId: userId,
       targetType: 'USER',
       metadata: {
         name: `${deletedUserData.firstName}_${deletedUserData.lastName}`,
@@ -259,8 +252,7 @@ export async function updateUserAvatar(
   prisma: PrismaClient
 ) {
   try {
-    const { userId } = req.params;
-    const userIdParsed = parseInt(userId, 10);
+    const userId = res.locals.validatedParam;
 
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -273,7 +265,7 @@ export async function updateUserAvatar(
       storageType === 'CLOUD' ? fileMetadata.cloudUrl : fileMetadata.savedPath;
 
     const updatedUser = await prisma.user.update({
-      where: { id: userIdParsed },
+      where: { id: userId },
       data: {
         avatarSource: fileSource,
       },
