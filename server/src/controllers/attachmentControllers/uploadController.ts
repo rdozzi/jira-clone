@@ -18,13 +18,12 @@ export async function handleSingleUpload(
         message: 'No file uploaded',
       });
     }
-    const { entityType, entityId } = req.body;
+    const { entityType, entityId } = res.locals.validatedBody;
     const uploadedBy = res.locals.userInfo.id;
-    const entityIdParsed = parseInt(entityId, 10);
 
     const entityRecord = await validateEntityAndId(
       entityType as AttachmentEntityType,
-      entityIdParsed,
+      entityId,
       prisma
     );
 
@@ -34,14 +33,14 @@ export async function handleSingleUpload(
       });
     }
 
-    const logEntityId = generateEntityIdForLog(entityType, entityIdParsed);
+    const logEntityId = generateEntityIdForLog(entityType, entityId);
 
     const metadata = await handleFileUpload(req.file as Express.Multer.File);
 
     const attachment = await prisma.attachment.create({
       data: {
         entityType,
-        entityId: entityIdParsed,
+        entityId: entityId,
         uploadedBy,
         fileName: metadata.filename,
         fileType: metadata.mimetype,
@@ -93,13 +92,12 @@ export async function handleMultipleUpload(
   }
 
   try {
-    const { entityType, entityId } = req.body;
+    const { entityType, entityId } = res.locals.validatedBody;
     const uploadedBy = res.locals.userInfo.id;
-    const entityIdParsed = parseInt(entityId, 10);
 
     const entityRecord = await validateEntityAndId(
       entityType as AttachmentEntityType,
-      entityIdParsed,
+      entityId,
       prisma
     );
 
@@ -109,7 +107,7 @@ export async function handleMultipleUpload(
       });
     }
 
-    const logEntityId = generateEntityIdForLog(entityType, entityIdParsed);
+    const logEntityId = generateEntityIdForLog(entityType, entityId);
 
     const createdAttachments = await Promise.all(
       files.map(async (file) => {
@@ -117,7 +115,7 @@ export async function handleMultipleUpload(
         const attachment = await prisma.attachment.create({
           data: {
             entityType,
-            entityId: entityIdParsed,
+            entityId: entityId,
             uploadedBy,
             fileName: metadata.filename,
             fileType: metadata.mimetype,

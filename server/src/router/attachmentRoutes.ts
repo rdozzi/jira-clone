@@ -22,6 +22,8 @@ import { checkBoardAndProjectAccess } from '../middleware/attachments/checkBoard
 import { loadEntityIdAndEntityTypeForUpload } from '../middleware/attachments/loadEntityIdAndEntityTypeForUpload';
 import { loadEntityIdAndEntityTypeForSingleDeletion } from '../middleware/attachments/loadEntityIdAndEntityTypeForSingleDeletion';
 import { validateAndSetAttachmentDeleteAndDownloadParams } from '../middleware/attachments/validateAndSetAttachmentDeleteAndDownloadParams';
+import { validateBody } from '../middleware/validation/validateBody';
+import { uploadAttachmentSchema } from '../schemas/attachment.schema';
 
 // Controller Functions
 import { getAllAttachments } from '../controllers/attachmentControllers/getAllAttachments';
@@ -73,6 +75,7 @@ router.post(
   loadEntityIdAndEntityTypeForUpload,
   checkTicketOrCommentOwnershipForAttachments,
   checkBoardAndProjectAccess,
+  validateBody(uploadAttachmentSchema),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await handleSingleUpload(req as CustomRequest, res, next, prisma);
   }
@@ -90,6 +93,7 @@ router.post(
   loadEntityIdAndEntityTypeForUpload,
   checkTicketOrCommentOwnershipForAttachments,
   checkBoardAndProjectAccess,
+  validateBody(uploadAttachmentSchema),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await handleMultipleUpload(req as CustomRequest, res, next, prisma);
   }
