@@ -9,6 +9,8 @@ import {
   deleteLabelFromTicket,
 } from '../controllers/ticketLabelController';
 import prisma from '../lib/prisma';
+import { validateParams } from '../middleware/validation/validateParams';
+import { validateMultipleParams } from '../middleware/validation/validateMultipleParams';
 
 const router = Router();
 
@@ -18,6 +20,7 @@ router.get(
   resolveProjectIdForTicketRoute(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
+  validateParams,
   getLabelByTicket(prisma)
 );
 
@@ -27,6 +30,7 @@ router.post(
   resolveProjectIdForTicketRoute(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
+  validateMultipleParams,
   addLabelToTicket(prisma)
 );
 
@@ -36,6 +40,7 @@ router.delete(
   resolveProjectIdForTicketRoute(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
+  validateMultipleParams,
   deleteLabelFromTicket(prisma)
 );
 
