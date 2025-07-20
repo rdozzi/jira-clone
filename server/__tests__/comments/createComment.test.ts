@@ -22,12 +22,12 @@ import { createTestAttachment } from '../../src/utilities/testUtilities/createAt
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 
-describe('Delete a comment', () => {
+describe('Create a comment', () => {
   let token: string;
   let user: User;
   let ticket: Ticket;
   let comment: Comment;
-  const testDescription = 'deleteAComment';
+  const testDescription = 'createAComment';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
@@ -65,7 +65,7 @@ describe('Delete a comment', () => {
     await prismaTest.$disconnect();
   });
 
-  it('should add a label to a ticket', async () => {
+  it('should add a comment to a ticket', async () => {
     const res = await request(app)
       .post(`/api/comments`)
       .set('Authorization', `Bearer ${token}`)
@@ -87,5 +87,15 @@ describe('Delete a comment', () => {
         message: expect.any(String),
       })
     );
+  });
+  it('should reject a comment with bad language', async () => {
+    const res = await request(app)
+      .post(`/api/comments`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        ticketId: ticket.id,
+        content: `This word is in the banned list: voyeur`,
+      });
+    expect(res.status).toBe(400);
   });
 });
