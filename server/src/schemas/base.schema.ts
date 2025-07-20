@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { GlobalRole } from '@prisma/client';
+import { GlobalRole, ProjectRole } from '@prisma/client';
 
 export const emailAuthSchema = z
   .email('Invalid credentials')
@@ -11,6 +11,12 @@ export const emailQuerySchema = z
   .trim()
   .pipe(z.email('Input must be a valid email').min(5).max(128));
 
+export const emailSchema = z
+  .email('A valid email is required')
+  .trim()
+  .min(5, 'Email must be 5 charcters long')
+  .max(255, 'Email must be less than 255 characters');
+
 export const globalRoleSchema = z
   .string('A string is required')
   .trim()
@@ -18,12 +24,6 @@ export const globalRoleSchema = z
   .refine((val) => Object.values(GlobalRole).includes(val as GlobalRole), {
     message: 'Invalid global role',
   });
-
-export const emailSchema = z
-  .email('A valid email is required')
-  .trim()
-  .min(5, 'Email must be 5 charcters long')
-  .max(255, 'Email must be less than 255 characters');
 
 export const labelColorSchema = z
   .string()
@@ -91,6 +91,14 @@ export const passwordSchema = z
     /[^A-Za-z0-9]/,
     'Password must contain at least one special character'
   );
+
+export const projectRoleSchema = z
+  .string('A string is required')
+  .trim()
+  .toUpperCase()
+  .refine((val) => Object.values(ProjectRole).includes(val as ProjectRole), {
+    message: 'Invalid project role',
+  });
 
 export const reasonSchema = z
   .string('A reason is required')
