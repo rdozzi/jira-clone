@@ -52,7 +52,7 @@ describe('createBannedEmail', () => {
     const res = await request(app)
       .post('/api/bannedEmails')
       .set('Authorization', `Bearer ${token}`)
-      .send({ email: bannedEmail.email, reason: 'Testing failure mode' });
+      .send({ email: `${bannedEmail.email}`, reason: 'Testing failure mode' });
     expect(res.status).toBe(409);
     expect(res.body.error).toEqual('Email already banned');
   });

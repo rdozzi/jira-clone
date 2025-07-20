@@ -12,7 +12,7 @@ export async function createBannedEmail(
     },
     update: {},
     create: {
-      email: `${testDescription}_${count}_email@example.com@example.com`,
+      email: `${testDescription}_${count}_email@example.com`,
       reason: reason,
     },
   });
