@@ -11,7 +11,7 @@ export function validateParams(
 
   const result = numberIdSchema.safeParse(req.params[entitykey]);
 
-  if (!result!.success) {
+  if (!result.success) {
     const error: ZodError = result!.error;
     const prettifiedError = z.prettifyError(error);
     res.status(400).json({
@@ -21,6 +21,6 @@ export function validateParams(
     return;
   }
 
-  res.locals.validatedParam = result!.data;
+  res.locals.validatedParam = result.data;
   next();
 }
