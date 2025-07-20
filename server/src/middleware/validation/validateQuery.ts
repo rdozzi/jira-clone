@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { numberIdSchema } from '../../schemas/numberId.schema';
-import { emailQuerySchema } from '../../schemas/emailQuery.schema';
+import { emailQuerySchema, numberIdSchema } from '../../schemas/base.schema';
 import { z, ZodError } from 'zod';
 
 export function validateQuery(req: Request, res: Response, next: NextFunction) {

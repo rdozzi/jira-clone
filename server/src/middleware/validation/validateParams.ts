@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { numberIdSchema } from '../../schemas/numberId.schema';
+import { numberIdSchema } from '../../schemas/base.schema';
 import { z, ZodError } from 'zod';
 
 export function validateParams(
