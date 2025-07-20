@@ -24,21 +24,11 @@ export async function getBannedEmailById(
   prisma: PrismaClient
 ) {
   try {
-    const { bannedEmailId } = req.params;
-
-    if (!bannedEmailId) {
-      return res.status(400).json({ error: 'Banned email ID is required' });
-    }
-
-    const bannedEmailIdParsed = parseInt(String(bannedEmailId), 10);
-
-    if (isNaN(bannedEmailIdParsed)) {
-      return res.status(400).json({ error: 'Invalid banned email ID' });
-    }
+    const bannedEmailId = res.locals.validatedParam;
 
     // Fetch banned email record by ID
     const bannedEmailRecord = await prisma.bannedEmail.findUnique({
-      where: { id: bannedEmailIdParsed },
+      where: { id: bannedEmailId },
     });
 
     if (!bannedEmailRecord) {
@@ -59,11 +49,7 @@ export async function createBannedEmail(
   prisma: PrismaClient
 ) {
   try {
-    const { email, reason } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
+    const { email, reason } = res.locals.validatedBody;
 
     // Check if the email already exists
     const existingBannedEmail = await prisma.bannedEmail.findUnique({

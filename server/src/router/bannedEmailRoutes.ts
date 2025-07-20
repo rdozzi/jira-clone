@@ -7,6 +7,9 @@ import {
 } from '../controllers/bannedEmailController';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { GlobalRole } from '@prisma/client';
+import { validateParams } from '../middleware/validation/validateParams';
+import { bannedEmailCreateSchema } from '../schemas/bannedEmail.schema';
+import { validateBody } from '../middleware/validation/validateBody';
 
 const router = Router();
 
@@ -23,6 +26,7 @@ router.get(
 router.get(
   '/bannedEmails/:bannedEmailId',
   authorizeGlobalRole(GlobalRole.ADMIN),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await getBannedEmailById(req, res, prisma);
   }
@@ -32,6 +36,7 @@ router.get(
 router.post(
   '/bannedEmails',
   authorizeGlobalRole(GlobalRole.ADMIN),
+  validateBody(bannedEmailCreateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await createBannedEmail(req, res, prisma);
   }
