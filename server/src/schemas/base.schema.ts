@@ -1,5 +1,17 @@
 import { z } from 'zod';
-import { GlobalRole, ProjectRole } from '@prisma/client';
+import { GlobalRole, ProjectRole, AttachmentEntityType } from '@prisma/client';
+
+export const attachmentEntityTypeSchema = z
+  .string('A string is required')
+  .trim()
+  .toUpperCase()
+  .refine(
+    (val) =>
+      Object.values(AttachmentEntityType).includes(val as AttachmentEntityType),
+    {
+      message: 'Invalid entity type',
+    }
+  );
 
 export const emailAuthSchema = z
   .email('Invalid credentials')
