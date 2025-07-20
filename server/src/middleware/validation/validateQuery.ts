@@ -27,7 +27,6 @@ export function validateQuery(req: Request, res: Response, next: NextFunction) {
     return;
   }
 
-  res.locals.validatedParam = { query: entitykey, data: result!.data };
-  console.log('validateQuery', res.locals.validatedParam);
+  res.locals.validatedQuery = { query: entitykey, data: result!.data };
   next();
 }
