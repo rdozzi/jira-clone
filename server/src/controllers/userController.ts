@@ -31,28 +31,18 @@ export async function getUser(
   prisma: PrismaClient
 ) {
   try {
-    const queryParams = req.query;
-    const { userId, userEmail } = queryParams;
-
-    if (!userId && !userEmail) {
-      return res.status(400).json({ error: 'User ID or email is required' });
-    }
-
+    const { query, data } = res.locals.validatedParam;
     let user;
 
-    if (userId) {
-      const userIdParsed = parseInt(String(userId), 10);
+    if (query !== 'userId' && query !== 'userEmail') {
+      return res.status(400).json({ error: 'Invalid query parameter' });
+    }
 
-      if (isNaN(userIdParsed)) {
-        res.status(400).json({ error: 'Invalid user ID' });
-        return;
-      }
-
-      // Fetch user by ID
-      user = await prisma.user.findUnique({ where: { id: userIdParsed } });
-    } else if (userEmail) {
+    if (query === 'userId') {
+      user = await prisma.user.findUnique({ where: { id: data } });
+    } else if (query === 'userEmail') {
       user = await prisma.user.findUnique({
-        where: { email: typeof userEmail === 'string' ? userEmail : undefined },
+        where: { email: typeof data === 'string' ? data : undefined },
       });
     }
 
