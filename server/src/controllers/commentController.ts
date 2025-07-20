@@ -27,11 +27,11 @@ export async function getCommentsByTicketId(
   res: Response,
   prisma: PrismaClient
 ) {
-  const { ticketId } = req.params;
-  const ticketIdParsed = parseInt(ticketId, 10);
+  const ticketId = res.locals.validatedParam;
+
   try {
     const ticketComments = await prisma.comment.findMany({
-      where: { ticketId: ticketIdParsed },
+      where: { ticketId: ticketId },
     });
     res.status(200).json({
       message: 'Comments were fetched successfully',
@@ -53,7 +53,7 @@ export async function createComment(
   try {
     const userId = res.locals.userInfo.id;
 
-    const commentData = req.body;
+    const commentData = res.locals.validatedBody;
     const comment = await prisma.comment.create({
       data: { ...commentData, authorId: userId },
     });
@@ -90,11 +90,10 @@ export async function deleteComment(
   try {
     const userId = res.locals.userInfo.id;
 
-    const { commentId } = req.params;
-    const commentIdParsed = parseInt(commentId, 10);
+    const commentId = res.locals.validatedParam;
 
     const oldComment = await prisma.comment.findUniqueOrThrow({
-      where: { id: commentIdParsed },
+      where: { id: commentId },
       select: {
         id: true,
         authorId: true,
@@ -108,11 +107,11 @@ export async function deleteComment(
         res,
         tx,
         AttachmentEntityType.COMMENT,
-        commentIdParsed,
+        commentId,
         userId
       );
       await tx.comment.delete({
-        where: { id: commentIdParsed },
+        where: { id: commentId },
       });
     });
 
@@ -122,7 +121,7 @@ export async function deleteComment(
       userId: userId,
       actorType: 'USER',
       action: 'DELETE_COMMENT',
-      targetId: commentIdParsed,
+      targetId: commentId,
       targetType: 'COMMENT',
       metadata: {
         id: oldComment?.id,
@@ -156,20 +155,12 @@ export async function updateComment(
   prisma: PrismaClient
 ) {
   try {
-    const { content } = req.body;
-    const { commentId } = req.params;
-    const commentIdParsed = parseInt(commentId, 10);
+    const { content } = res.locals.validatedBody;
+    const commentId = res.locals.validatedParam;
     const userId = res.locals.userInfo.id;
 
-    if (typeof content !== 'string' || content.trim() === '') {
-      res.status(400).json({
-        error: 'Content is required and must be a non-empty string.',
-      });
-      return;
-    }
-
     const oldComment = await prisma.comment.findUniqueOrThrow({
-      where: { id: commentIdParsed },
+      where: { id: commentId },
       select: {
         id: true,
         authorId: true,
@@ -184,7 +175,7 @@ export async function updateComment(
     }
 
     const updatedComment = await prisma.comment.update({
-      where: { id: commentIdParsed },
+      where: { id: commentId },
       data: {
         content,
       },
@@ -199,7 +190,7 @@ export async function updateComment(
       userId: userId,
       actorType: 'USER',
       action: 'UPDATE_COMMENT',
-      targetId: commentIdParsed,
+      targetId: commentId,
       targetType: 'COMMENT',
       metadata: {
         changes,
