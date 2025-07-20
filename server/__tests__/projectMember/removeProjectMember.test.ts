@@ -31,7 +31,7 @@ describe('Remove project member', () => {
       GlobalRole.USER
     );
     token = generateJwtToken(user1.id, user1.globalRole);
-    project = await createProject(prismaTest, testDescription);
+    project = await createProject(prismaTest, testDescription, user1.id);
     await createProjectMember(
       prismaTest,
       project.id,

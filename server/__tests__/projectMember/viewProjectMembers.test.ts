@@ -43,7 +43,7 @@ describe('View all users from a project', () => {
     );
     token = generateJwtToken(user2.id, user2.globalRole);
     tokenSuper = generateJwtToken(user4.id, user4.globalRole);
-    project = await createProject(prismaTest, testDescription);
+    project = await createProject(prismaTest, testDescription, user1.id);
     await createProjectMember(
       prismaTest,
       project.id,
