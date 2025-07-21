@@ -149,6 +149,18 @@ export const passwordSchema = z
     'Password must contain at least one special character'
   );
 
+export const projectDescriptionSchema = z
+  .string()
+  .trim()
+  .max(500, 'Project description cannot exceed 500 characters')
+  .optional();
+
+export const projectNameSchema = z
+  .string()
+  .trim()
+  .min(3, 'Project name must be at least 3 characters')
+  .max(100, 'Project name cannot exceed 100 characters');
+
 export const projectRoleSchema = z
   .string('A string is required')
   .trim()
