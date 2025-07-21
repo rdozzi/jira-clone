@@ -13,6 +13,10 @@ import {
   updateBoard,
   deleteBoard,
 } from '../controllers/boardController';
+import { validateParams } from '../middleware/validation/validateParams';
+import { validateQuery } from '../middleware/validation/validateQuery';
+import { validateBody } from '../middleware/validation/validateBody';
+import { boardCreateSchema, boardUpdateSchema } from '../schemas/board.schema';
 
 const router = Router();
 
@@ -20,6 +24,7 @@ const router = Router();
 router.get(
   '/boards',
   authorizeGlobalRole(GlobalRole.ADMIN),
+  validateQuery,
   async (req: Request, res: Response): Promise<void> => {
     await getAllBoards(req, res, prisma);
   }
@@ -40,6 +45,7 @@ router.get(
   resolveProjectIdFromBoard(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await getBoardsByProjectId(req, res, prisma);
   }
@@ -51,6 +57,7 @@ router.post(
   resolveProjectIdFromBoard(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
+  validateBody(boardCreateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await createBoard(req, res, prisma);
   }
@@ -62,6 +69,8 @@ router.patch(
   resolveProjectIdFromBoard(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
+  validateParams,
+  validateBody(boardUpdateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await updateBoard(req, res, prisma);
   }
@@ -73,6 +82,7 @@ router.delete(
   resolveProjectIdFromBoard(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await deleteBoard(req, res, prisma);
   }

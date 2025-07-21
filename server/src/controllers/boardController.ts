@@ -11,13 +11,21 @@ export async function getAllBoards(
   prisma: PrismaClient
 ) {
   try {
-    const { boardId } = req.query;
-    const parsedBoardId =
-      typeof boardId === 'string' ? parseInt(boardId, 10) : undefined;
+    const queryKeys = Object.keys(res.locals.validatedQuery || {});
 
-    console.log(parsedBoardId);
+    if (queryKeys.length === 0) {
+      // No query provided — fetch all tickets
+      const tickets = await prisma.board.findMany();
+      return res
+        .status(200)
+        .json({ message: 'Boards fetched successfully', data: tickets });
+    }
+
+    const query = queryKeys[0];
+    const data = res.locals.validatedQuery[query];
+
     const boards = await prisma.board.findMany({
-      where: { ...(parsedBoardId ? { id: parsedBoardId } : null) },
+      where: { ...(query ? { id: data } : null) },
     });
 
     if (boards.length === 0) {
@@ -25,7 +33,6 @@ export async function getAllBoards(
       return;
     }
 
-    console.log(boards.length);
     res.status(200).json({
       message:
         boards.length > 1
@@ -69,11 +76,11 @@ export async function getBoardsByProjectId(
   res: Response,
   prisma: PrismaClient
 ): Promise<void> {
-  const { projectId } = req.params;
-  const projectIdParsed = parseInt(projectId, 10);
+  const projectId = res.locals.validatedParam;
+
   try {
     const projectBoards = await prisma.board.findMany({
-      where: { projectId: projectIdParsed },
+      where: { projectId: projectId },
     });
 
     if (projectBoards.length === 0) {
@@ -105,7 +112,7 @@ export async function createBoard(
   try {
     const userInfo = res.locals.userInfo;
 
-    const boardData = req.body;
+    const boardData = res.locals.validatedBody;
     const board = await prisma.board.create({
       data: boardData,
     });
@@ -141,12 +148,11 @@ export async function updateBoard(
 ) {
   try {
     const userInfo = res.locals.userInfo;
-    const boardData = req.body;
-    const { boardId } = req.params;
-    const boardIdParsed = parseInt(boardId, 10);
+    const boardData = res.locals.validatedBody;
+    const boardId = res.locals.validatedParam;
 
     const oldBoard = await prisma.board.findUniqueOrThrow({
-      where: { id: boardIdParsed },
+      where: { id: boardId },
       select: {
         id: true,
         name: true,
@@ -155,7 +161,7 @@ export async function updateBoard(
     });
 
     const newBoard = await prisma.board.update({
-      where: { id: boardIdParsed },
+      where: { id: boardId },
       data: {
         ...boardData,
       },
@@ -168,7 +174,7 @@ export async function updateBoard(
       userId: userInfo.id,
       actorType: 'USER',
       action: 'UPDATE_BOARD',
-      targetId: boardIdParsed,
+      targetId: boardId,
       targetType: 'BOARD',
       metadata: {
         name: boardData.name,
@@ -194,11 +200,10 @@ export async function deleteBoard(
 ) {
   try {
     const userId = res.locals.userInfo.id;
-    const { boardId } = req.params;
-    const boardIdParsed = parseInt(boardId, 10);
+    const boardId = res.locals.validatedParam;
 
     const oldBoard = await prisma.board.findUniqueOrThrow({
-      where: { id: boardIdParsed },
+      where: { id: boardId },
       select: {
         id: true,
         name: true,
@@ -212,9 +217,9 @@ export async function deleteBoard(
     }
 
     prisma.$transaction(async (tx) => {
-      await deleteBoardDependencies(res, tx, 'BOARD', boardIdParsed, userId);
+      await deleteBoardDependencies(res, tx, 'BOARD', boardId, userId);
       await tx.board.delete({
-        where: { id: boardIdParsed },
+        where: { id: boardId },
       });
     });
 
@@ -222,7 +227,7 @@ export async function deleteBoard(
       userId: userId,
       actorType: 'USER',
       action: 'DELETE_BOARD',
-      targetId: boardIdParsed,
+      targetId: boardId,
       targetType: 'BOARD',
       metadata: {
         name: oldBoard?.name,
