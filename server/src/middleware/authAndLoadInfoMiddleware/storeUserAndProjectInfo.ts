@@ -11,6 +11,11 @@ function storeUserAndProjectInfoFn(
   const userGlobalRole = req.user?.globalRole;
   const userProjects = req.userProjects;
 
+  if (!userId || !userGlobalRole) {
+    res.status(401).json({ message: 'Unauthorized: Invalid user credentials' });
+    return;
+  }
+
   res.locals.userInfo = {
     id: userId,
     globalRole: userGlobalRole,
