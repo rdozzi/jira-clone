@@ -14,172 +14,219 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           Int        @id @default(autoincrement())
-  firstName    String?    @db.VarChar(255)
-  lastName     String?    @db.VarChar(255)
-  email        String     @unique @db.VarChar(255)
-  passwordHash String //Hashed by bcrypt in node
-  globalRole   GlobalRole @default(USER)
-  avatarSource String?    @default("NA") @db.VarChar(255)
-  isBanned     Boolean    @default(false)
-  createdAt    DateTime   @default(now()) @db.Timestamptz()
-  updatedAt    DateTime   @updatedAt @db.Timestamptz()
-  deletedAt    DateTime?  @db.Timestamptz()
-  isDeleted    Boolean?   @default(false)
+model Organization {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  createAt  DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @default(now()) @db.Timestamptz()
 
-  //Ownership (One-to-Many)
-  ownedProjects Project[] @relation("ProjectOwner")
-
-  //Membership (Many-to-many through ProjectMember)
-  projectMemberships ProjectMember[]
-
-  //Other Relationships
-  comments       Comment[]
-  attachments    Attachment[]
-  assigneeTicket Ticket[]     @relation("assignee")
-  reporterTicket Ticket[]     @relation("reporter")
-}
-
-model BannedEmail {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique @db.VarChar(255)
-  reason    String    @db.VarChar(255)
-  createdAt DateTime? @default(now()) @db.Timestamptz() // null if active
+  //Relationships
+  user          User[]
+  bannedEmail   BannedEmail[]
+  project       Project[]
+  board         Board[]
+  ticket        Ticket[]
+  comment       Comment[]
+  attachment    Attachment[]
+  label         Label[]
+  TicketLabel   TicketLabel[]
+  ActivityLog   ActivityLog[]
+  ProjectMember ProjectMember[]
 }
 
 model Project {
-  id          Int           @id @default(autoincrement())
-  name        String        @db.VarChar(255)
-  description String?       @default("NA") @db.VarChar(255)
-  status      ProjectStatus @default(ACTIVE)
-  isPublic    Boolean       @default(true)
-  createdAt   DateTime      @default(now()) @db.Timestamptz()
-  updatedAt   DateTime      @updatedAt @db.Timestamptz()
+  id             Int           @id @default(autoincrement())
+  name           String        @db.VarChar(255)
+  description    String?       @default("NA") @db.VarChar(255)
+  status         ProjectStatus @default(ACTIVE)
+  isPublic       Boolean       @default(true)
+  ownerId        Int?
+  organizationId Int
+  createdAt      DateTime      @default(now()) @db.Timestamptz()
+  updatedAt      DateTime      @updatedAt @db.Timestamptz()
 
   //Owner
-  ownerId Int?
-  owner   User? @relation("ProjectOwner", fields: [ownerId], references: [id])
+  owner User? @relation("ProjectOwner", fields: [ownerId], references: [id])
 
   //Membership
   members ProjectMember[]
+  Board   Board[]
 
   //Relationships
-  Board Board[]
+  Organization Organization @relation(fields: [organizationId], references: [id])
 }
 
 model Board {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(255)
-  projectId   Int
-  description String?  @db.VarChar(255)
-  createdAt   DateTime @default(now()) @db.Timestamptz()
-  updatedAt   DateTime @updatedAt @db.Timestamptz()
+  id             Int      @id @default(autoincrement())
+  name           String   @db.VarChar(255)
+  projectId      Int
+  description    String?  @db.VarChar(255)
+  organizationId Int
+  createdAt      DateTime @default(now()) @db.Timestamptz()
+  updatedAt      DateTime @updatedAt @db.Timestamptz()
 
   //Relationship
-  project Project  @relation(fields: [projectId], references: [id])
-  tickets Ticket[]
+  project      Project      @relation(fields: [projectId], references: [id])
+  tickets      Ticket[]
+  Organization Organization @relation(fields: [organizationId], references: [id])
 }
 
 model Ticket {
-  id          Int       @id @default(autoincrement())
-  title       String    @db.VarChar(255)
-  description String    @db.VarChar(255)
-  status      Status    @default(IN_PROGRESS)
-  priority    Priority
-  type        Type
-  assigneeId  Int?
-  reporterId  Int?
-  boardId     Int
-  dueDate     DateTime? @db.Timestamptz
-  createdAt   DateTime  @default(now()) @db.Timestamptz()
-  updatedAt   DateTime  @updatedAt @db.Timestamptz()
+  id             Int       @id @default(autoincrement())
+  title          String    @db.VarChar(255)
+  description    String    @db.VarChar(255)
+  status         Status    @default(IN_PROGRESS)
+  priority       Priority
+  type           Type
+  assigneeId     Int?
+  reporterId     Int?
+  boardId        Int
+  dueDate        DateTime? @db.Timestamptz
+  organizationId Int
+  createdAt      DateTime  @default(now()) @db.Timestamptz()
+  updatedAt      DateTime  @updatedAt @db.Timestamptz()
 
   //Relationship
-  board        Board         @relation(fields: [boardId], references: [id])
-  assignee     User?         @relation(name: "assignee", fields: [assigneeId], references: [id])
-  reporter     User?         @relation(name: "reporter", fields: [reporterId], references: [id])
+  board        Board        @relation(fields: [boardId], references: [id])
+  assignee     User?        @relation(name: "assignee", fields: [assigneeId], references: [id])
+  reporter     User?        @relation(name: "reporter", fields: [reporterId], references: [id])
+  Organization Organization @relation(fields: [organizationId], references: [id])
+
   comments     Comment[]
   ticketLabels TicketLabel[]
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  ticketId  Int
-  authorId  Int?
-  content   String   @db.VarChar(1000)
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt @db.Timestamptz()
+  id             Int      @id @default(autoincrement())
+  ticketId       Int
+  authorId       Int?
+  content        String   @db.VarChar(1000)
+  organizationId Int
+  createdAt      DateTime @default(now()) @db.Timestamptz()
+  updatedAt      DateTime @updatedAt @db.Timestamptz()
 
   //Relationship
-  ticket Ticket @relation(fields: [ticketId], references: [id])
-  author User?  @relation(fields: [authorId], references: [id])
+  ticket       Ticket       @relation(fields: [ticketId], references: [id])
+  author       User?        @relation(fields: [authorId], references: [id])
+  Organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model User {
+  id             Int        @id @default(autoincrement())
+  firstName      String?    @db.VarChar(255)
+  lastName       String?    @db.VarChar(255)
+  email          String     @unique @db.VarChar(255)
+  passwordHash   String //Hashed by bcrypt in node
+  globalRole     GlobalRole @default(USER)
+  avatarSource   String?    @default("NA") @db.VarChar(255)
+  isBanned       Boolean    @default(false)
+  organizationId Int
+  createdAt      DateTime   @default(now()) @db.Timestamptz()
+  updatedAt      DateTime   @updatedAt @db.Timestamptz()
+  deletedAt      DateTime?  @db.Timestamptz()
+  isDeleted      Boolean?   @default(false)
+
+  //Ownership (One-to-many)
+  ownedProjects Project[]    @relation("ProjectOwner")
+  comments      Comment[]
+  attachments   Attachment[]
+
+  //Membership (Many-to-many through ProjectMember)
+  projectMemberships ProjectMember[]
+
+  //Other Relationships
+  assigneeTicket Ticket[]     @relation("assignee")
+  reporterTicket Ticket[]     @relation("reporter")
+  Organization   Organization @relation(fields: [organizationId], references: [id])
 }
 
 model Attachment {
-  id          Int                  @id @default(autoincrement())
-  entityType  AttachmentEntityType
-  entityId    Int
-  fileName    String               @db.VarChar(255)
-  fileSize    Int
-  fileType    String               @db.VarChar(255)
-  fileUrl     String?              @db.VarChar(255)
-  filePath    String?
-  uploadedBy  Int?
-  createdAt   DateTime             @default(now()) @db.Timestamptz()
-  deletedAt   DateTime?            @db.Timestamptz()
-  storageType StorageType          @default(LOCAL)
+  id             Int                  @id @default(autoincrement())
+  entityType     AttachmentEntityType
+  entityId       Int
+  fileName       String               @db.VarChar(255)
+  fileSize       Int
+  fileType       String               @db.VarChar(255)
+  fileUrl        String?              @db.VarChar(255)
+  filePath       String?
+  uploadedBy     Int?
+  organizationId Int
+  createdAt      DateTime             @default(now()) @db.Timestamptz()
+  deletedAt      DateTime?            @db.Timestamptz()
+  storageType    StorageType          @default(LOCAL)
 
   //Relationships
-  uploaded User? @relation(fields: [uploadedBy], references: [id])
+  uploaded     User?        @relation(fields: [uploadedBy], references: [id])
+  Organization Organization @relation(fields: [organizationId], references: [id])
 
   //Relationship
   @@index([entityType, entityId])
 }
 
 model Label {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(255)
-  color     String   @db.VarChar(255)
-  createdAt DateTime @default(now()) @db.Timestamptz()
+  id             Int      @id @default(autoincrement())
+  name           String   @db.VarChar(255)
+  color          String   @db.VarChar(255)
+  organizationId Int
+  createdAt      DateTime @default(now()) @db.Timestamptz()
 
   //Relationship
-  TicketLabel TicketLabel[]
-}
-
-model TicketLabel {
-  ticketId Int
-  labelId  Int
-
-  //Relationship
-  ticketLabel Ticket @relation(fields: [ticketId], references: [id])
-  label       Label  @relation(fields: [labelId], references: [id])
-
-  @@id([ticketId, labelId])
+  TicketLabel  TicketLabel[]
+  Organization Organization  @relation(fields: [organizationId], references: [id])
 }
 
 model ActivityLog {
-  id         Int               @id @default(autoincrement())
-  userId     Int?
-  actorType  ActorTypeActivity @default(USER)
-  action     String            @db.VarChar(255)
-  targetId   Int?
-  targetType String            @db.VarChar(255)
-  metadata   Json?
-  createdAt  DateTime          @default(now()) @db.Timestamptz()
+  id             Int               @id @default(autoincrement())
+  userId         Int?
+  actorType      ActorTypeActivity @default(USER)
+  action         String            @db.VarChar(255)
+  targetId       Int?
+  targetType     String            @db.VarChar(255)
+  metadata       Json?
+  createdAt      DateTime          @default(now()) @db.Timestamptz()
+  organizationId Int
+
+  Organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model BannedEmail {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique @db.VarChar(255)
+  reason         String    @db.VarChar(255)
+  organizationId Int
+  createdAt      DateTime? @default(now()) @db.Timestamptz()
+
+  //Relationships
+  Organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model TicketLabel {
+  ticketId       Int
+  labelId        Int
+  organizationId Int
+
+  //Relationship
+  ticketLabel  Ticket       @relation(fields: [ticketId], references: [id])
+  label        Label        @relation(fields: [labelId], references: [id])
+  Organization Organization @relation(fields: [organizationId], references: [id])
+
+  // Composite Key
+  @@id([ticketId, labelId])
 }
 
 model ProjectMember {
-  id          Int         @id @default(autoincrement())
-  userId      Int
-  projectId   Int
-  projectRole ProjectRole @default(USER)
-  createdAt   DateTime    @default(now()) @db.Timestamptz()
-  updatedAt   DateTime    @updatedAt @db.Timestamptz()
+  id             Int         @id @default(autoincrement())
+  userId         Int
+  projectId      Int
+  projectRole    ProjectRole @default(USER)
+  organizationId Int
+  createdAt      DateTime    @default(now()) @db.Timestamptz()
+  updatedAt      DateTime    @updatedAt @db.Timestamptz()
 
   //Relationships
-  user    User    @relation(fields: [userId], references: [id])
-  project Project @relation(fields: [projectId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+  project      Project      @relation(fields: [projectId], references: [id])
+  Organization Organization @relation(fields: [organizationId], references: [id])
 
   @@unique([userId, projectId])
 }
