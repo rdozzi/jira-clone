@@ -10,7 +10,7 @@ export async function getAllTickets(
   prisma: PrismaClient
 ) {
   try {
-    const queryKeys = Object.keys(res.locals.validateQuery || {});
+    const queryKeys = Object.keys(res.locals.validatedQuery || {});
 
     if (queryKeys.length === 0) {
       // No query provided — fetch all tickets
