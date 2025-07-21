@@ -46,7 +46,6 @@ describe('Get boards', () => {
     const res = await request(app)
       .get(`/api/boards`)
       .set('Authorization', `Bearer ${token}`);
-    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Boards fetched successfully');
     expect(res.body.data).toHaveLength(3);
@@ -56,7 +55,6 @@ describe('Get boards', () => {
       .get(`/api/boards`)
       .query({ boardId: board1.id })
       .set('Authorization', `Bearer ${token}`);
-    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Board fetched successfully');
     expect(res.body.data).toBeInstanceOf(Object);
