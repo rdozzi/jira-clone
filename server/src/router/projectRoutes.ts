@@ -16,6 +16,12 @@ import {
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
+import { validateBody } from '../middleware/validation/validateBody';
+import { validateParams } from '../middleware/validation/validateParams';
+import {
+  projectCreateSchema,
+  projectUpdateSchema,
+} from '../schemas/project.schema';
 
 const router = Router();
 
@@ -51,6 +57,7 @@ router.get(
 router.post(
   '/projects',
   authorizeGlobalRole(GlobalRole.ADMIN),
+  validateBody(projectCreateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await createProject(req, res, prisma);
   }
@@ -62,6 +69,8 @@ router.patch(
   resolveProjectIdFromProject(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }),
+  validateBody(projectUpdateSchema),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await updateProject(req, res, prisma);
   }
@@ -73,6 +82,7 @@ router.delete(
   resolveProjectIdFromProject(),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await deleteProject(req, res, prisma);
   }

@@ -79,7 +79,7 @@ export async function createProject(
   try {
     const user = res.locals.userInfo;
 
-    const projectData = req.body;
+    const projectData = res.locals.validatedBody;
     const data = {
       name: projectData.name,
       description: projectData.description,
@@ -131,22 +131,15 @@ export async function updateProject(
   try {
     const user = res.locals.userInfo;
 
-    const { projectId } = req.params;
-    const projectIdParsed = parseInt(projectId, 10);
-
-    if (isNaN(projectIdParsed)) {
-      res.status(400).json({ message: 'Invalid project ID' });
-      return;
-    }
-
-    const projectData = req.body;
+    const projectId = res.locals.validatedParam;
+    const projectData = res.locals.validatedBody;
 
     const oldProject = await prisma.project.findUnique({
-      where: { id: projectIdParsed },
+      where: { id: projectId },
     });
 
     const newProject = await prisma.project.update({
-      where: { id: projectIdParsed },
+      where: { id: projectId },
       data: { ...projectData },
     });
 
@@ -157,7 +150,7 @@ export async function updateProject(
       userId: user.id,
       actorType: 'USER',
       action: 'UPDATE_PROJECT',
-      targetId: projectIdParsed,
+      targetId: projectId,
       targetType: 'PROJECT',
       metadata: {
         change,
@@ -184,15 +177,10 @@ export async function deleteProject(
   try {
     const userId = res.locals.userInfo.id;
 
-    const { projectId } = req.params;
-    const projectIdParsed = parseInt(projectId, 10);
-
-    if (isNaN(projectIdParsed)) {
-      return res.status(400).json({ message: 'Invalid project ID' });
-    }
+    const projectId = res.locals.validatedParam;
 
     const oldProject = await prisma.project.findUnique({
-      where: { id: projectIdParsed },
+      where: { id: projectId },
     });
 
     if (!oldProject) {
@@ -205,11 +193,11 @@ export async function deleteProject(
         res,
         tx,
         AttachmentEntityType.PROJECT,
-        projectIdParsed,
+        projectId,
         userId
       );
       await tx.project.delete({
-        where: { id: projectIdParsed },
+        where: { id: projectId },
       });
     });
 
@@ -217,7 +205,7 @@ export async function deleteProject(
       userId: userId,
       actorType: 'USER',
       action: 'DELETE_PROJECT',
-      targetId: projectIdParsed,
+      targetId: projectId,
       targetType: 'PROJECT',
       metadata: {
         name: oldProject.name,
