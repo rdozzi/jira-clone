@@ -24,6 +24,18 @@ export const attachmentEntityTypeSchema = z
     }
   );
 
+export const boardDescriptionSchema = z
+  .string()
+  .trim()
+  .max(500, 'Board description cannot exceed 500 characters')
+  .optional();
+
+export const boardNameSchema = z
+  .string('A string is required')
+  .trim()
+  .min(3, 'Board name must be at least 3 characters')
+  .max(100, 'Board name cannot exceed 100 characters');
+
 export const commentContentSchema = z
   .string('Comment content is rquired')
   .trim()
