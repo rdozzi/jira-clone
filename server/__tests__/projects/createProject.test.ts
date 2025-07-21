@@ -34,7 +34,6 @@ describe('Create a project', () => {
       .send({
         name: `Name_${testDescription}`,
         description: `Description_${testDescription}`,
-        ownerId: user.id,
       });
     expect(res.status).toBe(201);
     expect(res.body).toEqual(
@@ -60,11 +59,7 @@ describe('Create a project', () => {
       .send({
         name: `Name_${testDescription}`,
         description: `Description_${testDescription}`,
-        ownerId: user.id,
       });
-
-    console.log(res.body);
-
     const projectMember = await prismaTest.projectMember.findUnique({
       where: {
         userId_projectId: {
