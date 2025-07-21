@@ -31,7 +31,9 @@ export async function getUser(
   prisma: PrismaClient
 ) {
   try {
-    const { query, data } = res.locals.validatedQuery;
+    const query = Object.keys(res.locals.validatedQuery)[0];
+    const data = res.locals.validatedQuery[query];
+
     let user;
 
     if (query !== 'userId' && query !== 'userEmail') {
