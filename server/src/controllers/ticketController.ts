@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient, GlobalRole } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { deleteTicketDependencies } from '../services/deletionServices/deleteTicketDependencies';
@@ -10,17 +10,26 @@ export async function getAllTickets(
   prisma: PrismaClient
 ) {
   try {
-    const { assigneeId, reporterId } = req.query;
+    const queryKeys = Object.keys(res.locals.validateQuery || {});
 
-    const assigneeIdParsed =
-      typeof assigneeId === 'string' ? parseInt(assigneeId, 10) : undefined;
-    const reporterIdParsed =
-      typeof reporterId === 'string' ? parseInt(reporterId, 10) : undefined;
+    if (queryKeys.length === 0) {
+      // No query provided — fetch all tickets
+      const tickets = await prisma.ticket.findMany();
+      return res
+        .status(200)
+        .json({ message: 'Tickets fetched successfully', data: tickets });
+    }
+
+    const query = queryKeys[0];
+    const data = res.locals.validatedQuery[query];
+
+    const assigneeId = query === 'assigneeId' ? data : undefined;
+    const reporterId = query === 'reporterId' ? data : undefined;
 
     const tickets = await prisma.ticket.findMany({
       where: {
-        ...(assigneeIdParsed ? { assigneeId: assigneeIdParsed } : {}),
-        ...(reporterIdParsed ? { reporterId: reporterIdParsed } : {}),
+        ...(assigneeId !== undefined ? { assigneeId } : {}),
+        ...(reporterId !== undefined ? { reporterId } : {}),
       },
     });
     res
@@ -39,11 +48,11 @@ export async function getTicketById(
   res: Response,
   prisma: PrismaClient
 ) {
-  const { ticketId } = req.params;
-  const ticketIdParsed = parseInt(ticketId, 10);
+  const ticketId = res.locals.validatedParam;
+
   try {
     const ticket = await prisma.ticket.findUnique({
-      where: { id: ticketIdParsed },
+      where: { id: ticketId },
     });
     if (!ticket) {
       res.status(404).json({ message: 'Ticket not found' });
@@ -88,12 +97,11 @@ export async function getTicketsByBoardId(
   res: Response,
   prisma: PrismaClient
 ) {
-  const { boardId } = req.params;
-  const boardIdParsed = parseInt(boardId, 10);
+  const boardId = res.locals.validatedParam;
 
   try {
     const tickets = await prisma.ticket.findMany({
-      where: { boardId: boardIdParsed },
+      where: { boardId: boardId },
     });
     res
       .status(200)
@@ -112,20 +120,15 @@ export async function createNewTicket(
   prisma: PrismaClient
 ) {
   try {
-    const userInfo: { id: number; globalRole: GlobalRole } =
-      res.locals.userInfo;
+    const userId = res.locals.userInfo.id;
 
-    if (!userInfo || Object.keys(userInfo).length === 0) {
-      return res.status(401).json({ message: 'Unauthorized: User Not found' });
-    }
-
-    const ticketData = req.body;
+    const ticketData = res.locals.validatedBody;
     const ticket = await prisma.ticket.create({
       data: ticketData,
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
+      userId: userId,
       actorType: 'USER',
       action: 'CREATE_TICKET',
       targetId: ticket.id,
@@ -154,32 +157,24 @@ export async function deleteTicket(
   prisma: PrismaClient
 ) {
   try {
-    const userInfo: { id: number; globalRole: GlobalRole } =
-      res.locals.userInfo;
+    const userId = res.locals.userInfo.id;
 
-    if (!userInfo || Object.keys(userInfo).length === 0) {
-      return res.status(401).json({ message: 'Unauthorized: User Not found' });
-    }
-
-    const userId = userInfo.id;
-
-    const { ticketId } = req.params;
-    const ticketIdParsed = parseInt(ticketId, 10);
+    const ticketId = res.locals.validatedParam;
 
     const oldTicket = await prisma.ticket.findUniqueOrThrow({
-      where: { id: ticketIdParsed },
+      where: { id: ticketId },
       select: { id: true, title: true, description: true, boardId: true },
     });
 
     prisma.$transaction(async (tx) => {
-      await deleteTicketDependencies(res, tx, 'TICKET', ticketIdParsed, userId);
+      await deleteTicketDependencies(res, tx, 'TICKET', ticketId, userId);
       await tx.ticket.delete({
-        where: { id: ticketIdParsed },
+        where: { id: ticketId },
       });
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
+      userId: userId,
       actorType: 'USER',
       action: 'DELETE_TICKET',
       targetId: oldTicket.id,
@@ -207,26 +202,20 @@ export async function updateTicket(
   prisma: PrismaClient
 ) {
   try {
-    const userInfo: { id: number; globalRole: GlobalRole } =
-      res.locals.userInfo;
+    const userId = res.locals.userInfo.id;
 
-    if (!userInfo || Object.keys(userInfo).length === 0) {
-      return res.status(401).json({ message: 'Unauthorized: User Not found' });
-    }
-
-    const ticketData = req.body;
-    const { ticketId } = req.params;
-    const ticketIdParsed = parseInt(ticketId, 10);
+    const ticketData = res.locals.validatedBody;
+    const ticketId = res.locals.validatedParam;
 
     const oldTicket = await prisma.ticket.findUnique({
-      where: { id: ticketIdParsed },
+      where: { id: ticketId },
     });
     if (!oldTicket) {
       return res.status(404).json({ error: 'Ticket not found' });
     }
 
     const newTicket = await prisma.ticket.update({
-      where: { id: ticketIdParsed },
+      where: { id: ticketId },
       data: {
         ...ticketData,
       },
@@ -235,7 +224,7 @@ export async function updateTicket(
     const changes = generateDiff(oldTicket, newTicket);
 
     res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
+      userId: userId,
       actorType: 'USER',
       action: 'UPDATE_TICKET',
       targetId: newTicket.id,

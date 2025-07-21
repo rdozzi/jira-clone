@@ -15,6 +15,13 @@ import {
 } from '../controllers/ticketController';
 import { checkTicketOwnership } from '../middleware/ticketMiddleware/checkTicketOwnership';
 import { resolveProjectIdForTicketRoute } from '../middleware/ticketMiddleware/resolveProjectIdForTicketRoute';
+import { validateParams } from '../middleware/validation/validateParams';
+import { validateBody } from '../middleware/validation/validateBody';
+import {
+  ticketCreateSchema,
+  ticketUpdateSchema,
+} from '../schemas/ticket.schema';
+import { validateQuery } from '../middleware/validation/validateQuery';
 
 const router = Router();
 
@@ -22,6 +29,7 @@ const router = Router();
 router.get(
   '/tickets',
   authorizeGlobalRole(GlobalRole.ADMIN),
+  validateQuery,
   async (req: Request, res: Response): Promise<void> => {
     await getAllTickets(req, res, prisma);
   }
@@ -33,6 +41,7 @@ router.get(
   resolveProjectIdForTicketRoute(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await getTicketById(req, res, prisma);
   }
@@ -56,6 +65,7 @@ router.get(
   resolveProjectIdForTicketRoute(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.VIEWER),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await getTicketsByBoardId(req, res, prisma);
   }
@@ -67,6 +77,7 @@ router.post(
   resolveProjectIdForTicketRoute(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
+  validateBody(ticketCreateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await createNewTicket(req, res, prisma);
   }
@@ -79,6 +90,7 @@ router.delete(
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   checkTicketOwnership(prisma),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await deleteTicket(req, res, prisma);
   }
@@ -91,6 +103,8 @@ router.patch(
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   checkTicketOwnership(prisma),
+  validateParams,
+  validateBody(ticketUpdateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await updateTicket(req, res, prisma);
   }
