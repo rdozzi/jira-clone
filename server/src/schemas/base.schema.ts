@@ -12,6 +12,9 @@ import LeoProfanity from 'leo-profanity';
 const filter = LeoProfanity;
 const badWordsList = filter.list();
 
+// Regular expression for acceptable characters: letters, numbers, spaces, hyphens, underscores
+const organizationNameRegex = /^[\p{L}\p{N}\s\-_]+$/u;
+
 export const attachmentEntityTypeSchema = z
   .string('A string is required')
   .trim()
@@ -40,7 +43,7 @@ export const commentContentSchema = z
   .string('Comment content is rquired')
   .trim()
   .min(1, 'Comment cannot be empty')
-  .max(500, 'Comment cannot exceed 500 characters including spaces')
+  .max(1000, 'Comment cannot exceed 500 characters including spaces')
   .transform((val) => val.replace(/\s+/g, ' ').trim())
   .refine(
     (val) => {
@@ -55,18 +58,18 @@ export const commentContentSchema = z
 export const emailAuthSchema = z
   .email('Invalid credentials')
   .min(5, 'Invalid Credentials')
-  .max(255, 'Invalid Credentials');
+  .max(254, 'Invalid Credentials');
 
 export const emailQuerySchema = z
   .string()
   .trim()
-  .pipe(z.email('Input must be a valid email').min(5).max(128));
+  .pipe(z.email('Input must be a valid email').min(5).max(254));
 
 export const emailSchema = z
   .email('A valid email is required')
   .trim()
   .min(5, 'Email must be 5 charcters long')
-  .max(255, 'Email must be less than 255 characters');
+  .max(254, 'Email must be less than 255 characters');
 
 export const globalRoleSchema = z
   .string('A string is required')
@@ -84,6 +87,8 @@ export const isoDateStringSchema = z
 
 export const labelColorSchema = z
   .string()
+  .min(4)
+  .max(9)
   .regex(
     /^#[0-9A-F]{6}$/,
     'Color must be a valid 6-digit hex code (e.g., #AABBCC).'
@@ -108,8 +113,8 @@ export const labelNameSchema = z
 export const nameSchema = z
   .string('A string is required')
   .trim()
-  .min(3)
-  .max(128)
+  .min(2, 'Name should be at least 2 characters')
+  .max(150, 'Name cannot exceed 150 characters')
   .refine((name) => /^[A-Za-z0-9 _'-]+$/.test(name), {
     message: 'Name contains invalid characters',
   })
@@ -130,6 +135,25 @@ export const numberIdSchema = z.coerce
   })
   .int('Number must be an integer')
   .positive('Number must be positive');
+
+export const organizationNameSchema = z
+  .string('Organization name is required')
+  .min(3, 'Organization name must be at least 3 characters')
+  .max(150, 'Organization name cannot exceed 150 characters.')
+  .refine((val) => organizationNameRegex.test(val), {
+    message:
+      'Organization name contains invalid characters. Only letters, numbers, spaces, hyphens, and underscores are allowed.',
+  })
+  .refine(
+    (val) => {
+      const tokens = val.toLowerCase().split(/\s+/);
+      return !tokens.some((token) =>
+        badWordsList.some((word) => token === word.toLowerCase())
+      );
+    },
+    { error: 'Comment contains prohibited language.' }
+  )
+  .transform((val) => val.replace(/\s+/g, ' ').trim());
 
 export const passwordAuthSchema = z
   .string('Invalid credentials')
@@ -229,5 +253,5 @@ export const reasonSchema = z
   .string('A reason is required')
   .trim()
   .min(1, 'Reason should be at least 10 characters')
-  .max(255, 'Reason cannot exceed 255 characters')
+  .max(2000, 'Reason cannot exceed 2000 characters')
   .transform((reason) => reason.charAt(0).toUpperCase() + reason.slice(1));
