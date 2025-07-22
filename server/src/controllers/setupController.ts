@@ -1,52 +1,76 @@
 import { Request, Response } from 'express';
-import { PrismaClient, GlobalRole } from '@prisma/client';
+import { PrismaClient, OrganizationRole } from '@prisma/client';
 import { hashPassword } from '../utilities/password';
 import { buildLogEvent } from '../services/buildLogEvent';
 
 // Add middleware protection layers later (Sanitization, rate limiter, input validation, IP Check)
 
-export async function seedSuperAdmin(
+export async function seedOrganizationAndSuperAdmin(
   req: Request,
   res: Response,
   prisma: PrismaClient
 ) {
   try {
-    // Check if a SuperAdmin exists
-    const superAdmin = await prisma.user.findFirst({
-      where: { globalRole: GlobalRole.SUPERADMIN },
+    const { email, firstName, lastName, password, organizationName } =
+      res.locals.validatedBody;
+
+    // Check if organization exists
+    const organization = await prisma.organization.findUnique({
+      where: { name: organizationName },
     });
 
-    if (superAdmin) {
-      res.status(409).json({ message: 'SuperAdmin already exists' });
-      return;
+    if (organization) {
+      // Check if a SuperAdmin within the organization exists
+      const superAdmin = await prisma.user.findFirst({
+        where: { organizationRole: OrganizationRole.SUPERADMIN },
+      });
+
+      if (superAdmin) {
+        res
+          .status(409)
+          .json({ message: 'SuperAdmin already exists. Contact for access.' });
+        return;
+      }
     }
 
-    const { email, firstName, lastName, password } = req.body;
     const hashedPassword = await hashPassword(password);
 
-    const user = await prisma.user.create({
-      data: {
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        passwordHash: hashedPassword,
-        globalRole: GlobalRole.SUPERADMIN,
-      },
+    const [newOrganization, newUser] = await prisma.$transaction(async (tx) => {
+      const newOrganization = await tx.organization.create({
+        data: { name: organizationName },
+      });
+
+      const newUser = await tx.user.create({
+        data: {
+          email: email,
+          firstName: firstName,
+          lastName: lastName,
+          passwordHash: hashedPassword,
+          organizationRole: OrganizationRole.SUPERADMIN,
+          organizationId: newOrganization.id,
+        },
+      });
+
+      return [newOrganization, newUser];
     });
 
     res.locals.logEvent = buildLogEvent({
-      userId: user.id,
+      userId: newUser.id,
       actorType: 'USER',
-      action: 'CREATE_USER/SUPERADMIN_SEED',
-      targetId: user.id,
+      action: 'SEED_USER_AND_ORGANIZATION',
+      targetId: newUser.id,
       targetType: 'USER',
       metadata: {
-        role: `${user.globalRole}`,
-        name: `${user.firstName}_${user.lastName}`,
-        email: `${user.email}`,
+        role: `${newUser.globalRole}`,
+        name: `${newUser.firstName}_${newUser.lastName}`,
+        email: `${newUser.email}`,
+        organization: newOrganization.name,
       },
     });
-    res.status(201).json({ message: 'User successfully created.', data: user });
+    res.status(201).json({
+      message: `Organization and user created`,
+      data: { organization: newOrganization, user: newUser },
+    });
     return;
   } catch (error) {
     console.error('Error creating user: ', error);
