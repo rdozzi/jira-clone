@@ -16,7 +16,7 @@ datasource db {
 
 model Organization {
   id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(255)
+  name      String   @unique @db.VarChar(150)
   createAt  DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @default(now()) @db.Timestamptz()
 
@@ -36,8 +36,8 @@ model Organization {
 
 model Project {
   id             Int           @id @default(autoincrement())
-  name           String        @db.VarChar(255)
-  description    String?       @default("NA") @db.VarChar(255)
+  name           String        @db.VarChar(100)
+  description    String?       @default("NA") @db.VarChar(500)
   status         ProjectStatus @default(ACTIVE)
   isPublic       Boolean       @default(true)
   ownerId        Int?
@@ -45,36 +45,40 @@ model Project {
   createdAt      DateTime      @default(now()) @db.Timestamptz()
   updatedAt      DateTime      @updatedAt @db.Timestamptz()
 
-  //Owner
+  // Owner
   owner User? @relation("ProjectOwner", fields: [ownerId], references: [id])
 
-  //Membership
-  members ProjectMember[]
-  Board   Board[]
+  //Child (One-to-Many)
+  Board Board[]
 
-  //Relationships
+  //Membership (Many-to-Many)
+  members ProjectMember[]
+
+  // Parent
   Organization Organization @relation(fields: [organizationId], references: [id])
 }
 
 model Board {
   id             Int      @id @default(autoincrement())
-  name           String   @db.VarChar(255)
+  name           String   @db.VarChar(100)
   projectId      Int
-  description    String?  @db.VarChar(255)
+  description    String?  @db.VarChar(500)
   organizationId Int
   createdAt      DateTime @default(now()) @db.Timestamptz()
   updatedAt      DateTime @updatedAt @db.Timestamptz()
 
-  //Relationship
+  //Parent (Many-to-One)
   project      Project      @relation(fields: [projectId], references: [id])
-  tickets      Ticket[]
   Organization Organization @relation(fields: [organizationId], references: [id])
+
+  //Child
+  tickets Ticket[]
 }
 
 model Ticket {
   id             Int       @id @default(autoincrement())
-  title          String    @db.VarChar(255)
-  description    String    @db.VarChar(255)
+  title          String    @db.VarChar(150)
+  description    String    @db.VarChar(3000)
   status         Status    @default(IN_PROGRESS)
   priority       Priority
   type           Type
@@ -86,13 +90,16 @@ model Ticket {
   createdAt      DateTime  @default(now()) @db.Timestamptz()
   updatedAt      DateTime  @updatedAt @db.Timestamptz()
 
-  //Relationship
+  //Parent (Many-to-One)
   board        Board        @relation(fields: [boardId], references: [id])
+  Organization Organization @relation(fields: [organizationId], references: [id])
   assignee     User?        @relation(name: "assignee", fields: [assigneeId], references: [id])
   reporter     User?        @relation(name: "reporter", fields: [reporterId], references: [id])
-  Organization Organization @relation(fields: [organizationId], references: [id])
 
-  comments     Comment[]
+  //Child
+  comments Comment[]
+
+  //Member
   ticketLabels TicketLabel[]
 }
 
@@ -105,20 +112,21 @@ model Comment {
   createdAt      DateTime @default(now()) @db.Timestamptz()
   updatedAt      DateTime @updatedAt @db.Timestamptz()
 
-  //Relationship
+  //Parent
   ticket       Ticket       @relation(fields: [ticketId], references: [id])
-  author       User?        @relation(fields: [authorId], references: [id])
   Organization Organization @relation(fields: [organizationId], references: [id])
+
+  author User? @relation(fields: [authorId], references: [id])
 }
 
 model User {
   id             Int        @id @default(autoincrement())
-  firstName      String?    @db.VarChar(255)
-  lastName       String?    @db.VarChar(255)
+  firstName      String?    @db.VarChar(150)
+  lastName       String?    @db.VarChar(150)
   email          String     @unique @db.VarChar(255)
   passwordHash   String //Hashed by bcrypt in node
   globalRole     GlobalRole @default(USER)
-  avatarSource   String?    @default("NA") @db.VarChar(255)
+  avatarSource   String?    @default("NA") @db.VarChar(2048)
   isBanned       Boolean    @default(false)
   organizationId Int
   createdAt      DateTime   @default(now()) @db.Timestamptz()
@@ -127,27 +135,27 @@ model User {
   isDeleted      Boolean?   @default(false)
 
   //Ownership (One-to-many)
-  ownedProjects Project[]    @relation("ProjectOwner")
-  comments      Comment[]
-  attachments   Attachment[]
+  ownedProjects  Project[]    @relation("ProjectOwner")
+  comments       Comment[]
+  attachments    Attachment[]
+  assigneeTicket Ticket[]     @relation("assignee")
+  reporterTicket Ticket[]     @relation("reporter")
 
   //Membership (Many-to-many through ProjectMember)
   projectMemberships ProjectMember[]
 
   //Other Relationships
-  assigneeTicket Ticket[]     @relation("assignee")
-  reporterTicket Ticket[]     @relation("reporter")
-  Organization   Organization @relation(fields: [organizationId], references: [id])
+  Organization Organization @relation(fields: [organizationId], references: [id])
 }
 
 model Attachment {
   id             Int                  @id @default(autoincrement())
   entityType     AttachmentEntityType
   entityId       Int
-  fileName       String               @db.VarChar(255)
+  fileName       String               @db.VarChar(2048)
   fileSize       Int
-  fileType       String               @db.VarChar(255)
-  fileUrl        String?              @db.VarChar(255)
+  fileType       String               @db.VarChar(2048)
+  fileUrl        String?              @db.VarChar(2048)
   filePath       String?
   uploadedBy     Int?
   organizationId Int
@@ -159,44 +167,47 @@ model Attachment {
   uploaded     User?        @relation(fields: [uploadedBy], references: [id])
   Organization Organization @relation(fields: [organizationId], references: [id])
 
-  //Relationship
+  //Composite key index
   @@index([entityType, entityId])
 }
 
 model Label {
   id             Int      @id @default(autoincrement())
-  name           String   @db.VarChar(255)
-  color          String   @db.VarChar(255)
+  name           String   @db.VarChar(25)
+  color          String   @db.VarChar(9)
   organizationId Int
   createdAt      DateTime @default(now()) @db.Timestamptz()
 
-  //Relationship
-  TicketLabel  TicketLabel[]
-  Organization Organization  @relation(fields: [organizationId], references: [id])
+  //Membership (Many-to-Many)
+  TicketLabel TicketLabel[]
+
+  //Root
+  Organization Organization @relation(fields: [organizationId], references: [id])
 }
 
 model ActivityLog {
   id             Int               @id @default(autoincrement())
   userId         Int?
   actorType      ActorTypeActivity @default(USER)
-  action         String            @db.VarChar(255)
+  action         String            @db.VarChar(50)
   targetId       Int?
-  targetType     String            @db.VarChar(255)
+  targetType     String            @db.VarChar(50)
   metadata       Json?
   createdAt      DateTime          @default(now()) @db.Timestamptz()
   organizationId Int
 
+  //Root
   Organization Organization @relation(fields: [organizationId], references: [id])
 }
 
 model BannedEmail {
   id             Int       @id @default(autoincrement())
   email          String    @unique @db.VarChar(255)
-  reason         String    @db.VarChar(255)
+  reason         String    @db.VarChar(2000)
   organizationId Int
   createdAt      DateTime? @default(now()) @db.Timestamptz()
 
-  //Relationships
+  //Root
   Organization Organization @relation(fields: [organizationId], references: [id])
 }
 
@@ -210,7 +221,7 @@ model TicketLabel {
   label        Label        @relation(fields: [labelId], references: [id])
   Organization Organization @relation(fields: [organizationId], references: [id])
 
-  // Composite Key
+  //Composite key index
   @@id([ticketId, labelId])
 }
 
@@ -228,6 +239,7 @@ model ProjectMember {
   project      Project      @relation(fields: [projectId], references: [id])
   Organization Organization @relation(fields: [organizationId], references: [id])
 
+  //Composite key
   @@unique([userId, projectId])
 }
 
