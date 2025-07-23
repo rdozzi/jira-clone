@@ -13,7 +13,7 @@ const filter = LeoProfanity;
 const badWordsList = filter.list();
 
 // Regular expression for acceptable characters: letters, numbers, spaces, hyphens, underscores
-const organizationNameRegex = /^[\p{L}\p{N}\s\-_]+$/u;
+const organizationNameRegex = /^[\p{L}\p{N}\s\-_.,"'!?():;]+$/u;
 
 export const attachmentEntityTypeSchema = z
   .string('A string is required')
