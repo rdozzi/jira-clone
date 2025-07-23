@@ -6,6 +6,7 @@ export function buildLogEvent({
   action,
   targetId,
   targetType,
+  organizationId,
   metadata,
 }: LogEventPayload) {
   return {
@@ -14,6 +15,7 @@ export function buildLogEvent({
     action: action,
     targetId: targetId || null,
     targetType: targetType,
+    organizationId: organizationId,
     metadata: metadata || {},
   };
 }

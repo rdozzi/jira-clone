@@ -21,6 +21,8 @@ function authenticateFn(req: CustomRequest, res: Response, next: NextFunction) {
     req.user = {
       id: payload.id,
       globalRole: payload.globalRole,
+      organizationId: payload.organizationId,
+      organizationRole: payload.organizationRole,
     };
 
     next();

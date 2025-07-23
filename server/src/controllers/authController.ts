@@ -35,7 +35,13 @@ export async function loginUser(
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email, globalRole: user.globalRole },
+      {
+        id: user.id,
+        email: user.email,
+        globalRole: user.globalRole,
+        organizationId: user.organizationId,
+        organizationRole: user.organizationRole,
+      },
       process.env.JWT_SECRET as string,
       {
         expiresIn: Number(process.env.JWT_EXPIRATION),
@@ -48,11 +54,13 @@ export async function loginUser(
       action: 'USER_LOGIN',
       targetId: user.id,
       targetType: 'AUTHENTICATION',
+      organizationId: user.organizationId,
       metadata: {
         id: user.id,
         name: `${user.firstName}_${user.lastName}`,
         email: user.email,
         globalRole: user.globalRole,
+        organizationRole: user.organizationRole,
         timestamp: new Date().toISOString(),
       },
     });
@@ -61,7 +69,9 @@ export async function loginUser(
       message: 'Login successful',
       userId: user.id,
       email: user.email,
-      userRole: user.globalRole,
+      globalRole: user.globalRole,
+      organizationRole: user.organizationRole,
+      organizationId: user.organizationId,
       token: token,
       expiresIn: Date.now() + Number(process.env.JWT_EXPIRATION) * 1000,
     });
@@ -72,6 +82,7 @@ export async function loginUser(
 }
 
 export async function logoutUser(req: Request, res: Response) {
+  const userInfo = res.locals.userInfo;
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) {
     return res.status(401).json({ error: 'No token provided' });
@@ -86,6 +97,7 @@ export async function logoutUser(req: Request, res: Response) {
       action: 'USER_LOGOUT',
       targetId: userId,
       targetType: 'AUTHENTICATION',
+      organizationId: userInfo.organizationId,
       metadata: {
         id: userId,
         timestamp: new Date().toISOString(),

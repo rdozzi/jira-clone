@@ -8,6 +8,7 @@ export async function createActivityLog({
   action,
   targetId,
   targetType,
+  organizationId,
   metadata,
 }: LogEventPayload): Promise<ActivityLog | null> {
   try {
@@ -18,6 +19,7 @@ export async function createActivityLog({
         action,
         targetId,
         targetType,
+        organizationId,
         metadata,
       },
     });
