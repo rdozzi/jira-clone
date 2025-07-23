@@ -9,5 +9,6 @@ export type LogEventPayload = {
   action: string;
   targetId?: number | null;
   targetType: string;
+  organizationId: number;
   metadata: Json;
 };

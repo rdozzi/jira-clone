@@ -60,6 +60,7 @@ export async function seedOrganizationAndSuperAdmin(
       action: 'SEED_USER_AND_ORGANIZATION',
       targetId: newUser.id,
       targetType: 'USER',
+      organizationId: newOrganization.id,
       metadata: {
         role: `${newUser.globalRole}`,
         name: `${newUser.firstName}_${newUser.lastName}`,
