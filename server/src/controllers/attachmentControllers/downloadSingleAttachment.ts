@@ -9,17 +9,18 @@ import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 export async function downloadSingleAttachment(req: Request, res: Response) {
   try {
     const attachment: Attachment = res.locals.attachment;
+    const organizationId = res.locals.userInfo.organizationId;
 
     if (attachment.storageType === 'LOCAL') {
       const filePath = path.resolve(attachment.filePath || '');
-      res.locals.logEvent = generatePayload(attachment);
+      res.locals.logEvent = generatePayload(attachment, organizationId);
 
       await access(filePath);
 
       return res.download(filePath, attachment.fileName);
     } else if (attachment.storageType === 'CLOUD') {
       const signedUrl = await generateSignedCloudUrl(attachment);
-      res.locals.logEvent = generatePayload(attachment);
+      res.locals.logEvent = generatePayload(attachment, organizationId);
       res.status(200).json({
         message: `Download Successful; ${signedUrl} created successfully`,
       });
@@ -40,7 +41,7 @@ export async function downloadSingleAttachment(req: Request, res: Response) {
   }
 }
 
-function generatePayload(attachment: Attachment) {
+function generatePayload(attachment: Attachment, organizationId: number) {
   const logEntityId = generateEntityIdForLog(
     attachment.entityType,
     attachment.entityId
@@ -52,6 +53,7 @@ function generatePayload(attachment: Attachment) {
     action: 'DOWNLOAD_ATTACHMENT',
     targetId: attachment.id,
     targetType: 'ATTACHMENT',
+    organizationId: organizationId,
     metadata: {
       fileName: attachment.fileName,
       fileType: attachment.entityType,
