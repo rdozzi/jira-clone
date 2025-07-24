@@ -4,7 +4,8 @@ import { hashPassword } from '../password';
 export async function createUserProfile(
   prismaTest: PrismaClient,
   testDescription: string,
-  globalRole: GlobalRole
+  globalRole: GlobalRole,
+  organizationId: number
 ) {
   const email = `global_${globalRole}_${testDescription}@example.com`;
   const user = await prismaTest.user.findUnique({
@@ -21,6 +22,7 @@ export async function createUserProfile(
         lastName: `User_${testDescription}_lastName`,
         passwordHash: await hashPassword('seedPassword123'),
         globalRole: globalRole,
+        organizationId: organizationId,
       },
     });
     return user;

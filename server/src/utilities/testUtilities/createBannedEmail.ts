@@ -4,7 +4,8 @@ export async function createBannedEmail(
   prismaTest: PrismaClient,
   testDescription: string,
   count: number,
-  reason: string
+  reason: string,
+  organizationId: number
 ) {
   const bannedEmail = await prismaTest.bannedEmail.upsert({
     where: {
@@ -14,6 +15,7 @@ export async function createBannedEmail(
     create: {
       email: `${testDescription}_${count}_email@example.com`,
       reason: reason,
+      organizationId: organizationId,
     },
   });
 

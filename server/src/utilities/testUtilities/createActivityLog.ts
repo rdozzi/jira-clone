@@ -7,7 +7,8 @@ export async function createActivityLog(
   actorType: ActorTypeActivity,
   targetId: number,
   targetType: string,
-  count: number // If I need to make more than 1
+  count: number, // If I need to make more than 1
+  organizationId: number
 ) {
   const activityLog = await prismaTest.activityLog.findFirst({
     where: { action: `${targetType}_${testDescription}_${count}` },
@@ -23,6 +24,7 @@ export async function createActivityLog(
         targetId: targetId,
         targetType: targetType,
         metadata: { count },
+        organizationId: organizationId,
       },
     });
 

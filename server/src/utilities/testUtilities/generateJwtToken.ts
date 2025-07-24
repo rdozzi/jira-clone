@@ -1,9 +1,19 @@
 import jwt from 'jsonwebtoken';
-import { GlobalRole } from '@prisma/client';
+import { GlobalRole, OrganizationRole } from '@prisma/client';
 
-export function generateJwtToken(userId: number, globalRole: GlobalRole) {
+export function generateJwtToken(
+  userId: number,
+  globalRole: GlobalRole,
+  organizationId: number,
+  organizationRole: OrganizationRole
+) {
   const token = jwt.sign(
-    { id: userId, globalRole: globalRole },
+    {
+      id: userId,
+      globalRole: globalRole,
+      organizationId: organizationId,
+      organizationRole: organizationRole,
+    },
     process.env.JWT_SECRET!,
     { expiresIn: '1hr' }
   );

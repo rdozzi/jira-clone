@@ -4,7 +4,8 @@ export async function createTicket(
   prismaTest: PrismaClient | Prisma.TransactionClient,
   testDescription: string,
   boardId: number,
-  userId: number
+  userId: number,
+  organizationId: number
 ) {
   const ticket = await prismaTest.ticket.create({
     data: {
@@ -15,6 +16,7 @@ export async function createTicket(
       assigneeId: userId,
       reporterId: userId,
       boardId: boardId,
+      organizationId: organizationId,
     },
   });
 
