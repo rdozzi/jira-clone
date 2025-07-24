@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { GlobalRole, ProjectRole } from '@prisma/client';
+import { OrganizationRole, ProjectRole } from '@prisma/client';
 
 type UserProject = {
   projectId: number;
@@ -33,7 +33,7 @@ export function checkProjectMembership(options?: {
       // SuperAdmin bypass check
       if (
         options?.allowGlobalSuperAdmin &&
-        globalRole === GlobalRole.SUPERADMIN
+        globalRole === OrganizationRole.SUPERADMIN
       ) {
         return next();
       }

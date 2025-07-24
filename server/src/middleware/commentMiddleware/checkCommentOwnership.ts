@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { GlobalRole } from '@prisma/client';
+import { OrganizationRole } from '@prisma/client';
 import prisma from '../../lib/prisma';
 
 export function checkCommentOwnership(options?: {
@@ -19,7 +19,7 @@ export function checkCommentOwnership(options?: {
     // SuperAdmin bypass check
     if (
       options?.allowGlobalSuperAdmin &&
-      globalRole === GlobalRole.SUPERADMIN
+      globalRole === OrganizationRole.SUPERADMIN
     ) {
       return next();
     }

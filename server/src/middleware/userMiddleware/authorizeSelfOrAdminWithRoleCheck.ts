@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { GlobalRole } from '@prisma/client';
+import { OrganizationRole } from '@prisma/client';
 
 export function authorizeSelfOrAdminWithRoleCheck() {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -10,8 +10,8 @@ export function authorizeSelfOrAdminWithRoleCheck() {
 
     const userIdParsed = parseInt(userId, 10);
     const isAdmin =
-      requestUserGlobalRole === GlobalRole.ADMIN ||
-      requestUserGlobalRole === GlobalRole.SUPERADMIN;
+      requestUserGlobalRole === OrganizationRole.ADMIN ||
+      requestUserGlobalRole === OrganizationRole.SUPERADMIN;
     const isSelf = requestUserId === userIdParsed;
 
     // Authorization check

@@ -1,8 +1,8 @@
 import { Response, NextFunction, RequestHandler } from 'express';
-import { GlobalRole } from '@prisma/client';
+import { OrganizationRole } from '@prisma/client';
 import { hasRequiredGlobalRole } from '../../lib/roles';
 
-export function authorizeGlobalRole(requiredRole: GlobalRole) {
+export function authorizeGlobalRole(requiredRole: OrganizationRole) {
   return ((req: Request, res: Response, next: NextFunction) => {
     const userRole = res.locals.userInfo.globalRole;
 
