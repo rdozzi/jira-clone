@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { GlobalRole, ProjectRole } from '@prisma/client';
+import { OrganizationRole, ProjectRole } from '@prisma/client';
 import { hasRequiredProjectRole } from '../lib/roles';
 
 export function checkProjectRole(
@@ -20,7 +20,7 @@ export function checkProjectRole(
 
     if (
       options?.allowGlobalSuperAdmin &&
-      globalRole === GlobalRole.SUPERADMIN
+      globalRole === OrganizationRole.SUPERADMIN
     ) {
       next();
       return;

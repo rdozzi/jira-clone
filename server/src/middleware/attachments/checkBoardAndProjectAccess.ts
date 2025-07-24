@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { AttachmentEntityType, ProjectRole, GlobalRole } from '@prisma/client';
+import {
+  AttachmentEntityType,
+  ProjectRole,
+  OrganizationRole,
+} from '@prisma/client';
 import prisma from '../../lib/prisma';
 
 export async function checkBoardAndProjectAccess(
@@ -13,7 +17,7 @@ export async function checkBoardAndProjectAccess(
     const userId = res.locals.userInfo.id;
     const userGlobalRole = res.locals.userInfo.globalRole;
 
-    if (userGlobalRole === GlobalRole.SUPERADMIN) {
+    if (userGlobalRole === OrganizationRole.SUPERADMIN) {
       next();
       return;
     } else if (

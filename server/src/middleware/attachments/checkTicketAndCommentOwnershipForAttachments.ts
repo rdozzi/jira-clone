@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { AttachmentEntityType, GlobalRole } from '@prisma/client';
+import { AttachmentEntityType, OrganizationRole } from '@prisma/client';
 import prisma from '../../lib/prisma';
 
 export async function checkTicketOrCommentOwnershipForAttachments(
@@ -14,7 +14,7 @@ export async function checkTicketOrCommentOwnershipForAttachments(
     const userGlobalRole = res.locals.userInfo.globalRole;
 
     //If user is a SuperAdmin or the entityType is neither ticket or comment, go next
-    if (userGlobalRole === GlobalRole.SUPERADMIN) {
+    if (userGlobalRole === OrganizationRole.SUPERADMIN) {
       next();
       return;
     } else if (
