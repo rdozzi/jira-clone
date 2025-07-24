@@ -10,10 +10,15 @@ export async function deleteAttachmentsService(
   tx: Prisma.TransactionClient,
   entityType: AttachmentEntityType,
   entityId: number,
-  userId: number
+  userId: number,
+  organizationId: number
 ) {
   const attachments = await tx.attachment.findMany({
-    where: { entityType: entityType, entityId: entityId },
+    where: {
+      entityType: entityType,
+      entityId: entityId,
+      organizationId: organizationId,
+    },
   });
 
   // The comment has no associated attachments => Nothing to delete
@@ -53,6 +58,7 @@ export async function deleteAttachmentsService(
       action: 'DELETE_ATTACHMENT',
       targetId: attachment.id,
       targetType: 'ATTACHMENT',
+      organizationId: organizationId,
       metadata: {
         fileName: attachment.fileName,
         fileType: attachment.entityType,

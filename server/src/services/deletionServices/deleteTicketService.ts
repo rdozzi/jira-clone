@@ -7,10 +7,11 @@ export async function deleteTicketService(
   res: Response,
   tx: Prisma.TransactionClient,
   entityId: number, //boardId
-  userId: number
+  userId: number,
+  organizationId: number
 ) {
   const tickets = await tx.ticket.findMany({
-    where: { boardId: entityId },
+    where: { boardId: entityId, organizationId: organizationId },
     select: { id: true, title: true, description: true },
   });
   if (tickets.length > 0) {
@@ -21,7 +22,8 @@ export async function deleteTicketService(
         tx,
         AttachmentEntityType.TICKET,
         ticketObj.id,
-        userId
+        userId,
+        organizationId
       );
       await tx.ticket.delete({ where: { id: ticketObj.id } });
     }
@@ -32,6 +34,7 @@ export async function deleteTicketService(
         action: 'DELETE_TICKET',
         targetId: ticketObj.id,
         targetType: 'TICKET',
+        organizationId: organizationId,
         metadata: {
           title: `${ticketObj.title}`,
           description: `${ticketObj.description}`,

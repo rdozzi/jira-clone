@@ -7,10 +7,11 @@ export async function deleteCommentService(
   res: Response,
   tx: Prisma.TransactionClient,
   entityId: number,
-  userId: number
+  userId: number,
+  organizationId: number
 ) {
   const comments = await tx.comment.findMany({
-    where: { ticketId: entityId },
+    where: { ticketId: entityId, organizationId: organizationId },
     select: { id: true, authorId: true, content: true },
   });
   if (comments.length > 0) {
@@ -23,7 +24,8 @@ export async function deleteCommentService(
         tx,
         AttachmentEntityType.COMMENT,
         commentObj.id,
-        userId
+        userId,
+        organizationId
       );
       await tx.comment.delete({ where: { id: commentObj.id } });
     }
@@ -34,6 +36,7 @@ export async function deleteCommentService(
         action: 'DELETE_COMMENT',
         targetId: commentObj.id,
         targetType: 'COMMENT',
+        organizationId: organizationId,
         metadata: {
           authorId: commentObj.authorId,
           content: commentObj.content,

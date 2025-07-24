@@ -9,16 +9,24 @@ export async function deleteTicketDependencies(
   tx: Prisma.TransactionClient,
   ticketEntity: AttachmentEntityType, // TICKET
   ticketId: number, //ticketId
-  userId: number
+  userId: number,
+  organizationId: number
 ) {
   // Delete related comments
-  await deleteCommentService(res, tx, ticketId, userId);
+  await deleteCommentService(res, tx, ticketId, userId, organizationId);
 
   // Delete related Attachments
   // entityType for this service is the entity type sent from the service. In this case it should be "TICKET"
-  await deleteAttachmentsService(res, tx, ticketEntity, ticketId, userId);
+  await deleteAttachmentsService(
+    res,
+    tx,
+    ticketEntity,
+    ticketId,
+    userId,
+    organizationId
+  );
 
   // Delete TicketLabel Associations (Signature uses ticketId for entityId)
   // Labels have no dependencies, no service is needed
-  await deleteLabelDependencies(tx, null, ticketId);
+  await deleteLabelDependencies(tx, null, ticketId, organizationId);
 }
