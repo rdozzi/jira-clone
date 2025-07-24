@@ -69,7 +69,7 @@ export async function seedOrganizationAndSuperAdmin(
       },
     });
     res.status(201).json({
-      message: `Organization and user created`,
+      message: `Organization and user created successfully`,
       data: { organization: newOrganization, user: newUser },
     });
     return;

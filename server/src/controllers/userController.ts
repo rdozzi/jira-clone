@@ -14,7 +14,10 @@ export async function getAllUsers(
   prisma: PrismaClient
 ) {
   try {
-    const users = await prisma.user.findMany();
+    const organizationId = res.locals.userInfo.organizationId;
+    const users = await prisma.user.findMany({
+      where: { organizationId: organizationId },
+    });
     res.status(200).json({ message: 'Users fetched successfully', users });
     return;
   } catch (error) {
@@ -33,6 +36,7 @@ export async function getUser(
   try {
     const query = Object.keys(res.locals.validatedQuery)[0];
     const data = res.locals.validatedQuery[query];
+    const organizationId = res.locals.userInfo.organizationId;
 
     let user;
 
@@ -41,10 +45,15 @@ export async function getUser(
     }
 
     if (query === 'userId') {
-      user = await prisma.user.findUnique({ where: { id: data } });
+      user = await prisma.user.findUnique({
+        where: { id: data, organizationId: organizationId },
+      });
     } else if (query === 'userEmail') {
       user = await prisma.user.findUnique({
-        where: { email: typeof data === 'string' ? data : undefined },
+        where: {
+          email: typeof data === 'string' ? data : undefined,
+          organizationId: organizationId,
+        },
       });
     }
 
@@ -53,7 +62,7 @@ export async function getUser(
     }
 
     res.status(200).json({
-      message: 'User was retrieved successfully by user Id',
+      message: 'Users retrieved successfully',
       data: user,
     });
     return;
@@ -72,9 +81,10 @@ export async function getUserByProjectId(
 ) {
   try {
     const projectId = res.locals.validatedParam;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const users = await prisma.projectMember.findMany({
-      where: { projectId: projectId },
+      where: { projectId: projectId, organizationId: organizationId },
       include: {
         user: {
           select: {
@@ -91,7 +101,7 @@ export async function getUserByProjectId(
       return res.status(404).json({ error: 'No users found for this project' });
     }
     res.status(200).json({
-      message: 'Users successfully fetched by project Id',
+      message: 'Users fetched successfully',
       data: users.map((member) => member.user),
     });
     return;
@@ -114,6 +124,7 @@ export async function createUser(
     const { email, firstName, lastName, password, globalRole } =
       res.locals.validatedBody;
     const hashedPassword = await hashPassword(password);
+    const organizationId = res.locals.userInfo.organizationId;
 
     const user = await prisma.user.create({
       data: {
@@ -122,6 +133,7 @@ export async function createUser(
         lastName: lastName,
         passwordHash: hashedPassword,
         globalRole: globalRole,
+        organizationId: organizationId,
       },
     });
 
@@ -131,13 +143,14 @@ export async function createUser(
       action: 'CREATE_USER',
       targetId: user.id,
       targetType: 'USER',
+      organizationId: organizationId,
       metadata: {
         role: `${user.globalRole}`,
         name: `${user.firstName}_${user.lastName}`,
         email: `${user.email}`,
       },
     });
-    res.status(201).json({ message: 'User successfully created.', data: user });
+    res.status(201).json({ message: 'User created successfully', data: user });
     return;
   } catch (error) {
     console.error('Error creating user: ', error);
@@ -159,10 +172,11 @@ export async function updateUser(
   // Pertains to userId payload sent to endpoint
   const userId = res.locals.validatedParam;
   const userData = res.locals.validatedBody;
+  const organizationId = res.locals.userInfo.organizationId;
 
   try {
     const oldUser = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userId, organizationId: organizationId },
     });
     if (!oldUser) {
       res.status(404).json({ error: 'User not found' });
@@ -170,7 +184,7 @@ export async function updateUser(
     }
 
     const newUser = await prisma.user.update({
-      where: { id: userId },
+      where: { id: userId, organizationId: organizationId },
       data: {
         ...userData,
       },
@@ -184,6 +198,7 @@ export async function updateUser(
       action: 'UPDATE_USER',
       targetId: userId,
       targetType: 'USER',
+      organizationId: organizationId,
       metadata: {
         name: `${newUser.firstName}_${newUser.lastName}`,
         changes,
@@ -209,9 +224,10 @@ export async function deleteUser(
     // From storeUserAndProjectInfo
     const userInfo = res.locals.userInfo;
     const userId = res.locals.validatedParam;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const existingUser = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userId, organizationId: organizationId },
     });
 
     if (!existingUser || existingUser.isDeleted === true) {
@@ -219,10 +235,10 @@ export async function deleteUser(
       return;
     }
 
-    await deleteUserCascade(userId);
+    await deleteUserCascade(userId, organizationId);
 
     const deletedUserData = await prisma.user.update({
-      where: { id: userId },
+      where: { id: userId, organizationId: organizationId },
       data: { isDeleted: true, deletedAt: new Date() },
     });
 
@@ -232,6 +248,7 @@ export async function deleteUser(
       action: 'DELETE_USER',
       targetId: userId,
       targetType: 'USER',
+      organizationId: organizationId,
       metadata: {
         name: `${deletedUserData.firstName}_${deletedUserData.lastName}`,
         deletedOn: `${deletedUserData.deletedAt}`,
@@ -239,7 +256,12 @@ export async function deleteUser(
     });
 
     res.status(200).json({
-      message: `Soft delete action successful. Date ${deletedUserData.deletedAt} added to deletedAt`,
+      message: `User deleted successfully. Date ${deletedUserData.deletedAt} added to deletedAt`,
+      data: {
+        id: deletedUserData.id,
+        name: `${deletedUserData.firstName} ${deletedUserData.lastName}`,
+        organizationId: deletedUserData.organizationId,
+      },
     });
   } catch (error) {
     console.error('Error soft-deleting user: ', error);
@@ -255,6 +277,7 @@ export async function updateUserAvatar(
 ) {
   try {
     const userId = res.locals.validatedParam;
+    const organizationId = res.locals.userInfo.organizationId;
 
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -267,14 +290,19 @@ export async function updateUserAvatar(
       storageType === 'CLOUD' ? fileMetadata.cloudUrl : fileMetadata.savedPath;
 
     const updatedUser = await prisma.user.update({
-      where: { id: userId },
+      where: { id: userId, organizationId: organizationId },
       data: {
         avatarSource: fileSource,
       },
     });
 
     res.status(200).json({
-      avatarSource: updatedUser.avatarSource,
+      data: {
+        id: `${updatedUser.id}`,
+        avatarSource: updatedUser.avatarSource,
+        userName: `${updatedUser.firstName} ${updatedUser.lastName}`,
+        organizationId: `${updatedUser.organizationId}`,
+      },
       message: 'User avatar updated successfully',
     });
     return;

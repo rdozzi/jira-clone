@@ -14,7 +14,10 @@ export async function getAllProjects(
   prisma: PrismaClient
 ) {
   try {
-    const projects = await prisma.project.findMany();
+    const organizationId = res.locals.userInfo.organizationId;
+    const projects = await prisma.project.findMany({
+      where: { organizationId: organizationId },
+    });
     res
       .status(200)
       .json({ message: 'Projects fetched succesfully', data: projects });
@@ -33,9 +36,10 @@ export async function getProjectsByUserId(
 ) {
   try {
     const userId = res.locals.userInfo.id;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const projects = await prisma.projectMember.findMany({
-      where: { userId: userId },
+      where: { userId: userId, organizationId: organizationId },
       select: { project: true, projectRole: true },
     });
 
@@ -78,12 +82,14 @@ export async function createProject(
 ) {
   try {
     const user = res.locals.userInfo;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const projectData = res.locals.validatedBody;
     const data = {
       name: projectData.name,
       description: projectData.description,
       ownerId: user.id,
+      organizationId: organizationId,
     };
     const project = await prisma.project.create({
       data,
@@ -94,6 +100,7 @@ export async function createProject(
         userId: user.id,
         projectId: project.id,
         projectRole: ProjectRole.ADMIN,
+        organizationId: organizationId,
       },
     });
 
@@ -103,6 +110,7 @@ export async function createProject(
       action: 'CREATE_PROJECT',
       targetId: project.id,
       targetType: 'PROJECT',
+      organizationId: organizationId,
       metadata: {
         projectName: project.name,
         projectDescription: project.description,
@@ -130,16 +138,16 @@ export async function updateProject(
 ) {
   try {
     const user = res.locals.userInfo;
-
     const projectId = res.locals.validatedParam;
     const projectData = res.locals.validatedBody;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const oldProject = await prisma.project.findUnique({
-      where: { id: projectId },
+      where: { id: projectId, organizationId: organizationId },
     });
 
     const newProject = await prisma.project.update({
-      where: { id: projectId },
+      where: { id: projectId, organizationId: organizationId },
       data: { ...projectData },
     });
 
@@ -152,6 +160,7 @@ export async function updateProject(
       action: 'UPDATE_PROJECT',
       targetId: projectId,
       targetType: 'PROJECT',
+      organizationId: organizationId,
       metadata: {
         change,
       },
@@ -176,11 +185,11 @@ export async function deleteProject(
 ) {
   try {
     const userId = res.locals.userInfo.id;
-
     const projectId = res.locals.validatedParam;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const oldProject = await prisma.project.findUnique({
-      where: { id: projectId },
+      where: { id: projectId, organizationId: organizationId },
     });
 
     if (!oldProject) {
@@ -194,10 +203,11 @@ export async function deleteProject(
         tx,
         AttachmentEntityType.PROJECT,
         projectId,
-        userId
+        userId,
+        organizationId
       );
       await tx.project.delete({
-        where: { id: projectId },
+        where: { id: projectId, organizationId: organizationId },
       });
     });
 
@@ -207,6 +217,7 @@ export async function deleteProject(
       action: 'DELETE_PROJECT',
       targetId: projectId,
       targetType: 'PROJECT',
+      organizationId: organizationId,
       metadata: {
         name: oldProject.name,
         description: oldProject?.description,

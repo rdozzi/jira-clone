@@ -20,6 +20,7 @@ export async function handleSingleUpload(
     }
     const { entityType, entityId } = res.locals.validatedBody;
     const uploadedBy = res.locals.userInfo.id;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const entityRecord = await validateEntityAndId(
       entityType as AttachmentEntityType,
@@ -48,6 +49,7 @@ export async function handleSingleUpload(
         filePath: metadata.savedPath,
         fileUrl: metadata.cloudUrl,
         storageType: metadata.storageType,
+        organizationId: organizationId,
       },
     });
 
@@ -57,6 +59,7 @@ export async function handleSingleUpload(
       action: 'CREATE_ATTACHMENT',
       targetId: attachment.id,
       targetType: 'ATTACHMENT',
+      organizationId: organizationId,
       metadata: {
         metadata,
         ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
@@ -94,6 +97,7 @@ export async function handleMultipleUpload(
   try {
     const { entityType, entityId } = res.locals.validatedBody;
     const uploadedBy = res.locals.userInfo.id;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const entityRecord = await validateEntityAndId(
       entityType as AttachmentEntityType,
@@ -123,6 +127,7 @@ export async function handleMultipleUpload(
             filePath: metadata.savedPath,
             fileUrl: metadata.cloudUrl,
             storageType: metadata.storageType,
+            organizationId: organizationId,
           },
         });
         return attachment;
@@ -136,6 +141,7 @@ export async function handleMultipleUpload(
         action: 'CREATE_ATTACHMENT',
         targetId: attachment.id,
         targetType: 'ATTACHMENT',
+        organizationId: organizationId,
         metadata: {
           fileName: attachment.fileName,
           fileType: attachment.entityType,

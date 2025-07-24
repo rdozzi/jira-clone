@@ -19,6 +19,7 @@ export async function downloadMultipleAttachments(
     const attachmentIds = res.locals.attachmentIds;
     const entityId = res.locals.entityId;
     const entityType = res.locals.entityType;
+    const organizationId = res.locals.userInfo.organizationId;
     let successCount = 0;
     const missingFiles: string[] = [];
     const missingFileIds: number[] = [];
@@ -107,6 +108,7 @@ export async function downloadMultipleAttachments(
         action: 'DOWNLOAD_ATTACHMENT',
         targetId: attachment.id,
         targetType: 'ATTACHMENT',
+        organizationId: organizationId,
         metadata: {
           fileName: attachment?.fileName,
           fileType: attachment?.entityType,

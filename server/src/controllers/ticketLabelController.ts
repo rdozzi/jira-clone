@@ -5,15 +5,16 @@ export function getLabelByTicket(prisma: PrismaClient) {
   return async (req: Request, res: Response) => {
     try {
       const ticketId = res.locals.validatedParam;
+      const organizationId = res.locals.userInfo.organizationId;
 
       const ticketLabels = await prisma.ticketLabel.findMany({
-        where: { ticketId: ticketId },
+        where: { ticketId: ticketId, organizationId: organizationId },
         select: { ticketId: true, labelId: true },
       });
 
       res.status(200).json({
-        message: 'Label fetch successful (Note: Might be empty)',
-        ticketLabelPair: ticketLabels,
+        message: 'Label fetched successfully (Note: Might be empty)',
+        data: ticketLabels,
       });
       return;
     } catch (error) {
@@ -28,13 +29,18 @@ export function addLabelToTicket(prisma: PrismaClient) {
   return async (req: Request, res: Response): Promise<void> => {
     try {
       const { ticketId, labelId } = res.locals.validatedParams;
+      const organizationId = res.locals.userInfo.organizationId;
 
       const ticketLabel = await prisma.ticketLabel.create({
-        data: { ticketId: ticketId, labelId: labelId },
+        data: {
+          ticketId: ticketId,
+          labelId: labelId,
+          organizationId: organizationId,
+        },
       });
       res.status(201).json({
-        message: 'Label addition to ticket successful',
-        ticketLabelPair: ticketLabel,
+        message: 'Label added to ticket successfully',
+        data: ticketLabel,
       });
       return;
     } catch (error) {
@@ -58,6 +64,7 @@ export function deleteLabelFromTicket(prisma: PrismaClient) {
   return async (req: Request, res: Response): Promise<void> => {
     try {
       const { ticketId, labelId } = res.locals.validatedParams;
+      const organizationId = res.locals.userInfo.organizationId;
 
       const removedTicketLabel = await prisma.ticketLabel.delete({
         where: {
@@ -65,11 +72,12 @@ export function deleteLabelFromTicket(prisma: PrismaClient) {
             ticketId: ticketId,
             labelId: labelId,
           },
+          organizationId: organizationId,
         },
       });
       res.status(200).json({
-        message: 'Label remove successful',
-        removedTicketLabel: removedTicketLabel,
+        message: 'Label removed successfully',
+        data: removedTicketLabel,
       });
       return;
     } catch (error) {

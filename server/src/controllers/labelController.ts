@@ -11,8 +11,13 @@ export async function getAllLabels(
   prisma: PrismaClient
 ) {
   try {
-    const labels = await prisma.label.findMany();
-    res.status(200).json(labels);
+    const organizationId = res.locals.userInfo.organizationId;
+    const labels = await prisma.label.findMany({
+      where: { organizationId: organizationId },
+    });
+    res
+      .status(200)
+      .json({ message: 'Labels fetched successfully', data: labels });
   } catch (error) {
     console.error('Error fetching labels: ', error);
     res.status(500).json({ error: 'Failed to fetch labels' });
@@ -27,12 +32,13 @@ export async function createNewLabel(
 ) {
   try {
     const user = res.locals.userInfo;
+    const organizationId = res.locals.userInfo.organizationId;
 
     // From validateCreateLabel Middleware
     const { name, color } = res.locals.validatedBody;
 
     const label = await prisma.label.create({
-      data: { name: name, color: color },
+      data: { name: name, color: color, organizationId: organizationId },
     });
 
     res.locals.logEvent = buildLogEvent({
@@ -41,13 +47,14 @@ export async function createNewLabel(
       action: 'CREATE_LABEL',
       targetId: label.id,
       targetType: 'LABEL',
+      organizationId: organizationId,
       metadata: {
         name: `${label.name}`,
         color: `${label.color}`,
       },
     });
 
-    res.status(200).json({ message: 'Label successfully created', label });
+    res.status(200).json({ message: 'Label created successfully', label });
     return;
   } catch (error) {
     console.error('Error creating label: ', error);
@@ -64,20 +71,19 @@ export async function updateLabel(
 ) {
   try {
     const user = res.locals.userInfo;
+    const organizationId = res.locals.userInfo.organizationId;
 
     // From validateCreateLabel Middleware
     const labelData = res.locals.validatedBody;
-    const { labelId } = req.params;
-
-    const labelIdParsed = parseInt(labelId, 10);
+    const labelId = res.locals.validatedParam;
 
     const oldLabel = await prisma.label.findUniqueOrThrow({
-      where: { id: labelIdParsed },
+      where: { id: labelId, organizationId: organizationId },
       select: { id: true, name: true, color: true },
     });
 
     const newLabel = await prisma.label.update({
-      where: { id: labelIdParsed },
+      where: { id: labelId, organizationId: organizationId },
       data: {
         ...labelData,
       },
@@ -89,14 +95,15 @@ export async function updateLabel(
       userId: user.id,
       actorType: 'USER',
       action: 'UPDATE_LABEL',
-      targetId: labelIdParsed,
+      targetId: labelId,
       targetType: 'LABEL',
+      organizationId: organizationId,
       metadata: {
         change,
       },
     });
 
-    res.status(200).json({ message: 'Label successfully updated', newLabel });
+    res.status(200).json({ message: 'Label updated successfully', newLabel });
     return;
   } catch (error) {
     console.error('Error editing label: ', error);
@@ -112,18 +119,17 @@ export async function deleteLabel(
 ) {
   try {
     const user = res.locals.userInfo;
-
-    const { labelId } = req.params;
-    const labelIdParsed = parseInt(labelId, 10);
+    const organizationId = res.locals.userInfo.organizationId;
+    const labelId = res.locals.validatedParam;
 
     const oldLabel = await prisma.label.findUnique({
-      where: { id: labelIdParsed },
+      where: { id: labelId, organizationId: organizationId },
     });
 
     prisma.$transaction(async (tx) => {
-      await deleteLabelDependencies(tx, labelIdParsed, null);
+      await deleteLabelDependencies(tx, labelId, null, organizationId);
       await tx.label.delete({
-        where: { id: labelIdParsed },
+        where: { id: labelId, organizationId: organizationId },
       });
     });
 
@@ -133,6 +139,7 @@ export async function deleteLabel(
       action: 'DELETE_LABEL',
       targetId: oldLabel?.id,
       targetType: 'LABEL',
+      organizationId: organizationId,
       metadata: {
         name: `${oldLabel?.name}`,
         color: `${oldLabel?.color}`,
@@ -141,7 +148,7 @@ export async function deleteLabel(
 
     res
       .status(200)
-      .json({ message: 'Label successfully deleted', deletedLabel: oldLabel });
+      .json({ message: 'Label deleted successfully', deletedLabel: oldLabel });
     return;
   } catch (error) {
     console.error('Error delete label: ', error);

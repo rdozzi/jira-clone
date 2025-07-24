@@ -10,7 +10,10 @@ export async function getAllComments(
   prisma: PrismaClient
 ) {
   try {
-    const comments = await prisma.comment.findMany();
+    const organizationId = res.locals.userInfo.organizationId;
+    const comments = await prisma.comment.findMany({
+      where: { organizationId: organizationId },
+    });
     res
       .status(200)
       .json({ message: 'Comments were fetched successfully', data: comments });
@@ -27,11 +30,12 @@ export async function getCommentsByTicketId(
   res: Response,
   prisma: PrismaClient
 ) {
+  const organizationId = res.locals.userInfo.organizationId;
   const ticketId = res.locals.validatedParam;
 
   try {
     const ticketComments = await prisma.comment.findMany({
-      where: { ticketId: ticketId },
+      where: { ticketId: ticketId, organizationId: organizationId },
     });
     res.status(200).json({
       message: 'Comments were fetched successfully',
@@ -51,11 +55,16 @@ export async function createComment(
   prisma: PrismaClient
 ) {
   try {
+    const organizationId = res.locals.userInfo.organizationId;
     const userId = res.locals.userInfo.id;
 
     const commentData = res.locals.validatedBody;
     const comment = await prisma.comment.create({
-      data: { ...commentData, authorId: userId },
+      data: {
+        ...commentData,
+        authorId: userId,
+        organizationId: organizationId,
+      },
     });
 
     res.locals.logEvent = buildLogEvent({
@@ -64,6 +73,7 @@ export async function createComment(
       action: 'CREATE_COMMENT',
       targetId: comment.id,
       targetType: 'COMMENT',
+      organizationId: organizationId,
       metadata: {
         authorId: `${comment.authorId}`,
         content: `${comment.content}`,
@@ -89,11 +99,11 @@ export async function deleteComment(
 ) {
   try {
     const userId = res.locals.userInfo.id;
-
+    const organizationId = res.locals.userInfo.organizationId;
     const commentId = res.locals.validatedParam;
 
     const oldComment = await prisma.comment.findUniqueOrThrow({
-      where: { id: commentId },
+      where: { id: commentId, organizationId: organizationId },
       select: {
         id: true,
         authorId: true,
@@ -108,10 +118,11 @@ export async function deleteComment(
         tx,
         AttachmentEntityType.COMMENT,
         commentId,
-        userId
+        userId,
+        organizationId
       );
       await tx.comment.delete({
-        where: { id: commentId },
+        where: { id: commentId, organizationId: organizationId },
       });
     });
 
@@ -123,6 +134,7 @@ export async function deleteComment(
       action: 'DELETE_COMMENT',
       targetId: commentId,
       targetType: 'COMMENT',
+      organizationId: organizationId,
       metadata: {
         id: oldComment?.id,
         authorId: oldComment?.authorId,
@@ -158,9 +170,10 @@ export async function updateComment(
     const { content } = res.locals.validatedBody;
     const commentId = res.locals.validatedParam;
     const userId = res.locals.userInfo.id;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const oldComment = await prisma.comment.findUniqueOrThrow({
-      where: { id: commentId },
+      where: { id: commentId, organizationId: organizationId },
       select: {
         id: true,
         authorId: true,
@@ -175,7 +188,7 @@ export async function updateComment(
     }
 
     const updatedComment = await prisma.comment.update({
-      where: { id: commentId },
+      where: { id: commentId, organizationId: organizationId },
       data: {
         content,
       },
@@ -192,6 +205,7 @@ export async function updateComment(
       action: 'UPDATE_COMMENT',
       targetId: commentId,
       targetType: 'COMMENT',
+      organizationId: organizationId,
       metadata: {
         changes,
       },

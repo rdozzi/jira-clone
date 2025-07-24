@@ -9,7 +9,10 @@ export async function getAllBannedEmails(
   prisma: PrismaClient
 ) {
   try {
-    const bannedEmailRecords = await prisma.bannedEmail.findMany();
+    const organizationId = res.locals.userInfo.organizationId;
+    const bannedEmailRecords = await prisma.bannedEmail.findMany({
+      where: { organizationId: organizationId },
+    });
     return res.status(200).json(bannedEmailRecords);
   } catch (error) {
     console.error('Error fetching bannedEmail: ', error);
@@ -25,10 +28,11 @@ export async function getBannedEmailById(
 ) {
   try {
     const bannedEmailId = res.locals.validatedParam;
+    const organizationId = res.locals.userInfo.organizationId;
 
     // Fetch banned email record by ID
     const bannedEmailRecord = await prisma.bannedEmail.findUnique({
-      where: { id: bannedEmailId },
+      where: { id: bannedEmailId, organizationId: organizationId },
     });
 
     if (!bannedEmailRecord) {
@@ -50,6 +54,7 @@ export async function createBannedEmail(
 ) {
   try {
     const { email, reason } = res.locals.validatedBody;
+    const organizationId = res.locals.userInfo.organizationId;
 
     // Check if the email already exists
     const existingBannedEmail = await prisma.bannedEmail.findUnique({
@@ -62,7 +67,7 @@ export async function createBannedEmail(
 
     // Create a new banned email
     const bannedEmail = await prisma.bannedEmail.create({
-      data: { email, reason },
+      data: { email, reason, organizationId: organizationId },
     });
 
     // Log the event
@@ -72,6 +77,7 @@ export async function createBannedEmail(
       action: 'BAN_USER',
       targetId: null,
       targetType: 'USER',
+      organizationId: organizationId,
       metadata: {
         createdAt: `${bannedEmail.createdAt}`,
         reason: `${bannedEmail.reason}`,

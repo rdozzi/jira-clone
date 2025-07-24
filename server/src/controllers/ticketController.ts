@@ -11,10 +11,13 @@ export async function getAllTickets(
 ) {
   try {
     const queryKeys = Object.keys(res.locals.validatedQuery || {});
+    const organizationId = res.locals.userInfo.organizationId;
 
     if (queryKeys.length === 0) {
       // No query provided — fetch all tickets
-      const tickets = await prisma.ticket.findMany();
+      const tickets = await prisma.ticket.findMany({
+        where: { organizationId: organizationId },
+      });
       return res
         .status(200)
         .json({ message: 'Tickets fetched successfully', data: tickets });
@@ -49,10 +52,11 @@ export async function getTicketById(
   prisma: PrismaClient
 ) {
   const ticketId = res.locals.validatedParam;
+  const organizationId = res.locals.userInfo.organizationId;
 
   try {
     const ticket = await prisma.ticket.findUnique({
-      where: { id: ticketId },
+      where: { id: ticketId, organizationId: organizationId },
     });
     if (!ticket) {
       res.status(404).json({ message: 'Ticket not found' });
@@ -98,10 +102,11 @@ export async function getTicketsByBoardId(
   prisma: PrismaClient
 ) {
   const boardId = res.locals.validatedParam;
+  const organizationId = res.locals.userInfo.organizationId;
 
   try {
     const tickets = await prisma.ticket.findMany({
-      where: { boardId: boardId },
+      where: { boardId: boardId, organizationId: organizationId },
     });
     res
       .status(200)
@@ -121,8 +126,13 @@ export async function createNewTicket(
 ) {
   try {
     const userId = res.locals.userInfo.id;
+    const organizationId = res.locals.userInfo.organizationId;
 
-    const ticketData = res.locals.validatedBody;
+    const ticketData = {
+      ...res.locals.validatedBody,
+      organizationId: organizationId,
+    };
+
     const ticket = await prisma.ticket.create({
       data: ticketData,
     });
@@ -133,6 +143,7 @@ export async function createNewTicket(
       action: 'CREATE_TICKET',
       targetId: ticket.id,
       targetType: 'TICKET',
+      organizationId: organizationId,
       metadata: {
         title: `${ticket.title}`,
         description: `${ticket.description}`,
@@ -142,7 +153,7 @@ export async function createNewTicket(
 
     res
       .status(201)
-      .json({ message: 'Created ticket successfully', data: ticket });
+      .json({ message: 'Ticket created successfully', data: ticket });
     return;
   } catch (error) {
     console.error('Error creating ticket: ', error);
@@ -158,16 +169,23 @@ export async function deleteTicket(
 ) {
   try {
     const userId = res.locals.userInfo.id;
-
     const ticketId = res.locals.validatedParam;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const oldTicket = await prisma.ticket.findUniqueOrThrow({
-      where: { id: ticketId },
+      where: { id: ticketId, organizationId: organizationId },
       select: { id: true, title: true, description: true, boardId: true },
     });
 
     prisma.$transaction(async (tx) => {
-      await deleteTicketDependencies(res, tx, 'TICKET', ticketId, userId);
+      await deleteTicketDependencies(
+        res,
+        tx,
+        'TICKET',
+        ticketId,
+        userId,
+        organizationId
+      );
       await tx.ticket.delete({
         where: { id: ticketId },
       });
@@ -179,6 +197,7 @@ export async function deleteTicket(
       action: 'DELETE_TICKET',
       targetId: oldTicket.id,
       targetType: 'TICKET',
+      organizationId: organizationId,
       metadata: {
         title: `${oldTicket.title}`,
         description: `${oldTicket.description}`,
@@ -203,19 +222,19 @@ export async function updateTicket(
 ) {
   try {
     const userId = res.locals.userInfo.id;
-
     const ticketData = res.locals.validatedBody;
     const ticketId = res.locals.validatedParam;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const oldTicket = await prisma.ticket.findUnique({
-      where: { id: ticketId },
+      where: { id: ticketId, organizationId: organizationId },
     });
     if (!oldTicket) {
       return res.status(404).json({ error: 'Ticket not found' });
     }
 
     const newTicket = await prisma.ticket.update({
-      where: { id: ticketId },
+      where: { id: ticketId, organizationId: organizationId },
       data: {
         ...ticketData,
       },
@@ -229,6 +248,7 @@ export async function updateTicket(
       action: 'UPDATE_TICKET',
       targetId: newTicket.id,
       targetType: 'TICKET',
+      organizationId: organizationId,
       metadata: {
         ticketDescription: `${newTicket.description}`,
         title: `${newTicket.title}`,

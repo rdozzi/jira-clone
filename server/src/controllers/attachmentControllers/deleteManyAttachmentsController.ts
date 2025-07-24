@@ -15,6 +15,7 @@ export async function deleteManyAttachments(
   const attachmentIds = res.locals.attachmentIds;
   const entityId = res.locals.entityId;
   const entityType = res.locals.entityType;
+  const organizationId = res.locals.userInfo.organizationId;
 
   try {
     const attachments = await prisma.attachment.findMany({
@@ -70,6 +71,7 @@ export async function deleteManyAttachments(
         action: 'DELETE_ATTACHMENT',
         targetId: attachment.id,
         targetType: 'ATTACHMENT',
+        organizationId: organizationId,
         metadata: {
           fileName: attachment.fileName,
           fileType: attachment.entityType,
