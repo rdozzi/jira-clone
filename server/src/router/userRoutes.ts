@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
-import { GlobalRole, ProjectRole } from '@prisma/client';
+import { OrganizationRole, ProjectRole } from '@prisma/client';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
@@ -25,7 +25,7 @@ const router = Router();
 // Get all users
 router.get(
   '/users/all',
-  authorizeGlobalRole(GlobalRole.USER),
+  authorizeGlobalRole(OrganizationRole.USER),
   async (req: Request, res: Response): Promise<void> => {
     await getAllUsers(req, res, prisma);
   }
@@ -34,7 +34,7 @@ router.get(
 // Get users by id or email
 router.get(
   `/users`,
-  authorizeGlobalRole(GlobalRole.ADMIN),
+  authorizeGlobalRole(OrganizationRole.ADMIN),
   validateQuery,
   async (req: Request, res: Response): Promise<void> => {
     await getUser(req, res, prisma);
@@ -56,7 +56,7 @@ router.get(
 // Create user
 router.post(
   '/users',
-  authorizeGlobalRole(GlobalRole.ADMIN),
+  authorizeGlobalRole(OrganizationRole.ADMIN),
   validateBody(createUserSchema),
   async (req: Request, res: Response): Promise<void> => {
     await createUser(req, res, prisma);
@@ -66,7 +66,7 @@ router.post(
 // Delete user
 router.patch(
   '/users/:userId/soft-delete',
-  authorizeGlobalRole(GlobalRole.ADMIN),
+  authorizeGlobalRole(OrganizationRole.ADMIN),
   validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await deleteUser(req, res, prisma);
