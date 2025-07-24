@@ -4,13 +4,15 @@ export async function createProjectMember(
   prismaTest: PrismaClient | Prisma.TransactionClient,
   projectId: number,
   userId: number,
-  projectRole: ProjectRole
+  projectRole: ProjectRole,
+  organizationId: number
 ) {
   const projectMember = await prismaTest.projectMember.create({
     data: {
       projectId: projectId,
       userId: userId,
       projectRole: projectRole,
+      organizationId: organizationId,
     },
   });
 

@@ -15,7 +15,8 @@ export async function createTestAttachment(
   entityId: number,
   entityType: AttachmentEntityType,
   userId: number,
-  extension: Extension
+  extension: Extension,
+  organizationId: number
 ) {
   const uploadDir = path.join(__dirname, '../../../uploads');
   // Check for the upload directory
@@ -55,6 +56,7 @@ export async function createTestAttachment(
       filePath: destPath,
       uploadedBy: userId,
       storageType: StorageType.LOCAL,
+      organizationId: organizationId,
     },
   });
 
@@ -68,7 +70,8 @@ export async function createTestAttachments(
   entityId: number,
   entityType: AttachmentEntityType,
   userId: number,
-  extension: Extension
+  extension: Extension,
+  organizationId: number
 ) {
   const attachments = [];
   for (let i = 0; i < count; i++) {
@@ -79,7 +82,8 @@ export async function createTestAttachments(
         entityId,
         entityType,
         userId,
-        extension
+        extension,
+        organizationId
       )
     );
   }
