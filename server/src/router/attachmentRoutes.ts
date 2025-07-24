@@ -1,6 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { CustomRequest } from '../types/CustomRequest';
-import { AttachmentEntityType, GlobalRole, ProjectRole } from '@prisma/client';
+import {
+  AttachmentEntityType,
+  OrganizationRole,
+  ProjectRole,
+} from '@prisma/client';
 import prisma from '../lib/prisma';
 
 // Middleware imports
@@ -42,7 +46,7 @@ const router = Router();
 // No payload. Database call only. Get all
 router.get(
   '/attachments',
-  authorizeGlobalRole(GlobalRole.ADMIN),
+  authorizeGlobalRole(OrganizationRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await getAllAttachments(req, res, prisma);
   }
@@ -54,7 +58,7 @@ router.get(
 const enumPattern = Object.values(AttachmentEntityType).join('|');
 router.get(
   `/attachments/:entityType(${enumPattern})/:entityId(\\d+)`,
-  authorizeGlobalRole(GlobalRole.USER),
+  authorizeGlobalRole(OrganizationRole.USER),
   resolveProjectIdForGetAttachments(prisma),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
   checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
@@ -67,7 +71,7 @@ router.get(
 // Body/Form-Data (Multer Required): {file, entityType, entityId}
 router.post(
   '/attachments/single',
-  authorizeGlobalRole(GlobalRole.USER),
+  authorizeGlobalRole(OrganizationRole.USER),
   uploadSingleMiddleware,
   resolveProjectIdForCreateAttachment(prisma),
   checkProjectMembership(),
@@ -85,7 +89,7 @@ router.post(
 // Body/Form-Data (Multer Required): {files, entityType, entityId}
 router.post(
   '/attachments/many',
-  authorizeGlobalRole(GlobalRole.USER),
+  authorizeGlobalRole(OrganizationRole.USER),
   uploadMultipleMiddleware,
   resolveProjectIdForCreateAttachment(prisma),
   checkProjectMembership(),
@@ -103,7 +107,7 @@ router.post(
 // Params: :attachmentId
 router.delete(
   '/attachments/:attachmentId',
-  authorizeGlobalRole(GlobalRole.USER),
+  authorizeGlobalRole(OrganizationRole.USER),
   validateAttachmentExistsAndStore,
   resolveProjectIdForSingleDeletionAndDownload(prisma),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
@@ -120,7 +124,7 @@ router.delete(
 // Body: Array of Id values (attachmentIds), entityId, entityType
 router.delete(
   '/attachments',
-  authorizeGlobalRole(GlobalRole.USER),
+  authorizeGlobalRole(OrganizationRole.USER),
   validateAndSetAttachmentDeleteAndDownloadParams,
   resolveProjectIdForMultipleDeletionAndDownload(prisma),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
@@ -136,7 +140,7 @@ router.delete(
 // Params: :attachmentId
 router.get(
   '/attachments/:attachmentId(\\d+)/download',
-  authorizeGlobalRole(GlobalRole.USER),
+  authorizeGlobalRole(OrganizationRole.USER),
   validateAttachmentExistsAndStore,
   resolveProjectIdForSingleDeletionAndDownload(prisma),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),
@@ -150,7 +154,7 @@ router.get(
 // Body: Array of Ids (attachmentIds), entityId, entityType
 router.post(
   '/attachments/download',
-  authorizeGlobalRole(GlobalRole.USER),
+  authorizeGlobalRole(OrganizationRole.USER),
   validateAndSetAttachmentDeleteAndDownloadParams,
   resolveProjectIdForMultipleDeletionAndDownload(prisma),
   checkProjectMembership({ allowGlobalSuperAdmin: true }),

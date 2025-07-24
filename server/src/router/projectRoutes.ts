@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { GlobalRole, ProjectRole } from '@prisma/client';
+import { OrganizationRole, ProjectRole } from '@prisma/client';
 import { resolveProjectIdFromProject } from '../middleware/projectMiddleware/resolveProjectIdFromProject';
 import prisma from '../lib/prisma';
 
@@ -28,7 +28,7 @@ const router = Router();
 // Get all projects
 router.get(
   '/projects',
-  authorizeGlobalRole(GlobalRole.ADMIN),
+  authorizeGlobalRole(OrganizationRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await getAllProjects(req, res, prisma);
   }
@@ -37,7 +37,7 @@ router.get(
 // Get projects by userId
 router.get(
   '/projects/my-projects',
-  authorizeGlobalRole(GlobalRole.GUEST),
+  authorizeGlobalRole(OrganizationRole.GUEST),
   async (req: Request, res: Response): Promise<void> => {
     await getProjectsByUserId(req, res, prisma);
   }
@@ -56,7 +56,7 @@ router.get(
 // Create project (Become a member of project)
 router.post(
   '/projects',
-  authorizeGlobalRole(GlobalRole.ADMIN),
+  authorizeGlobalRole(OrganizationRole.ADMIN),
   validateBody(projectCreateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await createProject(req, res, prisma);
