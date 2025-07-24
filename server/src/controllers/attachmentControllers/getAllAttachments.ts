@@ -7,7 +7,11 @@ export async function getAllAttachments(
   prisma: PrismaClient
 ) {
   let whereClause:
-    | { entityType?: AttachmentEntityType; entityId?: number }
+    | {
+        entityType?: AttachmentEntityType;
+        entityId?: number;
+        organizationId?: number;
+      }
     | undefined;
   const { entityType, entityId } = req.params;
   const parsedEntityId = parseInt(entityId, 10);
@@ -15,11 +19,13 @@ export async function getAllAttachments(
   const isValidEntity = Object.values(AttachmentEntityType).includes(
     entityType as AttachmentEntityType
   );
+  const organizationId = res.locals.userInfo.organizationId;
 
   if (entityType && entityId && isValidId && isValidEntity) {
     whereClause = {
       entityType: entityType as AttachmentEntityType,
       entityId: parseInt(entityId, 10),
+      organizationId: organizationId,
     };
   } else if (entityType || entityId) {
     res
