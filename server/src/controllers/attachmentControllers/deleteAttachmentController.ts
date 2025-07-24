@@ -15,6 +15,7 @@ export async function deleteAttachment(
     const attachment: Attachment = res.locals.attachment;
     const deletedAttachment: Attachment = { ...attachment };
     const storageType = attachment?.storageType;
+    const organizationId = res.locals.userInfo.organizationId;
     if (storageType === 'LOCAL') {
       // Improve for safety later
       const filePath = attachment?.filePath;
@@ -46,6 +47,7 @@ export async function deleteAttachment(
       action: 'DELETE_ATTACHMENT',
       targetId: deletedAttachment.id,
       targetType: 'ATTACHMENT',
+      organizationId: organizationId,
       metadata: {
         fileName: deletedAttachment.fileName,
         fileType: deletedAttachment.entityType,

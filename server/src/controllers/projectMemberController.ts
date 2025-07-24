@@ -11,9 +11,10 @@ export async function viewProjectMembers(
 ) {
   try {
     const projectId = res.locals.validatedParam;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const projectMemberRecords = await prisma.projectMember.findMany({
-      where: { projectId: projectId },
+      where: { projectId: projectId, organizationId: organizationId },
       include: {
         user: {
           select: {
@@ -36,7 +37,12 @@ export async function viewProjectMembers(
       avatarURL: member.user.avatarSource,
     }));
 
-    res.status(200).json(projectUserPayload);
+    res
+      .status(200)
+      .json({
+        message: 'Project members fetched successfully',
+        data: projectUserPayload,
+      });
     return;
   } catch (error) {
     res
@@ -56,7 +62,8 @@ export async function addProjectMember(
   try {
     // From storeUserAndProjectInfo
     const userInfo = res.locals.userInfo;
-    const { projectId } = req.params;
+    const organizationId = res.locals.userInfo.organizationId;
+    const projectId = res.locals.validatedParam;
     const newProjectMemberData: { userId: number; projectRole: ProjectRole } =
       req.body;
 
@@ -65,10 +72,8 @@ export async function addProjectMember(
       return;
     }
 
-    const projectIdParsed = parseInt(projectId, 10);
-
     const projectExists = await prisma.project.findUnique({
-      where: { id: projectIdParsed },
+      where: { id: projectId, organizationId: organizationId },
       select: { id: true },
     });
     if (!projectExists) {
@@ -77,11 +82,15 @@ export async function addProjectMember(
     }
 
     const newProjectMember = await prisma.projectMember.create({
-      data: { ...newProjectMemberData, projectId: projectIdParsed },
+      data: {
+        ...newProjectMemberData,
+        projectId: projectId,
+        organizationId: organizationId,
+      },
     });
 
     const newUserData = await prisma.user.findUnique({
-      where: { id: newProjectMember.userId },
+      where: { id: newProjectMember.userId, organizationId: organizationId },
       select: {
         id: true,
         firstName: true,
@@ -95,8 +104,9 @@ export async function addProjectMember(
       userId: userInfo?.id,
       actorType: 'USER',
       action: 'ADD_PROJECT_MEMBER',
-      targetId: projectIdParsed,
+      targetId: projectId,
       targetType: 'PROJECT_MEMBER',
+      organizationId: organizationId,
       metadata: {
         firstName_lastName: `${newUserData?.firstName}_${newUserData?.lastName}`,
         email: newUserData?.email,
@@ -125,10 +135,12 @@ export async function removeProjectMember(
     // From storeUserAndProjectInfo
     const userInfo = res.locals.userInfo;
     const { projectId, userId } = res.locals.validatedParams;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const projectMember = await prisma.projectMember.findUnique({
       where: {
         userId_projectId: { projectId: projectId, userId: userId },
+        organizationId: organizationId,
       },
     });
 
@@ -138,7 +150,7 @@ export async function removeProjectMember(
     }
 
     await prisma.projectMember.delete({
-      where: { id: projectMember.id },
+      where: { id: projectMember.id, organizationId: organizationId },
     });
 
     const removedUserData = await prisma.user.findUnique({
@@ -157,6 +169,7 @@ export async function removeProjectMember(
       action: 'REMOVE_PROJECT_MEMBER',
       targetId: removedUserData?.id,
       targetType: 'PROJECT_MEMBER',
+      organizationId: organizationId,
       metadata: {
         projectRole: projectMember.projectRole,
         firstName_lastName: `${removedUserData?.firstName}_${removedUserData?.lastName}`,
@@ -188,10 +201,12 @@ export async function updateProjectMemberRole(
     const userInfo = res.locals.userInfo;
     const { projectId, userId } = res.locals.validatedParams;
     const { projectRole } = res.locals.validatedBody;
+    const organizationId = res.locals.userInfo.organizationId;
 
     const projectMember = await prisma.projectMember.findUnique({
       where: {
         userId_projectId: { projectId: projectId, userId: userId },
+        organizationId: organizationId,
       },
     });
 
@@ -201,7 +216,7 @@ export async function updateProjectMemberRole(
     }
 
     const updatedProjectMember = await prisma.projectMember.update({
-      where: { id: projectMember.id },
+      where: { id: projectMember.id, organizationId: organizationId },
       data: { projectRole },
     });
 
@@ -211,6 +226,7 @@ export async function updateProjectMemberRole(
       action: 'UPDATE_PROJECT_MEMBER_ROLE',
       targetId: projectId,
       targetType: 'PROJECT_MEMBER',
+      organizationId: organizationId,
       metadata: {
         changes: generateDiff(
           { projectRole: projectMember.projectRole },
@@ -220,7 +236,7 @@ export async function updateProjectMemberRole(
     });
 
     res.status(200).json({
-      message: "Project member's role updated successfully",
+      message: 'Project member role updated successfully',
       updatedProjectMember,
     });
     return;
