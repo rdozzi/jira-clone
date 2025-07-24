@@ -5,11 +5,16 @@ import { Prisma } from '@prisma/client';
 export async function deleteLabelDependencies(
   tx: Prisma.TransactionClient,
   labelId: number | null,
-  ticketId: number | null
+  ticketId: number | null,
+  organizationId: number
 ) {
   if (ticketId) {
-    await tx.ticketLabel.deleteMany({ where: { ticketId: ticketId } });
+    await tx.ticketLabel.deleteMany({
+      where: { ticketId: ticketId, organizationId: organizationId },
+    });
   } else if (labelId) {
-    await tx.ticketLabel.deleteMany({ where: { labelId: labelId } });
+    await tx.ticketLabel.deleteMany({
+      where: { labelId: labelId, organizationId: organizationId },
+    });
   }
 }

@@ -7,7 +7,8 @@ export async function deleteBoardService(
   res: Response,
   tx: Prisma.TransactionClient,
   entityId: number,
-  userId: number
+  userId: number,
+  organizationId: number
 ) {
   const boards = await tx.board.findMany({
     where: { projectId: entityId },
@@ -21,7 +22,8 @@ export async function deleteBoardService(
         tx,
         AttachmentEntityType.BOARD,
         boardObj.id,
-        userId
+        userId,
+        organizationId
       );
       await tx.board.delete({ where: { id: boardObj.id } });
     }
@@ -32,6 +34,7 @@ export async function deleteBoardService(
         action: 'DELETE_BOARD',
         targetId: boardObj.id,
         targetType: 'BOARD',
+        organizationId: organizationId,
         metadata: {
           name: boardObj.name,
           description: boardObj.description,

@@ -9,13 +9,15 @@ export async function deleteCommentDependencies(
   tx: Prisma.TransactionClient,
   commentEntity: AttachmentEntityType, // COMMENT
   commentId: number,
-  userId: number
+  userId: number,
+  organizationId: number
 ) {
   await deleteAttachmentsService(
     res,
     tx,
     commentEntity, // COMMENT
     commentId,
-    userId
+    userId,
+    organizationId
   );
 }
