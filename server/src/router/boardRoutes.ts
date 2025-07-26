@@ -43,8 +43,8 @@ router.get(
 router.get(
   '/boards/:projectId/project',
   resolveProjectIdFromBoard(),
-  checkProjectMembership({ allowGlobalSuperAdmin: true }),
-  checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
+  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
+  checkProjectRole(ProjectRole.VIEWER, { allowOrganizationSuperAdmin: true }),
   validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await getBoardsByProjectId(req, res, prisma);
@@ -80,8 +80,8 @@ router.patch(
 router.delete(
   '/boards/:boardId',
   resolveProjectIdFromBoard(),
-  checkProjectMembership({ allowGlobalSuperAdmin: true }),
-  checkProjectRole(ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }),
+  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
+  checkProjectRole(ProjectRole.ADMIN, { allowOrganizationSuperAdmin: true }),
   validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await deleteBoard(req, res, prisma);

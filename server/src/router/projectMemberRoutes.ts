@@ -21,8 +21,8 @@ const router = Router();
 router.get(
   '/projectMembers/:projectId/members',
   resolveProjectIdFromProject(),
-  checkProjectMembership({ allowGlobalSuperAdmin: true }),
-  checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
+  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
+  checkProjectRole(ProjectRole.VIEWER, { allowOrganizationSuperAdmin: true }),
   async (req: Request, res: Response): Promise<void> => {
     await viewProjectMembers(req, res, prisma);
   }

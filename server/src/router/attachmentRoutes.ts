@@ -60,8 +60,8 @@ router.get(
   `/attachments/:entityType(${enumPattern})/:entityId(\\d+)`,
   authorizeGlobalRole(OrganizationRole.USER),
   resolveProjectIdForGetAttachments(prisma),
-  checkProjectMembership({ allowGlobalSuperAdmin: true }),
-  checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
+  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
+  checkProjectRole(ProjectRole.VIEWER, { allowOrganizationSuperAdmin: true }),
   async (req: Request, res: Response): Promise<void> => {
     await getAllAttachments(req, res, prisma);
   }
@@ -110,8 +110,8 @@ router.delete(
   authorizeGlobalRole(OrganizationRole.USER),
   validateAttachmentExistsAndStore,
   resolveProjectIdForSingleDeletionAndDownload(prisma),
-  checkProjectMembership({ allowGlobalSuperAdmin: true }),
-  checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
+  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
+  checkProjectRole(ProjectRole.USER, { allowOrganizationSuperAdmin: true }),
   loadEntityIdAndEntityTypeForSingleDeletion,
   checkTicketOrCommentOwnershipForAttachments,
   checkBoardAndProjectAccess,
@@ -127,8 +127,8 @@ router.delete(
   authorizeGlobalRole(OrganizationRole.USER),
   validateAndSetAttachmentDeleteAndDownloadParams,
   resolveProjectIdForMultipleDeletionAndDownload(prisma),
-  checkProjectMembership({ allowGlobalSuperAdmin: true }),
-  checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
+  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
+  checkProjectRole(ProjectRole.USER, { allowOrganizationSuperAdmin: true }),
   checkTicketOrCommentOwnershipForAttachments,
   checkBoardAndProjectAccess,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -143,8 +143,8 @@ router.get(
   authorizeGlobalRole(OrganizationRole.USER),
   validateAttachmentExistsAndStore,
   resolveProjectIdForSingleDeletionAndDownload(prisma),
-  checkProjectMembership({ allowGlobalSuperAdmin: true }),
-  checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
+  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
+  checkProjectRole(ProjectRole.USER, { allowOrganizationSuperAdmin: true }),
   async (req: Request, res: Response): Promise<void> => {
     await downloadSingleAttachment(req, res);
   }
@@ -157,8 +157,8 @@ router.post(
   authorizeGlobalRole(OrganizationRole.USER),
   validateAndSetAttachmentDeleteAndDownloadParams,
   resolveProjectIdForMultipleDeletionAndDownload(prisma),
-  checkProjectMembership({ allowGlobalSuperAdmin: true }),
-  checkProjectRole(ProjectRole.USER, { allowGlobalSuperAdmin: true }),
+  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
+  checkProjectRole(ProjectRole.USER, { allowOrganizationSuperAdmin: true }),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await downloadMultipleAttachments(req, res, next, prisma);
   }
