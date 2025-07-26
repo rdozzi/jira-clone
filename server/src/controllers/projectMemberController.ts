@@ -37,12 +37,10 @@ export async function viewProjectMembers(
       avatarURL: member.user.avatarSource,
     }));
 
-    res
-      .status(200)
-      .json({
-        message: 'Project members fetched successfully',
-        data: projectUserPayload,
-      });
+    res.status(200).json({
+      message: 'Project members fetched successfully',
+      data: projectUserPayload,
+    });
     return;
   } catch (error) {
     res
@@ -180,7 +178,7 @@ export async function removeProjectMember(
 
     res.status(200).json({
       message: 'Project member removed successfully',
-      removedUserData,
+      data: removedUserData,
     });
     return;
   } catch (error) {
@@ -237,7 +235,7 @@ export async function updateProjectMemberRole(
 
     res.status(200).json({
       message: 'Project member role updated successfully',
-      updatedProjectMember,
+      data: updatedProjectMember,
     });
     return;
   } catch (error) {

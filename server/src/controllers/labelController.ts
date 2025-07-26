@@ -103,7 +103,9 @@ export async function updateLabel(
       },
     });
 
-    res.status(200).json({ message: 'Label updated successfully', newLabel });
+    res
+      .status(200)
+      .json({ message: 'Label updated successfully', data: newLabel });
     return;
   } catch (error) {
     console.error('Error editing label: ', error);
@@ -148,7 +150,7 @@ export async function deleteLabel(
 
     res
       .status(200)
-      .json({ message: 'Label deleted successfully', deletedLabel: oldLabel });
+      .json({ message: 'Label deleted successfully', data: oldLabel });
     return;
   } catch (error) {
     console.error('Error delete label: ', error);

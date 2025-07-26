@@ -83,7 +83,7 @@ export async function createComment(
 
     res
       .status(200)
-      .json({ message: 'Comment uploaded successfully', comment: comment });
+      .json({ message: 'Comment uploaded successfully', data: comment });
     return;
   } catch (error) {
     console.error('Error creating comment: ', error);
@@ -144,7 +144,7 @@ export async function deleteComment(
 
     res.status(200).json({
       message: 'Comment deleted successfully',
-      deletedComment: oldComment,
+      data: oldComment,
     });
     return;
   } catch (error) {
@@ -213,7 +213,7 @@ export async function updateComment(
 
     res
       .status(200)
-      .json({ message: 'Comment updated successfully', updatedComment });
+      .json({ message: 'Comment updated successfully', data: updatedComment });
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
