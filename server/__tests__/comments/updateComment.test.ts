@@ -3,7 +3,8 @@ import request from 'supertest';
 
 import {
   Board,
-  GlobalRole,
+  OrganizationRole,
+  Organization,
   Project,
   Ticket,
   User,
@@ -12,6 +13,7 @@ import {
 } from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createBoard } from '../../src/utilities/testUtilities/createBoard';
@@ -28,32 +30,58 @@ describe('Update Comment', () => {
   let board: Board;
   let ticket: Ticket;
   let comment: Comment;
+  let organization: Organization;
 
   const testDescription = 'updateComment';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.ADMIN
+      OrganizationRole.ADMIN,
+      organization.id
     );
-    project = await createProject(prismaTest, testDescription, user.id);
-    board = await createBoard(prismaTest, testDescription, project.id);
-    ticket = await createTicket(prismaTest, testDescription, board.id, user.id);
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole
+    );
+    project = await createProject(
+      prismaTest,
+      testDescription,
+      user.id,
+      organization.id
+    );
+    board = await createBoard(
+      prismaTest,
+      testDescription,
+      project.id,
+      organization.id
+    );
+    ticket = await createTicket(
+      prismaTest,
+      testDescription,
+      board.id,
+      user.id,
+      organization.id
+    );
     comment = await createComment(
       prismaTest,
       testDescription,
       ticket.id,
-      user.id
+      user.id,
+      organization.id
     );
     await createProjectMember(
       prismaTest,
       project.id,
       user.id,
-      ProjectRole.USER
+      ProjectRole.USER,
+      organization.id
     );
-    token = generateJwtToken(user.id, user.globalRole);
   });
   afterAll(async () => {
     await prismaTest.$disconnect();
@@ -69,13 +97,14 @@ describe('Update Comment', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual(
       expect.objectContaining({
-        updatedComment: {
+        data: {
           id: expect.any(Number),
           ticketId: expect.any(Number),
           authorId: expect.any(Number),
           content: 'Updated content for test',
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
+          organizationId: expect.any(Number),
         },
         message: expect.any(String),
       })

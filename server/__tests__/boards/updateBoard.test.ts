@@ -1,10 +1,18 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
-import { Board, GlobalRole, Project, User, ProjectRole } from '@prisma/client';
+import {
+  Board,
+  Project,
+  User,
+  ProjectRole,
+  Organization,
+  OrganizationRole,
+} from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createBoard } from '../../src/utilities/testUtilities/createBoard';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
@@ -16,25 +24,44 @@ describe('Update Board', () => {
   let user: User;
   let project: Project;
   let board: Board;
+  let organization: Organization;
 
   const testDescription = 'updateBoard';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.ADMIN
+      OrganizationRole.ADMIN,
+      organization.id
     );
-    project = await createProject(prismaTest, testDescription, user.id);
-    board = await createBoard(prismaTest, testDescription, project.id);
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole
+    );
+    project = await createProject(
+      prismaTest,
+      testDescription,
+      user.id,
+      organization.id
+    );
+    board = await createBoard(
+      prismaTest,
+      testDescription,
+      project.id,
+      organization.id
+    );
     await createProjectMember(
       prismaTest,
       project.id,
       user.id,
-      ProjectRole.ADMIN
+      ProjectRole.ADMIN,
+      organization.id
     );
-    token = generateJwtToken(user.id, user.globalRole);
   });
   afterAll(async () => {
     await prismaTest.$disconnect();

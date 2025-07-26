@@ -1,9 +1,16 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
-import { GlobalRole, Project, User, ProjectRole } from '@prisma/client';
+import {
+  OrganizationRole,
+  Organization,
+  Project,
+  User,
+  ProjectRole,
+} from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
@@ -14,23 +21,38 @@ describe('Update Project', () => {
   let token: string;
   let user: User;
   let project: Project;
+  let organization: Organization;
   const testDescription = 'updateProject';
+
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.ADMIN
+      OrganizationRole.ADMIN,
+      organization.id
     );
-    project = await createProject(prismaTest, testDescription, user.id);
+    project = await createProject(
+      prismaTest,
+      testDescription,
+      user.id,
+      organization.id
+    );
     await createProjectMember(
       prismaTest,
       project.id,
       user.id,
-      ProjectRole.ADMIN
+      ProjectRole.ADMIN,
+      organization.id
     );
-    token = generateJwtToken(user.id, user.globalRole);
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole
+    );
   });
   afterAll(async () => {
     await prismaTest.$disconnect();

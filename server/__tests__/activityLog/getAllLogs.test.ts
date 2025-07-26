@@ -2,13 +2,15 @@ import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
 import {
-  GlobalRole,
   User,
   ActorTypeActivity,
   ActivityLog,
+  Organization,
+  OrganizationRole,
 } from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createActivityLog } from '../../src/utilities/testUtilities/createActivityLog';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
@@ -18,16 +20,24 @@ describe('getAllLogs', () => {
   const testDescription = 'getAllLogs';
   let user: User;
   let token: string;
+  let organization: Organization;
 
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.ADMIN
+      OrganizationRole.ADMIN,
+      organization.id
     );
-    token = generateJwtToken(user.id, user.globalRole);
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole
+    );
     await createActivityLog(
       prismaTest,
       testDescription,
@@ -35,7 +45,8 @@ describe('getAllLogs', () => {
       ActorTypeActivity.USER,
       1,
       'TICKET',
-      1
+      1,
+      organization.id
     );
     await createActivityLog(
       prismaTest,
@@ -44,7 +55,8 @@ describe('getAllLogs', () => {
       ActorTypeActivity.USER,
       2,
       'BOARD',
-      2
+      2,
+      organization.id
     );
   });
   afterAll(async () => {
@@ -55,9 +67,10 @@ describe('getAllLogs', () => {
     const res = await request(app)
       .get('/api/activity-logs/all')
       .set('Authorization', `Bearer ${token}`);
-    const logs: ActivityLog = res.body.filter((log: ActivityLog) =>
+    const logs: ActivityLog[] = res.body.data.filter((log: ActivityLog) =>
       ['TICKET_getAllLogs_1', 'BOARD_getAllLogs_2'].includes(log.action)
     );
+
     expect(res.status).toBe(200);
     expect(logs).toEqual(
       expect.arrayContaining([

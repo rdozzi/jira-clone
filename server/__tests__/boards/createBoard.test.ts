@@ -1,10 +1,16 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
-import { GlobalRole, User, ProjectRole, Project } from '@prisma/client';
+import {
+  User,
+  ProjectRole,
+  Project,
+  Organization,
+  OrganizationRole,
+} from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
-
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
@@ -15,22 +21,36 @@ describe('Create a board', () => {
   let token: string;
   let user: User;
   let project: Project;
+  let organization: Organization;
   const testDescription = 'createABoard';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.USER
+      OrganizationRole.ADMIN,
+      organization.id
     );
-    token = generateJwtToken(user.id, user.globalRole);
-    project = await createProject(prismaTest, testDescription, user.id);
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole
+    );
+    project = await createProject(
+      prismaTest,
+      testDescription,
+      user.id,
+      organization.id
+    );
     await createProjectMember(
       prismaTest,
       project.id,
       user.id,
-      ProjectRole.ADMIN
+      ProjectRole.ADMIN,
+      organization.id
     );
   });
   afterAll(async () => {
@@ -57,6 +77,7 @@ describe('Create a board', () => {
           description: expect.any(String),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
+          organizationId: expect.any(Number),
         },
         message: expect.any(String),
       })

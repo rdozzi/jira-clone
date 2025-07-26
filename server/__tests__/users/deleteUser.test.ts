@@ -4,7 +4,8 @@ import waitForExpect from 'wait-for-expect';
 
 import {
   Board,
-  GlobalRole,
+  OrganizationRole,
+  Organization,
   Project,
   Ticket,
   User,
@@ -13,6 +14,7 @@ import {
 } from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createBoard } from '../../src/utilities/testUtilities/createBoard';
@@ -31,34 +33,56 @@ describe('Delete a user', () => {
   let ticket: Ticket;
   let comment: Comment;
   let attachment: Attachment;
+  let organization: Organization;
 
   const testDescription = 'deleteAUser';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user1 = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.ADMIN
+      OrganizationRole.ADMIN,
+      organization.id
     );
     user2 = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
-    project = await createProject(prismaTest, testDescription, user2.id);
-    board = await createBoard(prismaTest, testDescription, project.id);
+    token = generateJwtToken(
+      user1.id,
+      user1.globalRole,
+      user1.organizationId,
+      user1.organizationRole
+    );
+    project = await createProject(
+      prismaTest,
+      testDescription,
+      user2.id,
+      organization.id
+    );
+    board = await createBoard(
+      prismaTest,
+      testDescription,
+      project.id,
+      organization.id
+    );
     ticket = await createTicket(
       prismaTest,
       testDescription,
       board.id,
-      user2.id
+      user2.id,
+      organization.id
     );
     comment = await createComment(
       prismaTest,
       testDescription,
       ticket.id,
-      user2.id
+      user2.id,
+      organization.id
     );
     attachment = await createTestAttachment(
       prismaTest,
@@ -66,9 +90,9 @@ describe('Delete a user', () => {
       comment.id,
       'COMMENT',
       user2.id,
-      'jpg'
+      'jpg',
+      organization.id
     );
-    token = generateJwtToken(user1.id, user1.globalRole);
   });
   afterAll(async () => {
     await prismaTest.$disconnect();

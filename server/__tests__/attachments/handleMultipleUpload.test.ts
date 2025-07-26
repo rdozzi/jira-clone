@@ -3,18 +3,19 @@ import request from 'supertest';
 import dotenv from 'dotenv';
 
 import {
-  GlobalRole,
   User,
   ProjectRole,
   Ticket,
   Comment,
   Attachment,
+  OrganizationRole,
+  Organization,
 } from '@prisma/client';
 import { app } from '../../src/app';
 import path from 'path';
 import fs from 'fs/promises';
 import { prismaTest } from '../../src/lib/prismaTestClient';
-
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
@@ -33,35 +34,56 @@ describe('handleMultipleUpload', () => {
   let token: string;
   let ticket: Ticket | undefined;
   let comment: Comment;
+  let organization: Organization;
 
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user1 = await createUserProfile(
       prismaTest,
       `${testDescription}_user1`,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
-    token = generateJwtToken(user1.id, user1.globalRole);
-    const project = await createProject(prismaTest, testDescription, user1.id);
-    const board = await createBoard(prismaTest, testDescription, project.id);
+    token = generateJwtToken(
+      user1.id,
+      user1.globalRole,
+      user1.organizationId,
+      user1.organizationRole
+    );
+    const project = await createProject(
+      prismaTest,
+      testDescription,
+      user1.id,
+      organization.id
+    );
+    const board = await createBoard(
+      prismaTest,
+      testDescription,
+      project.id,
+      organization.id
+    );
     ticket = await createTicket(
       prismaTest,
       testDescription,
       board.id,
-      user1.id
+      user1.id,
+      organization.id
     );
     comment = await createComment(
       prismaTest,
       testDescription,
       ticket.id,
-      user1.id
+      user1.id,
+      organization.id
     );
     await createProjectMember(
       prismaTest,
       project.id,
       user1.id,
-      ProjectRole.USER
+      ProjectRole.USER,
+      organization.id
     );
   });
 

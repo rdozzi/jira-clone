@@ -1,9 +1,17 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
-import { GlobalRole, Ticket, User, Label, ProjectRole } from '@prisma/client';
+import {
+  OrganizationRole,
+  Organization,
+  Ticket,
+  User,
+  Label,
+  ProjectRole,
+} from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createBoard } from '../../src/utilities/testUtilities/createBoard';
@@ -18,25 +26,51 @@ describe('Add label to Ticket', () => {
   let user: User;
   let ticket: Ticket;
   let label: Label;
+  let organization: Organization;
   const testDescription = 'Add label to Ticket';
+
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
-    token = generateJwtToken(user.id, user.globalRole);
-    const project = await createProject(prismaTest, testDescription, user.id);
-    const board = await createBoard(prismaTest, testDescription, project.id);
-    ticket = await createTicket(prismaTest, testDescription, board.id, user.id);
-    label = await createLabel(prismaTest, 'label', '#FF0000');
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole
+    );
+    const project = await createProject(
+      prismaTest,
+      testDescription,
+      user.id,
+      organization.id
+    );
+    const board = await createBoard(
+      prismaTest,
+      testDescription,
+      project.id,
+      organization.id
+    );
+    ticket = await createTicket(
+      prismaTest,
+      testDescription,
+      board.id,
+      user.id,
+      organization.id
+    );
+    label = await createLabel(prismaTest, 'label', '#FF0000', organization.id);
     await createProjectMember(
       prismaTest,
       project.id,
       user.id,
-      ProjectRole.USER
+      ProjectRole.USER,
+      organization.id
     );
   });
   afterAll(async () => {
@@ -49,11 +83,12 @@ describe('Add label to Ticket', () => {
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(201);
     expect(res.body).toEqual({
-      ticketLabelPair: {
+      data: {
         ticketId: ticket.id,
         labelId: label.id,
+        organizationId: organization.id,
       },
-      message: 'Label addition to ticket successful',
+      message: 'Label added to ticket successfully',
     });
   });
 });

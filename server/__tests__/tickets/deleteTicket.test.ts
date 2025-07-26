@@ -13,9 +13,11 @@ import {
   Attachment,
   ProjectRole,
   Label,
+  Organization,
 } from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createBoard } from '../../src/utilities/testUtilities/createBoard';
@@ -38,29 +40,60 @@ describe('Delete a ticket', () => {
   let attachment: Attachment;
   let label1: Label;
   let label2: Label;
+  let organization: Organization;
 
   const testDescription = 'deleteATicket';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.USER
+      GlobalRole.USER,
+      organization.id
     );
-    project = await createProject(prismaTest, testDescription, user.id);
-    project = { ...project, ownerId: user.id };
-    board = await createBoard(prismaTest, testDescription, project.id);
-    ticket = await createTicket(prismaTest, testDescription, board.id, user.id);
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole
+    );
+    project = await createProject(
+      prismaTest,
+      testDescription,
+      user.id,
+      organization.id
+    );
+    board = await createBoard(
+      prismaTest,
+      testDescription,
+      project.id,
+      organization.id
+    );
+    ticket = await createTicket(
+      prismaTest,
+      testDescription,
+      board.id,
+      user.id,
+      organization.id
+    );
     comment1 = await createComment(
       prismaTest,
       `${testDescription}_1`,
       ticket.id,
-      user.id
+      user.id,
+      organization.id
     );
 
     // Comment 2
-    await createComment(prismaTest, `${testDescription}_2`, ticket.id, user.id);
+    await createComment(
+      prismaTest,
+      `${testDescription}_2`,
+      ticket.id,
+      user.id,
+      organization.id
+    );
 
     attachment = await createTestAttachment(
       prismaTest,
@@ -68,21 +101,32 @@ describe('Delete a ticket', () => {
       comment1.id,
       'COMMENT',
       user.id,
-      'jpg'
+      'jpg',
+      organization.id
     );
     await createProjectMember(
       prismaTest,
       project.id,
       user.id,
-      ProjectRole.USER
+      ProjectRole.USER,
+      organization.id
     );
 
-    label1 = await createLabel(prismaTest, 'test label 1', '#AAA123');
-    label2 = await createLabel(prismaTest, 'test label 2', '#E74C3C');
+    label1 = await createLabel(
+      prismaTest,
+      'test label 1',
+      '#AAA123',
+      organization.id
+    );
+    label2 = await createLabel(
+      prismaTest,
+      'test label 2',
+      '#E74C3C',
+      organization.id
+    );
 
-    await createTicketLabel(prismaTest, ticket.id, label1.id);
-    await createTicketLabel(prismaTest, ticket.id, label2.id);
-    token = generateJwtToken(user.id, user.globalRole);
+    await createTicketLabel(prismaTest, ticket.id, label1.id, organization.id);
+    await createTicketLabel(prismaTest, ticket.id, label2.id, organization.id);
   });
 
   it('should delete a ticket', async () => {

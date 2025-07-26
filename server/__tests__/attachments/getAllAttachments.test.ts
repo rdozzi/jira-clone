@@ -4,7 +4,8 @@ import request from 'supertest';
 import dotenv from 'dotenv';
 
 import {
-  GlobalRole,
+  Organization,
+  OrganizationRole,
   User,
   ProjectRole,
   Ticket,
@@ -14,7 +15,7 @@ import {
 } from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
-
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
@@ -38,58 +39,87 @@ describe('getAllAttachment', () => {
   let tokenUser3: string;
   let ticket: Ticket | undefined;
   let comment: Comment;
+  let organization: Organization;
 
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user1 = await createUserProfile(
       prismaTest,
       `${testDescription}_user1`,
-      GlobalRole.ADMIN
+      OrganizationRole.ADMIN,
+      organization.id
     );
 
     user2 = await createUserProfile(
       prismaTest,
       `${testDescription}_user2`,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
 
     user3 = await createUserProfile(
       prismaTest,
       `${testDescription}_user3`,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
 
-    tokenUser1 = generateJwtToken(user1.id, user1.globalRole);
-    tokenUser3 = generateJwtToken(user2.id, user2.globalRole);
-    const project = await createProject(prismaTest, testDescription, user1.id);
-    const board = await createBoard(prismaTest, testDescription, project.id);
+    tokenUser1 = generateJwtToken(
+      user1.id,
+      user1.globalRole,
+      user1.organizationId,
+      user1.organizationRole
+    );
+    tokenUser3 = generateJwtToken(
+      user2.id,
+      user2.globalRole,
+      user2.organizationId,
+      user2.organizationRole
+    );
+    const project = await createProject(
+      prismaTest,
+      testDescription,
+      user1.id,
+      organization.id
+    );
+    const board = await createBoard(
+      prismaTest,
+      testDescription,
+      project.id,
+      organization.id
+    );
     ticket = await createTicket(
       prismaTest,
       testDescription,
       board.id,
-      user1.id
+      user1.id,
+      organization.id
     );
 
     comment = await createComment(
       prismaTest,
       testDescription,
       ticket.id,
-      user1.id
+      user1.id,
+      organization.id
     );
 
     await createProjectMember(
       prismaTest,
       project.id,
       user2.id,
-      ProjectRole.USER
+      ProjectRole.USER,
+      organization.id
     );
 
     await createProjectMember(
       prismaTest,
       project.id,
       user3.id,
-      ProjectRole.VIEWER
+      ProjectRole.VIEWER,
+      organization.id
     );
 
     attachment1 = await createTestAttachment(
@@ -98,7 +128,8 @@ describe('getAllAttachment', () => {
       ticket.id,
       AttachmentEntityType.TICKET,
       user2.id,
-      'txt'
+      'txt',
+      organization.id
     );
 
     attachment2 = await createTestAttachment(
@@ -107,7 +138,8 @@ describe('getAllAttachment', () => {
       comment.id,
       AttachmentEntityType.COMMENT,
       user2.id,
-      'jpg'
+      'jpg',
+      organization.id
     );
   });
 

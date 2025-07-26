@@ -2,7 +2,8 @@ import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
 import {
-  GlobalRole,
+  OrganizationRole,
+  Organization,
   User,
   ProjectRole,
   Status,
@@ -12,7 +13,7 @@ import {
 } from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
-
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
@@ -24,23 +25,43 @@ describe('Create a ticket', () => {
   let token: string;
   let user: User;
   let board: Board;
+  let organization: Organization;
+
   const testDescription = 'createATicket';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
-    token = generateJwtToken(user.id, user.globalRole);
-    const project = await createProject(prismaTest, testDescription, user.id);
-    board = await createBoard(prismaTest, testDescription, project.id);
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole
+    );
+    const project = await createProject(
+      prismaTest,
+      testDescription,
+      user.id,
+      organization.id
+    );
+    board = await createBoard(
+      prismaTest,
+      testDescription,
+      project.id,
+      organization.id
+    );
     await createProjectMember(
       prismaTest,
       project.id,
       user.id,
-      ProjectRole.USER
+      ProjectRole.USER,
+      organization.id
     );
   });
   afterAll(async () => {
@@ -79,6 +100,7 @@ describe('Create a ticket', () => {
           dueDate: expect.any(String),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
+          organizationId: expect.any(Number),
         },
         message: expect.any(String),
       })
