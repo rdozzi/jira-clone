@@ -131,7 +131,7 @@ model User {
   globalRole       GlobalRole       @default(USER)
   avatarSource     String?          @default("NA") @db.VarChar(2048)
   isBanned         Boolean          @default(false)
-  organizationId   Int
+  organizationId   Int?
   createdAt        DateTime         @default(now()) @db.Timestamptz()
   updatedAt        DateTime         @updatedAt @db.Timestamptz()
   deletedAt        DateTime?        @db.Timestamptz()
@@ -150,7 +150,7 @@ model User {
   projectMemberships ProjectMember[]
 
   //Other Relationships
-  Organization Organization @relation(fields: [organizationId], references: [id])
+  Organization Organization? @relation(fields: [organizationId], references: [id])
 }
 
 model Attachment {
