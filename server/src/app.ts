@@ -7,6 +7,7 @@ import { authenticate } from './middleware/authAndLoadInfoMiddleware/authenticat
 import { globalLogMiddleware } from './middleware/logMiddleware';
 import { loadUserProjects } from './middleware/authAndLoadInfoMiddleware/loadUserProjects';
 import { storeUserAndProjectInfo } from './middleware/authAndLoadInfoMiddleware/storeUserAndProjectInfo';
+import { globalRateLimiter, routeRateLimiter } from './middleware/rateLimiter';
 
 // Routes
 import attachmentRoutes from './router/attachmentRoutes';
@@ -28,12 +29,15 @@ export const app: Application = express();
 app.use(express.json());
 app.use(cors());
 
+// Global rate limiter middleware
+app.use(globalRateLimiter);
+
 // ActivityLog middleware
 app.use(globalLogMiddleware());
 
 // Public routes
-app.use('/api', setupRoutes);
-app.use('/api', authRoutes);
+app.use('/api/setup', routeRateLimiter, setupRoutes);
+app.use('/api/auth', routeRateLimiter, authRoutes);
 
 // Authentication middleware (for protected routes)
 app.use(authenticate);
