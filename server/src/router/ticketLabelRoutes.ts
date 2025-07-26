@@ -18,8 +18,8 @@ const router = Router();
 router.get(
   '/ticket-labels/:ticketId',
   resolveProjectIdForTicketRoute(),
-  checkProjectMembership({ allowGlobalSuperAdmin: true }),
-  checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
+  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
+  checkProjectRole(ProjectRole.VIEWER, { allowOrganizationSuperAdmin: true }),
   validateParams,
   getLabelByTicket(prisma)
 );
@@ -38,8 +38,8 @@ router.post(
 router.delete(
   '/ticket-labels/:ticketId/:labelId',
   resolveProjectIdForTicketRoute(),
-  checkProjectMembership({ allowGlobalSuperAdmin: true }),
-  checkProjectRole(ProjectRole.VIEWER, { allowGlobalSuperAdmin: true }),
+  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
+  checkProjectRole(ProjectRole.VIEWER, { allowOrganizationSuperAdmin: true }),
   validateMultipleParams,
   deleteLabelFromTicket(prisma)
 );

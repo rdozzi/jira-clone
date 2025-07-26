@@ -67,8 +67,8 @@ router.post(
 router.patch(
   '/projects/:projectId',
   resolveProjectIdFromProject(),
-  checkProjectMembership({ allowGlobalSuperAdmin: true }),
-  checkProjectRole(ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }),
+  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
+  checkProjectRole(ProjectRole.ADMIN, { allowOrganizationSuperAdmin: true }),
   validateBody(projectUpdateSchema),
   validateParams,
   async (req: Request, res: Response): Promise<void> => {
@@ -80,8 +80,8 @@ router.patch(
 router.delete(
   '/projects/:projectId',
   resolveProjectIdFromProject(),
-  checkProjectMembership({ allowGlobalSuperAdmin: true }),
-  checkProjectRole(ProjectRole.ADMIN, { allowGlobalSuperAdmin: true }),
+  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
+  checkProjectRole(ProjectRole.ADMIN, { allowOrganizationSuperAdmin: true }),
   validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await deleteProject(req, res, prisma);
