@@ -4,7 +4,7 @@ import { hasRequiredProjectRole } from '../lib/roles';
 
 export function checkProjectRole(
   requiredRole: ProjectRole,
-  options?: { allowGlobalSuperAdmin?: boolean }
+  options?: { allowOrganizationSuperAdmin?: boolean }
 ) {
   return (req: Request, res: Response, next: NextFunction): void => {
     // res.locals.userProjectDetails derived from checkProjectMembership
@@ -16,11 +16,11 @@ export function checkProjectRole(
       | undefined = res.locals.userProjectDetails;
 
     // res.locals.userInfo.globalRole derived from storeUserAndProjectInfo
-    const globalRole = res.locals.userInfo.globalRole;
+    const organizationRole = res.locals.userInfo.organizationRole;
 
     if (
-      options?.allowGlobalSuperAdmin &&
-      globalRole === OrganizationRole.SUPERADMIN
+      options?.allowOrganizationSuperAdmin &&
+      organizationRole === OrganizationRole.SUPERADMIN
     ) {
       next();
       return;
