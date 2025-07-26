@@ -7,7 +7,7 @@ type UserProject = {
 };
 
 export function checkProjectMembership(options?: {
-  allowGlobalSuperAdmin?: boolean;
+  allowOrganizationSuperAdmin?: boolean;
 }) {
   return async (
     req: Request,
@@ -17,7 +17,7 @@ export function checkProjectMembership(options?: {
     try {
       // User id and globalRole from storeUserAndProjectInfo
       const userId = res.locals.userInfo?.id;
-      const globalRole = res.locals.userInfo.globalRole;
+      const organizationRole = res.locals.userInfo.organizationRole;
       // User project associations from loadUserProjects
       const userProjects = res.locals.userProjects;
       // Current projectId from resolveProjectIdFor[route]
@@ -32,10 +32,11 @@ export function checkProjectMembership(options?: {
 
       // SuperAdmin bypass check
       if (
-        options?.allowGlobalSuperAdmin &&
-        globalRole === OrganizationRole.SUPERADMIN
+        options?.allowOrganizationSuperAdmin &&
+        organizationRole === OrganizationRole.SUPERADMIN
       ) {
-        return next();
+        next();
+        return;
       }
 
       if (!userProjects) {

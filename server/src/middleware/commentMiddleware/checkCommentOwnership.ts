@@ -3,7 +3,7 @@ import { OrganizationRole } from '@prisma/client';
 import prisma from '../../lib/prisma';
 
 export function checkCommentOwnership(options?: {
-  allowGlobalSuperAdmin?: boolean;
+  allowOrganizationSuperAdmin?: boolean;
 }) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const commentId = parseInt(req.params.commentId, 10);
@@ -14,12 +14,12 @@ export function checkCommentOwnership(options?: {
     }
 
     const userId = res.locals.userInfo.id;
-    const globalRole = res.locals.userInfo.globalRole;
+    const organizationRole = res.locals.userInfo.organizationRole;
 
     // SuperAdmin bypass check
     if (
-      options?.allowGlobalSuperAdmin &&
-      globalRole === OrganizationRole.SUPERADMIN
+      options?.allowOrganizationSuperAdmin &&
+      organizationRole === OrganizationRole.SUPERADMIN
     ) {
       return next();
     }
