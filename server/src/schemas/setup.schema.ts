@@ -13,3 +13,10 @@ export const seedSuperAdminSchema = z.object({
   password: passwordSchema,
   organizationName: organizationNameSchema,
 });
+
+export const seedSuperUserSchema = z.object({
+  email: emailSchema,
+  firstName: nameSchema,
+  lastName: nameSchema,
+  password: passwordSchema,
+});
