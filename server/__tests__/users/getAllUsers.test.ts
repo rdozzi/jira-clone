@@ -1,9 +1,10 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
-import { User, GlobalRole } from '@prisma/client';
+import { User, Organization, OrganizationRole } from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
@@ -12,34 +13,46 @@ describe('Get all users', () => {
   let token: string;
   let user1: User;
   const testDescription = 'getAllUsers';
+  let organization: Organization;
+
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user1 = await createUserProfile(
       prismaTest,
       `${testDescription}_1`,
-      GlobalRole.ADMIN
+      OrganizationRole.ADMIN,
+      organization.id
     );
     //user 2
     await createUserProfile(
       prismaTest,
       `${testDescription}_2`,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
     //user 3
     await createUserProfile(
       prismaTest,
       `${testDescription}_3`,
-      GlobalRole.GUEST
+      OrganizationRole.GUEST,
+      organization.id
     );
     //user 4
     await createUserProfile(
       prismaTest,
       `${testDescription}_4`,
-      GlobalRole.GUEST
+      OrganizationRole.GUEST,
+      organization.id
     );
 
-    token = generateJwtToken(user1.id, user1.globalRole);
+    token = generateJwtToken(
+      user1.id,
+      user1.globalRole,
+      user1.organizationId,
+      user1.organizationRole
+    );
   });
   afterAll(async () => {
     await prismaTest.$disconnect();

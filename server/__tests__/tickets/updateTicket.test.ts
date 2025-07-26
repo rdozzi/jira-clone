@@ -3,7 +3,8 @@ import request from 'supertest';
 
 import {
   Board,
-  GlobalRole,
+  OrganizationRole,
+  Organization,
   Project,
   Ticket,
   User,
@@ -11,6 +12,7 @@ import {
 } from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createBoard } from '../../src/utilities/testUtilities/createBoard';
@@ -25,26 +27,51 @@ describe('Update Ticket', () => {
   let project: Project;
   let board: Board;
   let ticket: Ticket;
+  let organization: Organization;
 
   const testDescription = 'updateTicket';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.ADMIN
+      OrganizationRole.ADMIN,
+      organization.id
     );
-    project = await createProject(prismaTest, testDescription, user.id);
-    board = await createBoard(prismaTest, testDescription, project.id);
-    ticket = await createTicket(prismaTest, testDescription, board.id, user.id);
+    project = await createProject(
+      prismaTest,
+      testDescription,
+      user.id,
+      organization.id
+    );
+    board = await createBoard(
+      prismaTest,
+      testDescription,
+      project.id,
+      organization.id
+    );
+    ticket = await createTicket(
+      prismaTest,
+      testDescription,
+      board.id,
+      user.id,
+      organization.id
+    );
     await createProjectMember(
       prismaTest,
       project.id,
       user.id,
-      ProjectRole.USER
+      ProjectRole.USER,
+      organization.id
     );
-    token = generateJwtToken(user.id, user.globalRole);
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole
+    );
   });
   afterAll(async () => {
     await prismaTest.$disconnect();

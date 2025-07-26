@@ -1,9 +1,16 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
-import { GlobalRole, User, Project, ProjectRole } from '@prisma/client';
+import {
+  OrganizationRole,
+  Organization,
+  User,
+  Project,
+  ProjectRole,
+} from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
@@ -16,26 +23,42 @@ describe('Add project member', () => {
   let user2: User;
   let project: Project;
   const testDescription = 'Add project member';
+  let organization: Organization;
+
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user1 = await createUserProfile(
       prismaTest,
       `${testDescription}_1`,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
     user2 = await createUserProfile(
       prismaTest,
       `${testDescription}_2`,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
-    token = generateJwtToken(user1.id, user1.globalRole);
-    project = await createProject(prismaTest, testDescription, user1.id);
+    token = generateJwtToken(
+      user1.id,
+      user1.globalRole,
+      user1.organizationId,
+      user1.organizationRole
+    );
+    project = await createProject(
+      prismaTest,
+      testDescription,
+      user1.id,
+      organization.id
+    );
     await createProjectMember(
       prismaTest,
       project.id,
       user1.id,
-      ProjectRole.ADMIN
+      ProjectRole.ADMIN,
+      organization.id
     );
   });
   afterAll(async () => {
@@ -56,6 +79,7 @@ describe('Add project member', () => {
         projectId: project.id,
         userId: user2.id,
         projectRole: ProjectRole.VIEWER,
+        organizationId: expect.any(Number),
       },
       message: 'Project member added successfully',
     });

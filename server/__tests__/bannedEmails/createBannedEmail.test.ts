@@ -1,9 +1,15 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
-import { GlobalRole, User, BannedEmail } from '@prisma/client';
+import {
+  User,
+  BannedEmail,
+  OrganizationRole,
+  Organization,
+} from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createBannedEmail } from '../../src/utilities/testUtilities/createBannedEmail';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
@@ -13,21 +19,30 @@ describe('createBannedEmail', () => {
   let token: string;
   let user: User;
   let bannedEmail: BannedEmail;
+  let organization: Organization;
   const testDescription = 'createBannedEmail';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.ADMIN
+      OrganizationRole.ADMIN,
+      organization.id
     );
-    token = generateJwtToken(user.id, user.globalRole);
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole
+    );
     bannedEmail = await createBannedEmail(
       prismaTest,
       testDescription,
       1,
-      'Banned Email 1'
+      'Banned Email 1',
+      organization.id
     );
   });
   afterAll(async () => {

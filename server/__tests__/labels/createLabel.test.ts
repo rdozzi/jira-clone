@@ -1,9 +1,10 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
-import { GlobalRole, User } from '@prisma/client';
+import { OrganizationRole, Organization, User } from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
@@ -11,16 +12,24 @@ import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtT
 describe('createLabel', () => {
   let token: string;
   let user: User;
+  let organization: Organization;
   const testDescription = 'createLabel';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.ADMIN
+      OrganizationRole.ADMIN,
+      organization.id
     );
-    token = generateJwtToken(user.id, user.globalRole);
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole
+    );
   });
   afterAll(async () => {
     await prismaTest.$disconnect();
@@ -33,12 +42,13 @@ describe('createLabel', () => {
       .send({ name: `${testDescription}_label`, color: '#FF0000' });
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
-      message: 'Label successfully created',
+      message: 'Label created successfully',
       label: {
         id: expect.any(Number),
         name: `Createlabel_label`, // Hard-coded to satisfy test purposes
         color: '#FF0000',
         createdAt: expect.any(String),
+        organizationId: expect.any(Number),
       },
     });
   });

@@ -4,11 +4,12 @@ import request from 'supertest';
 import dotenv from 'dotenv';
 
 import {
-  GlobalRole,
+  Organization,
   User,
   ProjectRole,
   Ticket,
   Attachment,
+  OrganizationRole,
 } from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
@@ -16,6 +17,7 @@ import { unlink } from 'fs/promises';
 
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createBoard } from '../../src/utilities/testUtilities/createBoard';
 import { createTicket } from '../../src/utilities/testUtilities/createTicket';
@@ -32,30 +34,50 @@ describe('downloadMultipleAttachments', () => {
   let user1: User;
   let token: string;
   let ticket: Ticket | undefined;
+  let organization: Organization;
   // let filePath: string;
 
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user1 = await createUserProfile(
       prismaTest,
       `${testDescription}_user1`,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
-    token = generateJwtToken(user1.id, user1.globalRole);
-    const project = await createProject(prismaTest, testDescription, user1.id);
-    const board = await createBoard(prismaTest, testDescription, project.id);
+    token = generateJwtToken(
+      user1.id,
+      user1.globalRole,
+      user1.organizationId,
+      user1.organizationRole
+    );
+    const project = await createProject(
+      prismaTest,
+      testDescription,
+      user1.id,
+      organization.id
+    );
+    const board = await createBoard(
+      prismaTest,
+      testDescription,
+      project.id,
+      organization.id
+    );
     ticket = await createTicket(
       prismaTest,
       testDescription,
       board.id,
-      user1.id
+      user1.id,
+      organization.id
     );
     await createProjectMember(
       prismaTest,
       project.id,
       user1.id,
-      ProjectRole.USER
+      ProjectRole.USER,
+      organization.id
     );
 
     attachments = await createTestAttachments(
@@ -65,7 +87,8 @@ describe('downloadMultipleAttachments', () => {
       ticket.id,
       'TICKET',
       user1.id,
-      'pdf'
+      'pdf',
+      organization.id
     );
 
     attachmentIds = attachments.map((attachment) => {

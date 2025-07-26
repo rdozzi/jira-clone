@@ -2,15 +2,13 @@ import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 import dotenv from 'dotenv';
 
-import { GlobalRole, User } from '@prisma/client';
+import { OrganizationRole, Organization, User } from '@prisma/client';
 import { app } from '../../src/app';
 import path from 'path';
 import fs from 'fs/promises';
 import { prismaTest } from '../../src/lib/prismaTestClient';
-
-// import { createProject } from '../../src/utilities/testUtilities/createProject';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
-// import { createTestAttachment } from '../../src/utilities/testUtilities/createAttachments';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 
@@ -24,23 +22,36 @@ describe('Update User Avatar', () => {
   let token2: string;
   let avatarSource1: string;
   let avatarSource2: string;
+  let organization: Organization;
 
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
-    // project = await createProject(prismaTest, testDescription);
+    organization = await createOrganization(prismaTest, testDescription);
     user1 = await createUserProfile(
       prismaTest,
       `${testDescription}_user1`,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
     user2 = await createUserProfile(
       prismaTest,
       `${testDescription}_user2`,
-      GlobalRole.ADMIN
+      OrganizationRole.ADMIN,
+      organization.id
     );
-    token1 = generateJwtToken(user1.id, user1.globalRole);
-    token2 = generateJwtToken(user2.id, user2.globalRole);
+    token1 = generateJwtToken(
+      user1.id,
+      user1.globalRole,
+      user1.organizationId,
+      user1.organizationRole
+    );
+    token2 = generateJwtToken(
+      user2.id,
+      user2.globalRole,
+      user2.organizationId,
+      user2.organizationRole
+    );
   });
 
   it("should upload a single attachment for a user's avatar", async () => {

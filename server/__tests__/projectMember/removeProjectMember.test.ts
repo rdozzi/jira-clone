@@ -2,9 +2,16 @@ import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 
-import { GlobalRole, User, Project, ProjectRole } from '@prisma/client';
+import {
+  User,
+  Project,
+  ProjectRole,
+  OrganizationRole,
+  Organization,
+} from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
@@ -16,34 +23,51 @@ describe('Remove project member', () => {
   let user1: User;
   let user2: User;
   let project: Project;
+  let organization: Organization;
   const testDescription = 'Remove project member';
+
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user1 = await createUserProfile(
       prismaTest,
       `${testDescription}_1`,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
     user2 = await createUserProfile(
       prismaTest,
       `${testDescription}_2`,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
-    token = generateJwtToken(user1.id, user1.globalRole);
-    project = await createProject(prismaTest, testDescription, user1.id);
+    token = generateJwtToken(
+      user1.id,
+      user1.globalRole,
+      user1.organizationId,
+      user1.organizationRole
+    );
+    project = await createProject(
+      prismaTest,
+      testDescription,
+      user1.id,
+      organization.id
+    );
     await createProjectMember(
       prismaTest,
       project.id,
       user1.id,
-      ProjectRole.ADMIN
+      ProjectRole.ADMIN,
+      organization.id
     );
 
     await createProjectMember(
       prismaTest,
       project.id,
       user2.id,
-      ProjectRole.VIEWER
+      ProjectRole.VIEWER,
+      organization.id
     );
   });
   afterAll(async () => {
@@ -56,7 +80,7 @@ describe('Remove project member', () => {
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
-      removedUserData: {
+      data: {
         id: expect.any(Number),
         firstName: expect.any(String),
         lastName: expect.any(String),

@@ -1,9 +1,10 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
-import { GlobalRole, User } from '@prisma/client';
+import { User, OrganizationRole, Organization } from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 
@@ -16,13 +17,16 @@ import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDa
 describe('Login Auth Route', () => {
   const testDescription = 'Login_Auth_Route';
   let user: User;
+  let organization: Organization;
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.ADMIN
+      OrganizationRole.ADMIN,
+      organization.id
     );
   });
   afterAll(async () => {
@@ -40,7 +44,9 @@ describe('Login Auth Route', () => {
       message: 'Login successful',
       userId: expect.any(Number),
       email: expect.any(String),
-      userRole: expect.any(String),
+      globalRole: expect.any(String),
+      organizationRole: expect.any(String),
+      organizationId: expect.any(Number),
       token: expect.any(String),
       expiresIn: expect.any(Number),
     });

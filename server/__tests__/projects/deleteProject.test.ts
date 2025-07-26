@@ -5,7 +5,8 @@ import waitForExpect from 'wait-for-expect';
 
 import {
   Board,
-  GlobalRole,
+  OrganizationRole,
+  Organization,
   Project,
   Ticket,
   User,
@@ -17,6 +18,7 @@ import {
 } from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createBoard } from '../../src/utilities/testUtilities/createBoard';
@@ -48,50 +50,71 @@ describe('Delete a board', () => {
   let label2: Label;
   let ticketLabelPairsAfterDelete1: TicketLabel | null;
   let ticketLabelPairsAfterDelete2: TicketLabel | null;
+  let organization: Organization;
 
   const testDescription = 'deleteABoard';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       testDescription,
-      GlobalRole.USER
+      OrganizationRole.USER,
+      organization.id
     );
-    project = await createProject(prismaTest, testDescription, user.id);
-    board1 = await createBoard(prismaTest, `${testDescription}_1`, project.id);
-    board2 = await createBoard(prismaTest, `${testDescription}_2`, project.id);
+    project = await createProject(
+      prismaTest,
+      testDescription,
+      user.id,
+      organization.id
+    );
+    board1 = await createBoard(
+      prismaTest,
+      `${testDescription}_1`,
+      project.id,
+      organization.id
+    );
+    board2 = await createBoard(
+      prismaTest,
+      `${testDescription}_2`,
+      project.id,
+      organization.id
+    );
     ticket1 = await createTicket(
       prismaTest,
       testDescription,
       board1.id,
-      user.id
+      user.id,
+      organization.id
     );
     ticket2 = await createTicket(
       prismaTest,
       testDescription,
       board2.id,
-      user.id
+      user.id,
+      organization.id
     );
     ticket3 = await createTicket(
       prismaTest,
       testDescription,
       board2.id,
-      user.id
+      user.id,
+      organization.id
     );
     comment1 = await createComment(
       prismaTest,
       `${testDescription}_1`,
       ticket1.id,
-      user.id
+      user.id,
+      organization.id
     );
-
-    // Comment 2
     comment2 = await createComment(
       prismaTest,
       `${testDescription}_2`,
       ticket2.id,
-      user.id
+      user.id,
+      organization.id
     );
 
     attachment1 = await createTestAttachment(
@@ -100,7 +123,8 @@ describe('Delete a board', () => {
       comment1.id,
       'COMMENT',
       user.id,
-      'jpg'
+      'jpg',
+      organization.id
     );
 
     attachment2 = await createTestAttachment(
@@ -109,7 +133,8 @@ describe('Delete a board', () => {
       ticket1.id,
       'TICKET',
       user.id,
-      'pdf'
+      'pdf',
+      organization.id
     );
 
     attachment3 = await createTestAttachment(
@@ -118,7 +143,8 @@ describe('Delete a board', () => {
       board1.id,
       'BOARD',
       user.id,
-      'png'
+      'png',
+      organization.id
     );
 
     attachment4 = await createTestAttachment(
@@ -127,22 +153,39 @@ describe('Delete a board', () => {
       board1.id,
       'PROJECT',
       user.id,
-      'png'
+      'png',
+      organization.id
     );
 
     await createProjectMember(
       prismaTest,
       project.id,
       user.id,
-      ProjectRole.ADMIN
+      ProjectRole.ADMIN,
+      organization.id
     );
 
-    label1 = await createLabel(prismaTest, 'test label 1', '#AAA123');
-    label2 = await createLabel(prismaTest, 'test label 2', '#E74C3C');
+    label1 = await createLabel(
+      prismaTest,
+      'test label 1',
+      '#AAA123',
+      organization.id
+    );
+    label2 = await createLabel(
+      prismaTest,
+      'test label 2',
+      '#E74C3C',
+      organization.id
+    );
 
-    await createTicketLabel(prismaTest, ticket1.id, label1.id);
-    await createTicketLabel(prismaTest, ticket2.id, label2.id);
-    token = generateJwtToken(user.id, user.globalRole);
+    await createTicketLabel(prismaTest, ticket1.id, label1.id, organization.id);
+    await createTicketLabel(prismaTest, ticket2.id, label2.id, organization.id);
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole
+    );
   });
 
   it('should delete a project and all of its dependencies', async () => {
@@ -160,6 +203,7 @@ describe('Delete a board', () => {
         isPublic: expect.any(Boolean),
         createdAt: expect.any(String),
         updatedAt: expect.any(String),
+        organizationId: expect.any(Number),
       },
       message: 'Project deleted successfully',
     });

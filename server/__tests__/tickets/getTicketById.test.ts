@@ -1,9 +1,16 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 
-import { User, GlobalRole, Ticket, ProjectRole } from '@prisma/client';
+import {
+  User,
+  OrganizationRole,
+  Organization,
+  Ticket,
+  ProjectRole,
+} from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
+import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createBoard } from '../../src/utilities/testUtilities/createBoard';
@@ -16,30 +23,50 @@ describe('Get ticket by Id', () => {
   let token: string;
   let user: User;
   let ticket1: Ticket;
+  let organization: Organization;
   const testDescription = 'getTicketById';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
+    organization = await createOrganization(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
       `${testDescription}_1`,
-      GlobalRole.ADMIN
+      OrganizationRole.ADMIN,
+      organization.id
     );
-    const project = await createProject(prismaTest, testDescription, user.id);
-    const board = await createBoard(prismaTest, testDescription, project.id);
+    const project = await createProject(
+      prismaTest,
+      testDescription,
+      user.id,
+      organization.id
+    );
+    const board = await createBoard(
+      prismaTest,
+      testDescription,
+      project.id,
+      organization.id
+    );
     ticket1 = await createTicket(
       prismaTest,
       `${testDescription}_1`,
       board.id,
-      user.id
+      user.id,
+      organization.id
     );
     await createProjectMember(
       prismaTest,
       project.id,
       user.id,
-      ProjectRole.ADMIN
+      ProjectRole.ADMIN,
+      organization.id
     );
-    token = generateJwtToken(user.id, user.globalRole);
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole
+    );
   });
   afterAll(async () => {
     await prismaTest.$disconnect();
@@ -63,6 +90,7 @@ describe('Get ticket by Id', () => {
       dueDate: null,
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
+      organizationId: expect.any(Number),
     });
   });
 });
