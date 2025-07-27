@@ -8,7 +8,7 @@ const router = Router();
 
 // Login user
 router.post(
-  '/auth/login',
+  '/login',
   validateBody(authCredentialCheckSchema),
   async (req: Request, res: Response): Promise<void> => {
     await loginUser(req, res, prisma);
@@ -16,10 +16,7 @@ router.post(
 );
 
 // Lougout user
-router.post(
-  '/auth/logout',
-  async (req: Request, res: Response): Promise<void> => {
-    await logoutUser(req, res);
-  }
-);
+router.post('/logout', async (req: Request, res: Response): Promise<void> => {
+  await logoutUser(req, res);
+});
 export default router;

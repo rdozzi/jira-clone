@@ -10,7 +10,7 @@ import {
 const router = Router();
 
 router.post(
-  '/setup/seedSuperAdmin',
+  '/seedSuperAdmin',
   validateBody(seedSuperAdminSchema),
   async (req: Request, res: Response): Promise<void> => {
     await seedOrganizationAndSuperAdmin(req, res, prisma);
@@ -18,7 +18,7 @@ router.post(
 );
 
 router.post(
-  '/setup/seedSuperUser',
+  '/seedSuperUser',
   validateBody(seedSuperUserSchema),
   async (req: Request, res: Response): Promise<void> => {
     await seedOrganizationAndSuperAdmin(req, res, prisma);
