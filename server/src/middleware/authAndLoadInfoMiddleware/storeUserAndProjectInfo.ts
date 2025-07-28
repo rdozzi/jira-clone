@@ -7,27 +7,14 @@ function storeUserAndProjectInfoFn(
   res: Response,
   next: NextFunction
 ): void {
-  const userId = req.user?.id;
-  const userGlobalRole = req.user?.globalRole;
+  const { id, globalRole, organizationId, organizationRole } = req.user!;
   const userProjects = req.userProjects;
-  const userOrganizationRole = req.user?.organizationRole;
-  const userOrganizationId = req.user?.organizationId;
-
-  if (
-    !userId ||
-    !userGlobalRole ||
-    !userOrganizationRole ||
-    !userOrganizationId
-  ) {
-    res.status(401).json({ message: 'Unauthorized: Invalid user credentials' });
-    return;
-  }
 
   res.locals.userInfo = {
-    id: userId,
-    globalRole: userGlobalRole,
-    organizationId: userOrganizationId,
-    organizationRole: userOrganizationRole,
+    id: id,
+    globalRole: globalRole,
+    organizationId: organizationId,
+    organizationRole: organizationRole,
   };
 
   res.locals.userProjects = userProjects;
