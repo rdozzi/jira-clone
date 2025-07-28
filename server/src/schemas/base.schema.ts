@@ -1,11 +1,12 @@
 import { z } from 'zod';
 import {
-  GlobalRole,
+  OrganizationRole,
   ProjectRole,
   AttachmentEntityType,
   Status,
   Priority,
   Type,
+  GlobalRole,
 } from '@prisma/client';
 import LeoProfanity from 'leo-profanity';
 
@@ -154,6 +155,17 @@ export const organizationNameSchema = z
     { error: 'Comment contains prohibited language.' }
   )
   .transform((val) => val.replace(/\s+/g, ' ').trim());
+
+export const organizationRoleSchema = z
+  .string('A string is required')
+  .trim()
+  .toUpperCase()
+  .refine(
+    (val) => Object.values(OrganizationRole).includes(val as OrganizationRole),
+    {
+      message: 'Invalid global role',
+    }
+  );
 
 export const passwordAuthSchema = z
   .string('Invalid credentials')
