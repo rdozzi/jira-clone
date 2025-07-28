@@ -45,8 +45,9 @@ describe('Create a user', () => {
         firstName: 'Leonard',
         lastName: 'Nimoy',
         password: 'Test1234!',
-        globalRole: OrganizationRole.USER,
+        organizationRole: OrganizationRole.USER,
       });
+
     expect(res.status).toBe(201);
     expect(res.body).toEqual(
       expect.objectContaining({
@@ -63,8 +64,10 @@ describe('Create a user', () => {
           updatedAt: expect.any(String),
           deletedAt: null,
           isDeleted: false,
+          organizationId: expect.any(Number),
+          organizationRole: expect.any(String),
         },
-        message: 'User successfully created.',
+        message: 'User created successfully',
       })
     );
   });

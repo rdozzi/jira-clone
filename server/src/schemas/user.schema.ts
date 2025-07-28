@@ -3,7 +3,7 @@ import {
   emailSchema,
   nameSchema,
   passwordSchema,
-  globalRoleSchema,
+  organizationRoleSchema,
 } from './base.schema';
 
 export const createUserSchema = z
@@ -12,7 +12,7 @@ export const createUserSchema = z
     firstName: nameSchema,
     lastName: nameSchema,
     password: passwordSchema,
-    globalRole: globalRoleSchema,
+    organizationRole: organizationRoleSchema,
   })
   .strict();
 

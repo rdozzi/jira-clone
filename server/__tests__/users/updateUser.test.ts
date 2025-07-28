@@ -47,7 +47,7 @@ describe('Update user', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual(
       expect.objectContaining({
-        newUser: {
+        data: {
           id: expect.any(Number),
           firstName: 'James',
           lastName: 'Brown',
@@ -60,6 +60,8 @@ describe('Update user', () => {
           updatedAt: expect.any(String),
           deletedAt: null,
           isDeleted: false,
+          organizationId: expect.any(Number),
+          organizationRole: expect.any(String),
         },
         message: expect.any(String),
       })

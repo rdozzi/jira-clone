@@ -3,15 +3,15 @@ import { OrganizationRole } from '@prisma/client';
 
 export function authorizeSelfOrAdminWithRoleCheck() {
   return (req: Request, res: Response, next: NextFunction) => {
-    const { id: requestUserId, globalRole: requestUserGlobalRole } =
+    const { id: requestUserId, organizationRole: requestUserOrganizationRole } =
       res.locals.userInfo;
     const { userId } = req.params;
-    const { globalRole } = req.body;
+    const { organizationRole } = req.body;
 
     const userIdParsed = parseInt(userId, 10);
     const isAdmin =
-      requestUserGlobalRole === OrganizationRole.ADMIN ||
-      requestUserGlobalRole === OrganizationRole.SUPERADMIN;
+      requestUserOrganizationRole === OrganizationRole.ADMIN ||
+      requestUserOrganizationRole === OrganizationRole.SUPERADMIN;
     const isSelf = requestUserId === userIdParsed;
 
     // Authorization check
@@ -21,7 +21,7 @@ export function authorizeSelfOrAdminWithRoleCheck() {
     }
 
     // Self role change prevention
-    if (isSelf && globalRole) {
+    if (isSelf && organizationRole) {
       res
         .status(403)
         .json({ error: 'Unauthorized to change your own global role.' });

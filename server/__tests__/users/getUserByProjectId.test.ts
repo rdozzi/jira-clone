@@ -87,7 +87,7 @@ describe('Get user by project id', () => {
           firstName: expect.any(String),
           lastName: expect.any(String),
           email: expect.any(String),
-          globalRole: expect.any(String),
+          organizationRole: expect.any(String),
         }),
       ])
     );

@@ -63,11 +63,13 @@ describe('Update User Avatar', () => {
       .patch(`/api/users/${user1.id}/avatar`)
       .set('Authorization', `Bearer ${token1}`)
       .attach('file', filePathUpload);
+    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.message).toEqual('User avatar updated successfully');
-    expect(res.body.avatarSource).toEqual(expect.any(String));
-    avatarSource1 = res.body.avatarSource;
+    expect(res.body.data.avatarSource).toEqual(expect.any(String));
+    avatarSource1 = res.body.data.avatarSource;
   });
+
   it("should upload a single attachment for a user's avatar as a non-self admin", async () => {
     const filePathUpload = path.join(
       __dirname,
@@ -79,8 +81,8 @@ describe('Update User Avatar', () => {
       .attach('file', filePathUpload);
     expect(res.status).toBe(200);
     expect(res.body.message).toEqual('User avatar updated successfully');
-    expect(res.body.avatarSource).toEqual(expect.any(String));
-    avatarSource2 = res.body.avatarSource;
+    expect(res.body.data.avatarSource).toEqual(expect.any(String));
+    avatarSource2 = res.body.data.avatarSource;
   });
   afterAll(async () => {
     if (avatarSource1) {
