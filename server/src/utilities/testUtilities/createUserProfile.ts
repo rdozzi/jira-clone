@@ -7,7 +7,7 @@ export async function createUserProfile(
   organizationRole: OrganizationRole,
   organizationId: number
 ) {
-  const email = `global_${organizationRole}_${testDescription}@example.com`;
+  const email = `organizationUser_${organizationRole}_${testDescription}@example.com`;
   const user = await prismaTest.user.findUnique({
     where: { email: email },
   });
@@ -17,7 +17,7 @@ export async function createUserProfile(
   } else {
     const user = await prismaTest.user.create({
       data: {
-        email: `global_${organizationRole}_${testDescription}@example.com`,
+        email: `organizationUser_${organizationRole}_${testDescription}@example.com`,
         firstName: `User_${testDescription}_firstName`,
         lastName: `User_${testDescription}_lastName`,
         passwordHash: await hashPassword('seedPassword123'),
