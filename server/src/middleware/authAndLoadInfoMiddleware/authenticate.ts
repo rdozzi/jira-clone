@@ -18,6 +18,11 @@ function authenticateFn(req: CustomRequest, res: Response, next: NextFunction) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
     const payload = decoded as DecodedTokenPayload;
+
+    if (!payload.id || !payload.globalRole) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
     req.user = {
       id: payload.id,
       globalRole: payload.globalRole,
