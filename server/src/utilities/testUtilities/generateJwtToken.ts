@@ -4,8 +4,8 @@ import { GlobalRole, OrganizationRole } from '@prisma/client';
 export function generateJwtToken(
   userId: number,
   globalRole: GlobalRole,
-  organizationId: number,
-  organizationRole: OrganizationRole
+  organizationId: number | null,
+  organizationRole: OrganizationRole | null
 ) {
   const token = jwt.sign(
     {
