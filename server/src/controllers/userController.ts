@@ -14,11 +14,14 @@ export async function getAllUsers(
   prisma: PrismaClient
 ) {
   try {
+    console.log('getAllUsers', 'Inside Function');
     const organizationId = res.locals.userInfo.organizationId;
     const users = await prisma.user.findMany({
       where: { organizationId: organizationId },
     });
-    res.status(200).json({ message: 'Users fetched successfully', users });
+    res
+      .status(200)
+      .json({ message: 'Users fetched successfully', data: users });
     return;
   } catch (error) {
     console.error('Error fetching users: ', error);
@@ -92,7 +95,7 @@ export async function getUserByProjectId(
             firstName: true,
             lastName: true,
             email: true,
-            globalRole: true,
+            organizationRole: true,
           },
         },
       },
@@ -178,8 +181,16 @@ export async function updateUser(
     const oldUser = await prisma.user.findUnique({
       where: { id: userId, organizationId: organizationId },
     });
-    if (!oldUser) {
+
+    if (!oldUser || oldUser.isDeleted || oldUser.deletedAt) {
       res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    if (oldUser.isBanned) {
+      res
+        .status(404)
+        .json({ error: 'Banned user information cannot be udpated' });
       return;
     }
 
@@ -202,10 +213,13 @@ export async function updateUser(
       metadata: {
         name: `${newUser.firstName}_${newUser.lastName}`,
         changes,
+        timeStamp: new Date().toISOString(),
       },
     });
 
-    res.status(200).json({ message: 'User updated successfully', newUser });
+    res
+      .status(200)
+      .json({ message: 'User updated successfully', data: newUser });
     return;
   } catch (error) {
     console.error('Error editing user: ', error);
@@ -256,7 +270,7 @@ export async function deleteUser(
     });
 
     res.status(200).json({
-      message: `User deleted successfully. Date ${deletedUserData.deletedAt} added to deletedAt`,
+      message: `User deleted successfully. Deleted at ${deletedUserData.deletedAt}`,
       data: {
         id: deletedUserData.id,
         name: `${deletedUserData.firstName} ${deletedUserData.lastName}`,

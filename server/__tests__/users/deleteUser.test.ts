@@ -55,8 +55,8 @@ describe('Delete a user', () => {
     token = generateJwtToken(
       user1.id,
       user1.globalRole,
-      user1.organizationId,
-      user1.organizationRole
+      user1!.organizationId,
+      user1!.organizationRole
     );
     project = await createProject(
       prismaTest,
@@ -103,7 +103,7 @@ describe('Delete a user', () => {
       .patch(`/api/users/${user2.id}/soft-delete`)
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
-    expect(res.body.message).toContain('Soft delete action successful');
+    expect(res.body.message).toContain('User deleted successfully');
     await waitForExpect(async () => {
       //User
 
