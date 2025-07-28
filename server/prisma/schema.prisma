@@ -127,7 +127,7 @@ model User {
   lastName         String?           @db.VarChar(150)
   email            String            @unique @db.VarChar(255)
   passwordHash     String
-  organizationRole OrganizationRole? @default(USER)
+  organizationRole OrganizationRole?
   globalRole       GlobalRole        @default(USER)
   avatarSource     String?           @default("NA") @db.VarChar(2048)
   isBanned         Boolean           @default(false)
