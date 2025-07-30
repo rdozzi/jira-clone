@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { AttachmentEntityType, PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { deleteTicketDependencies } from '../services/deletionServices/deleteTicketDependencies';
@@ -181,7 +181,7 @@ export async function deleteTicket(
       await deleteTicketDependencies(
         res,
         tx,
-        'TICKET',
+        AttachmentEntityType.TICKET,
         ticketId,
         userId,
         organizationId

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { AttachmentEntityType, Prisma, PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { deleteBoardDependencies } from '../services/deletionServices/deleteBoardDependencies';
@@ -231,7 +231,7 @@ export async function deleteBoard(
       await deleteBoardDependencies(
         res,
         tx,
-        'BOARD',
+        AttachmentEntityType.BOARD,
         boardId,
         userId,
         organizationId
