@@ -20,6 +20,7 @@ export const ticketCreateSchema = z
     reporterId: numberIdSchema,
     boardId: numberIdSchema,
     dueDate: isoDateStringSchema,
+    organizationId: numberIdSchema.optional(),
   })
   .strict();
 
