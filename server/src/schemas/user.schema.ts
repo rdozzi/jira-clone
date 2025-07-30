@@ -6,7 +6,7 @@ import {
   organizationRoleSchema,
 } from './base.schema';
 
-export const createUserSchema = z
+export const userCreateSchema = z
   .object({
     email: emailSchema,
     firstName: nameSchema,
@@ -16,4 +16,4 @@ export const createUserSchema = z
   })
   .strict();
 
-export const updateUserSchema = createUserSchema.partial().strict();
+export const userUpdateSchema = userCreateSchema.partial().strict();
