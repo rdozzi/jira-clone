@@ -205,6 +205,8 @@ export const projectRoleSchema = z
     message: 'Invalid project role',
   });
 
+export const resourceSchema = z.string().trim().toUpperCase();
+
 export const ticketStatusSchema = z
   .string('A string is required')
   .trim()
