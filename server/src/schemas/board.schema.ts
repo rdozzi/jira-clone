@@ -10,6 +10,7 @@ export const boardCreateSchema = z
     name: boardNameSchema,
     description: boardDescriptionSchema,
     projectId: numberIdSchema,
+    organizationId: numberIdSchema.optional(),
   })
   .strict();
 
