@@ -19,7 +19,7 @@ import { uploadSingleMiddleware } from '../middleware/attachments/uploadMiddlewa
 import { validateQuery } from '../middleware/validation/validateQuery';
 import { validateParams } from '../middleware/validation/validateParams';
 import { validateBody } from '../middleware/validation/validateBody';
-import { createUserSchema, updateUserSchema } from '../schemas/user.schema';
+import { userCreateSchema, userUpdateSchema } from '../schemas/user.schema';
 const router = Router();
 
 // Get all users
@@ -57,7 +57,7 @@ router.get(
 router.post(
   '/users',
   authorizeGlobalRole(OrganizationRole.ADMIN),
-  validateBody(createUserSchema),
+  validateBody(userCreateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await createUser(req, res, prisma);
   }
@@ -78,7 +78,7 @@ router.patch(
   '/users/:userId/update',
   authorizeSelfOrAdminWithRoleCheck(),
   validateParams,
-  validateBody(updateUserSchema),
+  validateBody(userUpdateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await updateUser(req, res, prisma);
   }

@@ -1,11 +1,12 @@
 import { z } from 'zod';
 import { numberIdSchema, commentContentSchema } from './base.schema';
 
-export const createCommentSchema = z
+export const commentCreateSchema = z
   .object({
     ticketId: numberIdSchema,
     content: commentContentSchema,
+    organizationId: numberIdSchema.optional(),
   })
   .strict();
 
-export const updateUserSchema = createCommentSchema.partial().strict();
+export const commentUpdateSchema = commentCreateSchema.partial().strict();

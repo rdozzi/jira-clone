@@ -14,8 +14,8 @@ import {
 } from '../controllers/commentController';
 import { resolveProjectIdFromComment } from '../middleware/commentMiddleware/resolveProjectIdFromComment';
 import { validateBody } from '../middleware/validation/validateBody';
-import { createCommentSchema } from '../schemas/comment.schema';
-import { updateUserSchema } from '../schemas/comment.schema';
+import { commentCreateSchema } from '../schemas/comment.schema';
+import { commentUpdateSchema } from '../schemas/comment.schema';
 import { validateParams } from '../middleware/validation/validateParams';
 
 const router = Router();
@@ -47,7 +47,7 @@ router.post(
   resolveProjectIdFromComment(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
-  validateBody(createCommentSchema),
+  validateBody(commentCreateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await createComment(req, res, prisma);
   }
@@ -74,7 +74,7 @@ router.patch(
   checkProjectRole(ProjectRole.USER, { allowOrganizationSuperAdmin: true }),
   checkCommentOwnership({ allowOrganizationSuperAdmin: true }),
   validateParams,
-  validateBody(updateUserSchema),
+  validateBody(commentUpdateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await updateComment(req, res, prisma);
   }
