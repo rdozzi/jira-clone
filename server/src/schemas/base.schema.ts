@@ -167,6 +167,11 @@ export const organizationRoleSchema = z
     }
   );
 
+export const otpSchema = z
+  .string()
+  .length(6, { message: 'OTP must be 6 digits long' })
+  .regex(/^\d+$/, { message: 'OTP must contain only digits' });
+
 export const passwordAuthSchema = z
   .string('Invalid credentials')
   .min(1, 'Invalid credentials')
