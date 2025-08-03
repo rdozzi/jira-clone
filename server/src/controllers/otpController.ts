@@ -7,8 +7,7 @@ export async function createOTPHash(req: Request, res: Response) {
   try {
     const EXPIRE_TIME = 60 * 5;
 
-    // const email = res.locals.validatedBody;
-    const email: string = `test@email.com`;
+    const { email } = res.locals.validatedBody;
     const otpValue: string = generateOTP();
     await connectRedis();
 
@@ -21,11 +20,19 @@ export async function createOTPHash(req: Request, res: Response) {
 
     const clientPayload = await redisClient.hGetAll(`otpPayload:${email}`);
 
-    sendOTPEmail(clientPayload.email, clientPayload.otpValue);
+    const messageId = await sendOTPEmail(
+      clientPayload.email,
+      clientPayload.otpValue
+    );
 
-    res
-      .status(200)
-      .json({ message: 'Function Successful', data: clientPayload });
+    res.status(200).json({
+      message: 'OTP generation successful',
+      data: {
+        email: clientPayload.email,
+        otpValue: clientPayload.otpValue,
+        messageId: messageId,
+      },
+    });
   } catch (error) {
     console.error('Redis test failed:', error);
     res.status(500).json({ error: 'Redis test failed' });
