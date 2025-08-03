@@ -6,15 +6,27 @@ import {
 } from '../controllers/setupController';
 import { validateBody } from '../middleware/validation/validateBody';
 import {
-  seedSuperAdminSchema,
+  seedOrganizationSchema,
   // seedSuperUserSchema,
 } from '../schemas/setup.schema';
+import { verifyRecaptchaToken } from '../middleware/setupMiddleware/verifyRecaptchaToken';
+import verifyOTP from '../middleware/setupMiddleware/verifyOTP';
+import { verifyEmail } from '../middleware/setupMiddleware/verifyEmail';
+import { attemptCountLimiter } from '../middleware/setupMiddleware/attemptCountLimiter';
+import { isBlocked } from '../middleware/setupMiddleware/isBlocked';
+import { checkHoneypot } from '../middleware/setupMiddleware/checkHoneyPot';
 
 const router = Router();
 
 router.post(
   '/seedSuperAdmin',
-  validateBody(seedSuperAdminSchema),
+  checkHoneypot(),
+  validateBody(seedOrganizationSchema),
+  isBlocked(),
+  verifyRecaptchaToken(),
+  attemptCountLimiter(),
+  verifyEmail(),
+  verifyOTP(),
   async (req: Request, res: Response): Promise<void> => {
     await seedOrganizationAndSuperAdmin(req, res, prisma);
   }
