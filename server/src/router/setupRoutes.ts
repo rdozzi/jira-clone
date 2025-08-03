@@ -14,7 +14,7 @@ import verifyOTP from '../middleware/setupMiddleware/verifyOTP';
 import { verifyEmail } from '../middleware/setupMiddleware/verifyEmail';
 import { attemptCountLimiter } from '../middleware/setupMiddleware/attemptCountLimiter';
 import { isBlocked } from '../middleware/setupMiddleware/isBlocked';
-import { checkHoneypot } from '../middleware/setupMiddleware/checkHoneyPot';
+import { checkHoneypot } from '../middleware/setupMiddleware/checkHoneypot';
 
 const router = Router();
 
