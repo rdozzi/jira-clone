@@ -8,8 +8,9 @@ const user = process.env.ETHEREAL_USER;
 const password = process.env.ETHEREAL_PASS;
 
 export async function sendOTPEmail(email: string, otp: string) {
+  let transporter;
   try {
-    const transporter = nodemailer.createTransport({
+    transporter = nodemailer.createTransport({
       host: 'smtp.ethereal.email',
       port: 587,
       secure: false,
@@ -31,7 +32,12 @@ export async function sendOTPEmail(email: string, otp: string) {
 
     console.log('Message sent: %s', info.messageId);
     console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    return info.messageId;
   } catch (error) {
     console.error('Email transaction failed', error);
+  } finally {
+    if (transporter) {
+      transporter.close();
+    }
   }
 }
