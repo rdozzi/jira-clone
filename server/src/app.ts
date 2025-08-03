@@ -25,6 +25,7 @@ import superUserProfileRoutes from './router/superUserProfileRoutes';
 import ticketLabelRoutes from './router/ticketLabelRoutes';
 import ticketRoutes from './router/ticketRoutes';
 import userRoutes from './router/userRoutes';
+import otpRoutes from './router/otpRoutes';
 
 export const app: Application = express();
 
@@ -38,6 +39,7 @@ app.use(globalRateLimiter);
 app.use(globalLogMiddleware());
 
 // Public routes
+app.use('/api', otpRoutes);
 app.use('/api/setup', routeRateLimiter, setupRoutes);
 app.use('/api/auth', routeRateLimiter, authRoutes);
 
