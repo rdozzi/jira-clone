@@ -15,6 +15,7 @@ import { verifyEmail } from '../middleware/setupMiddleware/verifyEmail';
 import { attemptCountLimiter } from '../middleware/setupMiddleware/attemptCountLimiter';
 import { isBlocked } from '../middleware/setupMiddleware/isBlocked';
 import { checkHoneypot } from '../middleware/setupMiddleware/checkHoneypot';
+import { checkDisposableDomains } from '../middleware/setupMiddleware/checkDisposableDomains';
 
 const router = Router();
 
@@ -25,6 +26,7 @@ router.post(
   isBlocked(),
   verifyRecaptchaToken(),
   attemptCountLimiter(),
+  checkDisposableDomains(),
   verifyEmail(),
   verifyOTP(),
   async (req: Request, res: Response): Promise<void> => {
