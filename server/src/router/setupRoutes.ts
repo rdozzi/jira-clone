@@ -10,7 +10,7 @@ import {
   // seedSuperUserSchema,
 } from '../schemas/setup.schema';
 import { verifyRecaptchaToken } from '../middleware/setupMiddleware/verifyRecaptchaToken';
-import verifyOTP from '../middleware/setupMiddleware/verifyOTP';
+import { verifyOTP } from '../middleware/setupMiddleware/verifyOTP';
 import { verifyEmail } from '../middleware/setupMiddleware/verifyEmail';
 import { attemptCountLimiter } from '../middleware/setupMiddleware/attemptCountLimiter';
 import { isBlocked } from '../middleware/setupMiddleware/isBlocked';
@@ -19,7 +19,7 @@ import { checkHoneypot } from '../middleware/setupMiddleware/checkHoneypot';
 const router = Router();
 
 router.post(
-  '/seedSuperAdmin',
+  '/seedOrganizationAndSuperAdmin',
   checkHoneypot(),
   validateBody(seedOrganizationSchema),
   isBlocked(),
