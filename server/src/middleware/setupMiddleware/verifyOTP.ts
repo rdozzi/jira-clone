@@ -8,17 +8,22 @@ export function verifyOTP() {
     const { email, otp } = res.locals.validatedBody;
 
     const otpKey = `otpPayload:${email}`;
+    const blockedEmail = `blockedEmail:${email}`;
+    const attemptKey = `attemptPayload:${email}`;
     const otpPayload = await redisClient.hGetAll(otpKey);
 
-    if (otpPayload.email !== email || otpPayload.otp !== otp) {
+    if (
+      otpPayload.email !== email ||
+      String(otpPayload.otpValue) !== String(otp)
+    ) {
       res.status(401).json({ message: 'OTP authentication failed' });
       return;
     }
 
     await redisClient.del(otpKey);
+    await redisClient.del(blockedEmail);
+    await redisClient.del(attemptKey);
 
     next();
   };
 }
-
-export default verifyOTP;
