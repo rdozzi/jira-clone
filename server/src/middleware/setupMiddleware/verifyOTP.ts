@@ -1,15 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import { redisClient, connectRedis } from '../../lib/connectRedis';
+import { deleteKeysService } from '../../services/setupServices/deleteKeysService';
 
 export function verifyOTP() {
   return async (req: Request, res: Response, next: NextFunction) => {
     await connectRedis();
 
+    const timeInSeconds = 60 * 60 * 24; // 1 day
     const { email, otp } = res.locals.validatedBody;
 
     const otpKey = `otpPayload:${email}`;
-    const blockedEmail = `blockedEmail:${email}`;
-    const attemptKey = `attemptPayload:${email}`;
+    await redisClient.expire(otpKey, timeInSeconds, 'NX');
     const otpPayload = await redisClient.hGetAll(otpKey);
 
     if (
@@ -20,9 +21,7 @@ export function verifyOTP() {
       return;
     }
 
-    await redisClient.del(otpKey);
-    await redisClient.del(blockedEmail);
-    await redisClient.del(attemptKey);
+    await deleteKeysService(email);
 
     next();
   };

@@ -12,6 +12,7 @@ export function attemptCountLimiter() {
     const attemptKey = `attemptPayload:${email}`;
     const blockedEmailKey = `blockedEmail:${email}`;
     await redisClient.expire(attemptKey, timeInSeconds, 'NX');
+    await redisClient.expire(blockedEmailKey, timeInSeconds, 'NX');
     await redisClient.incr(attemptKey);
 
     if (Number(await redisClient.get(attemptKey)) >= 5) {
