@@ -21,14 +21,18 @@ interface OTPPayload {
 describe('Test seed organization and SuperAdmin route', () => {
   const testDescription = 'seedOrganizationAndSuperAdminRoute';
   const goodEmail = 'rdozzi84@gmail.com';
-  // const thirdPartyFailEmail = 'test@guerrillamail.com';
+  const thirdPartyFailEmail = 'test@guerrillamail.com';
   // const frequencyFailEmail = 'test@example.com';
-  let otpPayload: OTPPayload;
+  let otpPayload1: OTPPayload;
+  let otpPayload2: OTPPayload;
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     await connectRedis();
-    otpPayload = (await createOTP(goodEmail)) as unknown as OTPPayload;
+    otpPayload1 = (await createOTP(goodEmail)) as unknown as OTPPayload;
+    otpPayload2 = (await createOTP(
+      thirdPartyFailEmail
+    )) as unknown as OTPPayload;
   });
   afterAll(async () => {
     await prismaTest.$disconnect();
@@ -43,9 +47,8 @@ describe('Test seed organization and SuperAdmin route', () => {
         lastName: 'LastName',
         password: 'TestPassword123!',
         organizationName: `${testDescription}`,
-        otp: otpPayload.otpValue,
+        otp: otpPayload1.otpValue,
       });
-    console.log(res.body);
     expect(res.status).toBe(201);
     expect(res.body.message).toEqual(
       `Organization and user created successfully`
@@ -75,21 +78,24 @@ describe('Test seed organization and SuperAdmin route', () => {
       organizationRole: expect.any(String),
     });
   });
-  // it('it should fail due to a suspicious looking email', async () => {
-  //   const res = await request(app)
-  //     .post('/api/setup/seedOrganizationAndSuperAdmin')
-  //     .send({
-  //       email: thirdPartyFailEmail,
-  //       firstName: 'FirstName',
-  //       lastName: 'LastName',
-  //       password: 'TestPassword123!',
-  //       organizationName: `${testDescription}`,
-  //       otp: otpPayload.otpValue,
-  //     });
+  it('it should fail due to a suspicious looking email', async () => {
+    const res = await request(app)
+      .post('/api/setup/seedOrganizationAndSuperAdmin')
+      .send({
+        email: thirdPartyFailEmail,
+        firstName: 'FirstName',
+        lastName: 'LastName',
+        password: 'TestPassword123!',
+        organizationName: `${testDescription}`,
+        otp: otpPayload2.otpValue,
+      });
+    console.log(res.body);
 
-  //   expect(res.status).toBe(403);
-  //   expect(res.body.message).toBe('Request denied. Suspicious IP address.');
-  // });
+    expect(res.status).toBe(403);
+    expect(res.body.message).toBe(
+      'Request denied. Disposable email addresses are not allowed.'
+    );
+  });
   // it('it should fail due to too many attempts', async () => {
   //   for (let i = 0; i < 5; i++) {
   //     request(app)
