@@ -6,13 +6,14 @@ export function verifyRecaptchaToken() {
     const mockRecaptchaResults = { success: true, 'error-codes': [] };
 
     if (
-      (mockRecaptchaResults['success'],
-      mockRecaptchaResults['error-codes'].length === 0)
+      mockRecaptchaResults['success'] &&
+      mockRecaptchaResults['error-codes'].length === 0
     ) {
       next();
+      return;
+    } else {
+      res.status(400).json({ message: 'ReCaptcha test failed' });
+      return;
     }
-
-    res.status(400).json({ message: 'reCaptcha test failed' });
-    return;
   };
 }
