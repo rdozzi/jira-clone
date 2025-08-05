@@ -23,17 +23,18 @@ model Organization {
   isDeleted Boolean?  @default(false)
 
   //Relationships
-  user          User[]
-  bannedEmail   BannedEmail[]
-  project       Project[]
-  board         Board[]
-  ticket        Ticket[]
-  comment       Comment[]
-  attachment    Attachment[]
-  label         Label[]
-  TicketLabel   TicketLabel[]
-  ActivityLog   ActivityLog[]
-  ProjectMember ProjectMember[]
+  user              User[]
+  bannedEmail       BannedEmail[]
+  project           Project[]
+  board             Board[]
+  ticket            Ticket[]
+  comment           Comment[]
+  attachment        Attachment[]
+  label             Label[]
+  TicketLabel       TicketLabel[]
+  ActivityLog       ActivityLog[]
+  ProjectMember     ProjectMember[]
+  OrganizationUsage OrganizationUsage[]
 }
 
 model Project {
@@ -246,6 +247,22 @@ model ProjectMember {
 
   //Composite key
   @@unique([userId, projectId])
+}
+
+model OrganizationUsage {
+  organizationId    Int @id
+  totalProjects     Int @default(0)
+  totalBoards       Int @default(0)
+  totalTickets      Int @default(0)
+  totalComments     Int @default(0)
+  totalUsers        Int @default(0)
+  totalAttachments  Int @default(0)
+  totalLabels       Int @default(0)
+  totalActivityLogs Int @default(0)
+  totalFileStorage  Int @default(0)
+
+  //Relationships
+  Organization Organization @relation(fields: [organizationId], references: [id])
 }
 
 enum GlobalRole {
