@@ -256,10 +256,10 @@ model OrganizationUsage {
   totalTickets      Int @default(0)
   totalComments     Int @default(0)
   totalUsers        Int @default(0)
-  totalAttachments  Int @default(0)
   totalLabels       Int @default(0)
   totalActivityLogs Int @default(0)
   totalFileStorage  Int @default(0)
+  totalBannedEmails Int @default(0)
 
   //Relationships
   Organization Organization @relation(fields: [organizationId], references: [id])
