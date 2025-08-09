@@ -1,6 +1,7 @@
 import { ActivityLog } from '@prisma/client';
 import { LogEventPayload } from '../types/logEventPayload';
 import prisma from '../lib/prisma';
+import { activityLogCounter } from './organizationUsageServices/activityLogCounter';
 
 export async function createActivityLog({
   userId,
@@ -12,7 +13,7 @@ export async function createActivityLog({
   metadata,
 }: LogEventPayload): Promise<ActivityLog | null> {
   try {
-    return await prisma.activityLog.create({
+    const activityLog = await prisma.activityLog.create({
       data: {
         userId,
         actorType,
@@ -23,6 +24,16 @@ export async function createActivityLog({
         metadata,
       },
     });
+
+    if (organizationId != null) {
+      try {
+        await activityLogCounter(prisma, organizationId);
+      } catch (error) {
+        console.warn('Function activityLogCounter failed:', error);
+      }
+    }
+
+    return activityLog;
   } catch (error) {
     console.error('Error creating activity log: ', error);
     return null;
