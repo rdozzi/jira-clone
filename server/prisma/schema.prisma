@@ -206,7 +206,7 @@ model ActivityLog {
   Organization Organization? @relation(fields: [organizationId], references: [id])
 
   //Index 
-  @@index(fields: [organizationId, createdAt(sort: Asc)])
+  @@index(fields: [organizationId, createdAt(sort: Asc), id])
 }
 
 model BannedEmail {
