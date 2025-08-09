@@ -42,6 +42,8 @@ export function checkUsageTotals(prisma: PrismaClient) {
       });
       return;
     }
+
+    res.locals.resourceType = resourceType;
     next();
   };
 }
