@@ -11,39 +11,61 @@ export async function checkTotalCount(
     const totalOrgLimit = TOTAL_ORG_LIMITS[resourceType];
 
     if (resourceType === 'Project') {
-      total = await prisma.project.count({
+      const query = await prisma.organizationUsage.findUnique({
         where: { organizationId: organizationId },
+        select: { totalProjects: true },
       });
+
+      total = query!['totalProjects'];
     } else if (resourceType === 'Board') {
-      total = await prisma.board.count({
+      const query = await prisma.organizationUsage.findUnique({
         where: { organizationId: organizationId },
+        select: { totalBoards: true },
       });
+
+      total = query!['totalBoards'];
     } else if (resourceType === 'Ticket') {
-      total = await prisma.ticket.count({
+      const query = await prisma.organizationUsage.findUnique({
         where: { organizationId: organizationId },
+        select: { totalTickets: true },
       });
+
+      total = query!['totalTickets'];
     } else if (resourceType === 'Comment') {
-      total = await prisma.comment.count({
+      const query = await prisma.organizationUsage.findUnique({
         where: { organizationId: organizationId },
+        select: { totalComments: true },
       });
+
+      total = query!['totalComments'];
     } else if (resourceType === 'User') {
-      total = await prisma.user.count({
+      const query = await prisma.organizationUsage.findUnique({
         where: { organizationId: organizationId },
+        select: { totalUsers: true },
       });
+
+      total = query!['totalUsers'];
     } else if (resourceType === 'FileStorage') {
-      const aggregateResult = await prisma.attachment.aggregate({
-        _sum: { fileSize: true },
+      const query = await prisma.organizationUsage.findUnique({
         where: { organizationId: organizationId },
+        select: { totalFileStorage: true },
       });
-      total = aggregateResult._sum.fileSize ?? 0;
+
+      total = query!['totalFileStorage'];
     } else if (resourceType === 'Label') {
-      total = await prisma.label.count({
+      const query = await prisma.organizationUsage.findUnique({
         where: { organizationId: organizationId },
+        select: { totalLabels: true },
       });
+
+      total = query!['totalLabels'];
     } else if (resourceType === 'BannedEmail') {
-      total = await prisma.bannedEmail.count({
+      const query = await prisma.organizationUsage.findUnique({
         where: { organizationId: organizationId },
+        select: { totalBannedEmails: true },
       });
+
+      total = query!['totalBannedEmails'];
     }
 
     const isBelowTotalLimit = total < totalOrgLimit;
