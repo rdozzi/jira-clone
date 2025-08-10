@@ -1,20 +1,15 @@
 import { redisClient, connectRedis } from '../../lib/connectRedis';
 import { DAILY_ORG_LIMITS } from './limits';
-import { ResourceType } from '../../types/ResourceType';
+import { ResourceType } from '../../types/ResourceAndColumnTypes';
 
 //Key format: org:${organizationId}:<resource>:daily
 
 export async function increaseCount(
   resourceType: ResourceType,
   organizationId: number,
-  fileSize?: number
+  increment: number
 ) {
   await connectRedis();
-
-  const isFile = resourceType === 'FileStorage';
-
-  const increment =
-    isFile && typeof fileSize === 'number' && fileSize > 0 ? fileSize : 1;
 
   const EXPIRE_TIME = 60 * 60 * 24;
   const DAILY_LIMIT = DAILY_ORG_LIMITS[resourceType];
@@ -26,24 +21,29 @@ export async function increaseCount(
     );
   }
 
-  const luaScript = `local current = redis.call('GET',KEYS[1])
-  if current and tonumber(current) >= tonumber(ARGV[1]) then
+  const luaScript = `
+  local current = redis.call('GET',KEYS[1])
+  local curr = tonumber(current) or 0
+  local limit = tonumber(ARGV[1])
+  local inc = tonumber(ARGV[2])
+  local ttl = tonumber(ARGV[3])
+
+  if current + inc >= limit then
     return -1
   end
-  local newCount = redis.call('INCRBY', KEYS[1], ARGV[2])
-  if newCount == 1 then
-    redis.call('EXPIRE', KEYS[1], ARGV[3], ARGV[4])
-  end
-  return newCount`;
+
+  if not current then
+    redis.call('SET', KEYS[1], inc)
+    redis.call('EXPIRE',KEYS[1],ttl)
+    return inc
+  
+  else
+    return redis.call('INCRBY',KEYS[1],inc)
+  end`;
 
   const result = await redisClient.eval(luaScript, {
     keys: [key],
-    arguments: [
-      String(DAILY_LIMIT),
-      String(increment),
-      String(EXPIRE_TIME),
-      'NX',
-    ],
+    arguments: [String(DAILY_LIMIT), String(increment), String(EXPIRE_TIME)],
   });
 
   if (result === -1) {
@@ -52,7 +52,7 @@ export async function increaseCount(
     );
   }
 
-  return;
+  return key;
 }
 
 export async function reduceCount(
