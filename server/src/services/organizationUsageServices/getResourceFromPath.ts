@@ -1,4 +1,4 @@
-import { ResourceType } from '../../types/ResourceType';
+import { ResourceType } from '../../types/ResourceAndColumnTypes';
 
 interface StringKeyedObject {
   [key: string]: ResourceType;
