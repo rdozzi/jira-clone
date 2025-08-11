@@ -58,21 +58,21 @@ export async function increaseCount(
 export async function reduceCount(
   resourceType: ResourceType,
   organizationId: number,
-  fileSize?: number
+  decrement: number
 ) {
   await connectRedis();
 
-  const isFile = resourceType === 'FileStorage';
-
-  const decrement =
-    isFile && typeof fileSize === 'number' && fileSize > 0 ? fileSize : 1;
-
   const key = `org:${organizationId}:${resourceType}:daily`;
 
-  const luaScript = `local current = redis.call('GET',KEYS[1])
-  if current and tonumber(current) <= 0 then
+  const luaScript = `
+  local current = redis.call('GET',KEYS[1])
+  local curr = tonumber(current)
+  local dec = tonumber(ARGV[1])
+
+  if current - dec <= 0 then
     return -1
   end
+  
   local newCount = redis.call('DECRBY', KEYS[1], ARGV[1])
   return newCount`;
 
