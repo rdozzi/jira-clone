@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { checkDailyCount } from '../../services/organizationUsageServices/checkDailyCount';
-import { checkTotalCount } from '../../services/organizationUsageServices/checkTotalCount';
+import { checkDailyMaxCount } from '../../services/organizationUsageServices/checkDailyMaxCount';
+import { checkTotalMaxCount } from '../../services/organizationUsageServices/checkTotalMaxCount';
 import { PrismaClient } from '@prisma/client';
 import { getResourceFromPath } from '../../services/organizationUsageServices/getResourceFromPath';
 
-export function checkUsageTotals(prisma: PrismaClient) {
+export function checkMaxUsageTotals(prisma: PrismaClient) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const organizationId = res.locals.userInfo.organizationId;
 
@@ -18,7 +18,7 @@ export function checkUsageTotals(prisma: PrismaClient) {
         .json({ message: 'Unknown or unsupported resource type.' });
     }
 
-    const isBelowDailyCount = await checkDailyCount(
+    const isBelowDailyCount = await checkDailyMaxCount(
       resourceType,
       organizationId
     );
@@ -30,7 +30,7 @@ export function checkUsageTotals(prisma: PrismaClient) {
       return;
     }
 
-    const isBelowTotalLimit = await checkTotalCount(
+    const isBelowTotalLimit = await checkTotalMaxCount(
       prisma,
       resourceType,
       organizationId

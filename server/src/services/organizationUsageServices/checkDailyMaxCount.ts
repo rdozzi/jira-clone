@@ -1,7 +1,7 @@
 import { redisClient, connectRedis } from '../../lib/connectRedis';
 import { DAILY_ORG_LIMITS } from './limits';
 
-export async function checkDailyCount(
+export async function checkDailyMaxCount(
   resourceType: keyof typeof DAILY_ORG_LIMITS,
   organizationId: number
 ) {
