@@ -23,18 +23,26 @@ model Organization {
   isDeleted Boolean?  @default(false)
 
   //Relationships
-  user              User[]
-  bannedEmail       BannedEmail[]
-  project           Project[]
-  board             Board[]
-  ticket            Ticket[]
-  comment           Comment[]
-  attachment        Attachment[]
-  label             Label[]
-  TicketLabel       TicketLabel[]
-  ActivityLog       ActivityLog[]
-  ProjectMember     ProjectMember[]
-  OrganizationUsage OrganizationUsage[]
+  user                          User[]
+  bannedEmail                   BannedEmail[]
+  project                       Project[]
+  board                         Board[]
+  ticket                        Ticket[]
+  comment                       Comment[]
+  attachment                    Attachment[]
+  label                         Label[]
+  TicketLabel                   TicketLabel[]
+  ActivityLog                   ActivityLog[]
+  ProjectMember                 ProjectMember[]
+  OrganziationProjectStorage    OrganizationProjectUsage[]
+  OrganizationBoardUsage        OrganizationBoardUsage[]
+  OrganizationTicketUsage       OrganizationTicketUsage[]
+  OrganizationCommentUsage      OrganizationCommentUsage[]
+  OrganizationUserUsage         OrganizationUserUsage[]
+  OrganizationLabelUsage        OrganizationLabelUsage[]
+  OrganizationActivityLogUsage  OrganizationActivityLogUsage[]
+  OrganizationFileStorageUsage  OrganizationFileStorageUsage[]
+  OrganizationBannedEmailsUsage OrganizationBannedEmailsUsage[]
 }
 
 model Project {
@@ -252,17 +260,91 @@ model ProjectMember {
   @@unique([userId, projectId])
 }
 
-model OrganizationUsage {
-  organizationId    Int @id
-  totalProjects     Int @default(0)
-  totalBoards       Int @default(0)
-  totalTickets      Int @default(0)
-  totalComments     Int @default(0)
-  totalUsers        Int @default(0)
-  totalLabels       Int @default(0)
-  totalActivityLogs Int @default(0)
-  totalFileStorage  Int @default(0)
-  totalBannedEmails Int @default(0)
+model OrganizationProjectUsage {
+  organizationId Int      @id
+  totalProjects  Int      @default(0)
+  maxProjects    Int?     @default(20)
+  updatedAt      DateTime @updatedAt @db.Timestamptz()
+
+  //Relationships
+  Organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model OrganizationBoardUsage {
+  organizationId Int      @id
+  totalBoards    Int      @default(0)
+  maxBoards      Int?     @default(50)
+  updatedAt      DateTime @updatedAt @db.Timestamptz()
+
+  //Relationships
+  Organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model OrganizationTicketUsage {
+  organizationId Int      @id
+  totalTickets   Int      @default(0)
+  maxTickets     Int?     @default(5000)
+  updatedAt      DateTime @updatedAt @db.Timestamptz()
+
+  //Relationships
+  Organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model OrganizationCommentUsage {
+  organizationId Int      @id
+  totalComments  Int      @default(0)
+  maxComments    Int?     @default(20000)
+  updatedAt      DateTime @updatedAt @db.Timestamptz()
+
+  //Relationships
+  Organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model OrganizationUserUsage {
+  organizationId Int      @id
+  totalUsers     Int      @default(0)
+  maxUsers       Int?     @default(500)
+  updatedAt      DateTime @updatedAt @db.Timestamptz()
+
+  //Relationships
+  Organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model OrganizationLabelUsage {
+  organizationId Int      @id
+  totalLabels    Int      @default(0)
+  maxLabels      Int?     @default(100)
+  updatedAt      DateTime @updatedAt @db.Timestamptz()
+
+  //Relationships
+  Organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model OrganizationActivityLogUsage {
+  organizationId    Int      @id
+  totalActivityLogs Int      @default(0)
+  maxActivityLogs   Int?     @default(50000)
+  updatedAt         DateTime @updatedAt @db.Timestamptz()
+
+  //Relationships
+  Organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model OrganizationFileStorageUsage {
+  organizationId   Int      @id
+  totalFileStorage Int      @default(0)
+  maxFileStorage   Int?     @default(1073741824)
+  updatedAt        DateTime @updatedAt @db.Timestamptz()
+
+  //Relationships
+  Organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model OrganizationBannedEmailsUsage {
+  organizationId    Int      @id
+  totalBannedEmails Int      @default(0)
+  maxBannedEmails   Int?     @default(100)
+  updatedAt         DateTime @updatedAt @db.Timestamptz()
 
   //Relationships
   Organization Organization @relation(fields: [organizationId], references: [id])
