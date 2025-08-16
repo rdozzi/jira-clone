@@ -2,7 +2,7 @@ import { connectRedis, redisClient } from '../../lib/connectRedis';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { ResourceType } from '../../types/ResourceAndColumnTypes';
 import { increaseCount } from './dailyLimitCounters';
-import { getColumnfromResource } from './getColumnfromResource';
+import { getTableInfo } from './getTableInfo';
 import { TOTAL_ORG_LIMITS } from './limits';
 
 export async function createResourceService<T>(
@@ -13,7 +13,7 @@ export async function createResourceService<T>(
   fileSize?: number
 ): Promise<T> {
   const isFile = resourceType === 'FileStorage';
-  const columnName = getColumnfromResource(resourceType);
+  const { table, total, max } = getTableInfo(resourceType);
 
   const increment =
     isFile && typeof fileSize === 'number' && fileSize > 0 ? fileSize : 1;
@@ -24,33 +24,39 @@ export async function createResourceService<T>(
   try {
     const result = await prisma.$transaction(
       async (tx) => {
-        // Ensure row exists
-        await tx.organizationUsage.upsert({
-          where: { organizationId },
-          create: { organizationId },
-          update: {},
-        });
-
         // Lock usage row
-        const usage = await tx.$queryRaw<
-          Array<{ value: bigint | number }>
+        const [row] = await tx.$queryRaw<
+          Array<{ totalResource: number; maximum: number }>
         >(Prisma.sql`
-      SELECT ${Prisma.raw(columnName)} AS value
-      FROM "OrganizationUsage",
+      SELECT ${Prisma.raw(total)} AS totalResource, ${Prisma.raw(max)} AS maximum
+      FROM ${Prisma.raw(table)}
       WHERE "organizationId" = ${organizationId}
       FOR UPDATE`);
 
-        const current = Number(usage[0]?.value ?? 0);
-        const limit = TOTAL_ORG_LIMITS[resourceType];
+        if (!row) {
+          throw new Error(
+            `Organization usage row missing for ${resourceType} (orgId=${organizationId}). Check seeding logic.`
+          );
+        }
 
-        if (limit !== undefined && current + increment >= limit) {
+        const totalResource: bigint | number = row.totalResource;
+        let maximum: bigint | number = row.maximum;
+
+        if (maximum == null) {
+          maximum = TOTAL_ORG_LIMITS[resourceType];
+        }
+
+        const current = Number(totalResource ?? 0);
+        const limit = Number(maximum);
+
+        if (limit && current + increment > limit) {
           throw new Error('TOTAL_LIMIT');
         }
 
         // Increment Usage
         await tx.$executeRaw(Prisma.sql`
-      UPDATE "OrganizationUsage"
-      SET ${Prisma.raw(columnName)} = ${Prisma.raw(columnName)} + ${increment}
+      UPDATE ${Prisma.raw(table)}
+      SET ${Prisma.raw(total)} = ${Prisma.raw(total)} + ${increment}
       WHERE "organizationId" = ${organizationId}`);
 
         const entity = await doCreate(tx);
