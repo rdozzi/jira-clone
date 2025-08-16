@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { TOTAL_ORG_LIMITS } from './limits';
 import { pruneActivityLog } from './pruneActivityLog';
+import { namespace } from '../../lib/namespace';
 
 export async function activityLogCounter(
   prisma: PrismaClient,
@@ -11,24 +11,40 @@ export async function activityLogCounter(
       throw new Error('Organization Id is not defined');
     }
 
-    const LIMIT = TOTAL_ORG_LIMITS['ActivityLog'];
+    const logLimitInfo = await prisma.organizationActivityLogUsage.findUnique({
+      where: { organizationId: organizationId },
+      select: { totalActivityLogs: true, maxActivityLogs: true },
+    });
+
+    if (!logLimitInfo) {
+      throw new Error(
+        'No log limit record found for organization. Check database.'
+      );
+    }
+
+    const limit = logLimitInfo.maxActivityLogs;
 
     const exceedsOrgLimitAndLocked = await prisma.$transaction(async (tx) => {
-      const { totalActivityLogs: after } = await tx.organizationUsage.update({
-        where: { organizationId },
-        data: { totalActivityLogs: { increment: 1 } },
-        select: { totalActivityLogs: true },
-      });
+      const { totalActivityLogs: after } =
+        await tx.organizationActivityLogUsage.update({
+          where: { organizationId },
+          data: { totalActivityLogs: { increment: 1 } },
+          select: { totalActivityLogs: true },
+        });
       const before = after - 1;
-      const limitExceeded = before < LIMIT && after >= LIMIT;
+
+      if (!limit) return false;
+
+      const limitExceeded = before < limit && after >= limit;
+
       if (!limitExceeded) return false;
 
-      const NS = 42;
-      const rows = await tx.$queryRaw<
+      const NS: number = namespace['createLog'];
+      const [{ locked }] = await tx.$queryRaw<
         { locked: boolean }[]
       >`SELECT pg_try_advisory_xact_lock(${NS}, ${organizationId}) AS locked`;
 
-      return rows[0]?.locked === true;
+      return locked === true;
     });
 
     if (exceedsOrgLimitAndLocked)
