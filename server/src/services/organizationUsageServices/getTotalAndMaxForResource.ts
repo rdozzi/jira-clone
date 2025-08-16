@@ -1,7 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { TOTAL_ORG_LIMITS } from './limits';
-
-type TotalOrgLimit = keyof typeof TOTAL_ORG_LIMITS;
+import { TotalOrgLimit } from './checkTotalMaxCount';
 
 interface TotalAndMax {
   total: number | null;
