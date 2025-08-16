@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient, OrganizationRole /*GlobalRole*/ } from '@prisma/client';
 import { hashPassword } from '../utilities/password';
 import { buildLogEvent } from '../services/buildLogEvent';
+import { createCountTables } from '../services/setupServices/createCountTables';
 
 // Add middleware protection layers later (Sanitization, rate limiter, input validation, IP Check)
 
@@ -50,6 +51,8 @@ export async function seedOrganizationAndSuperAdmin(
           organizationId: newOrganization.id,
         },
       });
+
+      await createCountTables(tx, newOrganization.id);
 
       return [newOrganization, newUser];
     });
