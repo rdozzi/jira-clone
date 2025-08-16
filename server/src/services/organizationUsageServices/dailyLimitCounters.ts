@@ -55,35 +55,35 @@ export async function increaseCount(
   return key;
 }
 
-export async function reduceCount(
-  resourceType: ResourceType,
-  organizationId: number,
-  decrement: number
-) {
-  await connectRedis();
+// export async function reduceCount(
+//   resourceType: ResourceType,
+//   organizationId: number,
+//   decrement: number
+// ) {
+//   await connectRedis();
 
-  const key = `org:${organizationId}:${resourceType}:daily`;
+//   const key = `org:${organizationId}:${resourceType}:daily`;
 
-  const luaScript = `
-  local current = redis.call('GET',KEYS[1])
-  local curr = tonumber(current)
-  local dec = tonumber(ARGV[1])
+//   const luaScript = `
+//   local current = redis.call('GET',KEYS[1])
+//   local curr = tonumber(current)
+//   local dec = tonumber(ARGV[1])
 
-  if current - dec <= 0 then
-    return -1
-  end
-  
-  local newCount = redis.call('DECRBY', KEYS[1], ARGV[1])
-  return newCount`;
+//   if current - dec <= 0 then
+//     return -1
+//   end
 
-  const result = await redisClient.eval(luaScript, {
-    keys: [key],
-    arguments: [String(decrement)],
-  });
+//   local newCount = redis.call('DECRBY', KEYS[1], ARGV[1])
+//   return newCount`;
 
-  if (result === -1) {
-    throw new Error(`Cannot decrement below zero for ${resourceType}`);
-  }
+//   const result = await redisClient.eval(luaScript, {
+//     keys: [key],
+//     arguments: [String(decrement)],
+//   });
 
-  return;
-}
+//   if (result === -1) {
+//     throw new Error(`Cannot decrement below zero for ${resourceType}`);
+//   }
+
+//   return;
+// }
