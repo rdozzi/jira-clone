@@ -12,7 +12,7 @@ export async function deleteResourceService<T>(
     await prisma.$transaction(async (tx) => {
       // 1) Lock Resource
       const NS: number = namespace['deleteResource'];
-      await tx.$queryRaw`SELECT pg_advisory_xact_lock(${NS},${organizationId})`;
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(${NS}::int,${organizationId}::int)`;
 
       // 2) Delete action
       await doDelete(tx);
@@ -43,7 +43,7 @@ export async function deleteResourceService<T>(
           .then((result) => result._sum.fileSize),
       ];
 
-      // 4) Re-compute totals
+      // 4) Update totals
       await tx.organizationProjectUsage.update({
         where: { organizationId: organizationId },
         data: { totalProjects: projectCount },
