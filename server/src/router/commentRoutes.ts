@@ -48,8 +48,8 @@ router.post(
   resolveProjectIdFromComment(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
-  checkMaxUsageTotals(prisma),
   validateBody(commentCreateSchema),
+  checkMaxUsageTotals(prisma),
   async (req: Request, res: Response): Promise<void> => {
     await createComment(req, res, prisma);
   }
