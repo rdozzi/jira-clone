@@ -28,8 +28,8 @@ export async function createResourceService<T>(
         const [row] = await tx.$queryRaw<
           Array<{ totalResource: number; maximum: number }>
         >(Prisma.sql`
-      SELECT ${Prisma.raw(total)} AS totalResource, ${Prisma.raw(max)} AS maximum
-      FROM ${Prisma.raw(table)}
+      SELECT ${Prisma.raw(`"${total}"`)} AS totalResource, ${Prisma.raw(`"${max}"`)} AS maximum
+      FROM ${Prisma.raw(`"${table}"`)}
       WHERE "organizationId" = ${organizationId}
       FOR UPDATE`);
 
@@ -55,8 +55,8 @@ export async function createResourceService<T>(
 
         // Increment Usage
         await tx.$executeRaw(Prisma.sql`
-      UPDATE ${Prisma.raw(table)}
-      SET ${Prisma.raw(total)} = ${Prisma.raw(total)} + ${increment}
+      UPDATE ${Prisma.raw(`"${table}"`)}
+      SET ${Prisma.raw(`"${total}"`)} = ${Prisma.raw(`"${total}"`)} + ${increment}
       WHERE "organizationId" = ${organizationId}`);
 
         const entity = await doCreate(tx);
@@ -70,7 +70,7 @@ export async function createResourceService<T>(
     try {
       if (key) {
         await connectRedis();
-        await redisClient.decrby(key, increment);
+        await redisClient.decrBy(key, increment);
       }
     } catch (rollBackErr) {
       console.error('Redis rollback failed:', rollBackErr);
