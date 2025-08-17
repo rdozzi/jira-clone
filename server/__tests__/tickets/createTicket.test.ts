@@ -19,19 +19,24 @@ import { createUserProfile } from '../../src/utilities/testUtilities/createUserP
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createBoard } from '../../src/utilities/testUtilities/createBoard';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
+import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
 
 describe('Create a ticket', () => {
   let token: string;
   let user: User;
   let board: Board;
   let organization: Organization;
+  const resourceType: ResourceType = 'Ticket';
 
   const testDescription = 'createATicket';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,
@@ -65,6 +70,7 @@ describe('Create a ticket', () => {
     );
   });
   afterAll(async () => {
+    await deleteRedisKey(organization.id, resourceType);
     await prismaTest.$disconnect();
   });
 
@@ -83,7 +89,6 @@ describe('Create a ticket', () => {
         boardId: board.id,
         dueDate: new Date('30 July 2025 17:00 UTC').toISOString(),
       });
-    console.log(res.body);
     expect(res.status).toBe(201);
     expect(res.body).toEqual(
       expect.objectContaining({
