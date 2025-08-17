@@ -3,6 +3,8 @@ import { AttachmentEntityType, Prisma, PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { deleteBoardDependencies } from '../services/deletionServices/deleteBoardDependencies';
+import { createResourceService } from '../services/organizationUsageServices/createResourceService';
+import { deleteResourceService } from '../services/organizationUsageServices/deleteResourceService';
 
 // Get all Boards
 export async function getAllBoards(
@@ -116,13 +118,20 @@ export async function createBoard(
   try {
     const userInfo = res.locals.userInfo;
     const organizationId = res.locals.userInfo.organizationId;
+    const resourceType = res.locals.resourceType;
     let boardData = res.locals.validatedBody;
 
     boardData = { ...boardData, organizationId: organizationId };
 
-    const board = await prisma.board.create({
-      data: boardData,
-    });
+    const board = await createResourceService(
+      prisma,
+      resourceType,
+      organizationId,
+      async (tx) =>
+        await tx.board.create({
+          data: boardData,
+        })
+    );
 
     res.locals.logEvent = buildLogEvent({
       userId: userInfo.id,
@@ -227,7 +236,7 @@ export async function deleteBoard(
       res.status(404).json({ error: `Board not found` });
     }
 
-    prisma.$transaction(async (tx) => {
+    await deleteResourceService(prisma, organizationId, async (tx) => {
       await deleteBoardDependencies(
         res,
         tx,

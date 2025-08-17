@@ -17,6 +17,7 @@ import { validateParams } from '../middleware/validation/validateParams';
 import { validateQuery } from '../middleware/validation/validateQuery';
 import { validateBody } from '../middleware/validation/validateBody';
 import { boardCreateSchema, boardUpdateSchema } from '../schemas/board.schema';
+import { checkMaxUsageTotals } from '../middleware/organizationUsageMiddleware/checkMaxUsageTotals';
 
 const router = Router();
 
@@ -58,6 +59,7 @@ router.post(
   checkProjectMembership(),
   checkProjectRole(ProjectRole.ADMIN),
   validateBody(boardCreateSchema),
+  checkMaxUsageTotals(prisma),
   async (req: Request, res: Response): Promise<void> => {
     await createBoard(req, res, prisma);
   }
