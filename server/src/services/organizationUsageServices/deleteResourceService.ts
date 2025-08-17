@@ -1,11 +1,9 @@
 import { PrismaClient, Prisma } from '@prisma/client';
-import { ResourceType } from '../../types/ResourceAndColumnTypes';
 import { namespace } from '../../lib/namespace';
 
 export async function deleteResourceService<T>(
   prisma: PrismaClient,
   organizationId: number,
-  resourceType: ResourceType,
   doDelete: (tx: Prisma.TransactionClient) => Promise<T | null>
 ) {
   try {
