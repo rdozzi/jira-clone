@@ -5,7 +5,11 @@ import { PrismaClient } from '@prisma/client';
 import { getResourceFromPath } from '../../services/organizationUsageServices/getResourceFromPath';
 
 export function checkMaxUsageTotals(prisma: PrismaClient) {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const organizationId = res.locals.userInfo.organizationId;
 
     const path = req.path.split('/');
@@ -13,9 +17,10 @@ export function checkMaxUsageTotals(prisma: PrismaClient) {
     const resourceType = getResourceFromPath(pathResource);
 
     if (!resourceType) {
-      return res
+      res
         .status(400)
         .json({ message: 'Unknown or unsupported resource type.' });
+      return;
     }
 
     const isBelowDailyCount = await checkDailyMaxCount(
