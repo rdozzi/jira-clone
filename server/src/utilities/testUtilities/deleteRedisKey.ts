@@ -14,5 +14,7 @@ export async function deleteRedisKey(
     console.warn(`Error deleting key: ${key}. Check Logs.`);
   }
 
+  await redisClient.quit();
+
   return;
 }
