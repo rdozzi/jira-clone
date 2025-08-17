@@ -15,7 +15,10 @@ import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDa
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
+import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
 
 describe('Create a board', () => {
   let token: string;
@@ -23,10 +26,12 @@ describe('Create a board', () => {
   let project: Project;
   let organization: Organization;
   const testDescription = 'createABoard';
+  const resourceType: ResourceType = 'Board';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,
@@ -54,6 +59,7 @@ describe('Create a board', () => {
     );
   });
   afterAll(async () => {
+    await deleteRedisKey(organization.id, resourceType);
     await prismaTest.$disconnect();
   });
 
@@ -66,7 +72,6 @@ describe('Create a board', () => {
         description: `Description_${testDescription}`,
         projectId: project.id,
       });
-    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body).toEqual(
       expect.objectContaining({
