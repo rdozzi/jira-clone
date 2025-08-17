@@ -4,6 +4,7 @@ import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { deleteCommentDependencies } from '../services/deletionServices/deleteCommentDependencies';
 import { createResourceService } from '../services/organizationUsageServices/createResourceService';
+import { deleteResourceService } from '../services/organizationUsageServices/deleteResourceService';
 
 export async function getAllComments(
   req: Request,
@@ -111,6 +112,7 @@ export async function deleteComment(
     const userId = res.locals.userInfo.id;
     const organizationId = res.locals.userInfo.organizationId;
     const commentId = res.locals.validatedParam;
+    const resourceType = res.locals.resourceType;
 
     const oldComment = await prisma.comment.findUniqueOrThrow({
       where: { id: commentId, organizationId: organizationId },
@@ -122,19 +124,24 @@ export async function deleteComment(
       },
     });
 
-    prisma.$transaction(async (tx) => {
-      await deleteCommentDependencies(
-        res,
-        tx,
-        AttachmentEntityType.COMMENT,
-        commentId,
-        userId,
-        organizationId
-      );
-      await tx.comment.delete({
-        where: { id: commentId, organizationId: organizationId },
-      });
-    });
+    await deleteResourceService(
+      prisma,
+      organizationId,
+      resourceType,
+      async (tx) => {
+        await deleteCommentDependencies(
+          res,
+          tx,
+          AttachmentEntityType.COMMENT,
+          commentId,
+          userId,
+          organizationId
+        );
+        await tx.comment.delete({
+          where: { id: commentId, organizationId: organizationId },
+        });
+      }
+    );
 
     // The entityId for the purpose of logging is the ticketId for comments
 
