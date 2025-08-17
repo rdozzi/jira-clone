@@ -20,7 +20,7 @@ export async function pruneActivityLog(
       where: { id: { in: oldest.map((o) => o.id) } },
     });
 
-    await tx.organizationUsage.update({
+    await tx.organizationActivityLogUsage.update({
       where: { organizationId },
       data: { totalActivityLogs: { decrement: oldest.length } },
     });
