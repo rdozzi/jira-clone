@@ -5,7 +5,7 @@ import { namespace } from '../../lib/namespace';
 export async function activityLogCounter(
   prisma: PrismaClient,
   organizationId: number | null
-) {
+): Promise<boolean> {
   try {
     if (!organizationId) {
       throw new Error('Organization Id is not defined');
@@ -31,13 +31,16 @@ export async function activityLogCounter(
           data: { totalActivityLogs: { increment: 1 } },
           select: { totalActivityLogs: true },
         });
+
       const before = after - 1;
 
       if (!limit) return false;
 
       const limitExceeded = before < limit && after >= limit;
 
-      if (!limitExceeded) return false;
+      if (!limitExceeded) {
+        return false;
+      }
 
       const NS: number = namespace['createLog'];
       const [{ locked }] = await tx.$queryRaw<
@@ -47,8 +50,11 @@ export async function activityLogCounter(
       return locked === true;
     });
 
-    if (exceedsOrgLimitAndLocked)
+    if (exceedsOrgLimitAndLocked) {
       await pruneActivityLog(prisma, organizationId);
+    }
+
+    return exceedsOrgLimitAndLocked;
   } catch (error) {
     throw new Error(`Error attempting to prune ActivityLog: ${error}`);
   }
