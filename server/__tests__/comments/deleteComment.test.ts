@@ -24,6 +24,7 @@ import { createTicket } from '../../src/utilities/testUtilities/createTicket';
 import { createComment } from '../../src/utilities/testUtilities/createComment';
 import { createTestAttachment } from '../../src/utilities/testUtilities/createAttachments';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 
@@ -42,6 +43,7 @@ describe('Delete a comment', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,
