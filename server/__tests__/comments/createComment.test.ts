@@ -21,7 +21,11 @@ import { createTicket } from '../../src/utilities/testUtilities/createTicket';
 import { createComment } from '../../src/utilities/testUtilities/createComment';
 import { createTestAttachment } from '../../src/utilities/testUtilities/createAttachments';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
+import { createOrgCommentCount } from '../../src/utilities/testUtilities/createOrgCommentCount';
+import { createOrgActivityLogCount } from '../../src/utilities/testUtilities/createOrgActivityLogCount';
+import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
 
 describe('Create a comment', () => {
   let token: string;
@@ -30,10 +34,13 @@ describe('Create a comment', () => {
   let comment: Comment;
   let organization: Organization;
   const testDescription = 'createAComment';
+  const resourceType: ResourceType = 'Comment';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCommentCount(prismaTest, organization.id);
+    await createOrgActivityLogCount(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,
@@ -90,6 +97,7 @@ describe('Create a comment', () => {
     );
   });
   afterAll(async () => {
+    await deleteRedisKey(organization.id, resourceType);
     await prismaTest.$disconnect();
   });
 
