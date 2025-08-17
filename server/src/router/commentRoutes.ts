@@ -12,6 +12,7 @@ import {
   deleteComment,
   updateComment,
 } from '../controllers/commentController';
+import { checkMaxUsageTotals } from '../middleware/organizationUsageMiddleware/checkMaxUsageTotals';
 import { resolveProjectIdFromComment } from '../middleware/commentMiddleware/resolveProjectIdFromComment';
 import { validateBody } from '../middleware/validation/validateBody';
 import { commentCreateSchema } from '../schemas/comment.schema';
@@ -47,6 +48,7 @@ router.post(
   resolveProjectIdFromComment(),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
+  checkMaxUsageTotals(prisma),
   validateBody(commentCreateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await createComment(req, res, prisma);

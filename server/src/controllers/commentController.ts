@@ -3,6 +3,7 @@ import { Prisma, PrismaClient, AttachmentEntityType } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { deleteCommentDependencies } from '../services/deletionServices/deleteCommentDependencies';
+import { createResourceService } from '../services/organizationUsageServices/createResourceService';
 
 export async function getAllComments(
   req: Request,
@@ -59,13 +60,22 @@ export async function createComment(
     const userId = res.locals.userInfo.id;
 
     const commentData = res.locals.validatedBody;
-    const comment = await prisma.comment.create({
-      data: {
-        ...commentData,
-        authorId: userId,
-        organizationId: organizationId,
-      },
-    });
+
+    const resourceType = res.locals.resourceType;
+
+    const comment = await createResourceService(
+      prisma,
+      resourceType,
+      organizationId,
+      async (tx) =>
+        tx.comment.create({
+          data: {
+            ...commentData,
+            authorId: userId,
+            organizationId: organizationId,
+          },
+        })
+    );
 
     res.locals.logEvent = buildLogEvent({
       userId: userId,
