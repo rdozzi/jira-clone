@@ -112,7 +112,6 @@ export async function deleteComment(
     const userId = res.locals.userInfo.id;
     const organizationId = res.locals.userInfo.organizationId;
     const commentId = res.locals.validatedParam;
-    const resourceType = res.locals.resourceType;
 
     const oldComment = await prisma.comment.findUniqueOrThrow({
       where: { id: commentId, organizationId: organizationId },
@@ -124,24 +123,19 @@ export async function deleteComment(
       },
     });
 
-    await deleteResourceService(
-      prisma,
-      organizationId,
-      resourceType,
-      async (tx) => {
-        await deleteCommentDependencies(
-          res,
-          tx,
-          AttachmentEntityType.COMMENT,
-          commentId,
-          userId,
-          organizationId
-        );
-        await tx.comment.delete({
-          where: { id: commentId, organizationId: organizationId },
-        });
-      }
-    );
+    await deleteResourceService(prisma, organizationId, async (tx) => {
+      await deleteCommentDependencies(
+        res,
+        tx,
+        AttachmentEntityType.COMMENT,
+        commentId,
+        userId,
+        organizationId
+      );
+      await tx.comment.delete({
+        where: { id: commentId, organizationId: organizationId },
+      });
+    });
 
     // The entityId for the purpose of logging is the ticketId for comments
 
