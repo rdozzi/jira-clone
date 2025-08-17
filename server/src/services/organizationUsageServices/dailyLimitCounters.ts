@@ -28,14 +28,13 @@ export async function increaseCount(
   local inc = tonumber(ARGV[2])
   local ttl = tonumber(ARGV[3])
 
-  if current + inc >= limit then
-    return -1
-  end
-
   if not current then
     redis.call('SET', KEYS[1], inc)
     redis.call('EXPIRE',KEYS[1],ttl)
     return inc
+
+  elseif current + inc >= limit then
+    return -1
   
   else
     return redis.call('INCRBY',KEYS[1],inc)
