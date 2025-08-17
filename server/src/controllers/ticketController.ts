@@ -3,6 +3,8 @@ import { AttachmentEntityType, PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { deleteTicketDependencies } from '../services/deletionServices/deleteTicketDependencies';
+import { createResourceService } from '../services/organizationUsageServices/createResourceService';
+import { deleteResourceService } from '../services/organizationUsageServices/deleteResourceService';
 
 export async function getAllTickets(
   req: Request,
@@ -127,15 +129,22 @@ export async function createNewTicket(
   try {
     const userId = res.locals.userInfo.id;
     const organizationId = res.locals.userInfo.organizationId;
+    const resourceType = res.locals.resourceType;
 
     const ticketData = {
       ...res.locals.validatedBody,
       organizationId: organizationId,
     };
 
-    const ticket = await prisma.ticket.create({
-      data: ticketData,
-    });
+    const ticket = await createResourceService(
+      prisma,
+      resourceType,
+      organizationId,
+      async (tx) =>
+        await tx.ticket.create({
+          data: ticketData,
+        })
+    );
 
     res.locals.logEvent = buildLogEvent({
       userId: userId,
@@ -177,7 +186,7 @@ export async function deleteTicket(
       select: { id: true, title: true, description: true, boardId: true },
     });
 
-    prisma.$transaction(async (tx) => {
+    await deleteResourceService(prisma, organizationId, async (tx) => {
       await deleteTicketDependencies(
         res,
         tx,

@@ -22,6 +22,7 @@ import {
   ticketUpdateSchema,
 } from '../schemas/ticket.schema';
 import { validateQuery } from '../middleware/validation/validateQuery';
+import { checkMaxUsageTotals } from '../middleware/organizationUsageMiddleware/checkMaxUsageTotals';
 
 const router = Router();
 
@@ -78,6 +79,7 @@ router.post(
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
   validateBody(ticketCreateSchema),
+  checkMaxUsageTotals(prisma),
   async (req: Request, res: Response): Promise<void> => {
     await createNewTicket(req, res, prisma);
   }
