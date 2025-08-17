@@ -21,8 +21,7 @@ import { createTicket } from '../../src/utilities/testUtilities/createTicket';
 import { createComment } from '../../src/utilities/testUtilities/createComment';
 import { createTestAttachment } from '../../src/utilities/testUtilities/createAttachments';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
-import { createOrgCommentCount } from '../../src/utilities/testUtilities/createOrgCommentCount';
-import { createOrgActivityLogCount } from '../../src/utilities/testUtilities/createOrgActivityLogCount';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
@@ -39,8 +38,7 @@ describe('Create a comment', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
-    await createOrgCommentCount(prismaTest, organization.id);
-    await createOrgActivityLogCount(prismaTest, organization.id);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,
