@@ -8,17 +8,21 @@ import { createOrganization } from '../../src/utilities/testUtilities/createOrga
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
+import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey';
+import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
 
 describe('Create a project', () => {
   let token: string;
   let user: User;
   let organization: Organization;
-
+  const resourceType: ResourceType = 'Project';
   const testDescription = 'createAProject';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,
@@ -33,6 +37,7 @@ describe('Create a project', () => {
     );
   });
   afterAll(async () => {
+    await deleteRedisKey(organization.id, resourceType);
     await prismaTest.$disconnect();
   });
 

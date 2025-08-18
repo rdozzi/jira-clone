@@ -28,6 +28,7 @@ import { createTestAttachment } from '../../src/utilities/testUtilities/createAt
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
 import { createTicketLabel } from '../../src/utilities/testUtilities/createTicketLabel';
 import { createLabel } from '../../src/utilities/testUtilities/createLabel';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 
@@ -52,11 +53,12 @@ describe('Delete a board', () => {
   let ticketLabelPairsAfterDelete2: TicketLabel | null;
   let organization: Organization;
 
-  const testDescription = 'deleteABoard';
+  const testDescription = 'deleteAProject';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,
