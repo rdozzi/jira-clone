@@ -21,6 +21,7 @@ import { createLabel } from '../../src/utilities/testUtilities/createLabel';
 import { createTicketLabel } from '../../src/utilities/testUtilities/createTicketLabel';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
 describe('Delete label with deletion cascade', () => {
   let token: string;
@@ -34,6 +35,7 @@ describe('Delete label with deletion cascade', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,

@@ -8,6 +8,8 @@ import { createOrganization } from '../../src/utilities/testUtilities/createOrga
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
+import { redisClient } from '../../src/lib/connectRedis';
 
 describe('createLabel', () => {
   let token: string;
@@ -18,6 +20,7 @@ describe('createLabel', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,
@@ -32,6 +35,7 @@ describe('createLabel', () => {
     );
   });
   afterAll(async () => {
+    redisClient.quit();
     await prismaTest.$disconnect();
   });
 
