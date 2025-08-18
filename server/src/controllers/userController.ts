@@ -6,6 +6,7 @@ import { generateDiff } from '../services/generateDiff';
 import { getStorageType } from '../config/storage';
 import { storageDispatcher } from '../utilities/storageDispatcher';
 import { deleteUserCascade } from '../services/deletionServices/deleteUserCascade';
+import { createResourceService } from '../services/organizationUsageServices/createResourceService';
 
 // Get all users
 export async function getAllUsers(
@@ -124,21 +125,28 @@ export async function createUser(
   try {
     // From storeUserAndProjectInfo
     const userInfo = res.locals.userInfo;
-    const { email, firstName, lastName, password, globalRole } =
+    const { email, firstName, lastName, password, organizationRole } =
       res.locals.validatedBody;
     const hashedPassword = await hashPassword(password);
     const organizationId = res.locals.userInfo.organizationId;
+    const resourceType = res.locals.resourceType;
 
-    const user = await prisma.user.create({
-      data: {
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        passwordHash: hashedPassword,
-        globalRole: globalRole,
-        organizationId: organizationId,
-      },
-    });
+    const user = await createResourceService(
+      prisma,
+      resourceType,
+      organizationId,
+      async (tx) =>
+        await tx.user.create({
+          data: {
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+            passwordHash: hashedPassword,
+            organizationRole: organizationRole,
+            organizationId: organizationId,
+          },
+        })
+    );
 
     res.locals.logEvent = buildLogEvent({
       userId: userInfo.id,
@@ -249,6 +257,7 @@ export async function deleteUser(
       return;
     }
 
+    // User deletion isn't treated the same way because of soft deletions. User counts for organizations will not be decremented for the MVP.
     await deleteUserCascade(userId, organizationId);
 
     const deletedUserData = await prisma.user.update({
