@@ -15,7 +15,7 @@ export const TOTAL_ORG_LIMITS = {
   Board: 50,
   Ticket: 5000,
   Comment: 20000,
-  User: 500,
+  User: 1000,
   FileStorage: 1024 * 1024 * 1024, // 1GB/Day
   ActivityLog: 50000,
   Label: 100,
