@@ -11,6 +11,7 @@ import { OrganizationRole } from '@prisma/client';
 import { validateCreateLabel } from '../middleware/labelMiddleware/validateCreateLabel';
 import { validateUpdateLabel } from '../middleware/labelMiddleware/validateUpdateLabel';
 import { validateParams } from '../middleware/validation/validateParams';
+import { checkMaxUsageTotals } from '../middleware/organizationUsageMiddleware/checkMaxUsageTotals';
 
 const router = Router();
 
@@ -28,6 +29,7 @@ router.post(
   '/labels',
   authorizeGlobalRole(OrganizationRole.ADMIN),
   validateCreateLabel,
+  checkMaxUsageTotals(prisma),
   async (req: Request, res: Response): Promise<void> => {
     await createNewLabel(req, res, prisma);
   }

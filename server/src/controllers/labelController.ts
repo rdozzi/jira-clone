@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { deleteLabelDependencies } from '../services/deletionServices/deleteLabelDependencies';
+import { createResourceService } from '../services/organizationUsageServices/createResourceService';
+import { deleteResourceService } from '../services/organizationUsageServices/deleteResourceService';
 
 //Get all labels
 export async function getAllLabels(
@@ -33,13 +35,20 @@ export async function createNewLabel(
   try {
     const user = res.locals.userInfo;
     const organizationId = res.locals.userInfo.organizationId;
+    const resourceType = res.locals.resourceType;
 
     // From validateCreateLabel Middleware
     const { name, color } = res.locals.validatedBody;
 
-    const label = await prisma.label.create({
-      data: { name: name, color: color, organizationId: organizationId },
-    });
+    const label = await createResourceService(
+      prisma,
+      resourceType,
+      organizationId,
+      async (tx) =>
+        await tx.label.create({
+          data: { name: name, color: color, organizationId: organizationId },
+        })
+    );
 
     res.locals.logEvent = buildLogEvent({
       userId: user.id,
@@ -128,7 +137,7 @@ export async function deleteLabel(
       where: { id: labelId, organizationId: organizationId },
     });
 
-    prisma.$transaction(async (tx) => {
+    deleteResourceService(prisma, organizationId, async (tx) => {
       await deleteLabelDependencies(tx, labelId, null, organizationId);
       await tx.label.delete({
         where: { id: labelId, organizationId: organizationId },
