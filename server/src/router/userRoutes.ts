@@ -20,6 +20,8 @@ import { validateQuery } from '../middleware/validation/validateQuery';
 import { validateParams } from '../middleware/validation/validateParams';
 import { validateBody } from '../middleware/validation/validateBody';
 import { userCreateSchema, userUpdateSchema } from '../schemas/user.schema';
+import { checkMaxUsageTotals } from '../middleware/organizationUsageMiddleware/checkMaxUsageTotals';
+
 const router = Router();
 
 // Get all users
@@ -58,6 +60,7 @@ router.post(
   '/users',
   authorizeGlobalRole(OrganizationRole.ADMIN),
   validateBody(userCreateSchema),
+  checkMaxUsageTotals(prisma),
   async (req: Request, res: Response): Promise<void> => {
     await createUser(req, res, prisma);
   }
