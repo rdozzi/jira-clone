@@ -8,6 +8,8 @@ import { createOrganization } from '../../src/utilities/testUtilities/createOrga
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
+import { redisClient } from '../../src/lib/connectRedis';
 
 describe('Create a user', () => {
   let token: string;
@@ -19,6 +21,7 @@ describe('Create a user', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,
@@ -33,6 +36,7 @@ describe('Create a user', () => {
     );
   });
   afterAll(async () => {
+    await redisClient.quit();
     await prismaTest.$disconnect();
   });
 
@@ -49,26 +53,22 @@ describe('Create a user', () => {
       });
 
     expect(res.status).toBe(201);
-    expect(res.body).toEqual(
-      expect.objectContaining({
-        data: {
-          id: expect.any(Number),
-          firstName: 'Leonard',
-          lastName: 'Nimoy',
-          email: 'createAUser@example.com',
-          passwordHash: expect.any(String),
-          globalRole: 'USER',
-          avatarSource: 'NA',
-          isBanned: false,
-          createdAt: expect.any(String),
-          updatedAt: expect.any(String),
-          deletedAt: null,
-          isDeleted: false,
-          organizationId: expect.any(Number),
-          organizationRole: expect.any(String),
-        },
-        message: 'User created successfully',
-      })
-    );
+    expect(res.body.data).toEqual({
+      id: expect.any(Number),
+      firstName: 'Leonard',
+      lastName: 'Nimoy',
+      email: 'createAUser@example.com',
+      passwordHash: expect.any(String),
+      globalRole: 'USER',
+      avatarSource: 'NA',
+      isBanned: false,
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+      deletedAt: null,
+      isDeleted: false,
+      organizationId: expect.any(Number),
+      organizationRole: expect.any(String),
+    });
+    expect(res.body.message).toEqual('User created successfully');
   });
 });
