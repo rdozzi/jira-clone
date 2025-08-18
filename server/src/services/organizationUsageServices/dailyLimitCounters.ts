@@ -13,6 +13,10 @@ export async function increaseCount(
 
   const EXPIRE_TIME = 60 * 60 * 24;
   const DAILY_LIMIT = DAILY_ORG_LIMITS[resourceType];
+  if (!DAILY_LIMIT) {
+    // No daily limit defined for this resource, skip Redis tracking
+    return;
+  }
   const key = `org:${organizationId}:${resourceType}:daily`;
 
   if (typeof DAILY_LIMIT !== 'number') {
