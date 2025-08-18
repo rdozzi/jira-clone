@@ -22,6 +22,7 @@ import {
   projectCreateSchema,
   projectUpdateSchema,
 } from '../schemas/project.schema';
+import { checkMaxUsageTotals } from '../middleware/organizationUsageMiddleware/checkMaxUsageTotals';
 
 const router = Router();
 
@@ -58,6 +59,7 @@ router.post(
   '/projects',
   authorizeGlobalRole(OrganizationRole.ADMIN),
   validateBody(projectCreateSchema),
+  checkMaxUsageTotals(prisma),
   async (req: Request, res: Response): Promise<void> => {
     await createProject(req, res, prisma);
   }

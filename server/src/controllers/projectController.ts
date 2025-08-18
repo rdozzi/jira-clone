@@ -7,6 +7,8 @@ import {
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { deleteProjectDependencies } from '../services/deletionServices/deleteProjectDependencies';
+import { createResourceService } from '../services/organizationUsageServices/createResourceService';
+import { deleteResourceService } from '../services/organizationUsageServices/deleteResourceService';
 
 export async function getAllProjects(
   req: Request,
@@ -83,6 +85,7 @@ export async function createProject(
   try {
     const user = res.locals.userInfo;
     const organizationId = res.locals.userInfo.organizationId;
+    const resourceType = res.locals.resourceType;
 
     const projectData = res.locals.validatedBody;
     const data = {
@@ -91,9 +94,16 @@ export async function createProject(
       ownerId: user.id,
       organizationId: organizationId,
     };
-    const project = await prisma.project.create({
-      data,
-    });
+
+    const project = await createResourceService(
+      prisma,
+      resourceType,
+      organizationId,
+      async (tx) =>
+        await tx.project.create({
+          data,
+        })
+    );
 
     const projectMember = await prisma.projectMember.create({
       data: {
@@ -197,7 +207,7 @@ export async function deleteProject(
       return;
     }
 
-    prisma.$transaction(async (tx) => {
+    deleteResourceService(prisma, organizationId, async (tx) => {
       await deleteProjectDependencies(
         res,
         tx,
