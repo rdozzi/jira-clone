@@ -14,6 +14,8 @@ import { createUserProfile } from '../../src/utilities/testUtilities/createUserP
 import { createBannedEmail } from '../../src/utilities/testUtilities/createBannedEmail';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
+import { redisClient } from '../../src/lib/connectRedis';
 
 describe('createBannedEmail', () => {
   let token: string;
@@ -25,6 +27,7 @@ describe('createBannedEmail', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,
@@ -46,6 +49,7 @@ describe('createBannedEmail', () => {
     );
   });
   afterAll(async () => {
+    redisClient.quit();
     await prismaTest.$disconnect();
   });
 
