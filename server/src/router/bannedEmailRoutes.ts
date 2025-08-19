@@ -10,6 +10,7 @@ import { OrganizationRole } from '@prisma/client';
 import { validateParams } from '../middleware/validation/validateParams';
 import { bannedEmailCreateSchema } from '../schemas/bannedEmail.schema';
 import { validateBody } from '../middleware/validation/validateBody';
+import { checkMaxUsageTotals } from '../middleware/organizationUsageMiddleware/checkMaxUsageTotals';
 
 const router = Router();
 
@@ -37,6 +38,7 @@ router.post(
   '/bannedEmails',
   authorizeGlobalRole(OrganizationRole.ADMIN),
   validateBody(bannedEmailCreateSchema),
+  checkMaxUsageTotals(prisma),
   async (req: Request, res: Response): Promise<void> => {
     await createBannedEmail(req, res, prisma);
   }

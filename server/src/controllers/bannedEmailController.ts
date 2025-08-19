@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
+import { createResourceService } from '../services/organizationUsageServices/createResourceService';
 
 // Get all banned email records
 export async function getAllBannedEmails(
@@ -55,6 +56,7 @@ export async function createBannedEmail(
   try {
     const { email, reason } = res.locals.validatedBody;
     const organizationId = res.locals.userInfo.organizationId;
+    const resourceType = res.locals.resourceType;
 
     // Check if the email already exists
     const existingBannedEmail = await prisma.bannedEmail.findUnique({
@@ -66,9 +68,15 @@ export async function createBannedEmail(
     }
 
     // Create a new banned email
-    const bannedEmail = await prisma.bannedEmail.create({
-      data: { email, reason, organizationId: organizationId },
-    });
+    const bannedEmail = await createResourceService(
+      prisma,
+      resourceType,
+      organizationId,
+      async (tx) =>
+        await tx.bannedEmail.create({
+          data: { email, reason, organizationId: organizationId },
+        })
+    );
 
     // Log the event
     res.locals.logEvent = buildLogEvent({
