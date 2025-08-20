@@ -5,8 +5,19 @@ export const commentCreateSchema = z
   .object({
     ticketId: numberIdSchema,
     content: commentContentSchema,
-    organizationId: numberIdSchema.optional(),
   })
   .strict();
 
 export const commentUpdateSchema = commentCreateSchema.partial().strict();
+
+export const commentCreateSchemaSuperUser = z
+  .object({
+    ticketId: numberIdSchema,
+    content: commentContentSchema,
+    organizationId: numberIdSchema.optional(),
+  })
+  .strict();
+
+export const commentUpdateSchemaSuperUser = commentCreateSchema
+  .partial()
+  .strict();

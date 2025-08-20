@@ -10,8 +10,18 @@ export const boardCreateSchema = z
     name: boardNameSchema,
     description: boardDescriptionSchema,
     projectId: numberIdSchema,
-    organizationId: numberIdSchema.optional(),
   })
   .strict();
 
 export const boardUpdateSchema = boardCreateSchema.partial().strict();
+
+export const boardCreateSchemaSuperUser = z
+  .object({
+    name: boardNameSchema,
+    description: boardDescriptionSchema,
+    projectId: numberIdSchema,
+    organizationId: numberIdSchema.optional(),
+  })
+  .strict();
+
+export const boardUpdateSchemaSuperUser = boardCreateSchema.partial().strict();

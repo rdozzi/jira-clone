@@ -9,8 +9,19 @@ export const projectCreateSchema = z
   .object({
     name: projectNameSchema,
     description: projectDescriptionSchema,
-    organizationId: numberIdSchema.optional(),
   })
   .strict();
 
 export const projectUpdateSchema = projectCreateSchema.partial().strict();
+
+export const projectCreateSchemaSuperUser = z
+  .object({
+    name: projectNameSchema,
+    description: projectDescriptionSchema,
+    organizationId: numberIdSchema.optional(),
+  })
+  .strict();
+
+export const projectUpdateSchemaSuperUser = projectCreateSchema
+  .partial()
+  .strict();
