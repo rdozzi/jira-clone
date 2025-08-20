@@ -25,6 +25,7 @@ import { createComment } from '../../src/utilities/testUtilities/createComment';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
 import { createTestAttachment } from '../../src/utilities/testUtilities/createAttachments';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ describe('deleteAttachment', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user1 = await createUserProfile(
       prismaTest,
       `${testDescription}_user1`,

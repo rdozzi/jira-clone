@@ -24,6 +24,9 @@ import { createTicket } from '../../src/utilities/testUtilities/createTicket';
 import { createComment } from '../../src/utilities/testUtilities/createComment';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
+import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey';
+import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
 
 dotenv.config();
 
@@ -35,11 +38,13 @@ describe('handleMultipleUpload', () => {
   let ticket: Ticket | undefined;
   let comment: Comment;
   let organization: Organization;
+  const resourceType: ResourceType = 'FileStorage';
 
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user1 = await createUserProfile(
       prismaTest,
       `${testDescription}_user1`,
@@ -87,7 +92,7 @@ describe('handleMultipleUpload', () => {
     );
   });
 
-  it('should upload a single attachment', async () => {
+  it('should upload multiple attachments', async () => {
     const fixtureDir = path.join(
       __dirname,
       '../../src/utilities/testUtilities/__fixtures__'
@@ -109,13 +114,11 @@ describe('handleMultipleUpload', () => {
 
     expect(res.status).toBe(201);
     expect(res.body.message).toEqual(`${files.length} uploaded successfully`);
-    console.log(res.body);
     uploadedFiles = res.body.createdAttachments.map(
       (attachment: Attachment) => {
         return attachment.filePath;
       }
     );
-    console.log(uploadedFiles);
   });
   afterAll(async () => {
     if (uploadedFiles) {
@@ -123,6 +126,7 @@ describe('handleMultipleUpload', () => {
         await fs.rm(files, { force: true });
       }
     }
+    await deleteRedisKey(organization.id, resourceType);
     await prismaTest.$disconnect();
   });
 });
