@@ -4,6 +4,7 @@ import fs from 'fs/promises';
 import { PrismaClient } from '@prisma/client';
 import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { buildLogEvent } from '../../services/buildLogEvent';
+import { deleteResourceService } from '../../services/organizationUsageServices/deleteResourceService';
 
 export async function deleteManyAttachments(
   req: Request,
@@ -48,7 +49,9 @@ export async function deleteManyAttachments(
         if (attachment.storageType === 'LOCAL') {
           const filePath = path.resolve(attachment.filePath || '');
           await fs.unlink(filePath);
-          await prisma.attachment.delete({ where: { id: attachment.id } });
+          await deleteResourceService(prisma, organizationId, async (tx) =>
+            tx.attachment.delete({ where: { id: attachment.id } })
+          );
         } else if (attachment.storageType === 'CLOUD') {
           // await saveToCloud.deleteFile(attachment.path);
           console.log('Deleting from cloud storage:', attachment.fileUrl);

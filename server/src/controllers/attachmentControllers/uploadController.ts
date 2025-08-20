@@ -1,10 +1,11 @@
 import { Response, NextFunction } from 'express';
 import { CustomRequest } from '../../types/CustomRequest';
 import { handleFileUpload } from '../../services/uploadService';
-import { PrismaClient, AttachmentEntityType } from '@prisma/client';
+import { PrismaClient, AttachmentEntityType, Attachment } from '@prisma/client';
 import { validateEntityAndId } from '../../utilities/validateEntityAndId';
 import { buildLogEvent } from '../../services/buildLogEvent';
 import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
+import { createResourceService } from '../../services/organizationUsageServices/createResourceService';
 
 export async function handleSingleUpload(
   req: CustomRequest,
@@ -21,6 +22,7 @@ export async function handleSingleUpload(
     const { entityType, entityId } = res.locals.validatedBody;
     const uploadedBy = res.locals.userInfo.id;
     const organizationId = res.locals.userInfo.organizationId;
+    const resourceType = res.locals.resourceType;
 
     const entityRecord = await validateEntityAndId(
       entityType as AttachmentEntityType,
@@ -38,20 +40,26 @@ export async function handleSingleUpload(
 
     const metadata = await handleFileUpload(req.file as Express.Multer.File);
 
-    const attachment = await prisma.attachment.create({
-      data: {
-        entityType,
-        entityId: entityId,
-        uploadedBy,
-        fileName: metadata.filename,
-        fileType: metadata.mimetype,
-        fileSize: metadata.size,
-        filePath: metadata.savedPath,
-        fileUrl: metadata.cloudUrl,
-        storageType: metadata.storageType,
-        organizationId: organizationId,
-      },
-    });
+    const attachment = await createResourceService(
+      prisma,
+      resourceType,
+      organizationId,
+      async (tx) =>
+        await tx.attachment.create({
+          data: {
+            entityType,
+            entityId: entityId,
+            uploadedBy,
+            fileName: metadata.filename,
+            fileType: metadata.mimetype,
+            fileSize: metadata.size,
+            filePath: metadata.savedPath,
+            fileUrl: metadata.cloudUrl,
+            storageType: metadata.storageType,
+            organizationId: organizationId,
+          },
+        })
+    );
 
     res.locals.logEvent = buildLogEvent({
       userId: attachment.uploadedBy,
@@ -98,6 +106,7 @@ export async function handleMultipleUpload(
     const { entityType, entityId } = res.locals.validatedBody;
     const uploadedBy = res.locals.userInfo.id;
     const organizationId = res.locals.userInfo.organizationId;
+    const resourceType = res.locals.resourceType;
 
     const entityRecord = await validateEntityAndId(
       entityType as AttachmentEntityType,
@@ -113,26 +122,33 @@ export async function handleMultipleUpload(
 
     const logEntityId = generateEntityIdForLog(entityType, entityId);
 
-    const createdAttachments = await Promise.all(
-      files.map(async (file) => {
-        const metadata = await handleFileUpload(file);
-        const attachment = await prisma.attachment.create({
-          data: {
-            entityType,
-            entityId: entityId,
-            uploadedBy,
-            fileName: metadata.filename,
-            fileType: metadata.mimetype,
-            fileSize: metadata.size,
-            filePath: metadata.savedPath,
-            fileUrl: metadata.cloudUrl,
-            storageType: metadata.storageType,
-            organizationId: organizationId,
-          },
-        });
-        return attachment;
-      })
-    );
+    const createdAttachments: Attachment[] = [];
+
+    for (const file of files) {
+      const metadata = await handleFileUpload(file);
+      const attachment = await createResourceService(
+        prisma,
+        resourceType,
+        organizationId,
+        async (tx) =>
+          await tx.attachment.create({
+            data: {
+              entityType,
+              entityId: entityId,
+              uploadedBy,
+              fileName: metadata.filename,
+              fileType: metadata.mimetype,
+              fileSize: metadata.size,
+              filePath: metadata.savedPath,
+              fileUrl: metadata.cloudUrl,
+              storageType: metadata.storageType,
+              organizationId: organizationId,
+            },
+          })
+      );
+
+      createdAttachments.push(attachment);
+    }
 
     res.locals.logEvents = createdAttachments.map((attachment) => {
       return buildLogEvent({

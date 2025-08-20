@@ -28,6 +28,7 @@ import { loadEntityIdAndEntityTypeForSingleDeletion } from '../middleware/attach
 import { validateAndSetAttachmentDeleteAndDownloadParams } from '../middleware/attachments/validateAndSetAttachmentDeleteAndDownloadParams';
 import { validateBody } from '../middleware/validation/validateBody';
 import { uploadAttachmentSchema } from '../schemas/attachment.schema';
+import { checkMaxUsageTotals } from '../middleware/organizationUsageMiddleware/checkMaxUsageTotals';
 
 // Controller Functions
 import { getAllAttachments } from '../controllers/attachmentControllers/getAllAttachments';
@@ -80,6 +81,7 @@ router.post(
   checkTicketOrCommentOwnershipForAttachments,
   checkBoardAndProjectAccess,
   validateBody(uploadAttachmentSchema),
+  checkMaxUsageTotals(prisma),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await handleSingleUpload(req as CustomRequest, res, next, prisma);
   }
@@ -98,6 +100,7 @@ router.post(
   checkTicketOrCommentOwnershipForAttachments,
   checkBoardAndProjectAccess,
   validateBody(uploadAttachmentSchema),
+  checkMaxUsageTotals(prisma),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await handleMultipleUpload(req as CustomRequest, res, next, prisma);
   }
