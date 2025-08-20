@@ -23,6 +23,9 @@ import { createTicket } from '../../src/utilities/testUtilities/createTicket';
 import { createComment } from '../../src/utilities/testUtilities/createComment';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
+import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey';
+import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
 
 dotenv.config();
 
@@ -37,11 +40,13 @@ describe('handleSingleUpload', () => {
   let comment: Comment;
   let comment2: Comment;
   let organization: Organization;
+  const resourceType: ResourceType = 'FileStorage';
 
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user1 = await createUserProfile(
       prismaTest,
       `${testDescription}_user1`,
@@ -161,6 +166,7 @@ describe('handleSingleUpload', () => {
       console.log('If block 2');
       await fs.rm(uploadedFileName2, { force: true });
     }
+    await deleteRedisKey(organization.id, resourceType);
     await prismaTest.$disconnect();
   });
 });
