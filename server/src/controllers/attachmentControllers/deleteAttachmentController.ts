@@ -4,6 +4,7 @@ import fs from 'fs/promises';
 import { PrismaClient, Attachment } from '@prisma/client';
 import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { buildLogEvent } from '../../services/buildLogEvent';
+import { deleteResourceService } from '../../services/organizationUsageServices/deleteResourceService';
 
 export async function deleteAttachment(
   req: CustomRequest,
@@ -37,9 +38,11 @@ export async function deleteAttachment(
     );
 
     // Delete DB Record
-    await prisma.attachment.delete({
-      where: { id: attachment?.id },
-    });
+    await deleteResourceService(prisma, organizationId, async (tx) =>
+      tx.attachment.delete({
+        where: { id: attachment?.id },
+      })
+    );
 
     res.locals.logEvent = buildLogEvent({
       userId: deletedAttachment.uploadedBy,
