@@ -273,4 +273,13 @@ export const reasonSchema = z
   .trim()
   .min(1, 'Reason should be at least 10 characters')
   .max(2000, 'Reason cannot exceed 2000 characters')
-  .transform((reason) => reason.charAt(0).toUpperCase() + reason.slice(1));
+  .transform((reason) => reason.charAt(0).toUpperCase() + reason.slice(1))
+  .refine(
+    (val) => {
+      const tokens = val.toLowerCase().split(/\s+/);
+      return !tokens.some((token) =>
+        badWordsList.some((word) => token === word.toLowerCase())
+      );
+    },
+    { error: 'Comment contains prohibited language.' }
+  );
