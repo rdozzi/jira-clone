@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
-import { boardUpdateSchema } from '../../schemas/board.schema';
-import { commentUpdateSchema } from '../../schemas/comment.schema';
-import { projectUpdateSchema } from '../../schemas/project.schema';
-import { ticketUpdateSchema } from '../../schemas/ticket.schema';
+import { boardUpdateSchemaSuperUser } from '../../schemas/board.schema';
+import { commentUpdateSchemaSuperUser } from '../../schemas/comment.schema';
+import { projectUpdateSchemaSuperUser } from '../../schemas/project.schema';
+import { ticketUpdateSchemaSuperUser } from '../../schemas/ticket.schema';
 
 export const getBodySchemaForUpdate: RequestHandler = (req, res, next) => {
   try {
@@ -12,16 +12,16 @@ export const getBodySchemaForUpdate: RequestHandler = (req, res, next) => {
     let schema;
     switch (resourceEdited) {
       case 'PROJECT':
-        schema = projectUpdateSchema;
+        schema = projectUpdateSchemaSuperUser;
         break;
       case 'BOARD':
-        schema = boardUpdateSchema;
+        schema = boardUpdateSchemaSuperUser;
         break;
       case 'TICKET':
-        schema = ticketUpdateSchema;
+        schema = ticketUpdateSchemaSuperUser;
         break;
       case 'COMMENT':
-        schema = commentUpdateSchema;
+        schema = commentUpdateSchemaSuperUser;
         break;
       default:
         throw new Error('Selected resource is not available for creation.');
