@@ -17,6 +17,7 @@ import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
 describe('Remove project member', () => {
   let token: string;
@@ -30,6 +31,7 @@ describe('Remove project member', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user1 = await createUserProfile(
       prismaTest,
       `${testDescription}_1`,

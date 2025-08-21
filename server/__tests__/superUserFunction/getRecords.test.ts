@@ -12,6 +12,7 @@ import { createBoard } from '../../src/utilities/testUtilities/createBoard';
 import { createTicket } from '../../src/utilities/testUtilities/createTicket';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
 describe('Get Records with SuperUser', () => {
   let token: string;
@@ -25,6 +26,7 @@ describe('Get Records with SuperUser', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,

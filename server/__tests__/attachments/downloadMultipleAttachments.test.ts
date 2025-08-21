@@ -24,6 +24,7 @@ import { createTicket } from '../../src/utilities/testUtilities/createTicket';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
 import { createTestAttachments } from '../../src/utilities/testUtilities/createAttachments';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ describe('downloadMultipleAttachments', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user1 = await createUserProfile(
       prismaTest,
       `${testDescription}_user1`,

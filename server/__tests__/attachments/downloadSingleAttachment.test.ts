@@ -26,6 +26,7 @@ import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtT
 import path from 'path';
 import { unlink } from 'fs/promises';
 import { lookup } from 'mime-types';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ describe('downloadSingleAttachment', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user1 = await createUserProfile(
       prismaTest,
       `${testDescription}_user1`,

@@ -21,6 +21,7 @@ import { createProjectMember } from '../../src/utilities/testUtilities/createPro
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
 describe('Update Record', () => {
   let token: string;
@@ -36,6 +37,7 @@ describe('Update Record', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     superUser = await createSuperUser(prismaTest, testDescription);
     user = await createUserProfile(
       prismaTest,
