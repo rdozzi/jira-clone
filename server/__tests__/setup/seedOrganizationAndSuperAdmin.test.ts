@@ -89,7 +89,6 @@ describe('Test seed organization and SuperAdmin route', () => {
         organizationName: `${testDescription}`,
         otp: otpPayload2.otpValue,
       });
-    console.log(res.body);
 
     expect(res.status).toBe(403);
     expect(res.body.message).toBe(

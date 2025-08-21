@@ -15,7 +15,6 @@ export async function getAllUsers(
   prisma: PrismaClient
 ) {
   try {
-    console.log('getAllUsers', 'Inside Function');
     const organizationId = res.locals.userInfo.organizationId;
     const users = await prisma.user.findMany({
       where: { organizationId: organizationId },

@@ -112,7 +112,6 @@ describe('View all users from a project', () => {
     const res = await request(app)
       .get(`/api/projectMembers/${project.id}/members`)
       .set('Authorization', `Bearer ${tokenSuper}`);
-    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.data).toHaveLength(3);
   });

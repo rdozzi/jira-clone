@@ -53,7 +53,6 @@ describe('Get Projects', () => {
     const res = await request(app)
       .get(`/api/projects`)
       .set('Authorization', `Bearer ${token}`);
-    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Projects fetched succesfully');
     expect(res.body.data).toHaveLength(2);
