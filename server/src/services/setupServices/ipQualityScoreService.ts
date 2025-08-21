@@ -20,7 +20,6 @@ export async function ipQualityScoreService(email: string) {
     }
 
     const body = (await response.json()) as AsyncParams;
-    console.log(body);
 
     // This is a temporary solution for testing purposes only.
     if (

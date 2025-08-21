@@ -62,7 +62,6 @@ describe('Get all users', () => {
     const res = await request(app)
       .get(`/api/users/all`)
       .set('Authorization', `Bearer ${token}`);
-    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Users fetched successfully');
     expect(res.body.data).toHaveLength(4);

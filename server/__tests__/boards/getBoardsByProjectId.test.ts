@@ -80,7 +80,6 @@ describe('Get boards', () => {
     const res = await request(app)
       .get(`/api/boards`)
       .set('Authorization', `Bearer ${token}`);
-    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Boards fetched successfully');
     expect(res.body.data).toHaveLength(3);
@@ -89,7 +88,6 @@ describe('Get boards', () => {
     const res = await request(app)
       .get(`/api/boards/${project.id}/project`)
       .set('Authorization', `Bearer ${token}`);
-    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Boards fetched successfully');
     expect(res.body.data).toHaveLength(3);

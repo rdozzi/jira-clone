@@ -75,7 +75,6 @@ describe('Get project by user id', () => {
     const res = await request(app)
       .get(`/api/projects/my-projects`)
       .set('Authorization', `Bearer ${token}`);
-    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Projects fetched successfully');
     expect(res.body.data).toHaveLength(2);
