@@ -76,7 +76,6 @@ describe('Update user', () => {
       .send({
         organizationRole: 'ADMIN',
       });
-    console.log(res.body);
     expect(res.status).toBe(403);
     expect(res.body.error).toEqual(
       'Unauthorized to change your own global role.'

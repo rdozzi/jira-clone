@@ -63,7 +63,6 @@ describe('Update User Avatar', () => {
       .patch(`/api/users/${user1.id}/avatar`)
       .set('Authorization', `Bearer ${token1}`)
       .attach('file', filePathUpload);
-    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.message).toEqual('User avatar updated successfully');
     expect(res.body.data.avatarSource).toEqual(expect.any(String));

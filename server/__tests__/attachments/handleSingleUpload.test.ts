@@ -161,9 +161,7 @@ describe('handleSingleUpload', () => {
     if (uploadedFileName1) {
       await fs.rm(uploadedFileName1, { force: true });
     }
-    console.log(uploadedFileName2);
     if (uploadedFileName2) {
-      console.log('If block 2');
       await fs.rm(uploadedFileName2, { force: true });
     }
     await deleteRedisKey(organization.id, resourceType);

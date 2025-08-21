@@ -147,8 +147,6 @@ describe('getAllAttachment', () => {
     const res = await request(app)
       .get(`/api/attachments`)
       .set('Authorization', `Bearer ${tokenUser1}`);
-    console.log('test1', res.status);
-    console.log('test1', res.body);
     expect(res.status).toBe(200);
     expect(res.body).toHaveLength(2);
     expect(res.body[0].fileType).toBe('txt');
@@ -159,8 +157,6 @@ describe('getAllAttachment', () => {
     const res = await request(app)
       .get(`/api/attachments/${AttachmentEntityType.TICKET}/${ticket!.id}`)
       .set('Authorization', `Bearer ${tokenUser3}`);
-    console.log('test2', res.status);
-    console.log('test2', res.body);
     expect(res.status).toBe(200);
     expect(res.body).toHaveLength(1);
     expect(res.body[0].entityType).toBe('TICKET');

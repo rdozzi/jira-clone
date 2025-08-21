@@ -106,7 +106,6 @@ describe('downloadSingleAttachment', () => {
       });
 
     const res = await req;
-    console.log('Response Headers', res.header);
 
     const expectedMime = lookup(path.extname(attachment.fileName));
     const contentType = res.header['content-type'].split(';')[0];
