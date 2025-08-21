@@ -8,6 +8,7 @@ import { createOrganization } from '../../src/utilities/testUtilities/createOrga
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
 describe('Update user', () => {
   let token: string;
@@ -19,6 +20,7 @@ describe('Update user', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,
@@ -67,13 +69,14 @@ describe('Update user', () => {
       })
     );
   });
-  it('update to reject self-role promotion request', async () => {
+  it('reject self-role promotion request', async () => {
     const res = await request(app)
       .patch(`/api/users/${user.id}/update`)
       .set('Authorization', `Bearer ${token}`)
       .send({
-        globalRole: 'ADMIN',
+        organizationRole: 'ADMIN',
       });
+    console.log(res.body);
     expect(res.status).toBe(403);
     expect(res.body.error).toEqual(
       'Unauthorized to change your own global role.'

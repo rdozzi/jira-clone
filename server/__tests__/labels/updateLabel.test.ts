@@ -10,6 +10,7 @@ import { createUserProfile } from '../../src/utilities/testUtilities/createUserP
 import { createLabel } from '../../src/utilities/testUtilities/createLabel';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { normalizeEntity } from '../../src/utilities/testUtilities/normalizeEntity';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
 describe('getBannedEmailRecords', () => {
   const testDescription = 'getBannedEmailRecords';
@@ -23,6 +24,7 @@ describe('getBannedEmailRecords', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,

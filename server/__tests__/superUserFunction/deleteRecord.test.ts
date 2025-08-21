@@ -27,6 +27,7 @@ import { createTestAttachment } from '../../src/utilities/testUtilities/createAt
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
 describe('Delete Record', () => {
   let token: string;
@@ -44,6 +45,7 @@ describe('Delete Record', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user = await createUserProfile(
       prismaTest,
       testDescription,
@@ -103,7 +105,6 @@ describe('Delete Record', () => {
         `/api/superuser/function/COMMENT/${organization.id}/${comment.id}`
       )
       .set('Authorization', `Bearer ${token}`);
-    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.message).toBe(`Record deleted successfully`);
     expect(res.body.data).toEqual({
