@@ -23,6 +23,7 @@ import { createComment } from '../../src/utilities/testUtilities/createComment';
 import { createTestAttachment } from '../../src/utilities/testUtilities/createAttachments';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
+import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
 describe('Delete a user', () => {
   let token: string;
@@ -40,6 +41,7 @@ describe('Delete a user', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
+    await createOrgCountRecords(prismaTest, organization.id);
     user1 = await createUserProfile(
       prismaTest,
       testDescription,
