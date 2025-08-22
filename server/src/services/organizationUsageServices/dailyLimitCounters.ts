@@ -37,7 +37,7 @@ export async function increaseCount(
     redis.call('EXPIRE',KEYS[1],ttl)
     return inc
 
-  elseif current + inc >= limit then
+  elseif current + inc > limit then
     return -1
   
   else
