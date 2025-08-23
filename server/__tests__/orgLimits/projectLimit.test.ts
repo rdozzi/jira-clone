@@ -252,8 +252,6 @@ describe('Test project counters', () => {
       where: { organizationId: organization3.id },
       data: { totalProjects: 15 },
     });
-    // console.log('projectLimit.test.ts', 'orgTotal1', orgTotal1);
-    // console.log('projectLimit.test.ts', 'orgTotal2', orgTotal2);
     const res2 = await request(app)
       .post(`/api/projects`)
       .set('Authorization', `Bearer ${token2}`)
@@ -261,10 +259,6 @@ describe('Test project counters', () => {
         name: `Name_${testDescription}_2`,
         description: `Description_${testDescription}_2`,
       });
-    // const orgTotal1After = await prismaTest.organizationProjectUsage.findFirst({
-    //   where: { organizationId: organization1.id },
-    // });
-    // console.log(orgTotal1After);
     const res3 = await request(app)
       .post(`/api/projects`)
       .set('Authorization', `Bearer ${token3}`)
@@ -274,5 +268,30 @@ describe('Test project counters', () => {
       });
     expect(res2.status).toBe(403);
     expect(res3.status).toBe(201);
+  });
+
+  // Ensure daily key expires after 23:59 local time
+  it('Daily key expires after 23:59 at the given time', async () => {
+    const key = `org:${organization.id}:${resourceType}:daily`;
+    await redisClient.del(key);
+    await request(app)
+      .post(`/api/projects`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        name: `Name_${testDescription}`,
+        description: `Description_${testDescription}`,
+      });
+
+    const todayEnd = new Date();
+    todayEnd.setUTCHours(23, 59, 59, 999);
+    const EXPIRE_TIME = Math.floor(todayEnd.getTime() / 1000);
+    const testKey = 'testKey';
+    await redisClient.set(testKey, 'Test Key for checking expiration time');
+    await redisClient.expireAt(testKey, EXPIRE_TIME);
+    const testKeyTTL = await redisClient.ttl(testKey);
+
+    const ttl = Number(await redisClient.ttl(key));
+    expect(ttl).toBeGreaterThan(0);
+    expect(Math.abs(ttl - testKeyTTL)).toBeLessThanOrEqual(1);
   });
 });
