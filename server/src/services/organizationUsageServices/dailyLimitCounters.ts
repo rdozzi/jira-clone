@@ -11,19 +11,22 @@ export async function increaseCount(
 ) {
   await connectRedis();
 
-  const EXPIRE_TIME = 60 * 60 * 24;
+  const todayEnd = new Date();
+  todayEnd.setUTCHours(23, 59, 59, 999);
+  const EXPIRE_TIME = Math.floor(todayEnd.getTime() / 1000);
   const DAILY_LIMIT = DAILY_ORG_LIMITS[resourceType];
   if (!DAILY_LIMIT) {
     // No daily limit defined for this resource, skip Redis tracking
     return;
   }
-  const key = `org:${organizationId}:${resourceType}:daily`;
 
   if (typeof DAILY_LIMIT !== 'number') {
     throw new Error(
       `Daily limit not defined for resource type: ${resourceType}`
     );
   }
+
+  const key = `org:${organizationId}:${resourceType}:daily`;
 
   const luaScript = `
   local current = redis.call('GET',KEYS[1])
@@ -34,7 +37,7 @@ export async function increaseCount(
 
   if not current then
     redis.call('SET', KEYS[1], inc)
-    redis.call('EXPIRE',KEYS[1],ttl)
+    redis.call('EXPIREAT',KEYS[1],ttl)
     return inc
 
   elseif current + inc > limit then
