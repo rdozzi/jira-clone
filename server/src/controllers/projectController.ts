@@ -207,7 +207,7 @@ export async function deleteProject(
       return;
     }
 
-    deleteResourceService(prisma, organizationId, async (tx) => {
+    await deleteResourceService(prisma, organizationId, async (tx) => {
       await deleteProjectDependencies(
         res,
         tx,
