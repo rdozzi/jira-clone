@@ -21,7 +21,7 @@ export async function deleteAttachmentsService(
     },
   });
 
-  // The comment has no associated attachments => Nothing to delete
+  // The entityType (and corresponding id) has no associated attachments => Nothing to delete
   if (attachments.length === 0) return;
 
   const deletedAttachments: typeof attachments = JSON.parse(
