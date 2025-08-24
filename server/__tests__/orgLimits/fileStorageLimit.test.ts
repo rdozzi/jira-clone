@@ -1,7 +1,13 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
-import { OrganizationRole, Organization, User, Project } from '@prisma/client';
-import path from 'path';
+import {
+  OrganizationRole,
+  Organization,
+  User,
+  Project,
+  Attachment,
+} from '@prisma/client';
+// import path from 'path';
 
 import { app } from '../../src/app';
 import request from 'supertest';
@@ -13,7 +19,13 @@ import { createProject } from '../../src/utilities/testUtilities/createProject';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
+import { createTestAttachment } from '../../src/utilities/testUtilities/createAttachments';
+import { createTestFile } from '../../src/utilities/testUtilities/createTestFile';
 import generateJwtToken from '../../src/utilities/testUtilities/generateJwtToken';
+import {
+  DAILY_ORG_LIMITS,
+  TOTAL_ORG_LIMITS,
+} from '../../src/services/organizationUsageServices/limits';
 import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 
@@ -32,6 +44,7 @@ describe('Test file storage counters', () => {
   // let project3: Project;
   const resourceType: ResourceType = 'FileStorage';
   const testDescription = 'TestFileStorageCounters';
+  let attachment: Attachment;
   beforeAll(async () => {
     await prismaTest.$connect();
     await connectRedis();
@@ -98,29 +111,55 @@ describe('Test file storage counters', () => {
     //   user3.organizationRole
     // );
   });
+
   afterAll(async () => {
     await deleteRedisKey(organization.id, resourceType);
     await prismaTest.$disconnect();
   });
 
-  // Happy Path (Increment + Total)
   it('daily and org-level project should be 1', async () => {
-    const filePathUpload = path.join(
-      __dirname,
-      '../../src/utilities/testUtilities/__fixtures__/image3.jpg'
-    ); // image3 is ~1.2 Mb (1184979 Mb)
-
+    const file = createTestFile(2, '2b.bin');
     await request(app)
       .post(`/api/attachments/single`)
       .set('Authorization', `Bearer ${token}`)
       .field('entityType', 'PROJECT')
       .field('entityId', project.id)
-      .attach('file', filePathUpload);
+      .attach('file', file);
 
     const key = `org:${organization.id}:${resourceType}:daily`;
     const dailyFileSize = Number(await redisClient.get(key));
-    console.log(dailyFileSize);
-    expect(dailyFileSize).toBeGreaterThan(1);
+    expect(dailyFileSize).toBe(2);
+
+    const fileStorageTotal =
+      await prismaTest.organizationFileStorageUsage.findUnique({
+        where: { organizationId: organization.id },
+        select: { totalFileStorage: true },
+      });
+
+    const totalCount = fileStorageTotal!.totalFileStorage;
+    expect(totalCount).toBe(2);
+  });
+
+  // Meet daily and total limit boundary
+  it('daily and org-level file storage should be close to respective limits', async () => {
+    const file = createTestFile(1, '1b.bin');
+    const key = `org:${organization.id}:${resourceType}:daily`;
+
+    await redisClient.set(key, DAILY_ORG_LIMITS['FileStorage'] - 1);
+    await prismaTest.organizationFileStorageUsage.update({
+      where: { organizationId: organization.id },
+      data: { totalFileStorage: TOTAL_ORG_LIMITS['FileStorage'] - 1 },
+    });
+    const res = await request(app)
+      .post(`/api/attachments/single`)
+      .set('Authorization', `Bearer ${token}`)
+      .field('entityType', 'PROJECT')
+      .field('entityId', project.id)
+      .attach('file', file);
+
+    expect(res.status).toBe(201);
+    const dailyCount = Number(await redisClient.get(key));
+    expect(dailyCount).toBe(DAILY_ORG_LIMITS['FileStorage']);
 
     const projectFileStorageTotal =
       await prismaTest.organizationFileStorageUsage.findUnique({
@@ -129,113 +168,87 @@ describe('Test file storage counters', () => {
       });
 
     const totalCount = projectFileStorageTotal!.totalFileStorage;
-    expect(totalCount).toBeGreaterThan(1);
-
-    await prismaTest.attachment.deleteMany({
-      where: { organizationId: organization.id, entityId: project.id },
-    });
+    expect(totalCount).toBe(TOTAL_ORG_LIMITS['FileStorage']);
   });
 
-  // // Off-by-one boundary
-  // it('daily and org-level project should be 3 and 20 respectively', async () => {
-  //   const key = `org:${organization.id}:${resourceType}:daily`;
-  //   await redisClient.set(key, 2);
-  //   await prismaTest.organizationProjectUsage.update({
-  //     where: { organizationId: organization.id },
-  //     data: { totalProjects: 19 },
-  //   });
-  //   const res = await request(app)
-  //     .post(`/api/projects`)
-  //     .set('Authorization', `Bearer ${token}`)
-  //     .send({
-  //       name: `Name_${testDescription}`,
-  //       description: `Description_${testDescription}`,
-  //     });
-  //   expect(res.status).toBe(201);
-  //   const dailyCount = Number(await redisClient.get(key));
-  //   expect(dailyCount).toEqual(3);
+  // Daily limit exceded
+  it('should reject creation call due to daily limit reached', async () => {
+    const file = createTestFile(1, '1b.bin');
+    const key = `org:${organization.id}:${resourceType}:daily`;
+    await redisClient.set(key, DAILY_ORG_LIMITS['FileStorage']);
+    const res = await request(app)
+      .post(`/api/attachments/single`)
+      .set('Authorization', `Bearer ${token}`)
+      .field('entityType', 'PROJECT')
+      .field('entityId', project.id)
+      .attach('file', file);
+    expect(res.status).toBe(429);
+    expect(res.body.message).toContain(
+      'Requests exceeds daily limit for this resource'
+    );
+  });
 
-  //   const projectOrgTotal =
-  //     await prismaTest.organizationProjectUsage.findUnique({
-  //       where: { organizationId: organization.id },
-  //       select: { totalProjects: true },
-  //     });
+  // Total limit exceded
+  it('should reject creation call due to total limit reached', async () => {
+    const file = createTestFile(1, '1b.bin');
+    const key = `org:${organization.id}:${resourceType}:daily`;
+    await redisClient.set(key, 0);
+    await prismaTest.organizationFileStorageUsage.update({
+      where: { organizationId: organization.id },
+      data: { totalFileStorage: TOTAL_ORG_LIMITS['FileStorage'] },
+    });
+    const res = await request(app)
+      .post(`/api/attachments/single`)
+      .set('Authorization', `Bearer ${token}`)
+      .field('entityType', 'PROJECT')
+      .field('entityId', project.id)
+      .attach('file', file);
+    expect(res.status).toBe(403);
+    expect(res.body.message).toContain(
+      'The organization has reached the maximum limit of this resource'
+    );
+  });
 
-  //   const totalCount = projectOrgTotal!.totalProjects;
-  //   expect(totalCount).toEqual(20);
+  // Deletion
+  it('total should decrease by file size, daily should stay the same', async () => {
+    await prismaTest.attachment.deleteMany({
+      where: { organizationId: organization.id },
+    });
 
-  //   const projectId = res.body.data.id;
+    await prismaTest.organizationFileStorageUsage.update({
+      where: { organizationId: organization.id },
+      data: { totalFileStorage: 0 },
+    });
 
-  //   await prismaTest.projectMember.deleteMany({
-  //     where: { organizationId: organization.id, projectId: projectId },
-  //   });
+    attachment = await createTestAttachment(
+      prismaTest,
+      testDescription,
+      project.id,
+      'PROJECT',
+      user.id,
+      'jpg',
+      organization.id
+    );
 
-  //   await prismaTest.project.deleteMany({ where: { id: projectId } });
-  // });
+    const key = `org:${organization.id}:${resourceType}:daily`;
+    await redisClient.set(key, 37118); // image1.jpg = 37118 bytes
 
-  // // Daily limit exceded
-  // it('should reject creation call due to daily limit reached', async () => {
-  //   const key = `org:${organization.id}:${resourceType}:daily`;
-  //   await redisClient.set(key, 3);
-  //   const res = await request(app)
-  //     .post(`/api/projects`)
-  //     .set('Authorization', `Bearer ${token}`)
-  //     .send({
-  //       name: `Name_${testDescription}`,
-  //       description: `Description_${testDescription}`,
-  //     });
-  //   expect(res.status).toBe(429);
-  //   expect(res.body.message).toContain(
-  //     'Requests exceeds daily limit for this resource'
-  //   );
-  // });
+    const res = await request(app)
+      .delete(`/api/attachments/${attachment.id}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    const dailyCount = Number(await redisClient.get(key));
+    expect(dailyCount).toEqual(37118);
 
-  // // Total limit exceded
-  // it('should reject creation call due to total limit reached', async () => {
-  //   const key = `org:${organization.id}:${resourceType}:daily`;
-  //   await redisClient.set(key, 0);
-  //   await prismaTest.organizationProjectUsage.update({
-  //     where: { organizationId: organization.id },
-  //     data: { totalProjects: 20 },
-  //   });
-  //   const res = await request(app)
-  //     .post(`/api/projects`)
-  //     .set('Authorization', `Bearer ${token}`)
-  //     .send({
-  //       name: `Name_${testDescription}`,
-  //       description: `Description_${testDescription}`,
-  //     });
-  //   expect(res.status).toBe(403);
-  //   expect(res.body.message).toContain(
-  //     'The organization has reached the maximum limit of this resource'
-  //   );
-  // });
+    const fileStorageOrgTotal =
+      await prismaTest.organizationFileStorageUsage.findUnique({
+        where: { organizationId: organization.id },
+        select: { totalFileStorage: true },
+      });
 
-  // // Deletion
-  // it('total should decrease by 1, daily should stay the same', async () => {
-  //   const key = `org:${organization.id}:${resourceType}:daily`;
-  //   await redisClient.set(key, 1);
-  //   await prismaTest.organizationProjectUsage.update({
-  //     where: { organizationId: organization.id },
-  //     data: { totalProjects: 1 },
-  //   });
-  //   const res = await request(app)
-  //     .delete(`/api/projects/${project.id}`)
-  //     .set('Authorization', `Bearer ${token}`);
-  //   expect(res.status).toBe(200);
-
-  //   const dailyCount = Number(await redisClient.get(key));
-  //   expect(dailyCount).toEqual(1);
-
-  //   const projectOrgTotal =
-  //     await prismaTest.organizationProjectUsage.findUnique({
-  //       where: { organizationId: organization.id },
-  //       select: { totalProjects: true },
-  //     });
-
-  //   const totalCount = projectOrgTotal!.totalProjects;
-  //   expect(totalCount).toEqual(0);
-  // });
+    const totalCount = fileStorageOrgTotal!.totalFileStorage;
+    expect(totalCount).toEqual(0);
+  });
 
   // // Multi-Org: Organization limits are segregated
   // it('Org 2 should have status 403, Org 3 should have status 201', async () => {
