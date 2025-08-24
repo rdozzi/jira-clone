@@ -147,7 +147,7 @@ export async function createBoard(
     });
 
     res
-      .status(200)
+      .status(201)
       .json({ message: 'Board created successfully', data: board });
     return;
   } catch (error) {
