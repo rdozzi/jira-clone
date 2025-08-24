@@ -23,6 +23,7 @@ import { createTestAttachment } from '../../src/utilities/testUtilities/createAt
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey';
+import { deleteUploads } from '../../src/utilities/testUtilities/deleteUploads';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
 
@@ -96,6 +97,7 @@ describe('Create a comment', () => {
   });
   afterAll(async () => {
     await deleteRedisKey(organization.id, resourceType);
+    await deleteUploads();
     await prismaTest.$disconnect();
   });
 

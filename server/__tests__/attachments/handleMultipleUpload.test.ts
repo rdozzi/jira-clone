@@ -7,7 +7,6 @@ import {
   ProjectRole,
   Ticket,
   Comment,
-  Attachment,
   OrganizationRole,
   Organization,
 } from '@prisma/client';
@@ -26,13 +25,13 @@ import { createProjectMember } from '../../src/utilities/testUtilities/createPro
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey';
+import { deleteUploads } from '../../src/utilities/testUtilities/deleteUploads';
 import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
 
 dotenv.config();
 
 describe('handleMultipleUpload', () => {
   const testDescription = 'handleMultipleUpload';
-  let uploadedFiles: string[];
   let user1: User;
   let token: string;
   let ticket: Ticket | undefined;
@@ -114,19 +113,10 @@ describe('handleMultipleUpload', () => {
 
     expect(res.status).toBe(201);
     expect(res.body.message).toEqual(`${files.length} uploaded successfully`);
-    uploadedFiles = res.body.createdAttachments.map(
-      (attachment: Attachment) => {
-        return attachment.filePath;
-      }
-    );
   });
   afterAll(async () => {
-    if (uploadedFiles) {
-      for (const files of uploadedFiles) {
-        await fs.rm(files, { force: true });
-      }
-    }
     await deleteRedisKey(organization.id, resourceType);
+    await deleteUploads();
     await prismaTest.$disconnect();
   });
 });
