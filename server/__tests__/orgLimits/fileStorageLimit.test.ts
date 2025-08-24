@@ -7,7 +7,6 @@ import {
   Project,
   Attachment,
 } from '@prisma/client';
-// import path from 'path';
 
 import { app } from '../../src/app';
 import request from 'supertest';
@@ -31,17 +30,17 @@ import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDa
 
 describe('Test file storage counters', () => {
   let token: string;
-  // let token2: string;
-  // let token3: string;
+  let token2: string;
+  let token3: string;
   let user: User;
-  // let user2: User;
-  // let user3: User;
+  let user2: User;
+  let user3: User;
   let organization: Organization;
   let organization2: Organization;
   let organization3: Organization;
   let project: Project;
-  // let project2: Project;
-  // let project3: Project;
+  let project2: Project;
+  let project3: Project;
   const resourceType: ResourceType = 'FileStorage';
   const testDescription = 'TestFileStorageCounters';
   let attachment: Attachment;
@@ -67,24 +66,37 @@ describe('Test file storage counters', () => {
       OrganizationRole.ADMIN,
       organization.id
     );
-    // user2 = await createUserProfile(
-    //   prismaTest,
-    //   `${testDescription}_2`,
-    //   OrganizationRole.ADMIN,
-    //   organization2.id
-    // );
-    // user3 = await createUserProfile(
-    //   prismaTest,
-    //   `${testDescription}_3`,
-    //   OrganizationRole.ADMIN,
-    //   organization3.id
-    // );
+    user2 = await createUserProfile(
+      prismaTest,
+      `${testDescription}_2`,
+      OrganizationRole.ADMIN,
+      organization2.id
+    );
+    user3 = await createUserProfile(
+      prismaTest,
+      `${testDescription}_3`,
+      OrganizationRole.ADMIN,
+      organization3.id
+    );
     project = await createProject(
       prismaTest,
       testDescription,
       user.id,
       organization.id
     );
+    project2 = await createProject(
+      prismaTest,
+      testDescription,
+      user2.id,
+      organization2.id
+    );
+    project3 = await createProject(
+      prismaTest,
+      testDescription,
+      user3.id,
+      organization3.id
+    );
+
     await createProjectMember(
       prismaTest,
       project.id,
@@ -92,24 +104,40 @@ describe('Test file storage counters', () => {
       'ADMIN',
       organization.id
     );
+
+    await createProjectMember(
+      prismaTest,
+      project2.id,
+      user2.id,
+      'ADMIN',
+      organization2.id
+    );
+
+    await createProjectMember(
+      prismaTest,
+      project3.id,
+      user3.id,
+      'ADMIN',
+      organization3.id
+    );
     token = generateJwtToken(
       user.id,
       user.globalRole,
       user.organizationId,
       user.organizationRole
     );
-    // token2 = generateJwtToken(
-    //   user2.id,
-    //   user2.globalRole,
-    //   user2.organizationId,
-    //   user2.organizationRole
-    // );
-    // token3 = generateJwtToken(
-    //   user3.id,
-    //   user3.globalRole,
-    //   user3.organizationId,
-    //   user3.organizationRole
-    // );
+    token2 = generateJwtToken(
+      user2.id,
+      user2.globalRole,
+      user2.organizationId,
+      user2.organizationRole
+    );
+    token3 = generateJwtToken(
+      user3.id,
+      user3.globalRole,
+      user3.organizationId,
+      user3.organizationRole
+    );
   });
 
   afterAll(async () => {
@@ -117,6 +145,7 @@ describe('Test file storage counters', () => {
     await prismaTest.$disconnect();
   });
 
+  // Happy Path
   it('daily and org-level project should be 1', async () => {
     const file = createTestFile(2, '2b.bin');
     await request(app)
@@ -250,37 +279,46 @@ describe('Test file storage counters', () => {
     expect(totalCount).toEqual(0);
   });
 
-  // // Multi-Org: Organization limits are segregated
-  // it('Org 2 should have status 403, Org 3 should have status 201', async () => {
-  //   const key1 = `org:${organization2.id}:${resourceType}:daily`;
-  //   const key2 = `org:${organization3.id}:${resourceType}:daily`;
-  //   await redisClient.set(key1, 0);
-  //   await redisClient.set(key2, 0);
-  //   await prismaTest.organizationProjectUsage.update({
-  //     where: { organizationId: organization2.id },
-  //     data: { totalProjects: 20 },
-  //   });
-  //   await prismaTest.organizationProjectUsage.update({
-  //     where: { organizationId: organization3.id },
-  //     data: { totalProjects: 15 },
-  //   });
-  //   const res2 = await request(app)
-  //     .post(`/api/projects`)
-  //     .set('Authorization', `Bearer ${token2}`)
-  //     .send({
-  //       name: `Name_${testDescription}_2`,
-  //       description: `Description_${testDescription}_2`,
-  //     });
-  //   const res3 = await request(app)
-  //     .post(`/api/projects`)
-  //     .set('Authorization', `Bearer ${token3}`)
-  //     .send({
-  //       name: `Name_${testDescription}_3`,
-  //       description: `Description_${testDescription}_3`,
-  //     });
-  //   expect(res2.status).toBe(403);
-  //   expect(res3.status).toBe(201);
-  // });
+  // Multi-Org: Organization limits are segregated
+  it('Org 2 should have status 403, Org 3 should have status 201', async () => {
+    const file2 = createTestFile(1, '1b.bin');
+    const file3 = createTestFile(1, '1b.bin');
+    const key2 = `org:${organization2.id}:${resourceType}:daily`;
+    const key3 = `org:${organization3.id}:${resourceType}:daily`;
+    await redisClient.set(key2, 0);
+    await redisClient.set(key3, 0);
+
+    await prismaTest.organizationFileStorageUsage.update({
+      where: { organizationId: organization2.id },
+      data: { totalFileStorage: TOTAL_ORG_LIMITS['FileStorage'] },
+    });
+
+    await prismaTest.organizationFileStorageUsage.update({
+      where: { organizationId: organization3.id },
+      data: { totalFileStorage: 0 },
+    });
+
+    const res2 = await request(app)
+      .post(`/api/attachments/single`)
+      .set('Authorization', `Bearer ${token2}`)
+      .field('entityType', 'PROJECT')
+      .field('entityId', project2.id)
+      .attach('file', file2);
+
+    const res3 = await request(app)
+      .post(`/api/attachments/single`)
+      .set('Authorization', `Bearer ${token3}`)
+      .field('entityType', 'PROJECT')
+      .field('entityId', project3.id)
+      .attach('file', file3);
+
+    expect(res2.status).toBe(403);
+    expect(res2.body.message).toContain(
+      'The organization has reached the maximum limit of this resource: FileStorage.'
+    );
+    expect(res3.status).toBe(201);
+    expect(res3.body.message).toContain('File uploaded successfully');
+  });
 
   // // Ensure daily key expires after 23:59 local time
   // it('Daily key expires after 23:59 at the given time', async () => {
