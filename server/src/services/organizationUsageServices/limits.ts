@@ -4,7 +4,7 @@ export const DAILY_ORG_LIMITS = {
   Ticket: 100,
   Comment: 300,
   User: undefined,
-  FileStorage: 100 * 1024 * 1024, // 1MB/Day
+  FileStorage: 100 * 1024 * 1024, // 100 MB/Day
   ActivityLog: undefined,
   Label: undefined,
   BannedEmail: undefined,
@@ -16,7 +16,7 @@ export const TOTAL_ORG_LIMITS = {
   Ticket: 5000,
   Comment: 20000,
   User: 1000,
-  FileStorage: 1024 * 1024 * 1024, // 1GB/Day
+  FileStorage: 1024 * 1024 * 1024, // 1GB
   ActivityLog: 50000,
   Label: 100,
   BannedEmail: 100,
