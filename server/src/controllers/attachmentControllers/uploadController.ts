@@ -58,7 +58,8 @@ export async function handleSingleUpload(
             storageType: metadata.storageType,
             organizationId: organizationId,
           },
-        })
+        }),
+      metadata.size
     );
 
     res.locals.logEvent = buildLogEvent({
