@@ -320,28 +320,28 @@ describe('Test file storage counters', () => {
     expect(res3.body.message).toContain('File uploaded successfully');
   });
 
-  // // Ensure daily key expires after 23:59 local time
-  // it('Daily key expires after 23:59 at the given time', async () => {
-  //   const key = `org:${organization.id}:${resourceType}:daily`;
-  //   await redisClient.del(key);
-  //   await request(app)
-  //     .post(`/api/projects`)
-  //     .set('Authorization', `Bearer ${token}`)
-  //     .send({
-  //       name: `Name_${testDescription}`,
-  //       description: `Description_${testDescription}`,
-  //     });
+  // Ensure daily key expires after 23:59 local time
+  it('Daily key expires after 23:59 at the given time', async () => {
+    const file = createTestFile(1, '1b.bin');
+    const key = `org:${organization.id}:${resourceType}:daily`;
+    await redisClient.del(key);
+    await request(app)
+      .post(`/api/attachments/single`)
+      .set('Authorization', `Bearer ${token}`)
+      .field('entityType', 'PROJECT')
+      .field('entityId', project.id)
+      .attach('file', file);
 
-  //   const todayEnd = new Date();
-  //   todayEnd.setUTCHours(23, 59, 59, 999);
-  //   const EXPIRE_TIME = Math.floor(todayEnd.getTime() / 1000);
-  //   const testKey = 'testKey';
-  //   await redisClient.set(testKey, 'Test Key for checking expiration time');
-  //   await redisClient.expireAt(testKey, EXPIRE_TIME);
-  //   const testKeyTTL = await redisClient.ttl(testKey);
+    const todayEnd = new Date();
+    todayEnd.setUTCHours(23, 59, 59, 999);
+    const EXPIRE_TIME = Math.floor(todayEnd.getTime() / 1000);
+    const testKey = 'testKey';
+    await redisClient.set(testKey, 'Test Key for checking expiration time');
+    await redisClient.expireAt(testKey, EXPIRE_TIME);
+    const testKeyTTL = await redisClient.ttl(testKey);
 
-  //   const ttl = Number(await redisClient.ttl(key));
-  //   expect(ttl).toBeGreaterThan(0);
-  //   expect(Math.abs(ttl - testKeyTTL)).toBeLessThanOrEqual(1);
-  // });
+    const ttl = Number(await redisClient.ttl(key));
+    expect(ttl).toBeGreaterThan(0);
+    expect(Math.abs(ttl - testKeyTTL)).toBeLessThanOrEqual(1);
+  });
 });
