@@ -26,6 +26,7 @@ import {
   TOTAL_ORG_LIMITS,
 } from '../../src/services/organizationUsageServices/limits';
 import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey';
+import { deleteUploads } from '../../src/utilities/testUtilities/deleteUploads';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 
 describe('Test file storage counters', () => {
@@ -142,6 +143,7 @@ describe('Test file storage counters', () => {
 
   afterAll(async () => {
     await deleteRedisKey(organization.id, resourceType);
+    deleteUploads();
     await prismaTest.$disconnect();
   });
 
