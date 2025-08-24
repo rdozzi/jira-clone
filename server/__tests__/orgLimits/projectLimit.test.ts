@@ -267,7 +267,11 @@ describe('Test project counters', () => {
         description: `Description_${testDescription}_3`,
       });
     expect(res2.status).toBe(403);
+    expect(res2.body.message).toContain(
+      'The organization has reached the maximum limit of this resource'
+    );
     expect(res3.status).toBe(201);
+    expect(res3.body.message).toContain('Project created successfully');
   });
 
   // Ensure daily key expires after 23:59 local time
