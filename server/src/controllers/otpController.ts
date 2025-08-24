@@ -3,6 +3,8 @@ import { redisClient, connectRedis } from '../lib/connectRedis';
 import { generateOTP } from '../utilities/generateOTP';
 import { sendOTPEmail } from '../services/otpServices/sendOTPEmail';
 
+// Function creates an OTP with a key "otpPayload:${email}" that contains a payload with the user email and otpValue. This expires in 5 minutes from the time it's created.
+
 export async function createOTPHash(req: Request, res: Response) {
   try {
     const EXPIRE_TIME = 60 * 5;
