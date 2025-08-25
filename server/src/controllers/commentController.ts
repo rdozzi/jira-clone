@@ -93,8 +93,8 @@ export async function createComment(
     });
 
     res
-      .status(200)
-      .json({ message: 'Comment uploaded successfully', data: comment });
+      .status(201)
+      .json({ message: 'Comment created successfully', data: comment });
     return;
   } catch (error) {
     console.error('Error creating comment: ', error);
