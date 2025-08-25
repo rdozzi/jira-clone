@@ -4,6 +4,7 @@ import {
   getAllBannedEmails,
   getBannedEmailById,
   createBannedEmail,
+  deleteBannedEmail,
 } from '../controllers/bannedEmailController';
 import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
 import { OrganizationRole } from '@prisma/client';
@@ -41,6 +42,16 @@ router.post(
   checkMaxUsageTotals(prisma),
   async (req: Request, res: Response): Promise<void> => {
     await createBannedEmail(req, res, prisma);
+  }
+);
+
+// Delete banned email
+router.delete(
+  '/bannedEmails/:emailId',
+  authorizeGlobalRole(OrganizationRole.ADMIN),
+  validateParams,
+  async (req: Request, res: Response): Promise<void> => {
+    await deleteBannedEmail(req, res, prisma);
   }
 );
 
