@@ -24,6 +24,7 @@ export async function deleteResourceService<T>(
         userCount,
         labelCount,
         totalAttachmentSize,
+        bannedEmailCount,
       ] = [
         await tx.project.count({ where: { organizationId } }),
         await tx.board.count({ where: { organizationId } }),
@@ -39,6 +40,7 @@ export async function deleteResourceService<T>(
             _sum: { fileSize: true },
           })
           .then((result) => result._sum.fileSize),
+        await tx.bannedEmail.count({ where: { organizationId } }),
       ];
 
       // 4) Update totals
@@ -78,6 +80,11 @@ export async function deleteResourceService<T>(
           data: { totalFileStorage: totalAttachmentSize },
         });
       }
+
+      await tx.organizationBannedEmailsUsage.update({
+        where: { organizationId: organizationId },
+        data: { totalBannedEmails: bannedEmailCount },
+      });
     });
 
     return null;
