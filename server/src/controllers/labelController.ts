@@ -63,7 +63,9 @@ export async function createNewLabel(
       },
     });
 
-    res.status(200).json({ message: 'Label created successfully', label });
+    res
+      .status(201)
+      .json({ message: 'Label created successfully', data: label });
     return;
   } catch (error) {
     console.error('Error creating label: ', error);
@@ -137,7 +139,7 @@ export async function deleteLabel(
       where: { id: labelId, organizationId: organizationId },
     });
 
-    deleteResourceService(prisma, organizationId, async (tx) => {
+    await deleteResourceService(prisma, organizationId, async (tx) => {
       await deleteLabelDependencies(tx, labelId, null, organizationId);
       await tx.label.delete({
         where: { id: labelId, organizationId: organizationId },
