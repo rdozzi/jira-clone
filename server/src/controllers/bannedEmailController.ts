@@ -96,9 +96,8 @@ export async function createBannedEmail(
     });
 
     return res.status(201).json({
-      bannedEmail: bannedEmail.email,
-      reason: bannedEmail.reason,
       message: 'Banned email created successfully',
+      data: bannedEmail,
     });
   } catch (error) {
     console.error('Error creating banned email: ', error);
