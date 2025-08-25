@@ -109,7 +109,7 @@ describe('Create a comment', () => {
         ticketId: ticket.id,
         content: `Create comment for ${testDescription}`,
       });
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
     expect(res.body).toEqual(
       expect.objectContaining({
         data: {
