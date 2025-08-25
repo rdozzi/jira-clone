@@ -21,6 +21,15 @@ export async function resetTestDatabase() {
     'Board',
     'Project',
     'Organization',
+    'OrganizationProjectUsage',
+    'OrganizationBoardUsage',
+    'OrganizationTicketUsage',
+    'OrganizationCommentUsage',
+    'OrganizationUserUsage',
+    'OrganizationLabelUsage',
+    'OrganizationActivityLogUsage',
+    'OrganizationFileStorageUsage',
+    'OrganizationBannedEmailsUsage',
   ];
 
   await prismaTest.$transaction(async (tx) => {
