@@ -24,6 +24,8 @@ export async function activityLogCounter(
 
     const limit = logLimitInfo.maxActivityLogs;
 
+    if (!limit) return false;
+
     const exceedsOrgLimitAndLocked = await prisma.$transaction(async (tx) => {
       const { totalActivityLogs: after } =
         await tx.organizationActivityLogUsage.update({
@@ -34,8 +36,6 @@ export async function activityLogCounter(
 
       const before = after - 1;
 
-      if (!limit) return false;
-
       const limitExceeded = before < limit && after >= limit;
 
       if (!limitExceeded) {
@@ -45,7 +45,7 @@ export async function activityLogCounter(
       const NS: number = namespace['createLog'];
       const [{ locked }] = await tx.$queryRaw<
         { locked: boolean }[]
-      >`SELECT pg_try_advisory_xact_lock(${NS}, ${organizationId}) AS locked`;
+      >`SELECT pg_try_advisory_xact_lock(${NS}::int, ${organizationId}::int) AS locked`;
 
       return locked === true;
     });
