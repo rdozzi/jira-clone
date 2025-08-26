@@ -12,12 +12,10 @@ export function globalLogMiddleware() {
         try {
           if (logEvents && Array.isArray(logEvents)) {
             await Promise.all(
-              logEvents.map((logEvent) => {
-                createActivityLog(logEvent);
-              })
+              logEvents.map((logEvent) => createActivityLog(logEvent))
             );
           } else if (logEvent) {
-            createActivityLog(logEvent);
+            await createActivityLog(logEvent);
           }
         } catch (error) {
           console.error('Error creating activity log(s): ', error);
