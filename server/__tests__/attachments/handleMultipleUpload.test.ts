@@ -27,6 +27,7 @@ import { createOrgCountRecords } from '../../src/utilities/testUtilities/createO
 import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey';
 import { deleteUploads } from '../../src/utilities/testUtilities/deleteUploads';
 import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
+import waitForExpect from 'wait-for-expect';
 
 dotenv.config();
 
@@ -90,6 +91,11 @@ describe('handleMultipleUpload', () => {
       organization.id
     );
   });
+  afterAll(async () => {
+    await deleteRedisKey(organization.id, resourceType);
+    await deleteUploads();
+    await prismaTest.$disconnect();
+  });
 
   it('should upload multiple attachments', async () => {
     const fixtureDir = path.join(
@@ -113,10 +119,31 @@ describe('handleMultipleUpload', () => {
 
     expect(res.status).toBe(201);
     expect(res.body.message).toEqual(`${files.length} uploaded successfully`);
-  });
-  afterAll(async () => {
-    await deleteRedisKey(organization.id, resourceType);
-    await deleteUploads();
-    await prismaTest.$disconnect();
+
+    // Activity Log for Multiple uploads
+    await waitForExpect(async () => {
+      const activityLogs = await prismaTest.activityLog.findMany({
+        where: { organizationId: organization.id },
+      });
+      expect(activityLogs.length).toEqual(5);
+      expect(activityLogs[0]).toEqual({
+        id: expect.any(Number),
+        userId: expect.any(Number),
+        actorType: expect.any(String),
+        action: expect.any(String),
+        targetId: expect.any(Number),
+        targetType: expect.any(String),
+        metadata: expect.objectContaining({
+          commentId: expect.any(Number),
+          filename: expect.any(String),
+          mimetype: expect.any(String),
+          savedPath: expect.any(String),
+          size: expect.any(Number),
+          storageType: expect.any(String),
+        }),
+        createdAt: expect.any(Date),
+        organizationId: expect.any(Number),
+      });
+    });
   });
 });
