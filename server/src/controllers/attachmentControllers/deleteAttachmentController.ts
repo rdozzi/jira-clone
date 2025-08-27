@@ -5,6 +5,7 @@ import { PrismaClient, Attachment } from '@prisma/client';
 import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { buildLogEvent } from '../../services/buildLogEvent';
 import { deleteResourceService } from '../../services/organizationUsageServices/deleteResourceService';
+import { FileMetadata } from '../../types/file';
 
 export async function deleteAttachment(
   req: CustomRequest,
@@ -44,6 +45,15 @@ export async function deleteAttachment(
       })
     );
 
+    const fileMetadata: FileMetadata = {
+      filename: deletedAttachment.fileName,
+      mimetype: deletedAttachment.entityType,
+      size: deletedAttachment.fileSize,
+      savedPath: deletedAttachment.filePath ?? undefined,
+      cloudUrl: deletedAttachment.fileUrl ?? undefined,
+      storageType: deletedAttachment.storageType,
+    };
+
     res.locals.logEvent = buildLogEvent({
       userId: deletedAttachment.uploadedBy,
       actorType: 'USER',
@@ -52,12 +62,7 @@ export async function deleteAttachment(
       targetType: 'ATTACHMENT',
       organizationId: organizationId,
       metadata: {
-        fileName: deletedAttachment.fileName,
-        fileType: deletedAttachment.entityType,
-        fileSize: deletedAttachment.fileSize,
-        filePath: deletedAttachment.filePath,
-        fileUrl: deletedAttachment.fileUrl,
-        storageType: deletedAttachment.storageType,
+        ...fileMetadata,
         ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
         ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
         ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
