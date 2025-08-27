@@ -27,6 +27,7 @@ import path from 'path';
 import { unlink } from 'fs/promises';
 import { lookup } from 'mime-types';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
+import waitForExpect from 'wait-for-expect';
 
 dotenv.config();
 
@@ -115,6 +116,31 @@ describe('downloadSingleAttachment', () => {
     expect(res.header['content-disposition']).toMatch(/attachment/);
     expect(res.body instanceof Buffer || res.body instanceof Object).toBe(true);
     expect(res.body.length).toBeGreaterThan(0);
+    // Attachment ActivityLog
+    await waitForExpect(async () => {
+      const activityLog = await prismaTest.activityLog.findMany({
+        where: { organizationId: organization.id },
+      });
+      expect(activityLog.length).toBe(1);
+      expect(activityLog[0]).toEqual({
+        id: expect.any(Number),
+        userId: expect.any(Number),
+        actorType: expect.any(String),
+        action: expect.any(String),
+        targetId: expect.any(Number),
+        targetType: expect.any(String),
+        metadata: expect.objectContaining({
+          ticketId: expect.any(Number),
+          filename: expect.any(String),
+          mimetype: expect.any(String),
+          savedPath: expect.any(String),
+          size: expect.any(Number),
+          storageType: expect.any(String),
+        }),
+        createdAt: expect.any(Date),
+        organizationId: expect.any(Number),
+      });
+    });
   });
   afterAll(async () => {
     if (attachment.filePath) await unlink(attachment.filePath);
