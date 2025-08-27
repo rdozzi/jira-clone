@@ -6,6 +6,7 @@ import { validateEntityAndId } from '../../utilities/validateEntityAndId';
 import { buildLogEvent } from '../../services/buildLogEvent';
 import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { createResourceService } from '../../services/organizationUsageServices/createResourceService';
+import { FileMetadata } from '../../types/file';
 
 export async function handleSingleUpload(
   req: CustomRequest,
@@ -38,7 +39,9 @@ export async function handleSingleUpload(
 
     const logEntityId = generateEntityIdForLog(entityType, entityId);
 
-    const metadata = await handleFileUpload(req.file as Express.Multer.File);
+    const fileMetadata: FileMetadata = await handleFileUpload(
+      req.file as Express.Multer.File
+    );
 
     const attachment = await createResourceService(
       prisma,
@@ -50,16 +53,16 @@ export async function handleSingleUpload(
             entityType,
             entityId: entityId,
             uploadedBy,
-            fileName: metadata.filename,
-            fileType: metadata.mimetype,
-            fileSize: metadata.size,
-            filePath: metadata.savedPath,
-            fileUrl: metadata.cloudUrl,
-            storageType: metadata.storageType,
+            fileName: fileMetadata.filename,
+            fileType: fileMetadata.mimetype,
+            fileSize: fileMetadata.size,
+            filePath: fileMetadata.savedPath,
+            fileUrl: fileMetadata.cloudUrl,
+            storageType: fileMetadata.storageType,
             organizationId: organizationId,
           },
         }),
-      metadata.size
+      fileMetadata.size
     );
 
     res.locals.logEvent = buildLogEvent({
@@ -70,7 +73,7 @@ export async function handleSingleUpload(
       targetType: 'ATTACHMENT',
       organizationId: organizationId,
       metadata: {
-        metadata,
+        ...fileMetadata,
         ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
         ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
         ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
@@ -125,8 +128,10 @@ export async function handleMultipleUpload(
 
     const createdAttachments: Attachment[] = [];
 
+    let fileMetadata: FileMetadata;
+
     for (const file of files) {
-      const metadata = await handleFileUpload(file);
+      fileMetadata = await handleFileUpload(file);
       const attachment = await createResourceService(
         prisma,
         resourceType,
@@ -137,12 +142,12 @@ export async function handleMultipleUpload(
               entityType,
               entityId: entityId,
               uploadedBy,
-              fileName: metadata.filename,
-              fileType: metadata.mimetype,
-              fileSize: metadata.size,
-              filePath: metadata.savedPath,
-              fileUrl: metadata.cloudUrl,
-              storageType: metadata.storageType,
+              fileName: fileMetadata.filename,
+              fileType: fileMetadata.mimetype,
+              fileSize: fileMetadata.size,
+              filePath: fileMetadata.savedPath,
+              fileUrl: fileMetadata.cloudUrl,
+              storageType: fileMetadata.storageType,
               organizationId: organizationId,
             },
           })
@@ -160,12 +165,7 @@ export async function handleMultipleUpload(
         targetType: 'ATTACHMENT',
         organizationId: organizationId,
         metadata: {
-          fileName: attachment.fileName,
-          fileType: attachment.entityType,
-          fileSize: attachment.fileSize,
-          filePath: attachment.filePath,
-          fileUrl: attachment.fileUrl,
-          storageType: attachment.storageType,
+          ...fileMetadata,
           ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
           ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
           ...(logEntityId.boardId && { boardId: logEntityId.boardId }),

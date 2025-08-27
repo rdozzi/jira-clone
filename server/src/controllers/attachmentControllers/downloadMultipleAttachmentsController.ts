@@ -7,6 +7,7 @@ import { generateSignedCloudUrl } from '../../utilities/generateSignedCloudUrl';
 import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../../services/buildLogEvent';
 import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
+import { FileMetadata } from '../../types/file';
 
 export async function downloadMultipleAttachments(
   req: Request,
@@ -101,6 +102,14 @@ export async function downloadMultipleAttachments(
 
     res.locals.logEvents = attachments.map((attachment, index) => {
       const logEntityId = attachmentLogEntityIds[index];
+      const fileMetadata: FileMetadata = {
+        filename: attachment.fileName,
+        mimetype: attachment.entityType,
+        size: attachment.fileSize,
+        savedPath: attachment.filePath ?? undefined,
+        cloudUrl: attachment.fileUrl ?? undefined,
+        storageType: attachment.storageType,
+      };
 
       return buildLogEvent({
         userId: attachment.uploadedBy,
@@ -110,12 +119,7 @@ export async function downloadMultipleAttachments(
         targetType: 'ATTACHMENT',
         organizationId: organizationId,
         metadata: {
-          fileName: attachment?.fileName,
-          fileType: attachment?.entityType,
-          fileSize: attachment?.fileSize,
-          filePath: attachment?.filePath,
-          fileUrl: attachment?.fileUrl,
-          storageType: attachment?.storageType,
+          ...fileMetadata,
           ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
           ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
           ...(logEntityId.boardId && { boardId: logEntityId.boardId }),

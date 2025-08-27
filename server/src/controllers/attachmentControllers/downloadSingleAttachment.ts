@@ -5,6 +5,7 @@ import { generateSignedCloudUrl } from '../../utilities/generateSignedCloudUrl';
 import { Attachment } from '@prisma/client';
 import { buildLogEvent } from '../../services/buildLogEvent';
 import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
+import { FileMetadata } from '../../types/file';
 
 export async function downloadSingleAttachment(req: Request, res: Response) {
   try {
@@ -47,6 +48,15 @@ function generatePayload(attachment: Attachment, organizationId: number) {
     attachment.entityId
   );
 
+  const fileMetadata: FileMetadata = {
+    filename: attachment.fileName,
+    mimetype: attachment.entityType,
+    size: attachment.fileSize,
+    savedPath: attachment.filePath ?? undefined,
+    cloudUrl: attachment.fileUrl ?? undefined,
+    storageType: attachment.storageType,
+  };
+
   return buildLogEvent({
     userId: attachment.uploadedBy,
     actorType: 'USER',
@@ -55,12 +65,7 @@ function generatePayload(attachment: Attachment, organizationId: number) {
     targetType: 'ATTACHMENT',
     organizationId: organizationId,
     metadata: {
-      fileName: attachment.fileName,
-      fileType: attachment.entityType,
-      fileSize: attachment.fileSize,
-      filePath: attachment.filePath,
-      fileUrl: attachment.fileUrl,
-      storageType: attachment.storageType,
+      ...fileMetadata,
       ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
       ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
       ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
