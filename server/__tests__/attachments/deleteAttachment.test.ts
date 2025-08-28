@@ -26,6 +26,7 @@ import { createProjectMember } from '../../src/utilities/testUtilities/createPro
 import { createTestAttachment } from '../../src/utilities/testUtilities/createAttachments';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
+import waitForExpect from 'wait-for-expect';
 
 dotenv.config();
 
@@ -99,6 +100,9 @@ describe('deleteAttachment', () => {
       organization.id
     );
   });
+  afterAll(async () => {
+    await prismaTest.$disconnect();
+  });
 
   it('should delete a single attachment', async () => {
     const res = await request(app)
@@ -112,9 +116,31 @@ describe('deleteAttachment', () => {
     expect(deletedAttachment).toBeNull();
 
     expect(existsSync(attachment.filePath as PathLike)).toBe(false);
-  });
 
-  afterAll(async () => {
-    await prismaTest.$disconnect();
+    // Attachment ActivityLog
+    await waitForExpect(async () => {
+      const activityLog = await prismaTest.activityLog.findMany({
+        where: { organizationId: organization.id },
+      });
+      expect(activityLog.length).toBe(1);
+      expect(activityLog[0]).toEqual({
+        id: expect.any(Number),
+        userId: expect.any(Number),
+        actorType: expect.any(String),
+        action: expect.any(String),
+        targetId: expect.any(Number),
+        targetType: expect.any(String),
+        metadata: expect.objectContaining({
+          commentId: expect.any(Number),
+          filename: expect.any(String),
+          mimetype: expect.any(String),
+          savedPath: expect.any(String),
+          size: expect.any(Number),
+          storageType: expect.any(String),
+        }),
+        createdAt: expect.any(Date),
+        organizationId: expect.any(Number),
+      });
+    });
   });
 });
