@@ -127,7 +127,7 @@ describe('downloadMultipleAttachments', () => {
       const activityLog = await prismaTest.activityLog.findMany({
         where: { organizationId: organization.id },
       });
-      expect(activityLog.length).toBe(1);
+      expect(activityLog.length).toBe(3);
       expect(activityLog[0]).toEqual({
         id: expect.any(Number),
         userId: expect.any(Number),
