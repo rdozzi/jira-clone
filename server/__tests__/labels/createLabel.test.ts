@@ -44,10 +44,10 @@ describe('createLabel', () => {
       .post('/api/labels')
       .set('Authorization', `Bearer ${token}`)
       .send({ name: `${testDescription}_label`, color: '#FF0000' });
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
     expect(res.body).toEqual({
       message: 'Label created successfully',
-      label: {
+      data: {
         id: expect.any(Number),
         name: `Createlabel_label`, // Hard-coded to satisfy test purposes
         color: '#FF0000',
