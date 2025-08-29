@@ -107,6 +107,9 @@ describe('Test project counters', () => {
 
   // Happy Path (Increment + Total)
   it('daily and org-level project should be 1', async () => {
+    const key = `org:${organization.id}:${resourceType}:daily`;
+    await redisClient.set(key, 0);
+
     const res = await request(app)
       .post(`/api/projects`)
       .set('Authorization', `Bearer ${token}`)
@@ -115,7 +118,6 @@ describe('Test project counters', () => {
         description: `Description_${testDescription}`,
       });
 
-    const key = `org:${organization.id}:${resourceType}:daily`;
     const dailyCount = Number(await redisClient.get(key));
     expect(dailyCount).toEqual(1);
 
