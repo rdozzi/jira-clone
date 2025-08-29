@@ -215,8 +215,6 @@ describe('Test comment counters', () => {
         content: `Create comment for ${testDescription}`,
       });
 
-    console.log(res.body);
-
     expect(res.status).toEqual(201);
 
     const key = `org:${organization.id}:${resourceType}:daily`;
