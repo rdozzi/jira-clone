@@ -72,7 +72,7 @@ describe('Create a board', () => {
         description: `Description_${testDescription}`,
         projectId: project.id,
       });
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
     expect(res.body).toEqual(
       expect.objectContaining({
         data: {
