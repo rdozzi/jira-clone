@@ -8,6 +8,7 @@ import { createOrganization } from '../../src/utilities/testUtilities/createOrga
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
+import waitForExpect from 'wait-for-expect';
 
 // Positive Result:
 // 1) Successful Login: Create credential, use credential to log in.
@@ -51,6 +52,31 @@ describe('Login Auth Route', () => {
       organizationId: expect.any(Number),
       token: expect.any(String),
       expiresIn: expect.any(Number),
+    });
+
+    await waitForExpect(async () => {
+      const activityLog = await prismaTest.activityLog.findMany({
+        where: { organizationId: organization.id },
+      });
+      expect(activityLog.length).toBe(1);
+      expect(activityLog[0]).toEqual({
+        id: expect.any(Number),
+        userId: expect.any(Number),
+        actorType: expect.any(String),
+        action: expect.any(String),
+        targetId: expect.any(Number),
+        targetType: expect.any(String),
+        metadata: expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String),
+          email: expect.any(String),
+          globalRole: expect.any(String),
+          organizationRole: expect.any(String),
+          timestamp: expect.any(String),
+        }),
+        createdAt: expect.any(Date),
+        organizationId: expect.any(Number),
+      });
     });
   });
 
