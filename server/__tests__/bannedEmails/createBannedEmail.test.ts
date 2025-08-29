@@ -59,13 +59,14 @@ describe('createBannedEmail', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({ email: 'banned_email@example.com', reason: 'Testing' });
     expect(res.status).toBe(201);
-    expect(res.body).toEqual(
-      expect.objectContaining({
-        bannedEmail: 'banned_email@example.com',
-        reason: 'Testing',
-        message: 'Banned email created successfully',
-      })
-    );
+    expect(res.body.data).toEqual({
+      id: expect.any(Number),
+      createdAt: expect.any(String),
+      email: 'banned_email@example.com',
+      reason: 'Testing',
+      organizationId: expect.any(Number),
+    });
+    expect(res.body.message).toBe('Banned email created successfully');
   });
   it('should give an email already exists error message', async () => {
     const res = await request(app)
