@@ -24,6 +24,7 @@ import { createTestAttachment } from '../../src/utilities/testUtilities/createAt
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
+import { deleteUploads } from '../../src/utilities/testUtilities/deleteUploads';
 
 describe('Delete a user', () => {
   let token: string;
@@ -97,6 +98,7 @@ describe('Delete a user', () => {
     );
   });
   afterAll(async () => {
+    await deleteUploads();
     await prismaTest.$disconnect();
   });
 
