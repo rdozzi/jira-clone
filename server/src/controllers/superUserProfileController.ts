@@ -4,6 +4,7 @@ import { generateDiff } from '../services/generateDiff';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { getStorageType } from '../config/storage';
 import { storageDispatcher } from '../utilities/storageDispatcher';
+import { logBus } from '../lib/logBus';
 
 export async function getSuperUsers(
   req: Request,
@@ -22,7 +23,7 @@ export async function getSuperUsers(
       },
     });
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo.id,
         actorType: 'USER',
@@ -42,6 +43,8 @@ export async function getSuperUsers(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res.status(200).json({
       ...(query && { message: 'User fetched successfully', data: users[0] }),
@@ -95,7 +98,7 @@ export async function updateSuperUser(
 
     const changes = generateDiff(oldUser, newUser);
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo.id,
         actorType: 'USER',
@@ -110,6 +113,8 @@ export async function updateSuperUser(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(200)
@@ -205,7 +210,7 @@ export async function deleteSuperUser(
       data: { isDeleted: true, deletedAt: new Date() },
     });
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo.id,
         actorType: 'USER',
@@ -219,6 +224,8 @@ export async function deleteSuperUser(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res.status(200).json({
       message: `User deleted successfully`,

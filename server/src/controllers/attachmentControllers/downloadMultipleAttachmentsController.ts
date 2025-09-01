@@ -8,6 +8,7 @@ import { PrismaClient } from '@prisma/client';
 import { buildLogEvent } from '../../services/buildLogEvent';
 import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { FileMetadata } from '../../types/file';
+import { logBus } from '../../lib/logBus';
 
 export async function downloadMultipleAttachments(
   req: Request,
@@ -100,7 +101,7 @@ export async function downloadMultipleAttachments(
       archive.append(missingSummary, { name: 'MISSING_FILES.txt' });
     }
 
-    res.locals.logEvents = attachments.map((attachment, index) => {
+    const logEvents = attachments.map((attachment, index) => {
       const logEntityId = attachmentLogEntityIds[index];
       const fileMetadata: FileMetadata = {
         filename: attachment.fileName,
@@ -130,6 +131,8 @@ export async function downloadMultipleAttachments(
         },
       });
     });
+
+    logBus.emit('activityLog', logEvents);
 
     archive.finalize();
     return;

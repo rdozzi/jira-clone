@@ -5,6 +5,7 @@ import { generateDiff } from '../services/generateDiff';
 import { deleteBoardDependencies } from '../services/deletionServices/deleteBoardDependencies';
 import { createResourceService } from '../services/organizationUsageServices/createResourceService';
 import { deleteResourceService } from '../services/organizationUsageServices/deleteResourceService';
+import { logBus } from '../lib/logBus';
 
 // Get all Boards
 export async function getAllBoards(
@@ -133,7 +134,7 @@ export async function createBoard(
         })
     );
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo.id,
         actorType: 'USER',
@@ -147,6 +148,8 @@ export async function createBoard(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(201)
@@ -190,7 +193,7 @@ export async function updateBoard(
     const changes =
       oldBoard && newBoard ? generateDiff(oldBoard, newBoard) : {};
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo.id,
         actorType: 'USER',
@@ -204,6 +207,9 @@ export async function updateBoard(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
+
     res
       .status(200)
       .json({ message: 'Board updated successfully', data: newBoard });
@@ -254,20 +260,22 @@ export async function deleteBoard(
       });
     });
 
-    const deleteLog = buildLogEvent({
-      userId: userId,
-      actorType: 'USER',
-      action: 'DELETE_BOARD',
-      targetId: boardId,
-      targetType: 'BOARD',
-      organizationId: organizationId,
-      metadata: {
-        name: oldBoard?.name,
-        description: oldBoard?.description,
-      },
-    });
+    const deleteLog = [
+      buildLogEvent({
+        userId: userId,
+        actorType: 'USER',
+        action: 'DELETE_BOARD',
+        targetId: boardId,
+        targetType: 'BOARD',
+        organizationId: organizationId,
+        metadata: {
+          name: oldBoard?.name,
+          description: oldBoard?.description,
+        },
+      }),
+    ];
 
-    res.locals.logEvents = (res.locals.logEvents || []).concat(deleteLog);
+    logBus.emit('activityLog', deleteLog);
 
     res
       .status(200)

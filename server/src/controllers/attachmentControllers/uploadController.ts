@@ -7,6 +7,7 @@ import { buildLogEvent } from '../../services/buildLogEvent';
 import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { createResourceService } from '../../services/organizationUsageServices/createResourceService';
 import { FileMetadata } from '../../types/file';
+import { logBus } from '../../lib/logBus';
 
 export async function handleSingleUpload(
   req: CustomRequest,
@@ -65,7 +66,7 @@ export async function handleSingleUpload(
       fileMetadata.size
     );
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: attachment.uploadedBy,
         actorType: 'USER',
@@ -82,6 +83,8 @@ export async function handleSingleUpload(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     return res.status(201).json({
       message: 'File uploaded successfully',
@@ -158,7 +161,7 @@ export async function handleMultipleUpload(
       createdAttachments.push(attachment);
     }
 
-    res.locals.logEvents = createdAttachments.map((attachment) => {
+    const logEvents = createdAttachments.map((attachment) => {
       return buildLogEvent({
         userId: attachment.uploadedBy,
         actorType: 'USER',
@@ -175,6 +178,8 @@ export async function handleMultipleUpload(
         },
       });
     });
+
+    logBus.emit('activityLog', logEvents);
 
     return res.status(201).json({
       message: `${createdAttachments.length} uploaded successfully`,

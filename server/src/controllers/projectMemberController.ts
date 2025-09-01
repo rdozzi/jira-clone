@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient, ProjectRole } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
+import { logBus } from '../lib/logBus';
 
 // View Project Members
 export async function viewProjectMembers(
@@ -98,7 +99,7 @@ export async function addProjectMember(
       },
     });
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo?.id,
         actorType: 'USER',
@@ -113,6 +114,8 @@ export async function addProjectMember(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(201)
@@ -163,7 +166,7 @@ export async function removeProjectMember(
       },
     });
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo?.id,
         actorType: 'USER',
@@ -179,6 +182,8 @@ export async function removeProjectMember(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res.status(200).json({
       message: 'Project member removed successfully',
@@ -222,7 +227,7 @@ export async function updateProjectMemberRole(
       data: { projectRole },
     });
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo.id,
         actorType: 'USER',
@@ -238,6 +243,8 @@ export async function updateProjectMemberRole(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res.status(200).json({
       message: 'Project member role updated successfully',

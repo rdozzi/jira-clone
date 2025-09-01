@@ -4,6 +4,7 @@ import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { buildLogEvent } from '../buildLogEvent';
 import path from 'path';
 import fs from 'fs/promises';
+import { logBus } from '../../lib/logBus';
 
 export async function deleteAttachmentsService(
   res: Response,
@@ -74,6 +75,6 @@ export async function deleteAttachmentsService(
     });
   });
 
-  res.locals.logEvents = (res.locals.logEvents || []).concat(logEvents);
+  logBus.emit('activityLog', logEvents);
   return;
 }

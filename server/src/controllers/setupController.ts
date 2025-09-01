@@ -3,6 +3,7 @@ import { PrismaClient, OrganizationRole /*GlobalRole*/ } from '@prisma/client';
 import { hashPassword } from '../utilities/password';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { createCountTables } from '../services/setupServices/createCountTables';
+import { logBus } from '../lib/logBus';
 
 // Add middleware protection layers later (Sanitization, rate limiter, input validation, IP Check)
 
@@ -57,7 +58,7 @@ export async function seedOrganizationAndSuperAdmin(
       return [newOrganization, newUser];
     });
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: newUser.id,
         actorType: 'USER',
@@ -73,6 +74,9 @@ export async function seedOrganizationAndSuperAdmin(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
+
     res.status(201).json({
       message: `Organization and user created successfully`,
       data: { organization: newOrganization, user: newUser },
