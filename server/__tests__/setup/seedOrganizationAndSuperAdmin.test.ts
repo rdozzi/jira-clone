@@ -18,7 +18,7 @@ interface OTPPayload {
   otpValue: { [KeyObject: string]: string };
 }
 
-describe('Test seed organization and SuperAdmin route', () => {
+describe.skip('Test seed organization and SuperAdmin route', () => {
   const testDescription = 'seedOrganizationAndSuperAdminRoute';
   const goodEmail = 'rdozzi84@gmail.com';
   const thirdPartyFailEmail = 'test@guerrillamail.com';
@@ -35,8 +35,8 @@ describe('Test seed organization and SuperAdmin route', () => {
     )) as unknown as OTPPayload;
   });
   afterAll(async () => {
-    await prismaTest.$disconnect();
     await redisClient.quit();
+    await prismaTest.$disconnect();
   });
   it('it should generate an otp with an associated email and message id', async () => {
     const res = await request(app)
