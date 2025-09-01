@@ -16,7 +16,11 @@ export function generateDiff<
   const diff: DiffResult = {};
 
   for (const key of Object.keys(after)) {
-    if (key === 'createdAt' || key === 'updatedAt') {
+    if (
+      key === 'createdAt' ||
+      key === 'updatedAt' ||
+      key === 'organizationId'
+    ) {
       continue;
     }
 
