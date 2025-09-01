@@ -46,8 +46,8 @@ describe('Create a project', () => {
       .post(`/api/projects`)
       .set('Authorization', `Bearer ${token}`)
       .send({
-        name: `Name_${testDescription}`,
-        description: `Description_${testDescription}`,
+        name: `Test1_Name_${testDescription}`,
+        description: `Test1_Description_${testDescription}`,
       });
     expect(res.status).toBe(201);
     expect(res.body).toEqual(
@@ -72,8 +72,8 @@ describe('Create a project', () => {
       .post(`/api/projects`)
       .set('Authorization', `Bearer ${token}`)
       .send({
-        name: `Name_${testDescription}`,
-        description: `Description_${testDescription}`,
+        name: `Test2_Name_${testDescription}`,
+        description: `Test2_Description_${testDescription}`,
       });
     const projectMember = await prismaTest.projectMember.findUnique({
       where: {
