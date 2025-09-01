@@ -81,19 +81,21 @@ export async function createBannedEmail(
     );
 
     // Log the event
-    res.locals.logEvent = buildLogEvent({
-      userId: user.id,
-      actorType: 'USER',
-      action: 'BAN_USER_EMAIL',
-      targetId: null,
-      targetType: 'USER',
-      organizationId: organizationId,
-      metadata: {
-        createdAt: `${bannedEmail.createdAt}`,
-        reason: `${bannedEmail.reason}`,
-        email: `${bannedEmail.email}`,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: user.id,
+        actorType: 'USER',
+        action: 'BAN_USER_EMAIL',
+        targetId: null,
+        targetType: 'USER',
+        organizationId: organizationId,
+        metadata: {
+          createdAt: `${bannedEmail.createdAt}`,
+          reason: `${bannedEmail.reason}`,
+          email: `${bannedEmail.email}`,
+        },
+      }),
+    ];
 
     return res.status(201).json({
       message: 'Banned email created successfully',
@@ -134,20 +136,22 @@ export async function deleteBannedEmail(
     );
 
     // Log the event
-    res.locals.logEvent = buildLogEvent({
-      userId: user.id,
-      actorType: 'USER',
-      action: 'DELETE_BANNED_EMAIL',
-      targetId: null,
-      targetType: 'USER',
-      organizationId: organizationId,
-      metadata: {
-        message: 'Previous ban information',
-        reason: `${oldEmail.reason}`,
-        email: `${oldEmail.email}`,
-        createdAt: `${oldEmail.createdAt}`,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: user.id,
+        actorType: 'USER',
+        action: 'DELETE_BANNED_EMAIL',
+        targetId: null,
+        targetType: 'USER',
+        organizationId: organizationId,
+        metadata: {
+          message: 'Previous ban information',
+          reason: `${oldEmail.reason}`,
+          email: `${oldEmail.email}`,
+          createdAt: `${oldEmail.createdAt}`,
+        },
+      }),
+    ];
     res
       .status(200)
       .json({ message: 'Banned email deleted successfully', data: oldEmail });

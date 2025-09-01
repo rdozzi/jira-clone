@@ -48,22 +48,24 @@ export async function loginUser(
       }
     );
 
-    res.locals.logEvent = buildLogEvent({
-      userId: user.id,
-      actorType: 'USER',
-      action: 'USER_LOGIN',
-      targetId: user.id,
-      targetType: 'AUTHENTICATION',
-      organizationId: user.organizationId,
-      metadata: {
-        id: user.id,
-        name: `${user.firstName}_${user.lastName}`,
-        email: user.email,
-        globalRole: user.globalRole,
-        organizationRole: user.organizationRole,
-        timestamp: new Date().toISOString(),
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: user.id,
+        actorType: 'USER',
+        action: 'USER_LOGIN',
+        targetId: user.id,
+        targetType: 'AUTHENTICATION',
+        organizationId: user.organizationId,
+        metadata: {
+          id: user.id,
+          name: `${user.firstName}_${user.lastName}`,
+          email: user.email,
+          globalRole: user.globalRole,
+          organizationRole: user.organizationRole,
+          timestamp: new Date().toISOString(),
+        },
+      }),
+    ];
 
     res.status(200).json({
       message: 'Login successful',

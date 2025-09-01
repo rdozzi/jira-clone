@@ -57,20 +57,22 @@ export async function seedOrganizationAndSuperAdmin(
       return [newOrganization, newUser];
     });
 
-    res.locals.logEvent = buildLogEvent({
-      userId: newUser.id,
-      actorType: 'USER',
-      action: 'SEED_USER_AND_ORGANIZATION',
-      targetId: newUser.id,
-      targetType: 'USER',
-      organizationId: newOrganization.id,
-      metadata: {
-        role: `${newUser.globalRole}`,
-        name: `${newUser.firstName}_${newUser.lastName}`,
-        email: `${newUser.email}`,
-        organization: newOrganization.name,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: newUser.id,
+        actorType: 'USER',
+        action: 'SEED_USER_AND_ORGANIZATION',
+        targetId: newUser.id,
+        targetType: 'USER',
+        organizationId: newOrganization.id,
+        metadata: {
+          role: `${newUser.globalRole}`,
+          name: `${newUser.firstName}_${newUser.lastName}`,
+          email: `${newUser.email}`,
+          organization: newOrganization.name,
+        },
+      }),
+    ];
     res.status(201).json({
       message: `Organization and user created successfully`,
       data: { organization: newOrganization, user: newUser },

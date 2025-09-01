@@ -133,18 +133,20 @@ export async function createBoard(
         })
     );
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
-      actorType: 'USER',
-      action: 'CREATE_BOARD',
-      targetId: board.id,
-      targetType: 'BOARD',
-      organizationId: organizationId,
-      metadata: {
-        name: `${board.name}`,
-        description: `${board.description}`,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo.id,
+        actorType: 'USER',
+        action: 'CREATE_BOARD',
+        targetId: board.id,
+        targetType: 'BOARD',
+        organizationId: organizationId,
+        metadata: {
+          name: `${board.name}`,
+          description: `${board.description}`,
+        },
+      }),
+    ];
 
     res
       .status(201)
@@ -188,18 +190,20 @@ export async function updateBoard(
     const changes =
       oldBoard && newBoard ? generateDiff(oldBoard, newBoard) : {};
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
-      actorType: 'USER',
-      action: 'UPDATE_BOARD',
-      targetId: boardId,
-      targetType: 'BOARD',
-      organizationId: organizationId,
-      metadata: {
-        name: boardData.name,
-        changes,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo.id,
+        actorType: 'USER',
+        action: 'UPDATE_BOARD',
+        targetId: boardId,
+        targetType: 'BOARD',
+        organizationId: organizationId,
+        metadata: {
+          name: boardData.name,
+          changes,
+        },
+      }),
+    ];
     res
       .status(200)
       .json({ message: 'Board updated successfully', data: newBoard });
@@ -250,7 +254,7 @@ export async function deleteBoard(
       });
     });
 
-    res.locals.logEvent = buildLogEvent({
+    const deleteLog = buildLogEvent({
       userId: userId,
       actorType: 'USER',
       action: 'DELETE_BOARD',
@@ -262,6 +266,9 @@ export async function deleteBoard(
         description: oldBoard?.description,
       },
     });
+
+    res.locals.logEvents = (res.locals.logEvents || []).concat(deleteLog);
+
     res
       .status(200)
       .json({ message: 'Board deleted successfully', data: oldBoard });

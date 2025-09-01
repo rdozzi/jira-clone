@@ -146,19 +146,21 @@ export async function createNewTicket(
         })
     );
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userId,
-      actorType: 'USER',
-      action: 'CREATE_TICKET',
-      targetId: ticket.id,
-      targetType: 'TICKET',
-      organizationId: organizationId,
-      metadata: {
-        title: `${ticket.title}`,
-        description: `${ticket.description}`,
-        boardId: ticket.boardId,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userId,
+        actorType: 'USER',
+        action: 'CREATE_TICKET',
+        targetId: ticket.id,
+        targetType: 'TICKET',
+        organizationId: organizationId,
+        metadata: {
+          title: `${ticket.title}`,
+          description: `${ticket.description}`,
+          boardId: ticket.boardId,
+        },
+      }),
+    ];
 
     res
       .status(201)
@@ -200,18 +202,20 @@ export async function deleteTicket(
       });
     });
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userId,
-      actorType: 'USER',
-      action: 'DELETE_TICKET',
-      targetId: oldTicket.id,
-      targetType: 'TICKET',
-      organizationId: organizationId,
-      metadata: {
-        title: `${oldTicket.title}`,
-        description: `${oldTicket.description}`,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userId,
+        actorType: 'USER',
+        action: 'DELETE_TICKET',
+        targetId: oldTicket.id,
+        targetType: 'TICKET',
+        organizationId: organizationId,
+        metadata: {
+          title: `${oldTicket.title}`,
+          description: `${oldTicket.description}`,
+        },
+      }),
+    ];
 
     res
       .status(200)
@@ -251,20 +255,22 @@ export async function updateTicket(
 
     const changes = generateDiff(oldTicket, newTicket);
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userId,
-      actorType: 'USER',
-      action: 'UPDATE_TICKET',
-      targetId: newTicket.id,
-      targetType: 'TICKET',
-      organizationId: organizationId,
-      metadata: {
-        ticketDescription: `${newTicket.description}`,
-        title: `${newTicket.title}`,
-        changes,
-        boardId: newTicket.boardId,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userId,
+        actorType: 'USER',
+        action: 'UPDATE_TICKET',
+        targetId: newTicket.id,
+        targetType: 'TICKET',
+        organizationId: organizationId,
+        metadata: {
+          ticketDescription: `${newTicket.description}`,
+          title: `${newTicket.title}`,
+          changes,
+          boardId: newTicket.boardId,
+        },
+      }),
+    ];
 
     res
       .status(200)

@@ -50,18 +50,20 @@ export async function createNewLabel(
         })
     );
 
-    res.locals.logEvent = buildLogEvent({
-      userId: user.id,
-      actorType: 'USER',
-      action: 'CREATE_LABEL',
-      targetId: label.id,
-      targetType: 'LABEL',
-      organizationId: organizationId,
-      metadata: {
-        name: `${label.name}`,
-        color: `${label.color}`,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: user.id,
+        actorType: 'USER',
+        action: 'CREATE_LABEL',
+        targetId: label.id,
+        targetType: 'LABEL',
+        organizationId: organizationId,
+        metadata: {
+          name: `${label.name}`,
+          color: `${label.color}`,
+        },
+      }),
+    ];
 
     res
       .status(201)
@@ -102,17 +104,19 @@ export async function updateLabel(
 
     const change = oldLabel && newLabel ? generateDiff(oldLabel, newLabel) : {};
 
-    res.locals.logEvent = buildLogEvent({
-      userId: user.id,
-      actorType: 'USER',
-      action: 'UPDATE_LABEL',
-      targetId: labelId,
-      targetType: 'LABEL',
-      organizationId: organizationId,
-      metadata: {
-        change,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: user.id,
+        actorType: 'USER',
+        action: 'UPDATE_LABEL',
+        targetId: labelId,
+        targetType: 'LABEL',
+        organizationId: organizationId,
+        metadata: {
+          ...change,
+        },
+      }),
+    ];
 
     res
       .status(200)
@@ -146,18 +150,20 @@ export async function deleteLabel(
       });
     });
 
-    res.locals.logEvent = buildLogEvent({
-      userId: user.id,
-      actorType: 'USER',
-      action: 'DELETE_LABEL',
-      targetId: oldLabel?.id,
-      targetType: 'LABEL',
-      organizationId: organizationId,
-      metadata: {
-        name: `${oldLabel?.name}`,
-        color: `${oldLabel?.color}`,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: user.id,
+        actorType: 'USER',
+        action: 'DELETE_LABEL',
+        targetId: oldLabel?.id,
+        targetType: 'LABEL',
+        organizationId: organizationId,
+        metadata: {
+          name: `${oldLabel?.name}`,
+          color: `${oldLabel?.color}`,
+        },
+      }),
+    ];
 
     res
       .status(200)

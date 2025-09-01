@@ -14,14 +14,14 @@ export async function downloadSingleAttachment(req: Request, res: Response) {
 
     if (attachment.storageType === 'LOCAL') {
       const filePath = path.resolve(attachment.filePath || '');
-      res.locals.logEvent = generatePayload(attachment, organizationId);
+      res.locals.logEvents = generatePayload(attachment, organizationId);
 
       await access(filePath);
 
       return res.download(filePath, attachment.fileName);
     } else if (attachment.storageType === 'CLOUD') {
       const signedUrl = await generateSignedCloudUrl(attachment);
-      res.locals.logEvent = generatePayload(attachment, organizationId);
+      res.locals.logEvents = generatePayload(attachment, organizationId);
       res.status(200).json({
         message: `Download Successful; ${signedUrl} created successfully`,
       });
@@ -57,19 +57,21 @@ function generatePayload(attachment: Attachment, organizationId: number) {
     storageType: attachment.storageType,
   };
 
-  return buildLogEvent({
-    userId: attachment.uploadedBy,
-    actorType: 'USER',
-    action: 'DOWNLOAD_ATTACHMENT',
-    targetId: attachment.id,
-    targetType: 'ATTACHMENT',
-    organizationId: organizationId,
-    metadata: {
-      ...fileMetadata,
-      ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
-      ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
-      ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
-      ...(logEntityId.projectId && { projectId: logEntityId.projectId }),
-    },
-  });
+  return [
+    buildLogEvent({
+      userId: attachment.uploadedBy,
+      actorType: 'USER',
+      action: 'DOWNLOAD_ATTACHMENT',
+      targetId: attachment.id,
+      targetType: 'ATTACHMENT',
+      organizationId: organizationId,
+      metadata: {
+        ...fileMetadata,
+        ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
+        ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
+        ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
+        ...(logEntityId.projectId && { projectId: logEntityId.projectId }),
+      },
+    }),
+  ];
 }

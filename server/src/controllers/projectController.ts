@@ -114,20 +114,22 @@ export async function createProject(
       },
     });
 
-    res.locals.logEvent = buildLogEvent({
-      userId: user.id,
-      actorType: 'USER',
-      action: 'CREATE_PROJECT',
-      targetId: project.id,
-      targetType: 'PROJECT',
-      organizationId: organizationId,
-      metadata: {
-        projectName: project.name,
-        projectDescription: project.description,
-        projectOwnerId: project.ownerId,
-        projectRole: projectMember.projectRole,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: user.id,
+        actorType: 'USER',
+        action: 'CREATE_PROJECT',
+        targetId: project.id,
+        targetType: 'PROJECT',
+        organizationId: organizationId,
+        metadata: {
+          projectName: project.name,
+          projectDescription: project.description,
+          projectOwnerId: project.ownerId,
+          projectRole: projectMember.projectRole,
+        },
+      }),
+    ];
 
     res.status(201).json({
       message: `Project created successfully`,
@@ -164,17 +166,19 @@ export async function updateProject(
     const change =
       oldProject && newProject ? generateDiff(oldProject, newProject) : {};
 
-    res.locals.logEvent = buildLogEvent({
-      userId: user.id,
-      actorType: 'USER',
-      action: 'UPDATE_PROJECT',
-      targetId: projectId,
-      targetType: 'PROJECT',
-      organizationId: organizationId,
-      metadata: {
-        change,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: user.id,
+        actorType: 'USER',
+        action: 'UPDATE_PROJECT',
+        targetId: projectId,
+        targetType: 'PROJECT',
+        organizationId: organizationId,
+        metadata: {
+          change,
+        },
+      }),
+    ];
 
     res.status(200).json({
       message: `Project updated successfully`,
@@ -221,7 +225,7 @@ export async function deleteProject(
       });
     });
 
-    res.locals.logEvent = buildLogEvent({
+    const deleteLog = buildLogEvent({
       userId: userId,
       actorType: 'USER',
       action: 'DELETE_PROJECT',
@@ -234,6 +238,8 @@ export async function deleteProject(
         owner: oldProject.ownerId,
       },
     });
+
+    res.locals.logEvents = (res.locals.logEvents || []).concat(deleteLog);
 
     res.status(200).json({
       message: `Project deleted successfully`,
