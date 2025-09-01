@@ -2,9 +2,11 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 
+// Log Service
+import { initLogService } from './services/logService';
+
 // Middleware
 import { authenticate } from './middleware/authAndLoadInfoMiddleware/authenticate';
-import { globalLogMiddleware } from './middleware/logMiddleware';
 import { loadUserProjects } from './middleware/authAndLoadInfoMiddleware/loadUserProjects';
 import { storeUserAndProjectInfo } from './middleware/authAndLoadInfoMiddleware/storeUserAndProjectInfo';
 import { globalRateLimiter, routeRateLimiter } from './middleware/rateLimiter';
@@ -35,8 +37,8 @@ app.use(cors());
 // Global rate limiter middleware
 app.use(globalRateLimiter);
 
-// ActivityLog middleware
-app.use(globalLogMiddleware());
+// Initialize log service PubSub listener
+initLogService();
 
 // Public routes
 app.use('/api', otpRoutes);
