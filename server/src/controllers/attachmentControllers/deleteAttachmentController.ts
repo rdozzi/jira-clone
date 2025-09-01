@@ -6,6 +6,7 @@ import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { buildLogEvent } from '../../services/buildLogEvent';
 import { deleteResourceService } from '../../services/organizationUsageServices/deleteResourceService';
 import { FileMetadata } from '../../types/file';
+import { logBus } from '../../lib/logBus';
 
 export async function deleteAttachment(
   req: CustomRequest,
@@ -54,7 +55,7 @@ export async function deleteAttachment(
       storageType: deletedAttachment.storageType,
     };
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: deletedAttachment.uploadedBy,
         actorType: 'USER',
@@ -71,6 +72,8 @@ export async function deleteAttachment(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res.status(200).json({ message: 'Attachment deleted successfully' });
     next();

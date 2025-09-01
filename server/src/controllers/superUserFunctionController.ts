@@ -7,6 +7,7 @@ import { updateService } from '../services/superUserFunctionServices/updateServi
 import { deleteService } from '../services/superUserFunctionServices/deleteService';
 import { generateDiff } from '../services/generateDiff';
 import { getOldRecordService } from '../services/superUserFunctionServices/getOldRecordService';
+import { logBus } from '../lib/logBus';
 
 export async function getRecords(
   req: Request,
@@ -29,7 +30,7 @@ export async function getRecords(
       res.status(404).json({ message: 'No records exist' });
     }
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo.id,
         actorType: 'USER',
@@ -42,6 +43,8 @@ export async function getRecords(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res.status(200).json({ message: `Data fetched successfully`, data: data });
     return;
@@ -66,7 +69,7 @@ export async function createRecord(
 
     const data = await createService(prisma, resource, resourceBody, res);
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo.id,
         actorType: 'USER',
@@ -77,6 +80,8 @@ export async function createRecord(
         metadata: {},
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(200)
@@ -119,7 +124,7 @@ export async function updateRecord(
 
     const changes = oldData && data ? generateDiff(oldData, data) : {};
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo.id,
         actorType: 'USER',
@@ -132,6 +137,8 @@ export async function updateRecord(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(200)
@@ -169,7 +176,7 @@ export async function deleteRecord(
       res
     );
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo.id,
         actorType: 'USER',
@@ -180,6 +187,8 @@ export async function deleteRecord(
         metadata: {},
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(200)

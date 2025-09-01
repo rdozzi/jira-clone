@@ -6,6 +6,7 @@ import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { buildLogEvent } from '../../services/buildLogEvent';
 import { deleteResourceService } from '../../services/organizationUsageServices/deleteResourceService';
 import { FileMetadata } from '../../types/file';
+import { logBus } from '../../lib/logBus';
 
 export async function deleteManyAttachments(
   req: Request,
@@ -66,7 +67,7 @@ export async function deleteManyAttachments(
       }
     }
 
-    res.locals.logEvents = deletedAttachments.map((attachment, index) => {
+    const logEvents = deletedAttachments.map((attachment, index) => {
       const logEntityId = attachmentLogEntityIds[index];
 
       const fileMetadata: FileMetadata = {
@@ -94,6 +95,8 @@ export async function deleteManyAttachments(
         },
       });
     });
+
+    logBus.emit('activityLog', logEvents);
 
     res.status(200).json({ message: 'Attachments deleted successfully' });
     next();

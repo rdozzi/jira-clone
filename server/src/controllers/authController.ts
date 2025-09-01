@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 
 import { verifyPassword } from '../utilities/password';
 import { buildLogEvent } from '../services/buildLogEvent';
+import { logBus } from '../lib/logBus';
 
 dotenv.config();
 
@@ -48,7 +49,7 @@ export async function loginUser(
       }
     );
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: user.id,
         actorType: 'USER',
@@ -66,6 +67,8 @@ export async function loginUser(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res.status(200).json({
       message: 'Login successful',

@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { AttachmentEntityType, Prisma } from '@prisma/client';
 import { deleteBoardDependencies } from './deleteBoardDependencies';
 import { buildLogEvent } from '../buildLogEvent';
+import { logBus } from '../../lib/logBus';
 
 export async function deleteBoardService(
   res: Response,
@@ -42,8 +43,6 @@ export async function deleteBoardService(
       });
     });
 
-    res.locals.logEvents = (res.locals.logEvents || []).concat(
-      logEventDeletedComments
-    );
+    logBus.emit('activityLog', logEventDeletedComments);
   }
 }

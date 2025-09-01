@@ -5,6 +5,7 @@ import { generateDiff } from '../services/generateDiff';
 import { deleteTicketDependencies } from '../services/deletionServices/deleteTicketDependencies';
 import { createResourceService } from '../services/organizationUsageServices/createResourceService';
 import { deleteResourceService } from '../services/organizationUsageServices/deleteResourceService';
+import { logBus } from '../lib/logBus';
 
 export async function getAllTickets(
   req: Request,
@@ -146,7 +147,7 @@ export async function createNewTicket(
         })
     );
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userId,
         actorType: 'USER',
@@ -161,6 +162,8 @@ export async function createNewTicket(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(201)
@@ -202,7 +205,7 @@ export async function deleteTicket(
       });
     });
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userId,
         actorType: 'USER',
@@ -216,6 +219,8 @@ export async function deleteTicket(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(200)
@@ -255,7 +260,7 @@ export async function updateTicket(
 
     const changes = generateDiff(oldTicket, newTicket);
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userId,
         actorType: 'USER',
@@ -271,6 +276,8 @@ export async function updateTicket(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(200)

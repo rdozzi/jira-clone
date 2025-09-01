@@ -5,6 +5,7 @@ import { generateDiff } from '../services/generateDiff';
 import { deleteCommentDependencies } from '../services/deletionServices/deleteCommentDependencies';
 import { createResourceService } from '../services/organizationUsageServices/createResourceService';
 import { deleteResourceService } from '../services/organizationUsageServices/deleteResourceService';
+import { logBus } from '../lib/logBus';
 
 export async function getAllComments(
   req: Request,
@@ -78,7 +79,7 @@ export async function createComment(
         })
     );
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userId,
         actorType: 'USER',
@@ -93,6 +94,8 @@ export async function createComment(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(201)
@@ -141,21 +144,23 @@ export async function deleteComment(
 
     // The entityId for the purpose of logging is the ticketId for comments
 
-    const deleteLog = buildLogEvent({
-      userId: userId,
-      actorType: 'USER',
-      action: 'DELETE_COMMENT',
-      targetId: commentId,
-      targetType: 'COMMENT',
-      organizationId: organizationId,
-      metadata: {
-        id: oldComment?.id,
-        authorId: oldComment?.authorId,
-        content: oldComment?.content,
-      },
-    });
+    const deleteLog = [
+      buildLogEvent({
+        userId: userId,
+        actorType: 'USER',
+        action: 'DELETE_COMMENT',
+        targetId: commentId,
+        targetType: 'COMMENT',
+        organizationId: organizationId,
+        metadata: {
+          id: oldComment?.id,
+          authorId: oldComment?.authorId,
+          content: oldComment?.content,
+        },
+      }),
+    ];
 
-    res.locals.logEvents = (res.locals.logEvents || []).concat(deleteLog);
+    logBus.emit('activityLog', deleteLog);
 
     res.status(200).json({
       message: 'Comment deleted successfully',
@@ -214,7 +219,7 @@ export async function updateComment(
         ? generateDiff(oldComment, updatedComment)
         : {};
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userId,
         actorType: 'USER',
@@ -227,6 +232,8 @@ export async function updateComment(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(200)

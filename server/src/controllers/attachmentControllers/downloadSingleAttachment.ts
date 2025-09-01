@@ -6,6 +6,7 @@ import { Attachment } from '@prisma/client';
 import { buildLogEvent } from '../../services/buildLogEvent';
 import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { FileMetadata } from '../../types/file';
+import { logBus } from '../../lib/logBus';
 
 export async function downloadSingleAttachment(req: Request, res: Response) {
   try {
@@ -14,14 +15,16 @@ export async function downloadSingleAttachment(req: Request, res: Response) {
 
     if (attachment.storageType === 'LOCAL') {
       const filePath = path.resolve(attachment.filePath || '');
-      res.locals.logEvents = generatePayload(attachment, organizationId);
+      const logEvents = generatePayload(attachment, organizationId);
+      logBus.emit('activityLog', logEvents);
 
       await access(filePath);
 
       return res.download(filePath, attachment.fileName);
     } else if (attachment.storageType === 'CLOUD') {
       const signedUrl = await generateSignedCloudUrl(attachment);
-      res.locals.logEvents = generatePayload(attachment, organizationId);
+      const logEvents = generatePayload(attachment, organizationId);
+      logBus.emit('activityLog', logEvents);
       res.status(200).json({
         message: `Download Successful; ${signedUrl} created successfully`,
       });

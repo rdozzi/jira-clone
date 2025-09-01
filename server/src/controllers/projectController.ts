@@ -9,6 +9,7 @@ import { generateDiff } from '../services/generateDiff';
 import { deleteProjectDependencies } from '../services/deletionServices/deleteProjectDependencies';
 import { createResourceService } from '../services/organizationUsageServices/createResourceService';
 import { deleteResourceService } from '../services/organizationUsageServices/deleteResourceService';
+import { logBus } from '../lib/logBus';
 
 export async function getAllProjects(
   req: Request,
@@ -114,7 +115,7 @@ export async function createProject(
       },
     });
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: user.id,
         actorType: 'USER',
@@ -130,6 +131,8 @@ export async function createProject(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res.status(201).json({
       message: `Project created successfully`,
@@ -166,7 +169,7 @@ export async function updateProject(
     const change =
       oldProject && newProject ? generateDiff(oldProject, newProject) : {};
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: user.id,
         actorType: 'USER',
@@ -179,6 +182,8 @@ export async function updateProject(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res.status(200).json({
       message: `Project updated successfully`,
@@ -225,21 +230,23 @@ export async function deleteProject(
       });
     });
 
-    const deleteLog = buildLogEvent({
-      userId: userId,
-      actorType: 'USER',
-      action: 'DELETE_PROJECT',
-      targetId: projectId,
-      targetType: 'PROJECT',
-      organizationId: organizationId,
-      metadata: {
-        name: oldProject.name,
-        description: oldProject?.description,
-        owner: oldProject.ownerId,
-      },
-    });
+    const deleteLog = [
+      buildLogEvent({
+        userId: userId,
+        actorType: 'USER',
+        action: 'DELETE_PROJECT',
+        targetId: projectId,
+        targetType: 'PROJECT',
+        organizationId: organizationId,
+        metadata: {
+          name: oldProject.name,
+          description: oldProject?.description,
+          owner: oldProject.ownerId,
+        },
+      }),
+    ];
 
-    res.locals.logEvents = (res.locals.logEvents || []).concat(deleteLog);
+    logBus.emit('activityLog', deleteLog);
 
     res.status(200).json({
       message: `Project deleted successfully`,

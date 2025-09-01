@@ -5,6 +5,7 @@ import { generateDiff } from '../services/generateDiff';
 import { deleteLabelDependencies } from '../services/deletionServices/deleteLabelDependencies';
 import { createResourceService } from '../services/organizationUsageServices/createResourceService';
 import { deleteResourceService } from '../services/organizationUsageServices/deleteResourceService';
+import { logBus } from '../lib/logBus';
 
 //Get all labels
 export async function getAllLabels(
@@ -50,7 +51,7 @@ export async function createNewLabel(
         })
     );
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: user.id,
         actorType: 'USER',
@@ -64,6 +65,8 @@ export async function createNewLabel(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(201)
@@ -104,7 +107,7 @@ export async function updateLabel(
 
     const change = oldLabel && newLabel ? generateDiff(oldLabel, newLabel) : {};
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: user.id,
         actorType: 'USER',
@@ -117,6 +120,8 @@ export async function updateLabel(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(200)
@@ -150,7 +155,7 @@ export async function deleteLabel(
       });
     });
 
-    res.locals.logEvents = [
+    const deleteLog = [
       buildLogEvent({
         userId: user.id,
         actorType: 'USER',
@@ -164,6 +169,8 @@ export async function deleteLabel(
         },
       }),
     ];
+
+    logBus.emit('activityLog', deleteLog);
 
     res
       .status(200)

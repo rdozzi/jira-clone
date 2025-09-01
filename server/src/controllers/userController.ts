@@ -7,6 +7,7 @@ import { getStorageType } from '../config/storage';
 import { storageDispatcher } from '../utilities/storageDispatcher';
 import { deleteUserCascade } from '../services/deletionServices/deleteUserCascade';
 import { createResourceService } from '../services/organizationUsageServices/createResourceService';
+import { logBus } from '../lib/logBus';
 
 // Get all users
 export async function getAllUsers(
@@ -147,7 +148,7 @@ export async function createUser(
         })
     );
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo.id,
         actorType: 'USER',
@@ -162,6 +163,9 @@ export async function createUser(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
+
     res.status(201).json({ message: 'User created successfully', data: user });
     return;
   } catch (error) {
@@ -212,7 +216,7 @@ export async function updateUser(
 
     const changes = generateDiff(oldUser, newUser);
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo.id,
         actorType: 'USER',
@@ -227,6 +231,8 @@ export async function updateUser(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res
       .status(200)
@@ -268,7 +274,7 @@ export async function deleteUser(
       data: { isDeleted: true, deletedAt: new Date() },
     });
 
-    res.locals.logEvents = [
+    const logEvents = [
       buildLogEvent({
         userId: userInfo.id,
         actorType: 'USER',
@@ -282,6 +288,8 @@ export async function deleteUser(
         },
       }),
     ];
+
+    logBus.emit('activityLog', logEvents);
 
     res.status(200).json({
       message: `User deleted successfully. Deleted at ${deletedUserData.deletedAt}`,

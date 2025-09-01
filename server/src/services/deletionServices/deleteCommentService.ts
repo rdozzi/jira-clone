@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { AttachmentEntityType, Prisma } from '@prisma/client';
 import { deleteCommentDependencies } from './deleteCommentDependencies';
 import { buildLogEvent } from '../buildLogEvent';
+import { logBus } from '../../lib/logBus';
 
 export async function deleteCommentService(
   res: Response,
@@ -45,8 +46,6 @@ export async function deleteCommentService(
       });
     });
 
-    res.locals.logEvents = (res.locals.logEvents || []).concat(
-      logEventDeletedComments
-    );
+    logBus.emit('activityLog', logEventDeletedComments);
   }
 }

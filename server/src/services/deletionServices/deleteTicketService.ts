@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { AttachmentEntityType, Prisma } from '@prisma/client';
 import { deleteTicketDependencies } from './deleteTicketDependencies';
 import { buildLogEvent } from '../buildLogEvent';
+import { logBus } from '../../lib/logBus';
 
 export async function deleteTicketService(
   res: Response,
@@ -27,7 +28,7 @@ export async function deleteTicketService(
       );
       await tx.ticket.delete({ where: { id: ticketObj.id } });
     }
-    const logEventDeletedComments = deletedTickets.map((ticketObj) => {
+    const logEventDeletedTickets = deletedTickets.map((ticketObj) => {
       return buildLogEvent({
         userId: userId,
         actorType: 'USER',
@@ -42,8 +43,6 @@ export async function deleteTicketService(
       });
     });
 
-    res.locals.logEvents = (res.locals.logEvents || []).concat(
-      logEventDeletedComments
-    );
+    logBus.emit('activityLog', logEventDeletedTickets);
   }
 }
