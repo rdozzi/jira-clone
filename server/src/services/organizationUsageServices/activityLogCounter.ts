@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client';
 import { pruneActivityLog } from './pruneActivityLog';
 import { namespace } from '../../lib/namespace';
 
+// Removed from ActivityLog service. This functions causes infinite recursions and is not practical for this phase of the project.
+
 export async function activityLogCounter(
   prisma: PrismaClient,
   organizationId: number | null

@@ -8,6 +8,7 @@ export async function deleteLabelDependencies(
   ticketId: number | null,
   organizationId: number
 ) {
+  // Add ActivityLog record post mvp
   if (ticketId) {
     await tx.ticketLabel.deleteMany({
       where: { ticketId: ticketId, organizationId: organizationId },
