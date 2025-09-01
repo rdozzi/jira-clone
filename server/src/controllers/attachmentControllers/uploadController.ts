@@ -65,21 +65,23 @@ export async function handleSingleUpload(
       fileMetadata.size
     );
 
-    res.locals.logEvent = buildLogEvent({
-      userId: attachment.uploadedBy,
-      actorType: 'USER',
-      action: 'CREATE_ATTACHMENT',
-      targetId: attachment.id,
-      targetType: 'ATTACHMENT',
-      organizationId: organizationId,
-      metadata: {
-        ...fileMetadata,
-        ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
-        ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
-        ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
-        ...(logEntityId.projectId && { projectId: logEntityId.projectId }),
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: attachment.uploadedBy,
+        actorType: 'USER',
+        action: 'CREATE_ATTACHMENT',
+        targetId: attachment.id,
+        targetType: 'ATTACHMENT',
+        organizationId: organizationId,
+        metadata: {
+          ...fileMetadata,
+          ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
+          ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
+          ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
+          ...(logEntityId.projectId && { projectId: logEntityId.projectId }),
+        },
+      }),
+    ];
 
     return res.status(201).json({
       message: 'File uploaded successfully',

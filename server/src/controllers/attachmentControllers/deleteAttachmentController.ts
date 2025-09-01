@@ -54,21 +54,23 @@ export async function deleteAttachment(
       storageType: deletedAttachment.storageType,
     };
 
-    res.locals.logEvent = buildLogEvent({
-      userId: deletedAttachment.uploadedBy,
-      actorType: 'USER',
-      action: 'DELETE_ATTACHMENT',
-      targetId: deletedAttachment.id,
-      targetType: 'ATTACHMENT',
-      organizationId: organizationId,
-      metadata: {
-        ...fileMetadata,
-        ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
-        ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
-        ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
-        ...(logEntityId.projectId && { projectId: logEntityId.projectId }),
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: deletedAttachment.uploadedBy,
+        actorType: 'USER',
+        action: 'DELETE_ATTACHMENT',
+        targetId: deletedAttachment.id,
+        targetType: 'ATTACHMENT',
+        organizationId: organizationId,
+        metadata: {
+          ...fileMetadata,
+          ...(logEntityId.commentId && { commentId: logEntityId.commentId }),
+          ...(logEntityId.ticketId && { ticketId: logEntityId.ticketId }),
+          ...(logEntityId.boardId && { boardId: logEntityId.boardId }),
+          ...(logEntityId.projectId && { projectId: logEntityId.projectId }),
+        },
+      }),
+    ];
 
     res.status(200).json({ message: 'Attachment deleted successfully' });
     next();

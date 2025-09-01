@@ -147,19 +147,21 @@ export async function createUser(
         })
     );
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
-      actorType: 'USER',
-      action: 'CREATE_USER',
-      targetId: user.id,
-      targetType: 'USER',
-      organizationId: organizationId,
-      metadata: {
-        role: `${user.globalRole}`,
-        name: `${user.firstName}_${user.lastName}`,
-        email: `${user.email}`,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo.id,
+        actorType: 'USER',
+        action: 'CREATE_USER',
+        targetId: user.id,
+        targetType: 'USER',
+        organizationId: organizationId,
+        metadata: {
+          role: `${user.globalRole}`,
+          name: `${user.firstName}_${user.lastName}`,
+          email: `${user.email}`,
+        },
+      }),
+    ];
     res.status(201).json({ message: 'User created successfully', data: user });
     return;
   } catch (error) {
@@ -210,19 +212,21 @@ export async function updateUser(
 
     const changes = generateDiff(oldUser, newUser);
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
-      actorType: 'USER',
-      action: 'UPDATE_USER',
-      targetId: userId,
-      targetType: 'USER',
-      organizationId: organizationId,
-      metadata: {
-        name: `${newUser.firstName}_${newUser.lastName}`,
-        changes,
-        timeStamp: new Date().toISOString(),
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo.id,
+        actorType: 'USER',
+        action: 'UPDATE_USER',
+        targetId: userId,
+        targetType: 'USER',
+        organizationId: organizationId,
+        metadata: {
+          name: `${newUser.firstName}_${newUser.lastName}`,
+          changes,
+          timeStamp: new Date().toISOString(),
+        },
+      }),
+    ];
 
     res
       .status(200)
@@ -264,18 +268,20 @@ export async function deleteUser(
       data: { isDeleted: true, deletedAt: new Date() },
     });
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
-      actorType: 'USER',
-      action: 'DELETE_USER',
-      targetId: userId,
-      targetType: 'USER',
-      organizationId: organizationId,
-      metadata: {
-        name: `${deletedUserData.firstName}_${deletedUserData.lastName}`,
-        deletedOn: `${deletedUserData.deletedAt}`,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo.id,
+        actorType: 'USER',
+        action: 'DELETE_USER',
+        targetId: userId,
+        targetType: 'USER',
+        organizationId: organizationId,
+        metadata: {
+          name: `${deletedUserData.firstName}_${deletedUserData.lastName}`,
+          deletedOn: `${deletedUserData.deletedAt}`,
+        },
+      }),
+    ];
 
     res.status(200).json({
       message: `User deleted successfully. Deleted at ${deletedUserData.deletedAt}`,

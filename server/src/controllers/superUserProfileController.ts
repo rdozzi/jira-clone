@@ -22,25 +22,26 @@ export async function getSuperUsers(
       },
     });
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
-      actorType: 'USER',
-      action: 'GET_SUPERUSER',
-      targetId: data, //query paramId
-      targetType: 'SUPERUSER',
-      organizationId: null,
-      metadata: {
-        // userId queryParam defined
-        ...(query && {
-          note: `SuperUser ${userInfo.id} inquired about SuperUser: ${data}`,
-        }),
-        //userId queryParam undefined
-        ...(!query && {
-          note: `SuperUser ${userInfo.id} inquired about all SuperUsers`,
-        }),
-        timestamp: new Date().toISOString(),
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo.id,
+        actorType: 'USER',
+        action: 'GET_SUPERUSER',
+        targetId: data, //query paramId
+        targetType: 'SUPERUSER',
+        organizationId: null,
+        metadata: {
+          // userId queryParam defined
+          ...(query && {
+            note: `SuperUser ${userInfo.id} inquired about SuperUser: ${data}`,
+          }),
+          //userId queryParam undefined
+          ...(!query && {
+            note: `SuperUser ${userInfo.id} inquired about all SuperUsers`,
+          }),
+        },
+      }),
+    ];
 
     res.status(200).json({
       ...(query && { message: 'User fetched successfully', data: users[0] }),
@@ -94,19 +95,21 @@ export async function updateSuperUser(
 
     const changes = generateDiff(oldUser, newUser);
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
-      actorType: 'USER',
-      action: 'UPDATE_SUPERUSER',
-      targetId: userId,
-      targetType: 'USER',
-      organizationId: null,
-      metadata: {
-        name: `${newUser.firstName}_${newUser.lastName}`,
-        changes,
-        timeStamp: new Date().toISOString(),
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo.id,
+        actorType: 'USER',
+        action: 'UPDATE_SUPERUSER',
+        targetId: userId,
+        targetType: 'USER',
+        organizationId: null,
+        metadata: {
+          name: `${newUser.firstName}_${newUser.lastName}`,
+          changes,
+          timeStamp: new Date().toISOString(),
+        },
+      }),
+    ];
 
     res
       .status(200)
@@ -202,18 +205,20 @@ export async function deleteSuperUser(
       data: { isDeleted: true, deletedAt: new Date() },
     });
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
-      actorType: 'USER',
-      action: 'DELETE_SUPERUSER',
-      targetId: userId,
-      targetType: 'USER',
-      organizationId: null,
-      metadata: {
-        name: `${deletedUserData.firstName}_${deletedUserData.lastName}`,
-        deletedOn: `${deletedUserData.deletedAt}`,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo.id,
+        actorType: 'USER',
+        action: 'DELETE_SUPERUSER',
+        targetId: userId,
+        targetType: 'USER',
+        organizationId: null,
+        metadata: {
+          name: `${deletedUserData.firstName}_${deletedUserData.lastName}`,
+          deletedOn: `${deletedUserData.deletedAt}`,
+        },
+      }),
+    ];
 
     res.status(200).json({
       message: `User deleted successfully`,

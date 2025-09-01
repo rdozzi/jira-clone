@@ -98,19 +98,21 @@ export async function addProjectMember(
       },
     });
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo?.id,
-      actorType: 'USER',
-      action: 'ADD_PROJECT_MEMBER',
-      targetId: projectId,
-      targetType: 'PROJECT_MEMBER',
-      organizationId: organizationId,
-      metadata: {
-        firstName_lastName: `${newUserData?.firstName}_${newUserData?.lastName}`,
-        email: newUserData?.email,
-        projectRole: newProjectMember.projectRole,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo?.id,
+        actorType: 'USER',
+        action: 'ADD_PROJECT_MEMBER',
+        targetId: projectId,
+        targetType: 'PROJECT_MEMBER',
+        organizationId: organizationId,
+        metadata: {
+          firstName_lastName: `${newUserData?.firstName}_${newUserData?.lastName}`,
+          email: newUserData?.email,
+          projectRole: newProjectMember.projectRole,
+        },
+      }),
+    ];
 
     res
       .status(201)
@@ -161,20 +163,22 @@ export async function removeProjectMember(
       },
     });
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo?.id,
-      actorType: 'USER',
-      action: 'REMOVE_PROJECT_MEMBER',
-      targetId: removedUserData?.id,
-      targetType: 'PROJECT_MEMBER',
-      organizationId: organizationId,
-      metadata: {
-        projectRole: projectMember.projectRole,
-        firstName_lastName: `${removedUserData?.firstName}_${removedUserData?.lastName}`,
-        email: removedUserData?.email,
-        projectId: projectId,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo?.id,
+        actorType: 'USER',
+        action: 'REMOVE_PROJECT_MEMBER',
+        targetId: removedUserData?.id,
+        targetType: 'PROJECT_MEMBER',
+        organizationId: organizationId,
+        metadata: {
+          projectRole: projectMember.projectRole,
+          firstName_lastName: `${removedUserData?.firstName}_${removedUserData?.lastName}`,
+          email: removedUserData?.email,
+          projectId: projectId,
+        },
+      }),
+    ];
 
     res.status(200).json({
       message: 'Project member removed successfully',
@@ -218,20 +222,22 @@ export async function updateProjectMemberRole(
       data: { projectRole },
     });
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
-      actorType: 'USER',
-      action: 'UPDATE_PROJECT_MEMBER_ROLE',
-      targetId: projectId,
-      targetType: 'PROJECT_MEMBER',
-      organizationId: organizationId,
-      metadata: {
-        changes: generateDiff(
-          { projectRole: projectMember.projectRole },
-          { projectRole: updatedProjectMember.projectRole }
-        ),
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo.id,
+        actorType: 'USER',
+        action: 'UPDATE_PROJECT_MEMBER_ROLE',
+        targetId: projectId,
+        targetType: 'PROJECT_MEMBER',
+        organizationId: organizationId,
+        metadata: {
+          changes: generateDiff(
+            { projectRole: projectMember.projectRole },
+            { projectRole: updatedProjectMember.projectRole }
+          ),
+        },
+      }),
+    ];
 
     res.status(200).json({
       message: 'Project member role updated successfully',

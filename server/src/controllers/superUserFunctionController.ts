@@ -29,18 +29,19 @@ export async function getRecords(
       res.status(404).json({ message: 'No records exist' });
     }
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
-      actorType: 'USER',
-      action: 'GET_RESOURCE_BY_SUPERUSER',
-      targetId: recordId,
-      targetType: resource,
-      organizationId: organizationId,
-      metadata: {
-        recordId: recordId,
-        timestamp: new Date().toISOString(),
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo.id,
+        actorType: 'USER',
+        action: 'GET_RESOURCE_BY_SUPERUSER',
+        targetId: recordId,
+        targetType: resource,
+        organizationId: organizationId,
+        metadata: {
+          recordId: recordId,
+        },
+      }),
+    ];
 
     res.status(200).json({ message: `Data fetched successfully`, data: data });
     return;
@@ -65,17 +66,17 @@ export async function createRecord(
 
     const data = await createService(prisma, resource, resourceBody, res);
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
-      actorType: 'USER',
-      action: 'CREATE_RESOURCE_BY_SUPERUSER',
-      targetId: data?.id,
-      targetType: resource,
-      organizationId: organizationId,
-      metadata: {
-        timestamp: new Date().toISOString(),
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo.id,
+        actorType: 'USER',
+        action: 'CREATE_RESOURCE_BY_SUPERUSER',
+        targetId: data?.id,
+        targetType: resource,
+        organizationId: organizationId,
+        metadata: {},
+      }),
+    ];
 
     res
       .status(200)
@@ -118,18 +119,19 @@ export async function updateRecord(
 
     const changes = oldData && data ? generateDiff(oldData, data) : {};
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
-      actorType: 'USER',
-      action: 'UPDATE_RESOURCE_BY_SUPERUSER',
-      targetId: oldData?.id,
-      targetType: resource,
-      organizationId: organizationId,
-      metadata: {
-        timestamp: new Date().toISOString(),
-        changes,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo.id,
+        actorType: 'USER',
+        action: 'UPDATE_RESOURCE_BY_SUPERUSER',
+        targetId: oldData?.id,
+        targetType: resource,
+        organizationId: organizationId,
+        metadata: {
+          ...changes,
+        },
+      }),
+    ];
 
     res
       .status(200)
@@ -167,17 +169,17 @@ export async function deleteRecord(
       res
     );
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userInfo.id,
-      actorType: 'USER',
-      action: 'DELETE_RESOURCE_BY_SUPERUSER',
-      targetId: oldData?.id,
-      targetType: resource,
-      organizationId: organizationId,
-      metadata: {
-        timestamp: new Date().toISOString(),
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userInfo.id,
+        actorType: 'USER',
+        action: 'DELETE_RESOURCE_BY_SUPERUSER',
+        targetId: oldData?.id,
+        targetType: resource,
+        organizationId: organizationId,
+        metadata: {},
+      }),
+    ];
 
     res
       .status(200)

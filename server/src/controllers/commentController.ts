@@ -78,19 +78,21 @@ export async function createComment(
         })
     );
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userId,
-      actorType: 'USER',
-      action: 'CREATE_COMMENT',
-      targetId: comment.id,
-      targetType: 'COMMENT',
-      organizationId: organizationId,
-      metadata: {
-        authorId: `${comment.authorId}`,
-        content: `${comment.content}`,
-        ticketId: `${comment.ticketId}`,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userId,
+        actorType: 'USER',
+        action: 'CREATE_COMMENT',
+        targetId: comment.id,
+        targetType: 'COMMENT',
+        organizationId: organizationId,
+        metadata: {
+          authorId: `${comment.authorId}`,
+          content: `${comment.content}`,
+          ticketId: `${comment.ticketId}`,
+        },
+      }),
+    ];
 
     res
       .status(201)
@@ -139,7 +141,7 @@ export async function deleteComment(
 
     // The entityId for the purpose of logging is the ticketId for comments
 
-    res.locals.logEvent = buildLogEvent({
+    const deleteLog = buildLogEvent({
       userId: userId,
       actorType: 'USER',
       action: 'DELETE_COMMENT',
@@ -152,6 +154,8 @@ export async function deleteComment(
         content: oldComment?.content,
       },
     });
+
+    res.locals.logEvents = (res.locals.logEvents || []).concat(deleteLog);
 
     res.status(200).json({
       message: 'Comment deleted successfully',
@@ -210,17 +214,19 @@ export async function updateComment(
         ? generateDiff(oldComment, updatedComment)
         : {};
 
-    res.locals.logEvent = buildLogEvent({
-      userId: userId,
-      actorType: 'USER',
-      action: 'UPDATE_COMMENT',
-      targetId: commentId,
-      targetType: 'COMMENT',
-      organizationId: organizationId,
-      metadata: {
-        changes,
-      },
-    });
+    res.locals.logEvents = [
+      buildLogEvent({
+        userId: userId,
+        actorType: 'USER',
+        action: 'UPDATE_COMMENT',
+        targetId: commentId,
+        targetType: 'COMMENT',
+        organizationId: organizationId,
+        metadata: {
+          changes,
+        },
+      }),
+    ];
 
     res
       .status(200)
