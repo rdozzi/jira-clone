@@ -1,7 +1,7 @@
 import { ActivityLog } from '@prisma/client';
 import { LogEventPayload } from '../types/logEventPayload';
 import prisma from '../lib/prisma';
-import { activityLogCounter } from './organizationUsageServices/activityLogCounter';
+// import { activityLogCounter } from './organizationUsageServices/activityLogCounter';
 
 export async function createActivityLog({
   userId,
@@ -24,14 +24,6 @@ export async function createActivityLog({
         metadata,
       },
     });
-
-    if (organizationId != null) {
-      try {
-        await activityLogCounter(prisma, organizationId);
-      } catch (error) {
-        console.warn('Function activityLogCounter failed:', error);
-      }
-    }
 
     return activityLog;
   } catch (error) {
