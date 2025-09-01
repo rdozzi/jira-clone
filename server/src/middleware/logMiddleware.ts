@@ -7,7 +7,6 @@ export function globalLogMiddleware() {
   return function (req: Request, res: Response, next: NextFunction) {
     res.on('finish', () => {
       setImmediate(async () => {
-        const logEvent = res.locals.logEvent;
         const logEvents = res.locals.logEvents;
         if (res.statusCode < 400) {
           try {
@@ -15,9 +14,6 @@ export function globalLogMiddleware() {
               await Promise.all(
                 logEvents.map((logEvent) => createActivityLog(logEvent))
               );
-            }
-            if (logEvent) {
-              await createActivityLog(logEvent);
             }
             return;
           } catch (error) {
