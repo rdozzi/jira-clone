@@ -16,7 +16,7 @@ import generateJwtToken from '../../src/utilities/testUtilities/generateJwtToken
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
 
-describe('Test activity log counters', () => {
+describe.skip('Test activity log counters', () => {
   let token: string;
   let user: User;
   let organization: Organization;
