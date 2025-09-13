@@ -242,10 +242,6 @@ describe('Test project counters', () => {
 
   // Multi-Org: Organization limits are segregated
   it('Org 2 should have status 403, Org 3 should have status 201', async () => {
-    const key1 = `org:${organization2.id}:${resourceType}:daily`;
-    const key2 = `org:${organization3.id}:${resourceType}:daily`;
-    await redisClient.set(key1, 0);
-    await redisClient.set(key2, 0);
     await prismaTest.organizationProjectUsage.update({
       where: { organizationId: organization2.id },
       data: { totalProjects: 20 },
