@@ -285,10 +285,6 @@ describe('Test file storage counters', () => {
   it('Org 2 should have status 403, Org 3 should have status 201', async () => {
     const file2 = createTestFile(1, '1b.bin');
     const file3 = createTestFile(1, '1b.bin');
-    const key2 = `org:${organization2.id}:${resourceType}:daily`;
-    const key3 = `org:${organization3.id}:${resourceType}:daily`;
-    await redisClient.set(key2, 0);
-    await redisClient.set(key3, 0);
 
     await prismaTest.organizationFileStorageUsage.update({
       where: { organizationId: organization2.id },

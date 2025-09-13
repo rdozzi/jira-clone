@@ -336,10 +336,6 @@ describe('Test ticket counters', () => {
 
   // Multi-Org: Organization limits are segregated
   it('Org 2 should have status 403, Org 3 should have status 201', async () => {
-    const key2 = `org:${organization2.id}:${resourceType}:daily`;
-    const key3 = `org:${organization3.id}:${resourceType}:daily`;
-    await redisClient.set(key2, 0);
-    await redisClient.set(key3, 0);
     await prismaTest.organizationTicketUsage.update({
       where: { organizationId: organization2.id },
       data: { totalTickets: 5000 },
