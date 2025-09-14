@@ -14,15 +14,15 @@ import getUpdatedFields from '../utilities/getUpdatedFields';
 
 interface User {
   id: number;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
 }
 
 function getOptions(users: User[]): { value: number; label: string }[] {
   return (
     users?.map((user) => ({
       value: user.id,
-      label: `${user.first_name} ${user.last_name}`,
+      label: `${user.firstName} ${user.lastName}`,
     })) || []
   );
 }
