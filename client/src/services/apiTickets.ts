@@ -1,3 +1,5 @@
+import { getAuthToken } from '../lib/getAuthToken';
+
 interface Ticket {
   assigneeId: number;
   boardId: number;
@@ -10,15 +12,23 @@ interface Ticket {
   type: string;
 }
 
+const token = getAuthToken();
+
 type UpdatedTicket = Partial<Ticket>;
 
 export async function getTickets() {
   try {
-    const res = await fetch('http://localhost:3000/api/tickets');
+    const res = await fetch('http://localhost:3000/api/tickets', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
     if (!res.ok) {
       throw new Error('Failed to fetch tickets');
     }
-    const data = await res.json();
+    const { data } = await res.json();
     return data;
   } catch (err: any | unknown) {
     console.error(err);
@@ -80,6 +90,7 @@ export async function updateTicket(ticketId: number, ticket: UpdatedTicket) {
       {
         method: 'PATCH',
         headers: {
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(ticket),
@@ -88,7 +99,7 @@ export async function updateTicket(ticketId: number, ticket: UpdatedTicket) {
     if (!res.ok) {
       throw new Error('Failed to update ticket');
     }
-    const data = await res.json();
+    const { data } = await res.json();
     return data;
   } catch (err: any | unknown) {
     console.error(err);
