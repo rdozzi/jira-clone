@@ -1,7 +1,16 @@
-// Get comments by ticket Id
+import { getAuthToken } from '../lib/getAuthToken';
+
+const token = getAuthToken();
+
 export async function getCommentsById(ticketId: number) {
   try {
-    const res = await fetch(`http://localhost:3000/api/comments/${ticketId}`);
+    const res = await fetch(`http://localhost:3000/api/comments/${ticketId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
     if (!res.ok) {
       throw new Error('Failed to fetch comments');
     }
@@ -19,6 +28,7 @@ export async function createComment(commentObject: object) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(commentObject),
     });
@@ -37,6 +47,10 @@ export async function deleteComment(ticketId: number) {
   try {
     const res = await fetch(`http://localhost:3000/api/comments/${ticketId}`, {
       method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
     });
     if (!res.ok) {
       throw new Error('Failed to delete comment');
@@ -55,6 +69,7 @@ export async function editComment(commentId: number, content: string) {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ content }),
     });
