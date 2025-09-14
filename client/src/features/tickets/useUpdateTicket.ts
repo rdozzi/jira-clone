@@ -10,14 +10,11 @@ export function useUpdateTicket() {
       return apiUpdateTicket(ticketId, values);
     },
     onSuccess: (updatedTicket) => {
-      queryClient.setQueryData(['tickets'], (oldTickets: Tickets[] = []) => {
-        return oldTickets.map((t) => {
-          if (t.id === updatedTicket.id) {
-            return { ...t, ...updatedTicket };
-          }
-          return t;
-        });
-      });
+      queryClient.setQueryData(['tickets'], (oldTickets: Tickets[] = []) =>
+        oldTickets.map((t) =>
+          t.id === updatedTicket.id ? { ...t, ...updatedTicket } : t
+        )
+      );
     },
     onError: (error) => {
       console.error('Mutation Failed:', error);
