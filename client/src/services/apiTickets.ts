@@ -37,7 +37,13 @@ export async function getTickets() {
 
 export async function getTicketById(id: number) {
   try {
-    const res = await fetch(`http://localhost:3000/api/tickets/${id}`);
+    const res = await fetch(`http://localhost:3000/api/tickets/${id}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
     if (!res.ok) {
       throw new Error('Failed to fetch ticket');
     }
@@ -53,6 +59,7 @@ export async function createTicket(ticket: Ticket) {
     const res = await fetch('http://localhost:3000/api/tickets', {
       method: 'POST',
       headers: {
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(ticket),
@@ -71,6 +78,10 @@ export async function deleteTicket(id: number) {
   try {
     const res = await fetch(`http://localhost:3000/api/tickets/${id}`, {
       method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
     });
     if (!res.ok) {
       throw new Error('Failed to delete ticket');
