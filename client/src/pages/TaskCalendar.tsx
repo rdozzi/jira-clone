@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 import type { CalendarProps, SegmentedProps } from 'antd';
 import { Record } from '../ui/TicketListItemButton';
+import { CalendarTickets } from '../types/Tickets';
 
 import { Calendar, Button, DatePicker, Segmented } from 'antd';
 import {
@@ -23,7 +24,7 @@ type CellRenderRecord = Record;
 type ViewMode = 'month' | 'year';
 
 const TaskCalender = memo(function TaskCalender() {
-  const [ticketState, setTicketState] = useState([]);
+  const [ticketState, setTicketState] = useState<CalendarTickets[]>([]);
   const [date, setDate] = useState(dayjs());
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const { isLoading, tickets = [] } = useTickets(); // Add error later
