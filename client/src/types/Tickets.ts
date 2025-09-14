@@ -1,3 +1,7 @@
+export type Priority = 'LOW' | 'MEDIUM' | 'HIGH';
+export type Status = 'BACKLOG' | 'IN_PROGRESS' | 'DONE';
+export type Type = 'BUG' | 'TASK' | 'STORY';
+
 export interface Tickets {
   assignee: { first_name: string; last_name: string };
   assigneeId: number;
@@ -6,10 +10,26 @@ export interface Tickets {
   description: string;
   dueDate: Date;
   id: number;
-  priority: 'HIGH' | 'MEDIUM' | 'LOW';
+  priority: Priority;
   reporterId: number;
-  status: 'BACKLOG' | 'IN_PROGRESS' | 'DONE';
+  status: Status;
   title: string;
-  type: 'BUG' | 'TASK' | 'STORY';
+  type: Type;
+  updatedAt: Date;
+}
+
+export interface CalendarTickets {
+  assignee: { first_name: string; last_name: string };
+  assigneeId: number;
+  boardId: number;
+  createdAt: Date;
+  description: string;
+  dueDate: string;
+  id: number;
+  priority: string;
+  reporterId: number;
+  status: string;
+  title: string;
+  type: string;
   updatedAt: Date;
 }
