@@ -14,7 +14,7 @@ export async function getCommentsById(ticketId: number) {
     if (!res.ok) {
       throw new Error('Failed to fetch comments');
     }
-    const data = await res.json();
+    const { data } = await res.json();
     return data;
   } catch (err: any | unknown) {
     console.error(err);
@@ -35,7 +35,7 @@ export async function createComment(commentObject: object) {
     if (!res.ok) {
       throw new Error('Failed to create ticket');
     }
-    const data = await res.json();
+    const { data } = await res.json();
     return data;
   } catch (err: any | unknown) {
     console.error(err);
@@ -55,7 +55,7 @@ export async function deleteComment(ticketId: number) {
     if (!res.ok) {
       throw new Error('Failed to delete comment');
     }
-    const data = await res.json();
+    const { data } = await res.json();
     return data;
   } catch (err: any | unknown) {
     console.error(err);
@@ -76,7 +76,7 @@ export async function editComment(commentId: number, content: string) {
     if (!res.ok) {
       throw new Error('Failed to update comment');
     }
-    const data = await res.json();
+    const { data } = await res.json();
     return data;
   } catch (err: any | unknown) {
     console.error('Comment Error', err);
