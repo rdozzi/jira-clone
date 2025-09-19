@@ -20,6 +20,7 @@ export async function getAllTickets(
       // No query provided — fetch all tickets
       const tickets = await prisma.ticket.findMany({
         where: { organizationId: organizationId },
+        include: { assignee: { select: { firstName: true, lastName: true } } },
       });
       return res
         .status(200)
@@ -37,7 +38,9 @@ export async function getAllTickets(
         ...(assigneeId !== undefined ? { assigneeId } : {}),
         ...(reporterId !== undefined ? { reporterId } : {}),
       },
+      include: { assignee: { select: { firstName: true, lastName: true } } },
     });
+
     res
       .status(200)
       .json({ message: 'Tickets fetched successfully', data: tickets });
