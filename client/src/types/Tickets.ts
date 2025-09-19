@@ -3,7 +3,7 @@ export type Status = 'BACKLOG' | 'IN_PROGRESS' | 'DONE';
 export type Type = 'BUG' | 'TASK' | 'STORY';
 
 export interface Tickets {
-  assignee: { first_name: string; last_name: string };
+  assignee: { firstName: string; lastName: string };
   assigneeId: number;
   boardId: number;
   createdAt: Date;
