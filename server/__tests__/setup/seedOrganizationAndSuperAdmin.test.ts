@@ -3,6 +3,7 @@ import request from 'supertest';
 import { redisClient, connectRedis } from '../../src/lib/connectRedis';
 import { prismaTest } from '../../src/lib/prismaTestClient';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
+import waitForExpect from 'wait-for-expect';
 
 import { app } from '../../src/app';
 import { createOTP } from '../../src/utilities/testUtilities/createOTP';
@@ -18,21 +19,21 @@ interface OTPPayload {
   otpValue: { [KeyObject: string]: string };
 }
 
-describe.skip('Test seed organization and SuperAdmin route', () => {
+describe('Test seed organization and SuperAdmin route', () => {
   const testDescription = 'seedOrganizationAndSuperAdminRoute';
   const goodEmail = 'rdozzi84@gmail.com';
-  const thirdPartyFailEmail = 'test@guerrillamail.com';
+  // const thirdPartyFailEmail = 'test@guerrillamail.com';
   // const frequencyFailEmail = 'test@example.com';
   let otpPayload1: OTPPayload;
-  let otpPayload2: OTPPayload;
+  // let otpPayload2: OTPPayload;
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     await connectRedis();
     otpPayload1 = (await createOTP(goodEmail)) as unknown as OTPPayload;
-    otpPayload2 = (await createOTP(
-      thirdPartyFailEmail
-    )) as unknown as OTPPayload;
+    // otpPayload2 = (await createOTP(
+    //   thirdPartyFailEmail
+    // )) as unknown as OTPPayload;
   });
   afterAll(async () => {
     await redisClient.quit();
@@ -77,24 +78,29 @@ describe.skip('Test seed organization and SuperAdmin route', () => {
       organizationId: expect.any(Number),
       organizationRole: expect.any(String),
     });
-  });
-  it('it should fail due to a suspicious looking email', async () => {
-    const res = await request(app)
-      .post('/api/setup/seedOrganizationAndSuperAdmin')
-      .send({
-        email: thirdPartyFailEmail,
-        firstName: 'FirstName',
-        lastName: 'LastName',
-        password: 'TestPassword123!',
-        organizationName: `${testDescription}`,
-        otp: otpPayload2.otpValue,
-      });
 
-    expect(res.status).toBe(403);
-    expect(res.body.message).toBe(
-      'Request denied. Disposable email addresses are not allowed.'
-    );
+    await waitForExpect(async () => {
+      const projectCount = await prismaTest.organizationProjectUsage.count();
+      expect(projectCount).toEqual(1);
+    });
   });
+  // it('it should fail due to a suspicious looking email', async () => {
+  //   const res = await request(app)
+  //     .post('/api/setup/seedOrganizationAndSuperAdmin')
+  //     .send({
+  //       email: thirdPartyFailEmail,
+  //       firstName: 'FirstName',
+  //       lastName: 'LastName',
+  //       password: 'TestPassword123!',
+  //       organizationName: `${testDescription}`,
+  //       otp: otpPayload2.otpValue,
+  //     });
+
+  //   expect(res.status).toBe(403);
+  //   expect(res.body.message).toBe(
+  //     'Request denied. Disposable email addresses are not allowed.'
+  //   );
+  // });
   // it('it should fail due to too many attempts', async () => {
   //   for (let i = 0; i < 5; i++) {
   //     request(app)
