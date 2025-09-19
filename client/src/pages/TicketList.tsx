@@ -18,7 +18,7 @@ interface DataType {
   title: string;
   dueDate: Date;
   description: string;
-  assignee: { last_name: string };
+  assignee: { lastName: string };
   status: keyof typeof statusOrder;
   priority: keyof typeof priorityOrder;
   type: string;
@@ -65,12 +65,12 @@ function TicketList() {
       dataIndex: 'assignee',
       sorter: {
         compare: (a, b) =>
-          a.assignee['last_name']
+          a.assignee['lastName']
             .toLocaleLowerCase()
-            .localeCompare(b.assignee['last_name'].toLocaleLowerCase()),
+            .localeCompare(b.assignee['lastName'].toLocaleLowerCase()),
         multiple: 0,
       },
-      render: ({ first_name, last_name }) => `${first_name} ${last_name}`,
+      render: ({ firstName, lastName }) => `${firstName} ${lastName}`,
     },
     {
       title: 'Status',
