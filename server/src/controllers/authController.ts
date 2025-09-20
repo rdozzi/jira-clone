@@ -87,7 +87,6 @@ export async function loginUser(
 }
 
 export async function logoutUser(req: Request, res: Response) {
-  const userInfo = res.locals.userInfo;
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) {
     return res.status(401).json({ error: 'No token provided' });
@@ -95,19 +94,27 @@ export async function logoutUser(req: Request, res: Response) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
     const userId = parseInt((decoded as { id: string }).id, 10);
+    const organizationId = parseInt(
+      (decoded as { organizationId: string }).organizationId,
+      10
+    );
 
-    res.locals.logEvent = buildLogEvent({
-      userId: null,
-      actorType: 'USER',
-      action: 'USER_LOGOUT',
-      targetId: userId,
-      targetType: 'AUTHENTICATION',
-      organizationId: userInfo.organizationId,
-      metadata: {
-        id: userId,
-        timestamp: new Date().toISOString(),
-      },
-    });
+    const logEvents = [
+      buildLogEvent({
+        userId: userId,
+        actorType: 'USER',
+        action: 'USER_LOGOUT',
+        targetId: userId,
+        targetType: 'AUTHENTICATION',
+        organizationId: organizationId,
+        metadata: {
+          id: userId,
+          timestamp: new Date().toISOString(),
+        },
+      }),
+    ];
+
+    logBus.emit('activityLog', logEvents);
 
     return res.status(200).json({ message: 'Logout successful' });
   } catch (error) {
