@@ -1,9 +1,10 @@
 import { Outlet } from 'react-router-dom';
-import { Layout } from 'antd';
+import { Layout, Select } from 'antd';
 import HeaderComp from './HeaderComp';
 import ThemeToggle from './ThemeToggle';
 import LogoutButton from './LogoutButton';
 import UserHomeButton from './UserHomeButton';
+import { useProjectBoard } from '../contexts/useProjectBoard';
 
 const { Sider, Footer, Content } = Layout;
 
@@ -16,6 +17,15 @@ const footerStyle: StyleObject = {
 };
 
 function AppLayout() {
+  const {
+    projects,
+    isProjectLoading,
+    // projectError,
+    boards,
+    isBoardLoading,
+    // boardError,
+  } = useProjectBoard();
+
   return (
     <Layout>
       <Sider style={siderStyle}>
@@ -28,6 +38,40 @@ function AppLayout() {
         </div>
         <div>
           <UserHomeButton />
+        </div>
+        <div>
+          <Select
+            style={{ width: '100%', textAlign: 'left' }}
+            // placeholder='Please select a project'
+            defaultValue={projects?.[0]?.name}
+            loading={isProjectLoading}
+            size={'middle'}
+          >
+            {projects?.map((project) => {
+              return (
+                <Select.Option key={project.id} value={project.id}>
+                  {project.name}
+                </Select.Option>
+              );
+            })}
+          </Select>
+        </div>
+        <div>
+          <Select
+            style={{ width: '100%', textAlign: 'left' }}
+            // placeholder='Please select a board'
+            defaultValue={boards?.[0]?.name}
+            loading={isBoardLoading}
+            size={'middle'}
+          >
+            {boards?.map((board) => {
+              return (
+                <Select.Option key={board.id} value={board.id}>
+                  {board.name}
+                </Select.Option>
+              );
+            })}
+          </Select>
         </div>
       </Sider>
       <Layout>
