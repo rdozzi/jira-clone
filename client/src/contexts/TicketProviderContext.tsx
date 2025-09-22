@@ -1,11 +1,13 @@
-import { useGetTickets } from '../features/tickets/useGetTickets';
+import { useGetTicketsByBoardId } from '../features/tickets/useGetTicketsByBoardId';
 import { useUpdateTicket } from '../features/tickets/useUpdateTicket';
 import { TicketContext } from './TicketContext';
+import { useProjectBoard } from './useProjectBoard';
 
 type TicketProviderProps = { children: React.ReactNode };
 
 export const TicketProviderContext = ({ children }: TicketProviderProps) => {
-  const { tickets, isLoading, error } = useGetTickets();
+  const { boardId } = useProjectBoard();
+  const { tickets, isLoading, error } = useGetTicketsByBoardId(boardId);
   const updateTicketMutation = useUpdateTicket();
 
   return (
