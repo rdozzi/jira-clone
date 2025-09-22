@@ -37,8 +37,8 @@ function App() {
           <AuthProviderContext>
             <DropdownProvider>
               <ModalProviderContext>
-                <TicketProviderContext>
-                  <ProjectBoardProviderContext>
+                <ProjectBoardProviderContext>
+                  <TicketProviderContext>
                     <Routes>
                       {/* Public Routes */}
                       <Route path='/' element={<PublicHomepage />} />
@@ -64,8 +64,8 @@ function App() {
                       {/* 404 Not Found */}
                       <Route path='*' element={<NotFoundPage />} />
                     </Routes>
-                  </ProjectBoardProviderContext>
-                </TicketProviderContext>
+                  </TicketProviderContext>
+                </ProjectBoardProviderContext>
               </ModalProviderContext>
             </DropdownProvider>
           </AuthProviderContext>
