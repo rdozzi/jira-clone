@@ -113,6 +113,7 @@ export async function getTicketsByBoardId(
   try {
     const tickets = await prisma.ticket.findMany({
       where: { boardId: boardId, organizationId: organizationId },
+      include: { assignee: { select: { firstName: true, lastName: true } } },
     });
     res
       .status(200)
