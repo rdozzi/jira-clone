@@ -35,6 +35,28 @@ export async function getTickets() {
   }
 }
 
+export async function getTicketsByBoardId(boardId: number) {
+  try {
+    const res = await fetch(
+      `http://localhost:3000/api/tickets/${boardId}/board`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    if (!res.ok) {
+      throw new Error('Failed to fetch tickets');
+    }
+    const { data } = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(err);
+  }
+}
+
 export async function getTicketById(id: number) {
   try {
     const res = await fetch(`http://localhost:3000/api/tickets/${id}`, {
