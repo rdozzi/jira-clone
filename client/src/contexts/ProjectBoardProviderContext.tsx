@@ -34,10 +34,16 @@ export function ProjectBoardProviderContext({
   } = useGetBoardsByProjectId(projectId);
 
   useEffect(() => {
+    if (projects?.length && !project) {
+      setProject(projects[0]);
+    }
+  }, [projects, project]);
+
+  useEffect(() => {
     if (project && boards?.length && !board) {
       setBoard(boards[0]);
     }
-  }, [board, boards, project, setBoard]);
+  }, [board, boards, project]);
 
   return (
     <ProjectBoardContext.Provider
