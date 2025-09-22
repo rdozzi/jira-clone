@@ -21,11 +21,14 @@ function AppLayout() {
     projects,
     isProjectLoading,
     // projectError,
+    project,
+    setProject,
     boards,
+    board,
+    setBoard,
     isBoardLoading,
     // boardError,
   } = useProjectBoard();
-
   return (
     <Layout>
       <Sider style={siderStyle}>
@@ -42,10 +45,14 @@ function AppLayout() {
         <div>
           <Select
             style={{ width: '100%', textAlign: 'left' }}
-            // placeholder='Please select a project'
-            defaultValue={projects?.[0]?.name}
+            value={project?.id}
             loading={isProjectLoading}
             size={'middle'}
+            onChange={(id) => {
+              const selectedProject =
+                projects?.find((p) => p.id === id) || null;
+              setProject(selectedProject);
+            }}
           >
             {projects?.map((project) => {
               return (
@@ -59,15 +66,18 @@ function AppLayout() {
         <div>
           <Select
             style={{ width: '100%', textAlign: 'left' }}
-            // placeholder='Please select a board'
-            defaultValue={boards?.[0]?.name}
+            value={board?.id ?? undefined}
             loading={isBoardLoading}
             size={'middle'}
+            onChange={(id) => {
+              const selectedBoard = boards?.find((b) => b.id === id) || null;
+              setBoard(selectedBoard);
+            }}
           >
-            {boards?.map((board) => {
+            {boards?.map((b) => {
               return (
-                <Select.Option key={board.id} value={board.id}>
-                  {board.name}
+                <Select.Option key={b.id} value={b.id}>
+                  {b.name}
                 </Select.Option>
               );
             })}
