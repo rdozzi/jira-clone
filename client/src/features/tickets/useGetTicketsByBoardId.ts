@@ -7,7 +7,7 @@ export function useGetTicketsByBoardId(boardId: number | null) {
     data: tickets,
     error,
   } = useQuery({
-    queryKey: ['tickets'],
+    queryKey: ['tickets', boardId],
     queryFn: () => getTicketsByBoardId(boardId as number),
     enabled: !!boardId,
     staleTime: 0,
