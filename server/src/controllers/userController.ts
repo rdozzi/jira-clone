@@ -77,6 +77,29 @@ export async function getUser(
   }
 }
 
+export async function getUserSelf(
+  req: Request,
+  res: Response,
+  prisma: PrismaClient
+) {
+  try {
+    const userInfo = res.locals.userInfo;
+
+    const user = prisma.user.findUnique({
+      where: { id: userInfo.id, organizationId: userInfo.organizationId },
+    });
+
+    res.status(200).json({
+      message: 'User retrieved successfully',
+      data: user,
+    });
+  } catch (error) {
+    console.error('Error fetching users: ', error);
+    res.status(500).json({ error: 'failed to fetch user' });
+    return;
+  }
+}
+
 // Get users by ProjectId
 export async function getUserByProjectId(
   req: Request,
