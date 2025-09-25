@@ -19,7 +19,7 @@ function ProtectedRoute({ children, requireRole }: ProtectedRouteProps) {
     return <Navigate to='/login' replace />;
   }
 
-  if (requireRole && authState?.userRole !== requireRole) {
+  if (requireRole && authState?.organizationRole !== requireRole) {
     return <Navigate to='/unauthorized' replace />;
   }
 

@@ -1,8 +1,8 @@
-import { UserRole } from './UserRole';
+import { OrganizationRole } from './OrganizationRole';
 
 export type AuthState = {
   token: string | null;
   isAuthenticated: boolean;
-  userRole: UserRole | null;
+  organizationRole: OrganizationRole | null;
   userId?: number | null;
 };

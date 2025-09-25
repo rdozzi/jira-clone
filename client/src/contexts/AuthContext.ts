@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { UserRole } from '../types/UserRole';
+import { UserRole } from '../types/OrganizationRole';
 import { AuthState } from '../types/AuthState';
 
 type AuthContextType = {

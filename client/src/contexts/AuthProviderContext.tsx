@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AuthContext } from './AuthContext';
 
-import { UserRole } from '../types/UserRole';
+import { OrganizationRole } from '../types/OrganizationRole';
 import { AuthState } from '../types/AuthState';
 import { StoredAuth } from '../types/StoredAuth';
 
@@ -14,7 +14,7 @@ export function AuthProviderContext({
   const [authState, setAuthState] = useState<AuthState>({
     token: null,
     isAuthenticated: false,
-    userRole: null,
+    organizationRole: null,
     userId: null,
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -28,18 +28,22 @@ export function AuthProviderContext({
     setIsLoading(false);
   }, []);
 
-  function login(token: string, userRole: UserRole, userId?: number) {
+  function login(
+    token: string,
+    organizationRole: OrganizationRole,
+    userId?: number
+  ) {
     setAuthState({
       token,
       isAuthenticated: true,
-      userRole,
+      organizationRole,
       userId,
     });
 
     const authPayload: StoredAuth = {
       token,
       userId: userId || null,
-      userRole,
+      organizationRole,
       expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 hour expiration
     };
     // Store the auth payload in local storage
@@ -51,7 +55,7 @@ export function AuthProviderContext({
     setAuthState({
       token: null,
       isAuthenticated: false,
-      userRole: null,
+      organizationRole: null,
       userId: null,
     });
 
