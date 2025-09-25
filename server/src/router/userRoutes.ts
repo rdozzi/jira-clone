@@ -14,6 +14,7 @@ import {
   deleteUser,
   updateUser,
   updateUserAvatar,
+  getUserSelf,
 } from '../controllers/userController';
 import { uploadSingleMiddleware } from '../middleware/attachments/uploadMiddleware';
 import { validateQuery } from '../middleware/validation/validateQuery';
@@ -40,6 +41,15 @@ router.get(
   validateQuery,
   async (req: Request, res: Response): Promise<void> => {
     await getUser(req, res, prisma);
+  }
+);
+
+// Get user self
+router.get(
+  `/users/self`,
+  authorizeGlobalRole(OrganizationRole.GUEST),
+  async (req: Request, res: Response): Promise<void> => {
+    await getUserSelf(req, res, prisma);
   }
 );
 
