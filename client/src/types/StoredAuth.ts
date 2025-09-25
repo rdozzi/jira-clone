@@ -1,8 +1,8 @@
-import { UserRole } from './UserRole';
+import { OrganizationRole } from './OrganizationRole';
 
 export type StoredAuth = {
   token: string | null;
   userId: number | null;
-  userRole: UserRole | null;
+  organizationRole: OrganizationRole | null;
   expiresAt: string | null;
 };
