@@ -79,13 +79,18 @@ function LoginPage() {
       return;
     }
 
-    const { token, userId, userRole } = loginCheckPayload;
+    const { token, userId, organizationRole } = loginCheckPayload;
 
-    login(token, userRole, userId); // token and userId are stubbed for now
-    console.log(`Logged in as ${userRole}`);
+    login(token, organizationRole, userId);
+    console.log(`Logged in as ${organizationRole}`);
+    console.log(`token: ${token}`);
+    console.log(`userId: ${userId}`);
 
     const redirectPath =
-      userRole === 'ADMIN' || userRole === 'USER' || userRole === 'GUEST'
+      organizationRole === 'SUPERADMIN' ||
+      organizationRole === 'ADMIN' ||
+      organizationRole === 'USER' ||
+      organizationRole === 'GUEST'
         ? '/user-homepage'
         : '*';
     // role === 'ADMIN'
