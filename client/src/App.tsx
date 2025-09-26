@@ -8,6 +8,7 @@ import { ModalProviderContext } from './contexts/ModalProviderContext';
 import { TicketProviderContext } from './contexts/TicketProviderContext';
 import { AuthProviderContext } from './contexts/AuthProviderContext';
 import { ProjectBoardProviderContext } from './contexts/ProjectBoardProviderContext';
+import { UserProviderContext } from './contexts/UserProvider';
 
 import PublicHomepage from './pages/PublicHomepage';
 import LoginPage from './pages/LoginPage';
@@ -37,35 +38,37 @@ function App() {
           <AuthProviderContext>
             <DropdownProvider>
               <ModalProviderContext>
-                <ProjectBoardProviderContext>
-                  <TicketProviderContext>
-                    <Routes>
-                      {/* Public Routes */}
-                      <Route path='/' element={<PublicHomepage />} />
-                      <Route path='/login' element={<LoginPage />} />
+                <UserProviderContext>
+                  <ProjectBoardProviderContext>
+                    <TicketProviderContext>
+                      <Routes>
+                        {/* Public Routes */}
+                        <Route path='/' element={<PublicHomepage />} />
+                        <Route path='/login' element={<LoginPage />} />
 
-                      {/* Protected Routes */}
-                      <Route
-                        element={
-                          <ProtectedRoute> {<AppLayout />} </ProtectedRoute>
-                        }
-                      >
-                        {/* User Homepage; Renders depending on User Profile */}
-                        <Route path='/user-homepage' element={<UserHome />} />
+                        {/* Protected Routes */}
+                        <Route
+                          element={
+                            <ProtectedRoute> {<AppLayout />} </ProtectedRoute>
+                          }
+                        >
+                          {/* User Homepage; Renders depending on User Profile */}
+                          <Route path='/user-homepage' element={<UserHome />} />
 
-                        {/* Tickets Section */}
-                        <Route path='/tickets'>
-                          <Route path='ticketlist' element={<TicketList />} />
-                          <Route path='taskboard' element={<TaskBoard />} />
-                          <Route path='calendar' element={<TaskCalendar />} />
+                          {/* Tickets Section */}
+                          <Route path='/tickets'>
+                            <Route path='ticketlist' element={<TicketList />} />
+                            <Route path='taskboard' element={<TaskBoard />} />
+                            <Route path='calendar' element={<TaskCalendar />} />
+                          </Route>
                         </Route>
-                      </Route>
 
-                      {/* 404 Not Found */}
-                      <Route path='*' element={<NotFoundPage />} />
-                    </Routes>
-                  </TicketProviderContext>
-                </ProjectBoardProviderContext>
+                        {/* 404 Not Found */}
+                        <Route path='*' element={<NotFoundPage />} />
+                      </Routes>
+                    </TicketProviderContext>
+                  </ProjectBoardProviderContext>
+                </UserProviderContext>
               </ModalProviderContext>
             </DropdownProvider>
           </AuthProviderContext>
