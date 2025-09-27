@@ -85,7 +85,7 @@ export async function getUserSelf(
   try {
     const userInfo = res.locals.userInfo;
 
-    const user = prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userInfo.id, organizationId: userInfo.organizationId },
     });
 
