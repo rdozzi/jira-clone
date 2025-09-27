@@ -4,16 +4,22 @@ import { getProjectMembers as apiGetProjectMembers } from '../../services/apiPro
 export function useGetProjectMembers(projectId: number | null) {
   const {
     data: projectMembers,
-    isLoading,
+    isLoading: isLoadingProjectMember,
     error,
     refetch: refreshProjectMember,
   } = useQuery({
     queryKey: ['projectMember'],
     queryFn: () => apiGetProjectMembers(projectId as number),
+    enabled: projectId !== null,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
     refetchOnWindowFocus: false,
   });
 
-  return { isLoading, projectMembers, error, refreshProjectMember };
+  return {
+    isLoadingProjectMember,
+    projectMembers,
+    error,
+    refreshProjectMember,
+  };
 }
