@@ -4,8 +4,8 @@ import { Users } from '../types/Users';
 import { QueryObserverResult } from '@tanstack/react-query';
 
 interface UserContextType {
-  user: Users | null;
-  isLoading: boolean;
+  userSelf: Users | null;
+  isLoadingUser: boolean;
   error: Error | null;
   refreshUser: () => Promise<QueryObserverResult<any, Error>>;
 }
