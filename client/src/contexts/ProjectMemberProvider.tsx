@@ -11,12 +11,21 @@ export const ProjectMemberProvider = ({
   children,
 }: ProjectMemberProviderProps) => {
   const { projectId } = useProjectBoard();
-  const { projectMembers, isLoading, error, refreshProjectMember } =
-    useGetProjectMembers(projectId);
+  const {
+    projectMembers,
+    isLoadingProjectMember,
+    error,
+    refreshProjectMember,
+  } = useGetProjectMembers(projectId);
 
   return (
     <ProjectMemberContext.Provider
-      value={{ projectMembers, isLoading, error, refreshProjectMember }}
+      value={{
+        projectMembers,
+        isLoadingProjectMember,
+        error,
+        refreshProjectMember,
+      }}
     >
       {children}
     </ProjectMemberContext.Provider>
