@@ -3,8 +3,8 @@ import { getUserSelf as apiGetUserSelf } from '../../services/apiUsers';
 
 export function useGetUserSelf() {
   const {
-    isLoading,
-    data: user,
+    isLoading: isLoadingUser,
+    data: userSelf,
     error,
     refetch: refreshUser,
   } = useQuery({
@@ -15,5 +15,5 @@ export function useGetUserSelf() {
     refetchOnWindowFocus: false,
   });
 
-  return { isLoading, user, error, refreshUser };
+  return { isLoadingUser, userSelf, error, refreshUser };
 }

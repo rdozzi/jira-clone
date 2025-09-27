@@ -3,10 +3,10 @@ import { getUsers } from '../../services/apiUsers';
 
 export function useGetUsers() {
   const {
-    isLoading,
+    isLoading: isLoadingUsers,
     data: users,
     error,
   } = useQuery({ queryKey: ['users'], queryFn: getUsers });
 
-  return { isLoading, users, error };
+  return { isLoadingUsers, users, error };
 }
