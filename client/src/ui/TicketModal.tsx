@@ -10,6 +10,7 @@ import { useGetUsers } from '../features/users/useGetUsers';
 import { useCreateTickets } from '../features/tickets/useCreateTickets';
 import { useGetTicketById } from '../features/tickets/useGetTicketById';
 import { useUpdateTicket } from '../features/tickets/useUpdateTicket';
+import { useProjectBoard } from '../contexts/useProjectBoard';
 import getUpdatedFields from '../utilities/getUpdatedFields';
 
 interface User {
@@ -40,6 +41,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
   const { createNewTicket, isCreating } = useCreateTickets();
   const { ticket: ticketDbEntry } = useGetTicketById(record?.id);
   const { updateTicket, isUpdating } = useUpdateTicket();
+  const { boardId } = useProjectBoard();
 
   const [form] = Form.useForm();
   const userOptions = getOptions(users);
@@ -76,7 +78,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
       const { user, ...rest } = values;
       const updatedValues = {
         ...rest,
-        boardId: 1,
+        boardId: boardId as number,
         reporterId: 1,
         assigneeId: user,
         dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
@@ -99,7 +101,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
       const ticketId = ticketDbEntry.id;
       const updatedValues = {
         ...rest,
-        boardId: 1,
+        boardId: boardId,
         reporterId: 1,
         assigneeId: user,
         dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
