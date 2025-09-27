@@ -4,7 +4,7 @@ import { QueryObserverResult } from '@tanstack/react-query';
 
 interface ProjectMemberContextType {
   projectMembers: ProjectMember[] | undefined;
-  isLoading: boolean;
+  isLoadingProjectMember: boolean;
   error: Error | null;
   refreshProjectMember: () => Promise<QueryObserverResult<any, Error>>;
 }

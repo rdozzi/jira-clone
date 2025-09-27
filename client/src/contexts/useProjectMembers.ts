@@ -1,7 +1,7 @@
 import { ProjectMemberContext } from './ProjectMemberContext';
 import { useContext } from 'react';
 
-export function useProjectMember() {
+export function useProjectMembers() {
   const context = useContext(ProjectMemberContext);
 
   if (!context) {
