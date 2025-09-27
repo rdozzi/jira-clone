@@ -6,24 +6,22 @@ import { Modal, Form, Input, Radio, DatePicker, Select } from 'antd';
 
 import { Record } from './TicketListItemButton';
 
-import { useGetUsers } from '../features/users/useGetUsers';
 import { useCreateTickets } from '../features/tickets/useCreateTickets';
 import { useGetTicketById } from '../features/tickets/useGetTicketById';
 import { useUpdateTicket } from '../features/tickets/useUpdateTicket';
 import { useProjectBoard } from '../contexts/useProjectBoard';
+import { useGetUserSelf } from '../features/users/useGetUserSelf';
+import { useProjectMembers } from '../contexts/useProjectMembers';
+import { ProjectMember } from '../types/ProjectMember';
 import getUpdatedFields from '../utilities/getUpdatedFields';
 
-interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-}
-
-function getOptions(users: User[]): { value: number; label: string }[] {
+function getOptions(
+  projectMembers?: ProjectMember[]
+): { value: number; label: string }[] {
   return (
-    users?.map((user) => ({
-      value: user.id,
-      label: `${user.firstName} ${user.lastName}`,
+    projectMembers?.map((projectMember) => ({
+      value: projectMember.userId,
+      label: `${projectMember.firstName} ${projectMember.lastName}`,
     })) || []
   );
 }
@@ -37,14 +35,16 @@ export interface TicketModalProps {
 
 function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const { isLoading, users } = useGetUsers();
   const { createNewTicket, isCreating } = useCreateTickets();
   const { ticket: ticketDbEntry } = useGetTicketById(record?.id);
   const { updateTicket, isUpdating } = useUpdateTicket();
   const { boardId } = useProjectBoard();
+  const { userSelf, isLoadingUser, refreshUser } = useGetUserSelf();
+  const { isLoadingProjectMember, projectMembers, refreshProjectMember } =
+    useProjectMembers();
 
   const [form] = Form.useForm();
-  const userOptions = getOptions(users);
+  const userOptions = getOptions(projectMembers);
 
   function handleOk() {
     form.submit();
@@ -59,7 +59,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
     title: string;
     description: string;
     dueDate: Date;
-    user: number;
+    assignee: number;
     status: string;
     priority: string;
     type: string;
@@ -75,12 +75,12 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
 
   async function onFinishCreate(values: Value) {
     try {
-      const { user, ...rest } = values;
+      const { assignee, ...rest } = values;
       const updatedValues = {
         ...rest,
         boardId: boardId as number,
-        reporterId: 1,
-        assigneeId: user,
+        reporterId: userSelf.id,
+        assigneeId: assignee,
         dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
       };
       await createNewTicket(updatedValues);
@@ -97,13 +97,13 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
 
   async function onFinishEdit(values: Value) {
     try {
-      const { user, ...rest } = values;
+      const { assignee, ...rest } = values;
       const ticketId = ticketDbEntry.id;
       const updatedValues = {
         ...rest,
         boardId: boardId,
-        reporterId: 1,
-        assigneeId: user,
+        reporterId: userSelf.id,
+        assigneeId: assignee,
         dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
       };
       const updatedFields = getUpdatedFields(ticketDbEntry, updatedValues);
@@ -142,7 +142,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
         style={{ maxWidth: 600 }}
         onFinish={handleOnFinish}
         autoComplete='off'
-        disabled={isLoading}
+        disabled={isLoadingUser && isLoadingProjectMember}
         initialValues={
           mode === 'viewEdit'
             ? {
@@ -199,8 +199,8 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
         </Form.Item>
 
         <Form.Item
-          label='User'
-          name='user'
+          label='Assignee'
+          name='assignee'
           rules={[
             {
               required: true,
