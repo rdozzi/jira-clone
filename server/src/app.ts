@@ -43,7 +43,8 @@ initLogService();
 // Public routes
 app.use('/api', otpRoutes);
 app.use('/api/setup', routeRateLimiter, setupRoutes);
-app.use('/api/auth', routeRateLimiter, authRoutes);
+// app.use('/api/auth', routeRateLimiter, authRoutes);
+app.use('/api/auth', authRoutes);
 
 // Authentication middleware (for protected routes)
 app.use(authenticate);
