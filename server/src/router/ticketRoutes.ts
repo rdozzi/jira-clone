@@ -41,7 +41,7 @@ router.get(
   '/tickets/:ticketId',
   resolveProjectIdForTicketRoute(),
   checkProjectMembership(),
-  checkProjectRole(ProjectRole.ADMIN),
+  checkProjectRole(ProjectRole.USER),
   validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await getTicketById(req, res, prisma);
