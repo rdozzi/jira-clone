@@ -6,7 +6,7 @@ import {
   updateLabel,
   deleteLabel,
 } from '../controllers/labelController';
-import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
+import { authorizeOrganizationRole } from '../middleware/authAndLoadInfoMiddleware/authorizeOrganizationRole';
 import { OrganizationRole } from '@prisma/client';
 import { validateCreateLabel } from '../middleware/labelMiddleware/validateCreateLabel';
 import { validateUpdateLabel } from '../middleware/labelMiddleware/validateUpdateLabel';
@@ -18,7 +18,7 @@ const router = Router();
 // Get all Labels
 router.get(
   '/labels',
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await getAllLabels(req, res, prisma);
   }
@@ -27,7 +27,7 @@ router.get(
 // Create new Label
 router.post(
   '/labels',
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   validateCreateLabel,
   checkMaxUsageTotals(prisma),
   async (req: Request, res: Response): Promise<void> => {
@@ -38,7 +38,7 @@ router.post(
 // Update Label
 router.patch(
   '/labels/:labelId',
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   validateUpdateLabel,
   validateParams,
   async (req: Request, res: Response): Promise<void> => {
@@ -49,7 +49,7 @@ router.patch(
 // Delete Label
 router.delete(
   '/labels/:labelId',
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await deleteLabel(req, res, prisma);

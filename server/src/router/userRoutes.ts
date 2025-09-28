@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { OrganizationRole, ProjectRole } from '@prisma/client';
-import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
+import { authorizeOrganizationRole } from '../middleware/authAndLoadInfoMiddleware/authorizeOrganizationRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
 import { authorizeSelfOrAdminWithRoleCheck } from '../middleware/userMiddleware/authorizeSelfOrAdminWithRoleCheck';
@@ -28,7 +28,7 @@ const router = Router();
 // Get all users
 router.get(
   '/users/all',
-  authorizeGlobalRole(OrganizationRole.USER),
+  authorizeOrganizationRole(OrganizationRole.USER),
   async (req: Request, res: Response): Promise<void> => {
     await getAllUsers(req, res, prisma);
   }
@@ -37,7 +37,7 @@ router.get(
 // Get users by id or email
 router.get(
   `/users`,
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   validateQuery,
   async (req: Request, res: Response): Promise<void> => {
     await getUser(req, res, prisma);
@@ -47,7 +47,7 @@ router.get(
 // Get user self
 router.get(
   `/users/self`,
-  authorizeGlobalRole(OrganizationRole.GUEST),
+  authorizeOrganizationRole(OrganizationRole.GUEST),
   async (req: Request, res: Response): Promise<void> => {
     await getUserSelf(req, res, prisma);
   }
@@ -68,7 +68,7 @@ router.get(
 // Create user
 router.post(
   '/users',
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   validateBody(userCreateSchema),
   checkMaxUsageTotals(prisma),
   async (req: Request, res: Response): Promise<void> => {
@@ -79,7 +79,7 @@ router.post(
 // Delete user
 router.patch(
   '/users/:userId/soft-delete',
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await deleteUser(req, res, prisma);
