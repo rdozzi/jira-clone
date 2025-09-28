@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { OrganizationRole, ProjectRole } from '@prisma/client';
-import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
+import { authorizeOrganizationRole } from '../middleware/authAndLoadInfoMiddleware/authorizeOrganizationRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
 import {
@@ -29,7 +29,7 @@ const router = Router();
 // Get all Tickets
 router.get(
   '/tickets',
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   validateQuery,
   async (req: Request, res: Response): Promise<void> => {
     await getAllTickets(req, res, prisma);

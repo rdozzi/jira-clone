@@ -13,7 +13,7 @@ import {
 } from '../controllers/projectController';
 
 // Middleware
-import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
+import { authorizeOrganizationRole } from '../middleware/authAndLoadInfoMiddleware/authorizeOrganizationRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
 import { validateBody } from '../middleware/validation/validateBody';
@@ -29,7 +29,7 @@ const router = Router();
 // Get all projects
 router.get(
   '/projects',
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await getAllProjects(req, res, prisma);
   }
@@ -38,7 +38,7 @@ router.get(
 // Get projects by userId
 router.get(
   '/projects/my-projects',
-  authorizeGlobalRole(OrganizationRole.GUEST),
+  authorizeOrganizationRole(OrganizationRole.GUEST),
   async (req: Request, res: Response): Promise<void> => {
     await getProjectsByUserId(req, res, prisma);
   }
@@ -57,7 +57,7 @@ router.get(
 // Create project (Become a member of project)
 router.post(
   '/projects',
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   validateBody(projectCreateSchema),
   checkMaxUsageTotals(prisma),
   async (req: Request, res: Response): Promise<void> => {

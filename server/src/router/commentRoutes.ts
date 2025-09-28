@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { OrganizationRole, ProjectRole } from '@prisma/client';
-import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
+import { authorizeOrganizationRole } from '../middleware/authAndLoadInfoMiddleware/authorizeOrganizationRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
 import { checkCommentOwnership } from '../middleware/commentMiddleware/checkCommentOwnership';
@@ -24,7 +24,7 @@ const router = Router();
 // Get all comments
 router.get(
   '/comments',
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await getAllComments(req, res, prisma);
   }

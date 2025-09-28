@@ -2,7 +2,7 @@ import { Response, NextFunction, RequestHandler } from 'express';
 import { OrganizationRole } from '@prisma/client';
 import { hasRequiredOrganizationRole } from '../../lib/roles';
 
-export function authorizeGlobalRole(requiredRole: OrganizationRole) {
+export function authorizeOrganizationRole(requiredRole: OrganizationRole) {
   return ((req: Request, res: Response, next: NextFunction) => {
     const userRole = res.locals.userInfo.organizationRole;
 

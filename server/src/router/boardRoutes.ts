@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { OrganizationRole, ProjectRole } from '@prisma/client';
-import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
+import { authorizeOrganizationRole } from '../middleware/authAndLoadInfoMiddleware/authorizeOrganizationRole';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
 import { resolveProjectIdFromBoard } from '../middleware/boardMiddleware/resolveProjectIdFromBoard';
@@ -24,7 +24,7 @@ const router = Router();
 // Get all Boards
 router.get(
   '/boards',
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   validateQuery,
   async (req: Request, res: Response): Promise<void> => {
     await getAllBoards(req, res, prisma);
@@ -34,7 +34,7 @@ router.get(
 // Get board by Id
 // router.get(
 //   '/boards/:boardId',
-//   authorizeGlobalRole(GlobalRole.ADMIN),
+//   authorizeOrganizationRole(GlobalRole.ADMIN),
 //   async (req: Request, res: Response): Promise<void> => {
 //     await getBoardById(req, res, prisma);
 //   }

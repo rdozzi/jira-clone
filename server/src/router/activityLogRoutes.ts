@@ -5,7 +5,7 @@ import {
   getLogByTicketId,
   getLogByUserId,
 } from '../controllers/activityLogController';
-import { authorizeGlobalRole } from '../middleware/authAndLoadInfoMiddleware/authorizeGlobalRole';
+import { authorizeOrganizationRole } from '../middleware/authAndLoadInfoMiddleware/authorizeOrganizationRole';
 import { OrganizationRole, ProjectRole } from '@prisma/client';
 import { checkProjectMembership } from '../middleware/checkProjectMembership';
 import { checkProjectRole } from '../middleware/checkProjectRole';
@@ -17,7 +17,7 @@ const router = Router();
 // Get All logs
 router.get(
   '/activity-logs/all',
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   async (req: Request, res: Response): Promise<void> => {
     await getAllLogs(req, res, prisma);
   }
@@ -37,7 +37,7 @@ router.get(
 
 router.get(
   '/activity-logs/:userId/user',
-  authorizeGlobalRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.ADMIN),
   validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await getLogByUserId(req, res, prisma);
