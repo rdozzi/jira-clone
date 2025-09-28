@@ -34,7 +34,7 @@ function AppLayout() {
   return (
     <Layout>
       <Sider style={siderStyle}>
-        <div>{`Hello, ${userSelf.firstName}!`}</div>
+        <div>{`Hello, ${userSelf?.firstName}!`}</div>
         <div>
           <ThemeToggle />
         </div>
