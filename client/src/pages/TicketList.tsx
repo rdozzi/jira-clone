@@ -61,7 +61,7 @@ function TicketList() {
       render: (date) => dayjs(date).format('MM / DD / YYYY'),
     },
     {
-      title: 'User',
+      title: 'Assignee',
       dataIndex: 'assignee',
       sorter: {
         compare: (a, b) =>
