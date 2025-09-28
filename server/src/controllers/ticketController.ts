@@ -63,6 +63,7 @@ export async function getTicketById(
   try {
     const ticket = await prisma.ticket.findUnique({
       where: { id: ticketId, organizationId: organizationId },
+      include: { assignee: { select: { firstName: true, lastName: true } } },
     });
     if (!ticket) {
       res.status(404).json({ message: 'Ticket not found' });
