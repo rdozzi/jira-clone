@@ -5,6 +5,7 @@ import ThemeToggle from './ThemeToggle';
 import LogoutButton from './LogoutButton';
 import UserHomeButton from './UserHomeButton';
 import { useProjectBoard } from '../contexts/useProjectBoard';
+import { useGetUserSelf } from '../features/users/useGetUserSelf';
 
 const { Sider, Footer, Content } = Layout;
 
@@ -29,10 +30,11 @@ function AppLayout() {
     isBoardLoading,
     // boardError,
   } = useProjectBoard();
+  const { userSelf, isLoadingUser, refreshUser } = useGetUserSelf();
   return (
     <Layout>
       <Sider style={siderStyle}>
-        <div>Sider</div>
+        <div>{`Hello, ${userSelf.firstName}!`}</div>
         <div>
           <ThemeToggle />
         </div>
