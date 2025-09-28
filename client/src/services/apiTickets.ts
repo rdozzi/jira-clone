@@ -57,9 +57,9 @@ export async function getTicketsByBoardId(boardId: number) {
   }
 }
 
-export async function getTicketById(id: number) {
+export async function getTicketById(ticketId: number) {
   try {
-    const res = await fetch(`http://localhost:3000/api/tickets/${id}`, {
+    const res = await fetch(`http://localhost:3000/api/tickets/${ticketId}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -119,7 +119,7 @@ export async function updateTicket(ticketId: number, ticket: UpdatedTicket) {
   try {
     console.log('updateTicket Called');
     const res = await fetch(
-      `http://localhost:3000/api/tickets/updateTicket/${ticketId}`,
+      `http://localhost:3000/api/tickets/${ticketId}/update`,
       {
         method: 'PATCH',
         headers: {
