@@ -15,6 +15,8 @@ export function useUpdateTicket() {
           t.id === updatedTicket.id ? { ...t, ...updatedTicket } : t
         )
       );
+
+      queryClient.invalidateQueries({ queryKey: ['tickets'] });
     },
     onError: (error) => {
       console.error('Mutation Failed:', error);
