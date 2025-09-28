@@ -13,7 +13,7 @@ import { useProjectBoard } from '../contexts/useProjectBoard';
 import { useGetUserSelf } from '../features/users/useGetUserSelf';
 import { useProjectMembers } from '../contexts/useProjectMembers';
 import { ProjectMember } from '../types/ProjectMember';
-import getUpdatedFields from '../utilities/getUpdatedFields';
+import { getUpdatedFields } from '../utilities/getUpdatedFields';
 
 function getOptions(
   projectMembers?: ProjectMember[]
@@ -36,7 +36,7 @@ export interface TicketModalProps {
 function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { createNewTicket, isCreating } = useCreateTickets();
-  const { ticket: ticketDbEntry } = useGetTicketById(record?.id);
+  const { ticket } = useGetTicketById(record?.id);
   const { updateTicket, isUpdating } = useUpdateTicket();
   const { boardId } = useProjectBoard();
   const { userSelf, isLoadingUser, refreshUser } = useGetUserSelf();
@@ -83,7 +83,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
         assigneeId: assignee,
         dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
       };
-      await createNewTicket(updatedValues);
+      createNewTicket(updatedValues);
       setConfirmLoading(isCreating);
       console.log('Creating new Ticket: ', updatedValues);
       form.resetFields();
@@ -98,20 +98,23 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
   async function onFinishEdit(values: Value) {
     try {
       const { assignee, ...rest } = values;
-      const ticketId = ticketDbEntry.id;
+      const ticketId = ticket?.data?.id;
       const updatedValues = {
         ...rest,
-        boardId: boardId,
+        boardId: boardId as number,
         reporterId: userSelf.id,
         assigneeId: assignee,
         dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
       };
-      const updatedFields = getUpdatedFields(ticketDbEntry, updatedValues);
-      await updateTicket({ ticketId, values: updatedFields });
+      const updatedFields = getUpdatedFields(ticket?.data, updatedValues);
+      updateTicket({ ticketId, values: updatedFields });
       setConfirmLoading(isUpdating);
+      form.resetFields();
       closeModal();
     } catch (error) {
       console.error('Error updating ticket: ', error);
+      form.resetFields();
+      closeModal();
     } finally {
       setConfirmLoading(false);
     }
@@ -149,7 +152,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
                 title: record?.title,
                 description: record?.description,
                 dueDate: dayjs(record?.dueDate),
-                user: record?.assigneeId,
+                assignee: record?.assigneeId,
                 status: record?.status,
                 priority: record?.priority,
                 type: record?.type,
