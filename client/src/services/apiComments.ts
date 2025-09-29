@@ -33,7 +33,7 @@ export async function createComment(commentObject: object) {
       body: JSON.stringify(commentObject),
     });
     if (!res.ok) {
-      throw new Error('Failed to create ticket');
+      throw new Error('Failed to create comment');
     }
     const { data } = await res.json();
     return data;
