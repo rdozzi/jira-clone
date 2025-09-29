@@ -30,7 +30,7 @@ function AppLayout() {
     isBoardLoading,
     // boardError,
   } = useProjectBoard();
-  const { userSelf, isLoadingUser, refreshUser } = useGetUserSelf();
+  const { userSelf } = useGetUserSelf();
   return (
     <Layout>
       <Sider style={siderStyle}>
