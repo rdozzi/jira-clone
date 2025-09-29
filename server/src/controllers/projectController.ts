@@ -38,12 +38,15 @@ export async function getProjectsByUserId(
   prisma: PrismaClient
 ) {
   try {
-    const userId = res.locals.userInfo.id;
+    const userProjects = res.locals.userProjects;
     const organizationId = res.locals.userInfo.organizationId;
 
-    const projects = await prisma.projectMember.findMany({
-      where: { userId: userId, organizationId: organizationId },
-      select: { project: true, projectRole: true },
+    const projectIds: number[] = userProjects.map(
+      (p: { projectId: number; projectRole: string }) => p.projectId
+    );
+
+    const projects = await prisma.project.findMany({
+      where: { organizationId: organizationId, id: { in: projectIds } },
     });
 
     res
