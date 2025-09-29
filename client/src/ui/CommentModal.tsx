@@ -7,8 +7,6 @@ import { useCreateComment } from '../features/comments/useCreateComment';
 import { useDeleteComment } from '../features/comments/useDeleteComment';
 import { useUpdateComment } from '../features/comments/useUpdateComment';
 
-import { randomNumberGen } from '../utilities/randomNumberGen';
-
 import CreateCommentForm from './CreateCommentForm';
 import CommentRowWithEditor from './CommentRowWithEditor';
 
@@ -60,7 +58,7 @@ function CommentModal({
       try {
         const editPayload = { commentId: commentId, content: trimmedContent };
         console.log(editPayload);
-        await editComment(editPayload);
+        editComment(editPayload);
       } catch (error) {
         console.error('Error updating comment: ', error);
       } finally {
@@ -78,10 +76,9 @@ function CommentModal({
         const commentPayload: CommentPayload = {
           ...values,
           ticketId: recordId,
-          authorId: randomNumberGen(1, 2),
         };
         console.log('Comment Payload:', commentPayload);
-        await createNewComment(commentPayload);
+        createNewComment(commentPayload);
       } catch (error) {
         console.error('Error creating comment: ', error);
       } finally {
@@ -95,7 +92,7 @@ function CommentModal({
     async function handleDeleteComment(commentId: number) {
       try {
         console.log('Deleting comment: ', commentId);
-        await deleteComment(commentId);
+        deleteComment(commentId);
       } catch (error) {
         console.error('Error deleting comment: ', error);
       }
@@ -108,7 +105,6 @@ function CommentModal({
   interface CommentPayload {
     content: string;
     ticketId: number;
-    authorId: number;
   }
 
   return (
