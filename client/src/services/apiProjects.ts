@@ -21,6 +21,25 @@ export async function getProjects() {
   }
 }
 
+export async function getProjectsByUserId() {
+  try {
+    const res = await fetch(`http://localhost:3000/api/projects/my-projects`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!res.ok) {
+      throw new Error('Failed to fetch projects');
+    }
+    const { data } = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(err);
+  }
+}
+
 export async function createProject(projectObject: object) {
   try {
     const res = await fetch('http://localhost:3000/api/projects', {
