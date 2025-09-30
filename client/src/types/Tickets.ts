@@ -19,7 +19,7 @@ export interface Tickets {
 }
 
 export interface CalendarTickets {
-  assignee: { first_name: string; last_name: string };
+  assignee: { firstName: string; lastName: string };
   assigneeId: number;
   boardId: number;
   createdAt: Date;
