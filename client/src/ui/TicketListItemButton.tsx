@@ -1,5 +1,6 @@
 import { useState, memo } from 'react';
 import dayjs from 'dayjs';
+import { Tickets } from '../types/Tickets';
 
 import { Dropdown, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
@@ -13,7 +14,7 @@ import TicketModal from './TicketModal';
 import CommentModal from './CommentModal';
 
 export interface Record {
-  assignee: { first_name: string; last_name: string };
+  assignee: { firstName: string; lastName: string };
   assigneeId: number;
   boardId: number;
   createdAt: Date;
@@ -66,7 +67,7 @@ const dropdownItems = [
 const TicketListItemButton = memo(function TicketListItemButton({
   record,
 }: {
-  record: Record;
+  record: Tickets;
 }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
