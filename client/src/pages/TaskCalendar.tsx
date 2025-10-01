@@ -1,11 +1,9 @@
-import { useState, useEffect, memo, useMemo, useCallback } from 'react';
+import { useState, memo, useMemo, useCallback } from 'react';
 import dayjs from 'dayjs';
 
 import type { Dayjs } from 'dayjs';
 import type { CalendarProps, SegmentedProps } from 'antd';
 import { Record } from '../ui/TicketListItemButton';
-import { CalendarTickets } from '../types/Tickets';
-
 import { Calendar, Button, DatePicker, Segmented } from 'antd';
 import {
   LeftCircleOutlined,
@@ -24,7 +22,6 @@ type CellRenderRecord = Record;
 type ViewMode = 'month' | 'year';
 
 const TaskCalender = memo(function TaskCalender() {
-  const [ticketState, setTicketState] = useState<CalendarTickets[]>([]);
   const [date, setDate] = useState(dayjs());
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const { isLoading, tickets = [] } = useTickets(); // Add error later
@@ -85,14 +82,12 @@ const TaskCalender = memo(function TaskCalender() {
     [setViewMode]
   );
 
-  useEffect(() => {
-    if (tickets) {
-      const formattedTickets = tickets.map((ticket: CellRenderRecord) => ({
-        ...ticket,
-        dueDate: dayjs(ticket.dueDate).format('YYYY-MM-DD'),
-      }));
-      setTicketState(formattedTickets);
-    }
+  const formattedTickets = useMemo(() => {
+    if (!tickets) return [];
+    return tickets.map((ticket: CellRenderRecord) => ({
+      ...ticket,
+      dueDate: dayjs(ticket.dueDate).format('YYYY-MM-DD'),
+    }));
   }, [tickets]);
 
   const segmentOptions: SegmentedProps<ViewMode>['options'] = useMemo(
@@ -144,14 +139,14 @@ const TaskCalender = memo(function TaskCalender() {
   function cellRender(date: Dayjs, info: CellRenderInfoType) {
     if (info?.type === 'date' && viewMode === 'month') {
       const formattedDate = dayjs(date).format('YYYY-MM-DD');
-      const ticketsForDate = ticketState.filter(
+      const ticketsForDate = formattedTickets.filter(
         (ticket: CellRenderRecord) =>
           ticket.dueDate.toString() === formattedDate
       );
       return <TaskCalendarTicketList tickets={ticketsForDate} />;
     } else if (info?.type === 'month' && viewMode === 'year') {
       const formattedDate = dayjs(date).format('YYYY-MM');
-      const groupedTickets = ticketState.reduce<{
+      const groupedTickets = formattedTickets.reduce<{
         [key: string]: CellRenderRecord[];
       }>((acc, ticket: CellRenderRecord) => {
         const monthKey = dayjs(ticket.dueDate).format('YYYY-MM');
