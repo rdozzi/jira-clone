@@ -20,6 +20,8 @@ import AppLayout from './ui/AppLayout';
 import TicketList from './pages/TicketList';
 import TaskCalendar from './pages/TaskCalendar';
 import TaskBoard from './pages/TaskBoard';
+import ProjectOverview from './ui/ProjectOverview';
+import ProjectMembers from './ui/ProjectMembers';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -59,6 +61,7 @@ function App() {
                               path='/user-homepage'
                               element={<UserHome />}
                             />
+                            <Route path='/projects/'></Route>
 
                             {/* Tickets Section */}
                             <Route path='/tickets'>
@@ -72,6 +75,18 @@ function App() {
                                 element={<TaskCalendar />}
                               />
                             </Route>
+                            <Route
+                              path='/projects/:projectId/overview'
+                              element={<ProjectOverview />}
+                            />
+                            <Route
+                              path='/projects/:projectId/members'
+                              element={<ProjectMembers />}
+                            />
+                            <Route
+                              path='/projects/:projectId/members'
+                              element={<ProjectMembers />}
+                            />
                           </Route>
 
                           {/* 404 Not Found */}

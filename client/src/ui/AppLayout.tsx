@@ -4,6 +4,7 @@ import HeaderComp from './HeaderComp';
 import ThemeToggle from './ThemeToggle';
 import LogoutButton from './LogoutButton';
 import UserHomeButton from './UserHomeButton';
+import ProjectInfoLink from './ProjectInfoLink';
 import { useProjectBoard } from '../contexts/useProjectBoard';
 import { useGetUserSelf } from '../features/users/useGetUserSelf';
 
@@ -84,6 +85,9 @@ function AppLayout() {
               );
             })}
           </Select>
+        </div>
+        <div>
+          <ProjectInfoLink projectId={project?.id} />
         </div>
       </Sider>
       <Layout>
