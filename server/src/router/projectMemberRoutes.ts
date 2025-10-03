@@ -33,7 +33,7 @@ router.post(
   '/projectMembers/:projectId/members',
   resolveProjectIdFromProject(),
   checkProjectMembership(),
-  checkProjectRole(ProjectRole.VIEWER),
+  checkProjectRole(ProjectRole.ADMIN),
   validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await addProjectMember(req, res, prisma);
