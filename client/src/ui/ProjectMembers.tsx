@@ -1,5 +1,14 @@
+import ProjectInfoNav from './ProjectInfoNav';
+
 function ProjectMembers() {
-  return null;
+  return (
+    <>
+      <div>Project Members!</div>
+      <div>
+        <ProjectInfoNav />
+      </div>
+    </>
+  );
 }
 
 export default ProjectMembers;
