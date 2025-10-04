@@ -3,19 +3,27 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGetProjects } from '../features/projects/useGetProjects';
 import { Projects } from '../types/Projects';
+import ProjectInfoNav from './ProjectInfoNav';
 
 function ProjectOverview() {
   const { projectId } = useParams();
-  const [selectedProject, setSelectedProject] = useState<Projects | null>();
   const {
     projects,
     isLoading: isProjectLoading,
     // error: projectError,
   } = useGetProjects();
 
-  const typedProjects = (projects as Projects[]) || null;
   const projectIdNumber = Number(projectId);
-  console.log(typedProjects);
+
+  const currentProject: Projects = projects?.find(
+    (p: Projects) => p.id === projectIdNumber
+  );
+
+  const [selectedProject, setSelectedProject] = useState<Projects | null>(
+    currentProject
+  );
+
+  const typedProjects = (projects as Projects[]) || null;
 
   return (
     <>
@@ -42,6 +50,7 @@ function ProjectOverview() {
       <div>{selectedProject?.name}</div>
       <div>{selectedProject?.description}</div>
       <div>{selectedProject?.status}</div>
+      <ProjectInfoNav />
     </>
   );
 }
