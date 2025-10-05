@@ -1,3 +1,4 @@
+import ProjectInfoSelector from './ProjectInfoSelector';
 import ProjectInfoNav from './ProjectInfoNav';
 
 function ProjectMembers() {
@@ -5,6 +6,7 @@ function ProjectMembers() {
     <>
       <div>Project Members!</div>
       <div>
+        <ProjectInfoSelector />
         <ProjectInfoNav />
       </div>
     </>

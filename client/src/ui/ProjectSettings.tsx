@@ -1,3 +1,4 @@
+import ProjectInfoSelector from './ProjectInfoSelector';
 import ProjectInfoNav from './ProjectInfoNav';
 
 function ProjectSettings() {
@@ -5,6 +6,7 @@ function ProjectSettings() {
     <>
       <div>Project Settings!</div>
       <div>
+        <ProjectInfoSelector />
         <ProjectInfoNav />
       </div>
     </>
