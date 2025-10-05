@@ -3,6 +3,8 @@ import { useParams, Outlet } from 'react-router-dom';
 import { useGetProjects } from '../features/projects/useGetProjects';
 import { Projects } from '../types/Projects';
 import { ProjectInfoContext } from './ProjectInfoContext';
+import ProjectInfoSelector from '../ui/ProjectInfoSelector';
+import ProjectInfoNav from '../ui/ProjectInfoNav';
 
 export function ProjectInfoProvider() {
   const { projectId } = useParams();
@@ -34,7 +36,9 @@ export function ProjectInfoProvider() {
         projectIdNumber,
       }}
     >
+      <ProjectInfoSelector />
       <Outlet />
+      <ProjectInfoNav />
     </ProjectInfoContext.Provider>
   );
 }

@@ -1,5 +1,3 @@
-import ProjectInfoNav from './ProjectInfoNav';
-import ProjectInfoSelector from './ProjectInfoSelector';
 import { useProjectInfo } from '../contexts/useProjectInfo';
 
 export function ProjectOverview() {
@@ -8,11 +6,9 @@ export function ProjectOverview() {
 
   return (
     <>
-      <ProjectInfoSelector />
       <div>{selectedProject?.name}</div>
       <div>{selectedProject?.description}</div>
       <div>{selectedProject?.status}</div>
-      <ProjectInfoNav />
     </>
   );
 }
