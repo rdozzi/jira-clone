@@ -14,23 +14,21 @@ function ProjectBoards() {
 
   if (isBoardLoading)
     return (
-      <p>
+      <div>
         <Spin />
-      </p>
+      </div>
     );
-  if (error) return <p>Error Loading Projects!</p>;
+  if (error) return <div>Error Loading Projects!</div>;
 
   return (
     <>
       <div>ProjectBoards Page!</div>
       <div>
         {boards?.map((board: Boards) => (
-          <>
-            <div key={board.id}>
-              <div>Name: {board.name}</div>
-              <div>Description: {board.description}</div>
-            </div>
-          </>
+          <div key={board.id}>
+            <div>Name: {board.name}</div>
+            <div>Description: {board.description}</div>
+          </div>
         ))}
       </div>
     </>
