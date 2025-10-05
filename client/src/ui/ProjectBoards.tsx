@@ -6,27 +6,33 @@ import { Boards } from '../types/Boards';
 
 function ProjectBoards() {
   const { projectIdNumber } = useProjectInfo();
-  const { isLoading: isBoardLoading, boards } =
-    useGetBoardsByProjectId(projectIdNumber);
+  const {
+    isLoading: isBoardLoading,
+    boards,
+    error,
+  } = useGetBoardsByProjectId(projectIdNumber);
 
-  console.log(projectIdNumber);
-  console.log(boards);
+  if (isBoardLoading)
+    return (
+      <p>
+        <Spin />
+      </p>
+    );
+  if (error) return <p>Error Loading Projects!</p>;
 
   return (
     <>
       <div>ProjectBoards Page!</div>
-      {isBoardLoading ? (
-        <Spin />
-      ) : (
-        boards?.map((board: Boards) => (
+      <div>
+        {boards?.map((board: Boards) => (
           <>
             <div key={board.id}>
               <div>Name: {board.name}</div>
               <div>Description: {board.description}</div>
             </div>
           </>
-        ))
-      )}
+        ))}
+      </div>
     </>
   );
 }
