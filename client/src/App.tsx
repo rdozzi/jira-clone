@@ -10,6 +10,7 @@ import { AuthProviderContext } from './contexts/AuthProviderContext';
 import { ProjectBoardProviderContext } from './contexts/ProjectBoardProviderContext';
 import { UserProviderContext } from './contexts/UserProvider';
 import { ProjectMemberProvider } from './contexts/ProjectMemberProvider';
+import { ProjectInfoProvider } from './contexts/ProjectInfoProvider';
 
 import PublicHomepage from './pages/PublicHomepage';
 import LoginPage from './pages/LoginPage';
@@ -64,7 +65,6 @@ function App() {
                               path='/user-homepage'
                               element={<UserHome />}
                             />
-                            <Route path='/projects/'></Route>
 
                             {/* Tickets Section */}
                             <Route path='/tickets'>
@@ -78,26 +78,32 @@ function App() {
                                 element={<TaskCalendar />}
                               />
                             </Route>
+
                             <Route
-                              path='/projects/:projectId/overview'
-                              element={<ProjectOverview />}
-                            />
-                            <Route
-                              path='/projects/:projectId/boards'
-                              element={<ProjectBoards />}
-                            />
-                            <Route
-                              path='/projects/:projectId/members'
-                              element={<ProjectMembers />}
-                            />
-                            <Route
-                              path='/projects/:projectId/activityLogs'
-                              element={<ProjectActivityLogs />}
-                            />
-                            <Route
-                              path='/projects/:projectId/settings'
-                              element={<ProjectSettings />}
-                            />
+                              path='/projects/:projectId/*'
+                              element={<ProjectInfoProvider />}
+                            >
+                              <Route
+                                path='overview'
+                                element={<ProjectOverview />}
+                              />
+                              <Route
+                                path='boards'
+                                element={<ProjectBoards />}
+                              />
+                              <Route
+                                path='members'
+                                element={<ProjectMembers />}
+                              />
+                              <Route
+                                path='activityLogs'
+                                element={<ProjectActivityLogs />}
+                              />
+                              <Route
+                                path='settings'
+                                element={<ProjectSettings />}
+                              />
+                            </Route>
                           </Route>
 
                           {/* 404 Not Found */}
