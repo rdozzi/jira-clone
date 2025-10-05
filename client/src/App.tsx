@@ -23,9 +23,7 @@ import TaskCalendar from './pages/TaskCalendar';
 import TaskBoard from './pages/TaskBoard';
 import ProjectOverview from './ui/ProjectOverview';
 import ProjectMembers from './ui/ProjectMembers';
-import ProjectSettings from './ui/ProjectSettings';
 import ProjectBoards from './ui/ProjectBoards';
-import ProjectActivityLogs from './ui/ProjectActivityLogs';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -94,14 +92,6 @@ function App() {
                               <Route
                                 path='members'
                                 element={<ProjectMembers />}
-                              />
-                              <Route
-                                path='activityLogs'
-                                element={<ProjectActivityLogs />}
-                              />
-                              <Route
-                                path='settings'
-                                element={<ProjectSettings />}
                               />
                             </Route>
                           </Route>

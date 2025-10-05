@@ -13,16 +13,6 @@ function ProjectInfoNav() {
       <div>
         <NavLink to={`/projects/${projectId}/members`}>Project Members</NavLink>
       </div>
-      <div>
-        <NavLink to={`/projects/${projectId}/activityLogs`}>
-          Project ActivityLogs
-        </NavLink>
-      </div>
-      <div>
-        <NavLink to={`/projects/${projectId}/settings`}>
-          Project Settings
-        </NavLink>
-      </div>
     </>
   );
 }
