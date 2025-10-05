@@ -1,33 +1,27 @@
-import { useProjectInfo } from '../contexts/useProjectInfo';
-import { useGetUsersByProjectId } from '../features/users/useGetUsersByProjectId';
+import { useProjectMembers } from '../contexts/useProjectMembers';
 import { Spin } from 'antd';
-import { Users } from '../types/Users';
 
 function ProjectMembers() {
-  const { projectIdNumber } = useProjectInfo();
-  const { isLoadingUsers, projectUsers, error } =
-    useGetUsersByProjectId(projectIdNumber);
+  const { projectMembers, isLoadingProjectMember, error } = useProjectMembers();
 
-  if (isLoadingUsers)
+  if (isLoadingProjectMember)
     return (
-      <p>
+      <div>
         <Spin />
-      </p>
+      </div>
     );
-  if (error) return <p>Error Loading Projects!</p>;
+  if (error) return <div>Error Loading Projects!</div>;
 
   return (
     <>
       <div>Project Members!</div>
       <div>
-        {projectUsers?.map((projectUser: Users) => (
-          <>
-            <div key={projectUser.id}>
-              <div>
-                Name: {projectUser.firstName} {projectUser.lastName}
-              </div>
+        {projectMembers?.map((projectMember) => (
+          <div key={projectMember.userId}>
+            <div>
+              Name: {projectMember.firstName} {projectMember.lastName}
             </div>
-          </>
+          </div>
         ))}
       </div>
     </>
