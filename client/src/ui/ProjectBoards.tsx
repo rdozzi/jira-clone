@@ -1,8 +1,22 @@
-// import { useState, useEffect } from 'react';
 import { useProjectInfo } from '../contexts/useProjectInfo';
 import { useGetBoardsByProjectId } from '../features/boards/useGetBoardsByProjectId';
-import { Spin } from 'antd';
+import { useModal } from '../contexts/useModal';
+import ProjectBoardsModal from './ProjectBoardsModal';
+
+import { Spin, Table, Button } from 'antd';
+import type { TableColumnsType, TableProps } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+
+import BoardListItemButton from './BoardListItemButton';
+
 import { Boards } from '../types/Boards';
+
+const onChange: TableProps<Boards>['onChange'] = (
+  pagination,
+  filters,
+  sorter,
+  extra
+) => console.log('params', pagination, filters, sorter, extra);
 
 function ProjectBoards() {
   const { projectIdNumber } = useProjectInfo();
@@ -11,6 +25,7 @@ function ProjectBoards() {
     boards,
     error,
   } = useGetBoardsByProjectId(projectIdNumber);
+  const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
   if (isBoardLoading)
     return (
@@ -20,17 +35,52 @@ function ProjectBoards() {
     );
   if (error) return <div>Error Loading Projects!</div>;
 
+  const columns: TableColumnsType<Boards> = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      sorter: (a, b) => a.description.localeCompare(b.description),
+    },
+    {
+      title: '',
+      key: 'action',
+      align: 'center',
+      render: (record) => <BoardListItemButton record={record} />,
+    },
+  ];
+
+  function handleCreate() {
+    openModal('create', {});
+  }
+
   return (
     <>
-      <div>ProjectBoards Page!</div>
+      <Table<Boards>
+        columns={columns}
+        dataSource={boards}
+        rowKey='id'
+        onChange={onChange}
+        loading={isBoardLoading}
+        pagination={false}
+      />
       <div>
-        {boards?.map((board: Boards) => (
-          <div key={board.id}>
-            <div>Name: {board.name}</div>
-            <div>Description: {board.description}</div>
-          </div>
-        ))}
+        <Button onClick={handleCreate}>
+          <PlusOutlined /> Create
+        </Button>
       </div>
+      {mode === 'create' && (
+        <ProjectBoardsModal
+          isOpen={isOpen}
+          closeModal={closeModal}
+          mode={mode}
+          {...modalProps}
+        />
+      )}
     </>
   );
 }
