@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createBoard } from '../../services/apiBoards';
+import { createBoard as apiCreateBoard } from '../../services/apiBoards';
 
-export function useCreateTickets() {
+export function useCreateBoard() {
   const queryClient = useQueryClient();
-  const { mutate: createNewBoard, status } = useMutation({
-    mutationFn: createBoard,
+  const { mutate: createBoard, status } = useMutation({
+    mutationFn: apiCreateBoard,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['boards'] });
     },
@@ -12,5 +12,5 @@ export function useCreateTickets() {
 
   const isCreatingBoard = status === 'pending';
 
-  return { createNewBoard, isCreatingBoard };
+  return { createBoard, isCreatingBoard };
 }

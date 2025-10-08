@@ -2,6 +2,8 @@ import { memo } from 'react';
 import { Boards } from '../types/Boards';
 import { useDropdown } from '../contexts/DropdownContext';
 import { useModal } from '../contexts/useModal';
+import { useCreateBoard } from '../features/boards/useCreateBoard';
+import { useDeleteBoard } from '../features/boards/useDeleteBoard';
 import ProjectBoardsModal from './ProjectBoardsModal';
 
 import { Dropdown, Button } from 'antd';
@@ -33,6 +35,8 @@ const BoardListItemButton = memo(function BoardListItemButton({
 }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
+  const { createBoard, isCreatingBoard } = useCreateBoard();
+  const { deleteBoard, isDeletingBoard } = useDeleteBoard();
 
   const isDropdownOpen = activeDropdown === record.id;
 
@@ -41,14 +45,10 @@ const BoardListItemButton = memo(function BoardListItemButton({
   }
 
   function handleMenuClick(e: { key: string }) {
-    const duplicateBoard: Boards = {
-      id: record.id,
+    const partialBoard: Partial<Boards> = {
       name: record.name,
       projectId: record.projectId,
       description: record.description,
-      organizationId: record.organizationId,
-      createdAt: record.createdAt,
-      updatedAt: record.updatedAt,
     };
     switch (e.key) {
       case 'view_edit':
@@ -61,7 +61,7 @@ const BoardListItemButton = memo(function BoardListItemButton({
           console.error('Invalid record for duplication', record);
           break;
         }
-        // createNewBoard(duplicateBoard);
+        createBoard(partialBoard);
         console.log('Duplicate board created:', record);
         break;
 
@@ -70,7 +70,7 @@ const BoardListItemButton = memo(function BoardListItemButton({
         break;
 
       case 'delete':
-        // deleteBoard(record.id);
+        deleteBoard(record.id);
         console.log('Delete board:', record);
         break;
 
@@ -86,7 +86,7 @@ const BoardListItemButton = memo(function BoardListItemButton({
         menu={{ items: dropdownItems, onClick: handleMenuClick }}
         open={isDropdownOpen}
         trigger={['click']}
-        // disabled={isDeleting || isCreating}
+        disabled={isDeletingBoard || isCreatingBoard}
         onOpenChange={(open) => {
           if (!open) closeDropdown();
         }}
