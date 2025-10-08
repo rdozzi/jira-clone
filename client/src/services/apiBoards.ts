@@ -54,11 +54,38 @@ export async function createBoard(boardObject: object) {
       body: JSON.stringify(boardObject),
     });
     if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Error:', res.status, res.statusText, errorText);
+      throw new Error('Failed to create board');
+    }
+    const { data } = await res.json();
+    return data;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error(`[Board DELETE] ${err.message}`);
+    } else {
+      console.error('[Board DELETE] Unknown error:', err);
+    }
+  }
+}
+
+export async function deleteBoard(boardId: number) {
+  try {
+    const res = await fetch(`http://localhost:3000/api//boards/${boardId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Error:', res.status, res.statusText, errorText);
       throw new Error('Failed to create board');
     }
     const { data } = await res.json();
     return data;
   } catch (err: any | unknown) {
-    console.error(err);
+    console.error(`Error ${err.message}`);
   }
 }
