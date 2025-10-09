@@ -22,6 +22,27 @@ export async function getBoards() {
   }
 }
 
+export async function getBoardById(boardId: number) {
+  try {
+    const res = await fetch(`http://localhost:3000/api/boards/${boardId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Error:', res.status, res.statusText, errorText);
+      throw new Error('Failed to get board');
+    }
+    const data = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(err);
+  }
+}
+
 export async function getBoardsByProjectId(projectId: number) {
   try {
     const res = await fetch(
