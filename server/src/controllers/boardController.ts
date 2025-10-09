@@ -55,26 +55,25 @@ export async function getAllBoards(
 }
 
 // Get board by Id
-// This function is deprecated. This doesn't really serve a purpose for UI functions.
-// export async function getBoardById(
-//   req: Request,
-//   res: Response,
-//   prisma: PrismaClient
-// ) {
-//   const { boardId } = req.params;
-//   const convertedBoardId = parseInt(boardId, 10);
-//   try {
-//     const board = await prisma.board.findUnique({
-//       where: { id: convertedBoardId },
-//     });
-//     res.status(200).json(board);
-//     return;
-//   } catch (error) {
-//     console.error('Error fetching board: ', error);
-//     res.status(500).json({ error: 'Failed to fetch board' });
-//     return;
-//   }
-// }
+export async function getBoardById(
+  req: Request,
+  res: Response,
+  prisma: PrismaClient
+) {
+  const { boardId } = req.params;
+  const convertedBoardId = parseInt(boardId, 10);
+  try {
+    const board = await prisma.board.findUnique({
+      where: { id: convertedBoardId },
+    });
+    res.status(200).json(board);
+    return;
+  } catch (error) {
+    console.error('Error fetching board: ', error);
+    res.status(500).json({ error: 'Failed to fetch board' });
+    return;
+  }
+}
 
 // Get boards by Project Id
 export async function getBoardsByProjectId(
