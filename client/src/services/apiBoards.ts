@@ -1,4 +1,5 @@
 import { getAuthToken } from '../lib/getAuthToken';
+import { Boards } from '../types/Boards';
 
 const token = getAuthToken();
 
@@ -60,12 +61,8 @@ export async function createBoard(boardObject: object) {
     }
     const { data } = await res.json();
     return data;
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      console.error(`[Board DELETE] ${err.message}`);
-    } else {
-      console.error('[Board DELETE] Unknown error:', err);
-    }
+  } catch (err: any | unknown) {
+    console.error(`Error ${err.message}`);
   }
 }
 
@@ -81,11 +78,33 @@ export async function deleteBoard(boardId: number) {
     if (!res.ok) {
       const errorText = await res.text();
       console.error('Error:', res.status, res.statusText, errorText);
-      throw new Error('Failed to create board');
+      throw new Error('Failed to delete board');
     }
     const { data } = await res.json();
     return data;
   } catch (err: any | unknown) {
     console.error(`Error ${err.message}`);
+  }
+}
+
+export async function updateBoard(boardId: number, board: Partial<Boards>) {
+  try {
+    const res = await fetch(`http://localhost:3000/api/boards/${boardId}`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(board),
+    });
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Error:', res.status, res.statusText, errorText);
+      throw new Error('Failed to update board');
+    }
+    const { data } = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(err);
   }
 }
