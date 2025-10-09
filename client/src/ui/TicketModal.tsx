@@ -39,9 +39,8 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
   const { ticket } = useGetTicketById(record?.id);
   const { updateTicket, isUpdating } = useUpdateTicket();
   const { boardId } = useProjectBoard();
-  const { userSelf, isLoadingUser, refreshUser } = useGetUserSelf();
-  const { isLoadingProjectMember, projectMembers, refreshProjectMember } =
-    useProjectMembers();
+  const { userSelf, isLoadingUser } = useGetUserSelf();
+  const { isLoadingProjectMember, projectMembers } = useProjectMembers();
 
   const [form] = Form.useForm();
   const userOptions = getOptions(projectMembers);
