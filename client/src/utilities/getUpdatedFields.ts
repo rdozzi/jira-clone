@@ -21,3 +21,15 @@ export function getUpdatedFields(ticketDbEntry: Tickets, updatedValues: any) {
   }
   return updatedFields;
 }
+
+export function getUpdatedBoardFields(originalBoard: any, values: any) {
+  const updatedFields: any = {};
+  for (const key of Object.keys(values)) {
+    const original = originalBoard[key];
+    const updated = values[key];
+    if (original !== updated) {
+      updatedFields[key] = updated;
+    }
+  }
+  return updatedFields;
+}
