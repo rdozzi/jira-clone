@@ -22,8 +22,10 @@ const dropdownItems = [
 
 const ProjectListItemButton = memo(function ProjectListItemButton({
   record,
+  projectId,
 }: {
   record: ProjectMember;
+  projectId: number;
 }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
@@ -45,7 +47,7 @@ const ProjectListItemButton = memo(function ProjectListItemButton({
 
       case 'removeMember':
         removeProjectMember({
-          projectId: record.projectId,
+          projectId: projectId,
           userId: record.userId,
         });
         console.log('Remove project member:', record);
