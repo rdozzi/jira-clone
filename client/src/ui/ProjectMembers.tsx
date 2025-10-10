@@ -47,7 +47,9 @@ function ProjectMembers() {
       title: '',
       key: 'action',
       align: 'center',
-      render: (record) => <ProjectListItemButton record={record} />,
+      render: (record) => (
+        <ProjectListItemButton record={record} projectId={projectIdNumber} />
+      ),
     },
   ];
 
@@ -67,7 +69,7 @@ function ProjectMembers() {
       />
       <div>
         <Button onClick={handleCreate}>
-          <PlusOutlined /> Create
+          <PlusOutlined /> Add
         </Button>
       </div>
       {mode === 'create' && (
