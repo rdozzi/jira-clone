@@ -8,7 +8,7 @@ export function useGetProjectMembers(projectId: number | null) {
     error,
     refetch: refreshProjectMember,
   } = useQuery({
-    queryKey: ['projectMember'],
+    queryKey: ['projectMembers'],
     queryFn: () => apiGetProjectMembers(projectId as number),
     enabled: projectId !== null,
     staleTime: 1000 * 60 * 5,
