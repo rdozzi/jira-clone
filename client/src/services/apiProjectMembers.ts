@@ -1,5 +1,10 @@
 import { getAuthToken } from '../lib/getAuthToken';
 
+interface MemberInfo {
+  userId: number;
+  projectRole: string;
+}
+
 const token = getAuthToken();
 
 export async function getProjectMembers(projectId: number) {
@@ -16,6 +21,84 @@ export async function getProjectMembers(projectId: number) {
     );
     if (!res.ok) {
       throw new Error('Failed to fetch project members');
+    }
+    const { data } = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(err);
+  }
+}
+
+export async function addProjectMember(
+  projectId: number,
+  memberInfo: MemberInfo
+) {
+  try {
+    const res = await fetch(
+      `http://localhost:3000/api/projectMembers/${projectId}/members`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(memberInfo),
+      }
+    );
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Error:', res.status, res.statusText, errorText);
+      throw new Error('Failed to update board');
+    }
+    const { data } = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(err);
+  }
+}
+
+export async function removeProjectMember(projectId: number, userId: number) {
+  try {
+    const res = await fetch(
+      `http://localhost:3000/api/projectMembers/${projectId}/members/${userId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    if (!res.ok) {
+      throw new Error('Failed to delete ticket');
+    }
+    const data = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(err);
+  }
+}
+
+export async function updateProjectMemberRole(
+  projectId: number,
+  userId: number,
+  projectRole: any
+) {
+  try {
+    console.log('updateTicket Called');
+    const res = await fetch(
+      `http://localhost:3000/api/projectMembers/${projectId}/members/${userId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(projectRole),
+      }
+    );
+    if (!res.ok) {
+      throw new Error('Failed to update ticket');
     }
     const { data } = await res.json();
     return data;
