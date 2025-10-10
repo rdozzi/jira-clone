@@ -1,10 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addProjectMember as apiAddProjectMember } from '../../services/apiProjectMembers';
 
-export function useAddProjectMember(projectId: number, memberInfo: any) {
+export function useAddProjectMember() {
   const queryClient = useQueryClient();
   const { mutate: addProjectMember, status } = useMutation({
-    mutationFn: () => apiAddProjectMember(projectId, memberInfo),
+    mutationFn: ({
+      projectId,
+      memberInfo,
+    }: {
+      projectId: number;
+      memberInfo: any;
+    }) => apiAddProjectMember(projectId, memberInfo),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projectMembers'] });
     },
