@@ -7,7 +7,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { ProjectMember } from '../types/ProjectMember';
 import { useModal } from '../contexts/useModal';
 
-import ProjectListItemButton from './ProjectListItemButton';
+import ProjectMemberListItemButton from './ProjectMemberListItemButton';
 import ProjectMembersModal from './ProjectMembersModal';
 
 const onChange: TableProps<ProjectMember>['onChange'] = (
@@ -48,7 +48,10 @@ function ProjectMembers() {
       key: 'action',
       align: 'center',
       render: (record) => (
-        <ProjectListItemButton record={record} projectId={projectIdNumber} />
+        <ProjectMemberListItemButton
+          record={record}
+          projectId={projectIdNumber}
+        />
       ),
     },
   ];
@@ -72,14 +75,12 @@ function ProjectMembers() {
           <PlusOutlined /> Add
         </Button>
       </div>
-      {mode === 'create' && (
-        <ProjectMembersModal
-          isOpen={isOpen}
-          closeModal={closeModal}
-          mode={mode}
-          {...modalProps}
-        />
-      )}
+      <ProjectMembersModal
+        isOpen={isOpen}
+        closeModal={closeModal}
+        mode={mode}
+        {...modalProps}
+      />
     </>
   );
 }

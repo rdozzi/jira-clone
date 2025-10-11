@@ -121,14 +121,13 @@ function TicketList() {
           <PlusOutlined /> Create
         </Button>
       </div>
-      {mode === 'create' && (
-        <TicketModal
-          isOpen={isOpen}
-          closeModal={closeModal}
-          mode={mode}
-          {...modalProps}
-        />
-      )}
+
+      <TicketModal
+        isOpen={isOpen}
+        closeModal={closeModal}
+        mode={mode}
+        {...modalProps}
+      />
     </>
   );
 }

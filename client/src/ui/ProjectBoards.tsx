@@ -7,7 +7,7 @@ import { Spin, Table, Button } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-import BoardListItemButton from './BoardListItemButton';
+import ProjectBoardListItemButton from './ProjectBoardListItemButton';
 
 import { Boards } from '../types/Boards';
 
@@ -50,7 +50,7 @@ function ProjectBoards() {
       title: '',
       key: 'action',
       align: 'center',
-      render: (record) => <BoardListItemButton record={record} />,
+      render: (record) => <ProjectBoardListItemButton record={record} />,
     },
   ];
 
@@ -73,14 +73,13 @@ function ProjectBoards() {
           <PlusOutlined /> Create
         </Button>
       </div>
-      {mode === 'create' && (
-        <ProjectBoardsModal
-          isOpen={isOpen}
-          closeModal={closeModal}
-          mode={mode}
-          {...modalProps}
-        />
-      )}
+
+      <ProjectBoardsModal
+        isOpen={isOpen}
+        closeModal={closeModal}
+        mode={mode}
+        {...modalProps}
+      />
     </>
   );
 }
