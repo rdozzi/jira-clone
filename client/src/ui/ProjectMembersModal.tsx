@@ -80,6 +80,8 @@ function ProjectMembersModal({ isOpen, closeModal, record, mode }: ModalProps) {
     }
   }
 
+  if (isProjectLoading || isLoadingUsers) return <div>'Is Loading...'</div>;
+
   return createPortal(
     <Modal
       title={
@@ -106,13 +108,12 @@ function ProjectMembersModal({ isOpen, closeModal, record, mode }: ModalProps) {
         onFinish={handleOnFinish}
         autoComplete='off'
         disabled={isProjectLoading || isLoadingUsers}
-        initialValues={
-          mode === 'viewEdit'
-            ? {
-                projectRole: record?.projectRole,
-              }
-            : { project: selectedProject }
-        }
+        initialValues={{
+          projectId: selectedProject?.id,
+          ...(mode === 'viewEdit' && {
+            userId: record?.userId,
+          }),
+        }}
       >
         <Form.Item
           label='Project'
