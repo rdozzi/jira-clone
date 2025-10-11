@@ -5,14 +5,15 @@ import { Modal, Form, Select } from 'antd';
 import { useAddProjectMember } from '../features/projectMember/useAddProjectMember';
 import { useUpdateProjectMemberRole } from '../features/projectMember/useUpdateProjectMemberRole';
 import { useProjectInfo } from '../contexts/useProjectInfo';
-import { useProjectMembers } from '../contexts/useProjectMembers';
+import { useGetUsers } from '../features/users/useGetUsers';
 import { PROJECT_ROLES } from '../types/ProjectMember';
+import { Users } from '../types/Users';
 
 export interface ModalProps {
   isOpen: boolean;
   closeModal: () => void;
   record?: ProjectMember;
-  mode: 'create' | 'viewEdit';
+  mode: 'create' | 'viewEdit' | null;
 }
 
 export interface Value {
@@ -27,7 +28,7 @@ function ProjectMembersModal({ isOpen, closeModal, record, mode }: ModalProps) {
   const { updateProjectMemberRole, isUpdatingProjectMemberRole } =
     useUpdateProjectMemberRole();
   const { selectedProject, typedProjects, isProjectLoading } = useProjectInfo();
-  const { projectMembers, isLoadingProjectMember } = useProjectMembers();
+  const { isLoadingUsers, users } = useGetUsers();
 
   const [form] = Form.useForm();
 
@@ -98,13 +99,13 @@ function ProjectMembersModal({ isOpen, closeModal, record, mode }: ModalProps) {
     >
       <Form
         form={form}
-        name='basic'
+        name='projectModalForm'
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
         onFinish={handleOnFinish}
         autoComplete='off'
-        disabled={isProjectLoading || isLoadingProjectMember}
+        disabled={isProjectLoading || isLoadingUsers}
         initialValues={
           mode === 'viewEdit'
             ? {
@@ -115,7 +116,7 @@ function ProjectMembersModal({ isOpen, closeModal, record, mode }: ModalProps) {
       >
         <Form.Item
           label='Project'
-          name='project'
+          name='projectId'
           rules={[
             {
               required: true,
@@ -152,13 +153,10 @@ function ProjectMembersModal({ isOpen, closeModal, record, mode }: ModalProps) {
             placeholder='Please select a user'
             disabled={mode === 'viewEdit'}
           >
-            {projectMembers?.map((projectMember) => {
+            {users?.map((user: Users) => {
               return (
-                <Select.Option
-                  key={projectMember.userId}
-                  value={projectMember.userId}
-                >
-                  {projectMember.firstName} {projectMember.lastName}
+                <Select.Option key={user.id} value={user.id}>
+                  {user.firstName} {user.lastName}
                 </Select.Option>
               );
             })}
