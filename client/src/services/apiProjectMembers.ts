@@ -48,7 +48,7 @@ export async function addProjectMember(
     if (!res.ok) {
       const errorText = await res.text();
       console.error('Error:', res.status, res.statusText, errorText);
-      throw new Error('Failed to update board');
+      throw new Error('Failed to add project member');
     }
     const { data } = await res.json();
     return data;
@@ -70,7 +70,7 @@ export async function removeProjectMember(projectId: number, userId: number) {
       }
     );
     if (!res.ok) {
-      throw new Error('Failed to delete ticket');
+      throw new Error('Failed to remove project member');
     }
     const data = await res.json();
     return data;
@@ -98,7 +98,7 @@ export async function updateProjectMemberRole(
       }
     );
     if (!res.ok) {
-      throw new Error('Failed to update ticket');
+      throw new Error('Failed to update user project role');
     }
     const { data } = await res.json();
     return data;
