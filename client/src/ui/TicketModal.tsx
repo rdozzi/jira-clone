@@ -30,7 +30,7 @@ export interface TicketModalProps {
   isOpen: boolean;
   closeModal: () => void;
   record?: Record;
-  mode: 'create' | 'viewEdit';
+  mode: 'create' | 'viewEdit' | null;
 }
 
 function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
@@ -138,7 +138,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
     >
       <Form
         form={form}
-        name='basic'
+        name='ticketModalForm'
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
