@@ -20,7 +20,7 @@ const dropdownItems = [
   },
 ];
 
-const ProjectListItemButton = memo(function ProjectListItemButton({
+const ProjectMemberListItemButton = memo(function ProjectMemberListItemButton({
   record,
   projectId,
 }: {
@@ -42,7 +42,6 @@ const ProjectListItemButton = memo(function ProjectListItemButton({
     switch (e.key) {
       case 'editRole':
         openModal('viewEdit', { id: record.userId, record });
-        console.log('Edit project member role:', record);
         break;
 
       case 'removeMember':
@@ -88,4 +87,4 @@ const ProjectListItemButton = memo(function ProjectListItemButton({
   );
 });
 
-export default ProjectListItemButton;
+export default ProjectMemberListItemButton;

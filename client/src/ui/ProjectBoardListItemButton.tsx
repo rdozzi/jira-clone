@@ -28,7 +28,7 @@ const dropdownItems = [
   },
 ];
 
-const BoardListItemButton = memo(function BoardListItemButton({
+const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
   record,
 }: {
   record: Boards;
@@ -53,6 +53,7 @@ const BoardListItemButton = memo(function BoardListItemButton({
     switch (e.key) {
       case 'view_edit':
         openModal('viewEdit', { id: record.id, record });
+        console.log(isOpen, mode);
         console.log('View/Edit board:', record);
         break;
 
@@ -107,4 +108,4 @@ const BoardListItemButton = memo(function BoardListItemButton({
   );
 });
 
-export default BoardListItemButton;
+export default ProjectBoardListItemButton;
