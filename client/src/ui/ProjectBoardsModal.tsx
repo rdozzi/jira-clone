@@ -14,7 +14,7 @@ export interface ModalProps {
   isOpen: boolean;
   closeModal: () => void;
   record?: Boards;
-  mode: 'create' | 'viewEdit';
+  mode: 'create' | 'viewEdit' | null;
 }
 
 export interface Value {
@@ -112,7 +112,7 @@ function ProjectBoardsModal({ isOpen, closeModal, record, mode }: ModalProps) {
     >
       <Form
         form={form}
-        name='basic'
+        name='projectBoardForm'
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
