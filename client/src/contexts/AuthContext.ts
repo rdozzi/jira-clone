@@ -1,10 +1,14 @@
 import { createContext, useContext } from 'react';
-import { UserRole } from '../types/OrganizationRole';
+import { OrganizationRole } from '../types/OrganizationRole';
 import { AuthState } from '../types/AuthState';
 
 type AuthContextType = {
   authState: AuthState;
-  login: (_token: string, _userRole: UserRole, _userId: number) => void;
+  login: (
+    _token: string,
+    _organizationRole: OrganizationRole,
+    _userId: number
+  ) => void;
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
