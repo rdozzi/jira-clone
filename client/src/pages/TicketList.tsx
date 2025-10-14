@@ -24,6 +24,22 @@ interface DataType {
   type: string;
 }
 
+export interface Record {
+  assignee: { firstName: string; lastName: string };
+  assigneeId: number;
+  boardId: number;
+  createdAt: Date;
+  description: string;
+  dueDate: Date | string;
+  id: number;
+  priority: string;
+  reporterId: number;
+  status: string;
+  title: string;
+  type: string;
+  updatedAt: Date;
+}
+
 const onChange: TableProps<DataType>['onChange'] = (
   pagination,
   filters,
@@ -34,6 +50,8 @@ const onChange: TableProps<DataType>['onChange'] = (
 function TicketList() {
   const { isLoading, tickets, error } = useTickets();
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
+
+  const record = modalProps?.record as Record;
 
   if (error) {
     return <div>Error loading tickets: {error.message}</div>;
@@ -126,7 +144,7 @@ function TicketList() {
         isOpen={isOpen}
         closeModal={closeModal}
         mode={mode}
-        {...modalProps}
+        record={record}
       />
     </>
   );

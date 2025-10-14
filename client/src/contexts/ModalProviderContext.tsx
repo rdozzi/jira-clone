@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { ModalContext } from './ModalContext';
 
 type ModalState = {
@@ -20,9 +20,12 @@ export function ModalProviderContext({ children }: ModalProviderProps) {
     setModalState({ isOpen: true, mode, modalProps });
   }
 
-  function closeModal() {
-    setModalState({ isOpen: false, mode: null, modalProps: {} });
-  }
+  const closeModal = useCallback(function closeModal() {
+    setModalState((prev) => ({ ...prev, isOpen: false }));
+    setTimeout(() => {
+      setModalState({ isOpen: false, mode: null, modalProps: {} });
+    }, 0);
+  }, []);
 
   return (
     <ModalContext.Provider
