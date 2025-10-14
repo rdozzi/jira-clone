@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import dayjs from 'dayjs';
 
 import { Modal, Form, Input, Radio, DatePicker, Select } from 'antd';
 
-import { Record } from './TicketListItemButton';
+import { Record } from '../pages/TicketList';
 
 import { useCreateTickets } from '../features/tickets/useCreateTickets';
 import { useGetTicketById } from '../features/tickets/useGetTicketById';
@@ -43,6 +43,26 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
   const { isLoadingProjectMember, projectMembers } = useProjectMembers();
 
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (mode === 'create') {
+      form.resetFields();
+      form.setFieldsValue({ status: 'BACKLOG', priority: 'LOW', type: 'BUG' });
+    } else if (mode === 'viewEdit') {
+      form.setFieldsValue({
+        title: record?.title,
+        description: record?.description,
+        dueDate: dayjs(record?.dueDate),
+        assignee: record?.assigneeId,
+        status: record?.status,
+        priority: record?.priority,
+        type: record?.type,
+      });
+    }
+  }, [isOpen, mode, record, form]);
+
   const userOptions = getOptions(projectMembers);
 
   function handleOk() {
@@ -51,7 +71,6 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
 
   function handleCancel() {
     closeModal();
-    form.resetFields();
   }
 
   interface Value {
@@ -127,10 +146,10 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
           : 'Edit Ticket Information'
       }
       onOk={handleOk}
+      afterClose={() => form.resetFields()}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
       open={isOpen}
-      onClose={closeModal}
       getContainer={false}
       destroyOnClose={true}
       mask={false}
@@ -138,6 +157,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
     >
       <Form
         form={form}
+        key={mode === 'create' ? 'create' : record?.id || 'edit'}
         name='ticketModalForm'
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
@@ -145,19 +165,6 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
         onFinish={handleOnFinish}
         autoComplete='off'
         disabled={isLoadingUser && isLoadingProjectMember}
-        initialValues={
-          mode === 'viewEdit'
-            ? {
-                title: record?.title,
-                description: record?.description,
-                dueDate: dayjs(record?.dueDate),
-                assignee: record?.assigneeId,
-                status: record?.status,
-                priority: record?.priority,
-                type: record?.type,
-              }
-            : { status: 'BACKLOG', priority: 'LOW', type: 'BUG' }
-        }
       >
         <Form.Item
           label='Title'
