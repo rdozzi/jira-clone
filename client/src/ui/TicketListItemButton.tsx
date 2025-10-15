@@ -10,7 +10,6 @@ import { useCreateTickets } from '../features/tickets/useCreateTickets';
 import { useDropdown } from '../contexts/DropdownContext';
 import { useModal } from '../contexts/useModal';
 
-import TicketModal from './TicketModal';
 import CommentModal from './CommentModal';
 
 export interface Record {
@@ -70,7 +69,7 @@ const TicketListItemButton = memo(function TicketListItemButton({
   record: Tickets;
 }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
-  const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
+  const { openModal } = useModal();
   const { deleteTicket, isDeleting } = useDeleteTicket();
   const { createNewTicket, isCreating } = useCreateTickets();
 
