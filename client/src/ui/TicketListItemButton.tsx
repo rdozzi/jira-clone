@@ -148,14 +148,6 @@ const TicketListItemButton = memo(function TicketListItemButton({
           <EllipsisOutlined />
         </Button>
       </Dropdown>
-      {isOpen && mode === 'viewEdit' && modalProps?.id === record.id && (
-        <TicketModal
-          isOpen={isOpen}
-          closeModal={closeModal}
-          mode={mode}
-          {...modalProps}
-        />
-      )}
       {isCommentOpen && (
         <CommentModal
           isCommentOpen={isCommentOpen}
