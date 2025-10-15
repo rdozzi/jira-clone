@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 
 import type { Dayjs } from 'dayjs';
 import type { CalendarProps, SegmentedProps } from 'antd';
-import { Record } from '../ui/TicketListItemButton';
+import { Record } from './TicketList';
 import { Calendar, Button, DatePicker, Segmented } from 'antd';
 import {
   LeftCircleOutlined,
@@ -26,6 +26,8 @@ const TaskCalender = memo(function TaskCalender() {
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const { isLoading, tickets = [] } = useTickets(); // Add error later
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
+
+  const record = modalProps?.record;
 
   const handleCreate = useCallback(
     function handleCreate() {
@@ -180,14 +182,13 @@ const TaskCalender = memo(function TaskCalender() {
         value={date}
         headerRender={headerRender}
       />
-      {mode === 'create' && (
-        <TicketModal
-          isOpen={isOpen}
-          closeModal={closeModal}
-          mode={mode}
-          {...modalProps}
-        />
-      )}
+
+      <TicketModal
+        isOpen={isOpen}
+        closeModal={closeModal}
+        mode={mode}
+        record={record}
+      />
     </>
   );
 });
