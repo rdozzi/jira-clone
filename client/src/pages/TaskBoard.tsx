@@ -16,7 +16,7 @@ export interface Board {
 }
 
 export interface Tickets {
-  assignee: { first_name: string; last_name: string };
+  assignee: { firstName: string; lastName: string };
   assigneeId: number;
   boardId: number;
   createdAt: Date;
@@ -44,6 +44,8 @@ function TaskBoard() {
   const { isLoading, tickets = [] } = useTickets(); // Add error later
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
   const handleOnDragEnd = useDragHandler(setBoardState);
+
+  const record = modalProps?.record;
 
   useEffect(() => {
     if (!isLoading && tickets.length > 0) {
@@ -92,14 +94,12 @@ function TaskBoard() {
           ))}
         </div>
       </DragDropContext>
-      {mode === 'create' && (
-        <TicketModal
-          isOpen={isOpen}
-          closeModal={closeModal}
-          mode={mode}
-          {...modalProps}
-        />
-      )}
+      <TicketModal
+        isOpen={isOpen}
+        closeModal={closeModal}
+        mode={mode}
+        record={record}
+      />
     </>
   );
 }
