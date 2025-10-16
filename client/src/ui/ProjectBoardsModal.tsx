@@ -20,7 +20,7 @@ export interface ModalProps {
 export interface Value {
   project: number;
   name: string;
-  descriptin: string;
+  description: string;
 }
 
 function getOptions(projects?: Projects[]): { value: number; label: string }[] {
