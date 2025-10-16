@@ -8,7 +8,7 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { useModal } from '../contexts/useModal';
 import { useGetProjects } from '../features/projects/useGetProjects';
-import { Projects } from '../types/Projects';
+import { ProjectViewAllProjects } from '../types/Projects';
 
 const onChange: TableProps<ProjectViewAllProjects>['onChange'] = (
   pagination,
@@ -16,10 +16,6 @@ const onChange: TableProps<ProjectViewAllProjects>['onChange'] = (
   sorter,
   extra
 ) => console.log('params', pagination, filters, sorter, extra);
-
-export interface ProjectViewAllProjects extends Projects {
-  owner: any;
-}
 
 function ProjectViewAll() {
   const { isLoading: isProjectsLoading, projects, error } = useGetProjects();
