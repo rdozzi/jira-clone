@@ -33,3 +33,15 @@ export function getUpdatedBoardFields(originalBoard: any, values: any) {
   }
   return updatedFields;
 }
+
+export function getUpdatedProjectFields(originalProject: any, values: any) {
+  const updatedFields: any = {};
+  for (const key of Object.keys(values)) {
+    const original = originalProject[key];
+    const updated = values[key];
+    if (original !== updated) {
+      updatedFields[key] = updated;
+    }
+  }
+  return updatedFields;
+}
