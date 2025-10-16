@@ -1,5 +1,7 @@
 import { useProjectInfo } from '../contexts/useProjectInfo';
-import { Select } from 'antd';
+import { Select, Flex } from 'antd';
+import { useUser } from '../contexts/useUser';
+import { NavLink } from 'react-router-dom';
 
 function ProjectInfoSelector() {
   const {
@@ -9,25 +11,41 @@ function ProjectInfoSelector() {
     typedProjects,
     projectIdNumber,
   } = useProjectInfo();
+  const { userSelf } = useUser();
+  console.log(userSelf);
   return (
-    <Select
-      value={selectedProject?.name}
-      loading={isProjectLoading}
-      size={'middle'}
-      onChange={() => {
-        const selectedProject =
-          typedProjects?.find((p) => p.id === projectIdNumber) || null;
-        setSelectedProject(selectedProject);
-      }}
-    >
-      {typedProjects?.map((project) => {
-        return (
-          <Select.Option key={project.id} value={project.id}>
-            {project.name}
-          </Select.Option>
-        );
-      })}
-    </Select>
+    <Flex gap='middle' align='center'>
+      <Select
+        value={selectedProject?.name}
+        loading={isProjectLoading}
+        size={'middle'}
+        onChange={() => {
+          const selectedProject =
+            typedProjects?.find((p) => p.id === projectIdNumber) || null;
+          setSelectedProject(selectedProject);
+        }}
+      >
+        {typedProjects?.map((project) => {
+          return (
+            <Select.Option key={project.id} value={project.id}>
+              {project.name}
+            </Select.Option>
+          );
+        })}
+      </Select>
+      <div>{selectedProject?.name}</div>
+      <div>{selectedProject?.description}</div>
+      <div>{selectedProject?.status}</div>
+      {userSelf?.organizationRole === 'ADMIN' ||
+      userSelf?.organizationRole === 'SUPERADMIN' ? (
+        <>
+          <span> | </span>
+          <NavLink to={`/projects/view-all`}>View All Projects</NavLink>
+        </>
+      ) : (
+        ''
+      )}
+    </Flex>
   );
 }
 
