@@ -24,6 +24,7 @@ import TaskBoard from './pages/TaskBoard';
 import ProjectOverview from './ui/ProjectOverview';
 import ProjectMembers from './ui/ProjectMembers';
 import ProjectBoards from './ui/ProjectBoards';
+import ProjectViewAll from './ui/ProjectViewAll';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -94,6 +95,10 @@ function App() {
                                 element={<ProjectMembers />}
                               />
                             </Route>
+                            <Route
+                              path='/projects/view-all'
+                              element={<ProjectViewAll />}
+                            />
                           </Route>
 
                           {/* 404 Not Found */}
