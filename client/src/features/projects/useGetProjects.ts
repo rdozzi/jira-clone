@@ -21,7 +21,7 @@ export function useGetProjects() {
         return getProjectsByUserId();
       }
     },
-    // queryFn: getProjects,
+    enabled: !!userSelf,
     staleTime: 0,
     gcTime: 1000 * 60 * 10,
     refetchOnWindowFocus: false,
