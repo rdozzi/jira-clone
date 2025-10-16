@@ -9,3 +9,7 @@ export interface Projects {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface ProjectViewAllProjects extends Projects {
+  owner: any;
+}
