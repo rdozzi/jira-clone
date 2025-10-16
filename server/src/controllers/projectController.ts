@@ -20,6 +20,7 @@ export async function getAllProjects(
     const organizationId = res.locals.userInfo.organizationId;
     const projects = await prisma.project.findMany({
       where: { organizationId: organizationId },
+      include: { owner: { select: { firstName: true, lastName: true } } },
     });
     res
       .status(200)
@@ -47,6 +48,7 @@ export async function getProjectsByUserId(
 
     const projects = await prisma.project.findMany({
       where: { organizationId: organizationId, id: { in: projectIds } },
+      include: { owner: { select: { firstName: true, lastName: true } } },
     });
 
     res
