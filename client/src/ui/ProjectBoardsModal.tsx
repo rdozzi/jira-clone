@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Modal, Form, Input, Select } from 'antd';
 import { useProjectInfo } from '../contexts/useProjectInfo';
@@ -41,6 +41,20 @@ function ProjectBoardsModal({ isOpen, closeModal, record, mode }: ModalProps) {
 
   const [form] = Form.useForm();
   const projectOptions = getOptions(typedProjects);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (mode === 'create') {
+      form.resetFields();
+    } else if (mode === 'viewEdit') {
+      form.setFieldsValue({
+        project: record?.projectId,
+        name: record?.name,
+        description: record?.description,
+      });
+    }
+  }, [isOpen, mode, record, form]);
 
   function handleOk() {
     form.submit();
@@ -119,15 +133,6 @@ function ProjectBoardsModal({ isOpen, closeModal, record, mode }: ModalProps) {
         onFinish={handleOnFinish}
         autoComplete='off'
         disabled={isProjectLoading}
-        initialValues={
-          mode === 'viewEdit'
-            ? {
-                project: record?.projectId,
-                name: record?.name,
-                description: record?.description,
-              }
-            : {}
-        }
       >
         <Form.Item
           label='Project'

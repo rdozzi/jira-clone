@@ -27,6 +27,8 @@ function ProjectBoards() {
   } = useGetBoardsByProjectId(projectIdNumber);
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
+  const record = modalProps.record as Boards;
+
   if (isBoardLoading)
     return (
       <div>
@@ -78,7 +80,7 @@ function ProjectBoards() {
         isOpen={isOpen}
         closeModal={closeModal}
         mode={mode}
-        {...modalProps}
+        record={record}
       />
     </>
   );

@@ -4,7 +4,6 @@ import { useDropdown } from '../contexts/DropdownContext';
 import { useModal } from '../contexts/useModal';
 import { useCreateBoard } from '../features/boards/useCreateBoard';
 import { useDeleteBoard } from '../features/boards/useDeleteBoard';
-import ProjectBoardsModal from './ProjectBoardsModal';
 
 import { Dropdown, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
@@ -34,7 +33,7 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
   record: Boards;
 }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
-  const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
+  const { openModal } = useModal();
   const { createBoard, isCreatingBoard } = useCreateBoard();
   const { deleteBoard, isDeletingBoard } = useDeleteBoard();
 
@@ -53,7 +52,6 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
     switch (e.key) {
       case 'view_edit':
         openModal('viewEdit', { id: record.id, record });
-        console.log(isOpen, mode);
         console.log('View/Edit board:', record);
         break;
 
@@ -96,14 +94,6 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
           <EllipsisOutlined />
         </Button>
       </Dropdown>
-      {isOpen && mode === 'viewEdit' && modalProps?.id === record.id && (
-        <ProjectBoardsModal
-          isOpen={isOpen}
-          closeModal={closeModal}
-          mode={mode}
-          {...modalProps}
-        />
-      )}
     </>
   );
 });
