@@ -9,6 +9,7 @@ export function useGetBoardById(boardId: number | undefined) {
   } = useQuery({
     queryKey: ['board', boardId],
     queryFn: () => apiGetBoardById(boardId!),
+    staleTime: 0,
     enabled: !!boardId, // Only run the query if boardId is truthy
   });
 

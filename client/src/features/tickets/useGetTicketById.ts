@@ -9,6 +9,7 @@ export function useGetTicketById(ticketId: any) {
   } = useQuery({
     queryKey: ['ticket', ticketId],
     queryFn: () => apiGetTicketById(ticketId),
+    staleTime: 0,
     enabled: !!ticketId, // Only run the query if ticketId is truthy
   });
 

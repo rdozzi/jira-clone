@@ -9,6 +9,7 @@ export function useGetCommentsById(recordId: number) {
   } = useQuery({
     queryKey: ['comments-by-ticket', recordId],
     queryFn: () => apiGetCommentsById(recordId),
+    staleTime: 0,
     enabled: !!recordId, // Only run the query if commentId is truthy
   });
 

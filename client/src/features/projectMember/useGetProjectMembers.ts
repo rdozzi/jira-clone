@@ -11,7 +11,7 @@ export function useGetProjectMembers(projectId: number | null) {
     queryKey: ['projectMembers'],
     queryFn: () => apiGetProjectMembers(projectId as number),
     enabled: projectId !== null,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
     gcTime: 1000 * 60 * 10,
     refetchOnWindowFocus: false,
   });
