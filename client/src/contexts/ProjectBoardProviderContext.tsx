@@ -3,6 +3,7 @@ import { BoardRef, ProjectRef } from '../types/projectBoard';
 import { ProjectBoardContext } from './ProjectBoardContext';
 import { useGetProjects } from '../features/projects/useGetProjects';
 import { useGetBoardsByProjectId } from '../features/boards/useGetBoardsByProjectId';
+import { Boards } from '../types/Boards';
 
 type ProjectBoardProviderProps = { children: React.ReactNode };
 
@@ -33,17 +34,32 @@ export function ProjectBoardProviderContext({
     error: boardError,
   } = useGetBoardsByProjectId(projectId);
 
+  // Initialize projects once
   useEffect(() => {
     if (projects?.length && !project) {
       setProject(projects[0]);
     }
   }, [projects, project]);
 
+  // Initialize boards once
   useEffect(() => {
-    if (project && boards?.length && !board) {
+    if (boards?.length && !board) {
       setBoard(boards[0]);
     }
   }, [board, boards, project]);
+
+  //Reset board when project changes
+  useEffect(() => {
+    if (project && boards?.length) {
+      const boardBelongsToProject = boards.some(
+        (b: Boards) => b.projectId === project.id && b.id === board?.id
+      );
+
+      if (!boardBelongsToProject) {
+        setBoard(boards[0]);
+      }
+    }
+  }, [project, boards, board]);
 
   return (
     <ProjectBoardContext.Provider
