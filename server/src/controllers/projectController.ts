@@ -92,6 +92,7 @@ export async function createProject(
     const user = res.locals.userInfo;
     const organizationId = res.locals.userInfo.organizationId;
     const resourceType = res.locals.resourceType;
+    let projectMember;
 
     const projectData = res.locals.validatedBody;
     const data = {
@@ -111,14 +112,46 @@ export async function createProject(
         })
     );
 
-    const projectMember = await prisma.projectMember.create({
-      data: {
-        userId: user.id,
-        projectId: project.id,
-        projectRole: ProjectRole.ADMIN,
-        organizationId: organizationId,
-      },
-    });
+    try {
+      const newProjectBoard = await prisma.board.create({
+        data: {
+          name: `${project.name} default board`,
+          description: `${project.name} default board`,
+          projectId: project.id,
+          organizationId: organizationId,
+        },
+      });
+
+      projectMember = await prisma.projectMember.create({
+        data: {
+          userId: user.id,
+          projectId: project.id,
+          projectRole: ProjectRole.ADMIN,
+          organizationId: organizationId,
+        },
+      });
+
+      const logEvents = [
+        buildLogEvent({
+          userId: user.id,
+          actorType: 'USER',
+          action: 'CREATE_BOARD',
+          targetId: newProjectBoard.id,
+          targetType: 'BOARD',
+          organizationId: organizationId,
+          metadata: {
+            name: `${newProjectBoard.name}`,
+            description: `${newProjectBoard.description}`,
+          },
+        }),
+      ];
+
+      logBus.emit('activityLog', logEvents);
+    } catch (setupError) {
+      console.error(
+        `Failed to create board or add project member: ${setupError}`
+      );
+    }
 
     const logEvents = [
       buildLogEvent({
@@ -132,7 +165,9 @@ export async function createProject(
           projectName: project.name,
           projectDescription: project.description,
           projectOwnerId: project.ownerId,
-          projectRole: projectMember.projectRole,
+          ...(projectMember
+            ? { projectRole: projectMember.projectRole }
+            : { projectRole: null }),
         },
       }),
     ];
