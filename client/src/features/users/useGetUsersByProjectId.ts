@@ -10,7 +10,7 @@ export function useGetUsersByProjectId(projectId: number) {
   } = useQuery({
     queryKey: ['projectUsers'],
     queryFn: () => apiGetUsersByProjectId(projectId),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
     gcTime: 1000 * 60 * 10,
     refetchOnWindowFocus: false,
   });

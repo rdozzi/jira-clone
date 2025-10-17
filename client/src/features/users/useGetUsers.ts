@@ -6,7 +6,7 @@ export function useGetUsers() {
     isLoading: isLoadingUsers,
     data: users,
     error,
-  } = useQuery({ queryKey: ['users'], queryFn: getUsers });
+  } = useQuery({ queryKey: ['users'], queryFn: getUsers, staleTime: 0 });
 
   return { isLoadingUsers, users, error };
 }
