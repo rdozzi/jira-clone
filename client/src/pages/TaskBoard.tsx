@@ -7,6 +7,7 @@ import { useModal } from '../contexts/useModal';
 
 import TicketModal from '../ui/TicketModal';
 import TaskBoardColumn from '../ui/TaskBoardColumn';
+import Loading from '../ui/Loading';
 
 import { useDragHandler } from '../hooks/useDragHandler';
 
@@ -41,15 +42,22 @@ const boards: Board[] = [
 
 function TaskBoard() {
   const [boardState, setBoardState] = useState<BoardState>({});
-  const { isLoading, tickets = [] } = useTickets(); // Add error later
+  const { isLoading, tickets = [], error } = useTickets(); // Add error later
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
   const handleOnDragEnd = useDragHandler(setBoardState);
 
   const record = modalProps?.record;
 
   useEffect(() => {
-    if (!isLoading && tickets.length > 0) {
+    if (isLoading) return;
+
+    if (tickets.length > 0) {
       setBoardState(() => initializeBoards(boards, tickets));
+    } else {
+      setBoardState((prev) => {
+        const hasTickets = Object.values(prev).some((arr) => arr.length > 0);
+        return hasTickets ? initializeBoards(boards, []) : prev;
+      });
     }
   }, [isLoading, tickets]);
 
@@ -76,9 +84,14 @@ function TaskBoard() {
     return initialState;
   }
 
-  if (isLoading) {
-    return <div> Loading... </div>;
-  }
+  if (isLoading)
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+
+  if (error) return <div>Error loading tickets!</div>;
 
   return (
     <>
