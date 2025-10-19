@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { BoardRef, ProjectRef } from '../types/projectBoard';
+import { Boards } from '../types/Boards';
 import { ProjectBoardContext } from './ProjectBoardContext';
 import { useGetProjects } from '../features/projects/useGetProjects';
 import { useGetBoardsByProjectId } from '../features/boards/useGetBoardsByProjectId';
-import { Boards } from '../types/Boards';
 
 type ProjectBoardProviderProps = { children: React.ReactNode };
 
@@ -26,7 +26,7 @@ export function ProjectBoardProviderContext({
     projects,
     isLoading: isProjectLoading,
     error: projectError,
-  } = useGetProjects();
+  } = useGetProjects('main');
 
   const {
     boards,
