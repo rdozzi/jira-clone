@@ -18,7 +18,11 @@ const onChange: TableProps<ProjectViewAllProjects>['onChange'] = (
 ) => console.log('params', pagination, filters, sorter, extra);
 
 function ProjectViewAll() {
-  const { isLoading: isProjectsLoading, projects, error } = useGetProjects();
+  const {
+    isLoading: isProjectsLoading,
+    projects,
+    error,
+  } = useGetProjects('info');
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
   const record = modalProps.record as ProjectViewAllProjects;

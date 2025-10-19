@@ -2,7 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { getProjects, getProjectsByUserId } from '../../services/apiProjects';
 import { useGetUserSelf } from '../users/useGetUserSelf';
 
-export function useGetProjects() {
+type Scope = 'main' | 'info';
+
+export function useGetProjects(scope: Scope) {
   const { userSelf } = useGetUserSelf();
   const isAdmin =
     userSelf?.organizationRole === 'ADMIN' ||
@@ -13,7 +15,7 @@ export function useGetProjects() {
     data: projects,
     error,
   } = useQuery({
-    queryKey: ['projects'],
+    queryKey: ['projects', scope],
     queryFn: () => {
       if (isAdmin) {
         return getProjects();
