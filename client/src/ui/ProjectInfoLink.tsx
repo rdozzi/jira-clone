@@ -1,7 +1,11 @@
 import { NavLink } from 'react-router-dom';
+import { useProjectInfo } from '../contexts/useProjectInfo';
 
-function ProjectInfoLink({ projectId }: { projectId: number | undefined }) {
-  return <NavLink to={`/projects/${projectId}/overview`}>Project Info</NavLink>;
+function ProjectInfoLink() {
+  const { projectIdNumber } = useProjectInfo();
+  return (
+    <NavLink to={`/projects/${projectIdNumber}/overview`}>Project Info</NavLink>
+  );
 }
 
 export default ProjectInfoLink;

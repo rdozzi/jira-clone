@@ -87,7 +87,7 @@ function AppLayout() {
           </Select>
         </div>
         <div>
-          <ProjectInfoLink projectId={project?.id} />
+          <ProjectInfoLink />
         </div>
       </Sider>
       <Layout>

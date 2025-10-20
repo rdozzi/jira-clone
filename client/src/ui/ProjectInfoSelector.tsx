@@ -9,21 +9,21 @@ function ProjectInfoSelector() {
     setSelectedProject,
     isProjectLoading,
     typedProjects,
-    projectIdNumber,
   } = useProjectInfo();
   const { userSelf } = useUser();
-  console.log(userSelf);
+
+  function onChange(value: number | null | undefined) {
+    const selectedProject = typedProjects?.find((p) => p.id === value) || null;
+    setSelectedProject(selectedProject);
+  }
+
   return (
     <Flex gap='middle' align='center'>
       <Select
-        value={selectedProject?.name}
+        value={selectedProject?.id}
         loading={isProjectLoading}
         size={'middle'}
-        onChange={() => {
-          const selectedProject =
-            typedProjects?.find((p) => p.id === projectIdNumber) || null;
-          setSelectedProject(selectedProject);
-        }}
+        onChange={onChange}
       >
         {typedProjects?.map((project) => {
           return (

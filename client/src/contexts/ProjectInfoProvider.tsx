@@ -1,29 +1,36 @@
 import { useState, useEffect } from 'react';
-import { useParams, Outlet } from 'react-router-dom';
 import { useGetProjects } from '../features/projects/useGetProjects';
 import { Projects } from '../types/Projects';
 import { ProjectInfoContext } from './ProjectInfoContext';
-import ProjectInfoSelector from '../ui/ProjectInfoSelector';
-import ProjectInfoNav from '../ui/ProjectInfoNav';
+import { useProjectBoard } from './useProjectBoard';
 
-export function ProjectInfoProvider() {
-  const { projectId } = useParams();
+type ProjectInfoProviderProps = { children: React.ReactNode };
+
+export function ProjectInfoProvider({ children }: ProjectInfoProviderProps) {
   const {
     projects,
     isLoading: isProjectLoading,
-    // error: projectError,
-  } = useGetProjects();
+    // error: projectInfoError,
+  } = useGetProjects('info');
+  const { project } = useProjectBoard();
 
-  const projectIdNumber = Number(projectId);
+  const initialProject = projects?.find((p: Projects) => p.id === project?.id);
 
   const [selectedProject, setSelectedProject] = useState<Projects | null>(null);
+  const [projectIdNumber, setProjectIdNumber] = useState<number | null>(null);
 
   useEffect(() => {
-    const currentProject: Projects = projects?.find(
-      (p: Projects) => p.id === projectIdNumber
-    );
-    setSelectedProject(currentProject);
-  }, [projects, projectIdNumber]);
+    if (!selectedProject && initialProject) {
+      setSelectedProject(initialProject);
+      setProjectIdNumber(initialProject.id);
+    }
+  }, [initialProject, selectedProject, project]);
+
+  useEffect(() => {
+    if (selectedProject) {
+      setProjectIdNumber(selectedProject.id);
+    }
+  }, [selectedProject]);
 
   const typedProjects = (projects as Projects[]) || null;
   return (
@@ -33,12 +40,10 @@ export function ProjectInfoProvider() {
         selectedProject,
         setSelectedProject,
         typedProjects,
-        projectIdNumber,
+        projectIdNumber: projectIdNumber ?? -1,
       }}
     >
-      <ProjectInfoSelector />
-      <Outlet />
-      <ProjectInfoNav />
+      {children}
     </ProjectInfoContext.Provider>
   );
 }
