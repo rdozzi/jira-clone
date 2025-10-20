@@ -28,6 +28,7 @@ export function ProjectInfoProvider({ children }: ProjectInfoProviderProps) {
 
   useEffect(() => {
     if (selectedProject) {
+      setSelectedProject(selectedProject);
       setProjectIdNumber(selectedProject.id);
     }
   }, [selectedProject]);
@@ -41,6 +42,7 @@ export function ProjectInfoProvider({ children }: ProjectInfoProviderProps) {
         setSelectedProject,
         typedProjects,
         projectIdNumber: projectIdNumber ?? -1,
+        setProjectIdNumber,
       }}
     >
       {children}

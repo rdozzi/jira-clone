@@ -1,3 +1,4 @@
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useProjectInfo } from '../contexts/useProjectInfo';
 import { Select, Flex } from 'antd';
 import { useUser } from '../contexts/useUser';
@@ -9,12 +10,24 @@ function ProjectInfoSelector() {
     setSelectedProject,
     isProjectLoading,
     typedProjects,
+    setProjectIdNumber,
   } = useProjectInfo();
   const { userSelf } = useUser();
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   function onChange(value: number | null | undefined) {
     const selectedProject = typedProjects?.find((p) => p.id === value) || null;
     setSelectedProject(selectedProject);
+    setProjectIdNumber(selectedProject!.id);
+
+    const updatedPath = location.pathname.replace(
+      /\/projects\/\d+/,
+      `/projects/${selectedProject!.id}`
+    );
+
+    navigate(updatedPath, { replace: true });
   }
 
   return (
