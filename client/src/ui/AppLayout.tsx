@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Layout, Select } from 'antd';
 import HeaderComp from './HeaderComp';
 import ThemeToggle from './ThemeToggle';
@@ -32,6 +32,11 @@ function AppLayout() {
     // boardError,
   } = useProjectBoard();
   const { userSelf } = useGetUserSelf();
+  const location = useLocation();
+
+  const isProjectInfoView = /^\/projects\//.test(location.pathname);
+  console.log(isProjectInfoView);
+
   return (
     <Layout>
       <Sider style={siderStyle}>
@@ -51,6 +56,7 @@ function AppLayout() {
             value={project?.id}
             loading={isProjectLoading}
             size={'middle'}
+            disabled={isProjectInfoView}
             onChange={(id) => {
               const selectedProject =
                 projects?.find((p) => p.id === id) || null;
@@ -72,6 +78,7 @@ function AppLayout() {
             value={board?.id ?? undefined}
             loading={isBoardLoading}
             size={'middle'}
+            disabled={isProjectInfoView}
             onChange={(id) => {
               const selectedBoard = boards?.find((b) => b.id === id) || null;
               setBoard(selectedBoard);
