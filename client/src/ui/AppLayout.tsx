@@ -35,7 +35,6 @@ function AppLayout() {
   const location = useLocation();
 
   const isProjectInfoView = /^\/projects\//.test(location.pathname);
-  console.log(isProjectInfoView);
 
   return (
     <Layout>
