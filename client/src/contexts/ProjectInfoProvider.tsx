@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useGetProjects } from '../features/projects/useGetProjects';
 import { Projects } from '../types/Projects';
 import { ProjectInfoContext } from './ProjectInfoContext';
-import { useProjectBoard } from './useProjectBoard';
 
 type ProjectInfoProviderProps = { children: React.ReactNode };
 
@@ -12,9 +11,8 @@ export function ProjectInfoProvider({ children }: ProjectInfoProviderProps) {
     isLoading: isProjectLoading,
     // error: projectInfoError,
   } = useGetProjects('info');
-  const { project } = useProjectBoard();
 
-  const initialProject = projects?.find((p: Projects) => p.id === project?.id);
+  const initialProject = projects ? projects[0] : null;
 
   const [selectedProject, setSelectedProject] = useState<Projects | null>(null);
   const [projectIdNumber, setProjectIdNumber] = useState<number | null>(null);
@@ -24,7 +22,7 @@ export function ProjectInfoProvider({ children }: ProjectInfoProviderProps) {
       setSelectedProject(initialProject);
       setProjectIdNumber(initialProject.id);
     }
-  }, [initialProject, selectedProject, project]);
+  }, [initialProject, selectedProject]);
 
   useEffect(() => {
     if (selectedProject) {
