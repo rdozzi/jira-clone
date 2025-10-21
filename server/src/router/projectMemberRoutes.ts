@@ -23,6 +23,7 @@ router.get(
   resolveProjectIdFromProject(),
   checkProjectMembership({ allowOrganizationSuperAdmin: true }),
   checkProjectRole(ProjectRole.VIEWER, { allowOrganizationSuperAdmin: true }),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await viewProjectMembers(req, res, prisma);
   }
