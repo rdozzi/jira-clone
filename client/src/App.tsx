@@ -47,9 +47,9 @@ function App() {
               <ModalProviderContext>
                 <UserProviderContext>
                   <ProjectBoardProviderContext>
-                    <ProjectMemberProvider>
-                      <TicketProviderContext>
-                        <ProjectInfoProvider>
+                    <TicketProviderContext>
+                      <ProjectInfoProvider>
+                        <ProjectMemberProvider>
                           <Routes>
                             {/* Public Routes */}
                             <Route path='/' element={<PublicHomepage />} />
@@ -112,9 +112,9 @@ function App() {
                             {/* 404 Not Found */}
                             <Route path='*' element={<NotFoundPage />} />
                           </Routes>
-                        </ProjectInfoProvider>
-                      </TicketProviderContext>
-                    </ProjectMemberProvider>
+                        </ProjectMemberProvider>
+                      </ProjectInfoProvider>
+                    </TicketProviderContext>
                   </ProjectBoardProviderContext>
                 </UserProviderContext>
               </ModalProviderContext>

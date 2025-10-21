@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { ProjectMemberContext } from './ProjectMemberContext';
 import { useGetProjectMembers } from '../features/projectMember/useGetProjectMembers';
-import { useProjectBoard } from './useProjectBoard';
+import { useProjectInfo } from './useProjectInfo';
 
 interface ProjectMemberProviderProps {
   children: ReactNode;
@@ -10,13 +10,14 @@ interface ProjectMemberProviderProps {
 export const ProjectMemberProvider = ({
   children,
 }: ProjectMemberProviderProps) => {
-  const { projectId } = useProjectBoard();
+  const { selectedProject } = useProjectInfo();
+
   const {
     projectMembers,
     isLoadingProjectMember,
     error,
     refreshProjectMember,
-  } = useGetProjectMembers(projectId);
+  } = useGetProjectMembers(selectedProject?.id);
 
   return (
     <ProjectMemberContext.Provider
