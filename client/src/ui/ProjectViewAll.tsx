@@ -1,6 +1,7 @@
 import Loading from './Loading';
 import ProjectViewAllModal from './ProjectViewAllModal';
 import ProjectViewAllItemButton from './ProjectViewAllItemButton';
+import BackButton from './BackButton';
 
 import { Table, Button } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
@@ -110,6 +111,7 @@ function ProjectViewAll() {
         mode={mode}
         record={record}
       />
+      <BackButton>Back</BackButton>
     </>
   );
 }
