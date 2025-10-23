@@ -1,18 +1,18 @@
 import { EntityType } from '../../types/Attachments';
 import { useQuery } from '@tanstack/react-query';
-import { getAllAttachments as apiGetAllAttachments } from '../../services/apiAttachments';
+import { getAttachments as apiGetAttachments } from '../../services/apiAttachments';
 
-export function useGetBoardById(entityType: EntityType, entityId: number) {
+export function useGetAttachments(entityType: EntityType, entityId: number) {
   const {
-    isLoading: isFetchingBoard,
-    data: board,
-    error,
+    isLoading: isFetchingAttachments,
+    data: attachments,
+    error: attachmentError,
   } = useQuery({
     queryKey: ['attachment', entityType, entityId],
-    queryFn: () => apiGetAllAttachments(entityType, entityId),
+    queryFn: () => apiGetAttachments(entityType, entityId),
     staleTime: 0,
     enabled: !!entityId,
   });
 
-  return { isFetchingBoard, board, error };
+  return { isFetchingAttachments, attachments, attachmentError };
 }
