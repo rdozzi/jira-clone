@@ -9,8 +9,10 @@ import { useDeleteTicket } from '../features/tickets/useDeleteTicket';
 import { useCreateTickets } from '../features/tickets/useCreateTickets';
 import { useDropdown } from '../contexts/DropdownContext';
 import { useModal } from '../contexts/useModal';
+import { useAttachmentModal } from '../contexts/useAttachmentModal';
 
 import CommentModal from './CommentModal';
+import AttachmentModal from '../ui/AttachmentModal';
 
 export interface Record {
   assignee: { firstName: string; lastName: string };
@@ -57,6 +59,7 @@ const dropdownItems = [
     key: 'add_view_comments',
     label: 'Add/View Comments',
   },
+  { key: 'attachments', label: 'Attachments' },
   {
     key: 'delete',
     label: 'Delete',
@@ -72,6 +75,8 @@ const TicketListItemButton = memo(function TicketListItemButton({
   const { openModal } = useModal();
   const { deleteTicket, isDeleting } = useDeleteTicket();
   const { createNewTicket, isCreating } = useCreateTickets();
+  const { isAttachmentOpen, openAttachmentModal, closeAttachmentModal } =
+    useAttachmentModal();
 
   const [isCommentOpen, setIsCommentOpen] = useState(false);
 
@@ -121,6 +126,12 @@ const TicketListItemButton = memo(function TicketListItemButton({
         console.log('Comment', record);
         break;
 
+      case 'attachments':
+        console.log(record.id, record);
+        openAttachmentModal('TICKET', { id: record.id, record });
+        console.log('Attachments', record);
+        break;
+
       case 'delete':
         deleteTicket(record.id);
         console.log('Delete ticket:', record);
@@ -147,15 +158,22 @@ const TicketListItemButton = memo(function TicketListItemButton({
           <EllipsisOutlined />
         </Button>
       </Dropdown>
-      {isCommentOpen && (
-        <CommentModal
-          isCommentOpen={isCommentOpen}
-          onOk={onOkCommentModal}
-          ticketTitle={record.title}
-          ticketDescription={record.description}
-          recordId={record.id}
-        />
-      )}
+
+      <CommentModal
+        isCommentOpen={isCommentOpen}
+        onOk={onOkCommentModal}
+        ticketTitle={record.title}
+        ticketDescription={record.description}
+        recordId={record.id}
+      />
+
+      <AttachmentModal
+        isAttachmentOpen={isAttachmentOpen}
+        closeAttachmentModal={closeAttachmentModal}
+        entityType={'TICKET'}
+        record={record}
+        mode={'TICKET'}
+      />
     </>
   );
 });
