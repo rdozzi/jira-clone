@@ -17,7 +17,9 @@ export async function getAttachments(entityType: EntityType, entityId: number) {
     if (!res.ok) {
       throw new Error('Failed to fetch attachments');
     }
-    const { data } = await res.json();
+
+    const data = await res.json();
+
     return data;
   } catch (err: any | unknown) {
     console.error(err);
