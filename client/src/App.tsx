@@ -27,7 +27,6 @@ import ProjectMembers from './ui/ProjectMembers';
 import ProjectBoards from './ui/ProjectBoards';
 import ProjectViewAll from './ui/ProjectViewAll';
 import ProjectInfoLayout from './ui/ProjectInfoLayout';
-import ModalLayer from './ui/ModalLayer';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -63,7 +62,7 @@ function App() {
                                 element={
                                   <ProtectedRoute>
                                     {' '}
-                                    {<AppLayout />} <ModalLayer />
+                                    {<AppLayout />}
                                   </ProtectedRoute>
                                 }
                               >
