@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { AttachmentModalContext } from './AttachmentModalContext';
 import { EntityType } from '../types/Attachments';
 
@@ -8,11 +8,9 @@ type AttachmentModalState = {
   modalProps: Record<string, unknown>;
 };
 
-export function AttachmentModalProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+type ModalProviderProps = { children: React.ReactNode };
+
+export function AttachmentModalProvider({ children }: ModalProviderProps) {
   const [attachmentModalState, setAttachmentModalState] =
     useState<AttachmentModalState>({
       isOpen: false,
@@ -24,12 +22,9 @@ export function AttachmentModalProvider({
     setAttachmentModalState({ isOpen: true, mode, modalProps });
   }
 
-  const closeAttachmentModal = useCallback(function closeModal() {
-    setAttachmentModalState((prev) => ({ ...prev, isOpen: false }));
-    setTimeout(() => {
-      setAttachmentModalState({ isOpen: false, mode: null, modalProps: {} });
-    }, 0);
-  }, []);
+  function closeAttachmentModal() {
+    setAttachmentModalState({ isOpen: false, mode: null, modalProps: {} });
+  }
 
   return (
     <AttachmentModalContext.Provider
@@ -37,8 +32,8 @@ export function AttachmentModalProvider({
         isAttachmentOpen: attachmentModalState.isOpen,
         openAttachmentModal,
         closeAttachmentModal,
-        mode: attachmentModalState.mode,
-        modalProps: attachmentModalState.modalProps,
+        modeAttachment: attachmentModalState.mode,
+        modalPropsAttachment: attachmentModalState.modalProps,
       }}
     >
       {children}
