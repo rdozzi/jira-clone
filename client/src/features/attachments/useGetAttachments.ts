@@ -11,7 +11,7 @@ export function useGetAttachments(entityType: EntityType, entityId: number) {
     queryKey: ['attachment', entityType, entityId],
     queryFn: () => apiGetAttachments(entityType, entityId),
     staleTime: 0,
-    enabled: !!entityId,
+    enabled: !!entityId && !!entityType,
   });
 
   return { isFetchingAttachments, attachments, attachmentError };
