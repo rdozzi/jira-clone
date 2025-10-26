@@ -6,35 +6,40 @@ import { useGetAttachments } from '../features/attachments/useGetAttachments';
 import { useState } from 'react';
 import AttachmentRow from './AttachmentRow';
 import Loading from './Loading';
+import { useAttachmentModal } from '../contexts/useAttachmentModal';
 
-interface AttachmentModalProps {
-  isAttachmentOpen: boolean;
-  closeAttachmentModal: () => void;
-  entityType: EntityType;
-  record?: any;
-  mode: EntityType;
-}
-
-function AttachmentModal({
-  isAttachmentOpen,
-  closeAttachmentModal,
-  entityType,
-  record,
-}: AttachmentModalProps) {
+function AttachmentModal() {
   const [confirmLoading, setConfirmLoading] = useState(false);
+  type ModalPropsWithRecord = {
+    id?: number;
+    record?: { title?: string };
+    [key: string]: any;
+  };
+
+  const { isOpen, closeModal, mode, modalProps } = useAttachmentModal() as {
+    isOpen: boolean;
+    closeModal: () => void;
+    mode: EntityType;
+    modalProps: ModalPropsWithRecord;
+  };
   const { isFetchingAttachments, attachments, attachmentError } =
-    useGetAttachments(entityType, record?.id);
+    useGetAttachments(
+      mode,
+      typeof modalProps?.id === 'number' ? modalProps.id : -1
+    );
 
   if (isFetchingAttachments) return <Loading />;
   if (attachmentError) return <div>Error loading attachments</div>;
 
   function onOk() {
-    closeAttachmentModal();
+    closeModal();
   }
+
+  if (isFetchingAttachments) setConfirmLoading(true);
 
   return createPortal(
     <Modal
-      open={isAttachmentOpen}
+      open={isOpen}
       onOk={onOk}
       onCancel={onOk}
       cancelButtonProps={{ style: { display: 'none' } }}
@@ -43,9 +48,15 @@ function AttachmentModal({
       destroyOnClose={true}
       mask={false}
       title={'Attachments'}
+      loading={isFetchingAttachments && <Loading />}
     >
-      <div>Description: {record.description}</div>
-      <div>Entity Type: {entityType}</div>
+      <div>
+        Title:{' '}
+        {typeof modalProps?.record?.title === 'string'
+          ? modalProps.record.title
+          : ''}
+      </div>
+      <div>Entity Type: {mode as EntityType}</div>
       {attachments && attachments.length > 0 ? (
         attachments.map((attachment: Attachment) => (
           <AttachmentRow attachment={attachment} key={attachment.id} />
