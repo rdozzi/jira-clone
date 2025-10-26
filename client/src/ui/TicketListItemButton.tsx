@@ -12,7 +12,6 @@ import { useModal } from '../contexts/useModal';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
 
 import CommentModal from './CommentModal';
-import AttachmentModal from '../ui/AttachmentModal';
 
 export interface Record {
   assignee: { firstName: string; lastName: string };
@@ -75,8 +74,7 @@ const TicketListItemButton = memo(function TicketListItemButton({
   const { openModal } = useModal();
   const { deleteTicket, isDeleting } = useDeleteTicket();
   const { createNewTicket, isCreating } = useCreateTickets();
-  const { isAttachmentOpen, openAttachmentModal, closeAttachmentModal } =
-    useAttachmentModal();
+  const { openModal: openAttachmentModal } = useAttachmentModal();
 
   const [isCommentOpen, setIsCommentOpen] = useState(false);
 
@@ -127,7 +125,6 @@ const TicketListItemButton = memo(function TicketListItemButton({
         break;
 
       case 'attachments':
-        console.log(record.id, record);
         openAttachmentModal('TICKET', { id: record.id, record });
         console.log('Attachments', record);
         break;
@@ -165,14 +162,6 @@ const TicketListItemButton = memo(function TicketListItemButton({
         ticketTitle={record.title}
         ticketDescription={record.description}
         recordId={record.id}
-      />
-
-      <AttachmentModal
-        isAttachmentOpen={isAttachmentOpen}
-        closeAttachmentModal={closeAttachmentModal}
-        entityType={'TICKET'}
-        record={record}
-        mode={'TICKET'}
       />
     </>
   );
