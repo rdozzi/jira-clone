@@ -4,14 +4,14 @@ import { DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
 
 function editFilename(fileName: string) {
   const dashIndex = fileName.indexOf('-', 0);
-  const updatedFilename = fileName.slice(dashIndex, fileName.length);
+  const updatedFilename = fileName.slice(dashIndex + 1, fileName.length);
   return updatedFilename;
 }
 
 function AttachmentRow({ attachment }: { attachment: Attachment }) {
   return (
-    <Flex justify='center' align='center' gap='small'>
-      <div>{editFilename(attachment.fileName)}</div>
+    <Flex justify='flex-start' align='center' gap='small'>
+      {editFilename(attachment.fileName)}
       <Button icon={<DownloadOutlined />} />
       <Button icon={<DeleteOutlined />} />
     </Flex>
