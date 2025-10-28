@@ -7,14 +7,16 @@ import { useState } from 'react';
 import AttachmentRow from './AttachmentRow';
 import Loading from './Loading';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
+import { useUploadSingleAttachment } from '../features/attachments/useUploadSingleAttachment';
+
+type ModalPropsWithRecord = {
+  id?: number;
+  record?: { title?: string };
+  [key: string]: any;
+};
 
 function AttachmentModal() {
   const [confirmLoading, setConfirmLoading] = useState(false);
-  type ModalPropsWithRecord = {
-    id?: number;
-    record?: { title?: string };
-    [key: string]: any;
-  };
 
   const { isOpen, closeModal, mode, modalProps } = useAttachmentModal() as {
     isOpen: boolean;
@@ -27,12 +29,29 @@ function AttachmentModal() {
       mode,
       typeof modalProps?.id === 'number' ? modalProps.id : -1
     );
+  const { uploadSingleAttachment, isUploadingAttachment } =
+    useUploadSingleAttachment();
 
   if (isFetchingAttachments) return <Loading />;
   if (attachmentError) return <div>Error loading attachments</div>;
 
   function onOk() {
     closeModal();
+  }
+
+  async function handleCustomRequest(options: any) {
+    const { onSuccess, onError, file } = options;
+
+    try {
+      uploadSingleAttachment({
+        file,
+        entityType: String(mode),
+        entityId: Number(modalProps.id),
+      });
+      onSuccess?.({}, file);
+    } catch (error) {
+      onError?.(error);
+    }
   }
 
   if (isFetchingAttachments) setConfirmLoading(true);
@@ -64,7 +83,12 @@ function AttachmentModal() {
       ) : (
         <div> No Attachments Found</div>
       )}
-      <Upload>
+      <Upload
+        customRequest={handleCustomRequest}
+        showUploadList={false}
+        multiple={false}
+        disabled={isUploadingAttachment}
+      >
         <Button icon={<UploadOutlined />}>Upload</Button>
       </Upload>
     </Modal>,
