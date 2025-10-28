@@ -28,17 +28,13 @@ export async function getAttachments(entityType: EntityType, entityId: number) {
 
 export async function uploadSingleAttachment(formData: FormData) {
   try {
-    const res = await fetch(
-      `http://localhost:3000/api/attachments/attachments/single`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: formData,
-      }
-    );
+    const res = await fetch(`http://localhost:3000/api/attachments/single`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
     if (!res.ok) {
       const errorText = await res.text();
       console.error('Error:', res.status, res.statusText, errorText);
