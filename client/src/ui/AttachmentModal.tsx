@@ -9,7 +9,7 @@ import Loading from './Loading';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
 import { useUploadSingleAttachment } from '../features/attachments/useUploadSingleAttachment';
 
-type ModalPropsWithRecord = {
+export type ModalPropsWithRecord = {
   id?: number;
   record?: { title?: string };
   [key: string]: any;
