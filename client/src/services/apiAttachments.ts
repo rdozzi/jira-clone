@@ -46,3 +46,26 @@ export async function uploadSingleAttachment(formData: FormData) {
     console.error(err);
   }
 }
+
+export async function deleteSingleAttachment(attachmentId: number) {
+  try {
+    const res = await fetch(
+      `http://localhost:3000/api/attachments/${attachmentId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Error:', res.status, res.statusText, errorText);
+      throw new Error('Failed to delete board');
+    }
+    const { data } = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(`Error ${err.message}`);
+  }
+}
