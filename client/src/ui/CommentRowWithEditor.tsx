@@ -5,9 +5,11 @@ import {
   EditOutlined,
   CheckOutlined,
   CloseOutlined,
+  PaperClipOutlined,
 } from '@ant-design/icons';
 import { getLocalTime } from '../utilities/getLocalTime';
 import { areStringsIdentical } from '../utilities/areStringsIdentical';
+import { useAttachmentModal } from '../contexts/useAttachmentModal';
 
 interface CommentRowWithEditorProps {
   comment: {
@@ -41,6 +43,11 @@ const CommentRowWithEditor = memo(function CommentRowWithEditor({
   handleOpenEditor,
   handleDeleteComment,
 }: CommentRowWithEditorProps) {
+  const { openModal } = useAttachmentModal();
+  function openAttachmentModal() {
+    openModal('COMMENT', { id: comment.id, comment });
+    console.log('Attachments', comment);
+  }
   return (
     <li key={comment.id} style={{ listStyleType: 'none' }}>
       {openEditor === comment.id ? (
@@ -117,6 +124,15 @@ const CommentRowWithEditor = memo(function CommentRowWithEditor({
           ></Button>
         </Tooltip>
       </Popconfirm>
+      <Tooltip title='See Attachments'>
+        <Button
+          type='text'
+          shape='circle'
+          icon={<PaperClipOutlined />}
+          size='small'
+          onClick={openAttachmentModal}
+        ></Button>
+      </Tooltip>
     </li>
   );
 });
