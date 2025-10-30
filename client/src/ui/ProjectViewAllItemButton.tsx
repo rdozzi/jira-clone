@@ -8,6 +8,7 @@ import { useDeleteProject } from '../features/projects/useDeleteProject';
 
 import { Dropdown, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
+import { useAttachmentModal } from '../contexts/useAttachmentModal';
 
 // ADJUST PROJECT EDIT SCHEMA TO ALLOW FOR EDITING STATUS, PRIVATE/PUBLIC BOOLEAN, AND OWNER. WILL NEED TO IMPLEMENT A VALID USER'S LIST FOR EDIT MODAL AND STATUS AND IS PROJECT PUBLIC OPTIONS. ADD CONDITIONAL RENDERING FEATURES THAT GIVE THE STATUS AND PUBLIC/NON-PUBLIC FEATURES WEIGHT.
 
@@ -23,6 +24,10 @@ const dropdownItems = [
   {
     key: 'archive',
     label: 'Archive',
+  },
+  {
+    key: 'attachments',
+    label: 'Attachments',
   },
   {
     key: 'delete',
@@ -41,6 +46,7 @@ const ProjectViewAllItemButton = memo(function ProjectViewAllItemButton({
   const { deleteProject, isDeletingProject, deleteProjectError } =
     useDeleteProject();
   const { openModal } = useModal();
+  const { openModal: openAttachmentModal } = useAttachmentModal();
 
   const isDropdownOpen = activeDropdown === record.id;
 
@@ -70,6 +76,11 @@ const ProjectViewAllItemButton = memo(function ProjectViewAllItemButton({
 
       case 'archive':
         console.log('Archive project:', record);
+        break;
+
+      case 'attachments':
+        openAttachmentModal('PROJECT', { id: record.id, record });
+        console.log('Attachments', record);
         break;
 
       case 'delete':
