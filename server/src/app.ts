@@ -31,8 +31,15 @@ import otpRoutes from './router/otpRoutes';
 
 export const app: Application = express();
 
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+    exposedHeaders: ['Content-Disposition'],
+  })
+);
+
 app.use(express.json());
-app.use(cors());
 
 // Global rate limiter middleware
 app.use(globalRateLimiter);
