@@ -4,6 +4,7 @@ import { useDropdown } from '../contexts/DropdownContext';
 import { useModal } from '../contexts/useModal';
 import { useCreateBoard } from '../features/boards/useCreateBoard';
 import { useDeleteBoard } from '../features/boards/useDeleteBoard';
+import { useAttachmentModal } from '../contexts/useAttachmentModal';
 
 import { Dropdown, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
@@ -22,6 +23,10 @@ const dropdownItems = [
     label: 'Archive',
   },
   {
+    key: 'attachments',
+    label: 'Attachments',
+  },
+  {
     key: 'delete',
     label: 'Delete',
   },
@@ -34,6 +39,7 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
 }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
   const { openModal } = useModal();
+  const { openModal: openAttachmentModal } = useAttachmentModal();
   const { createBoard, isCreatingBoard } = useCreateBoard();
   const { deleteBoard, isDeletingBoard } = useDeleteBoard();
 
@@ -66,6 +72,11 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
 
       case 'archive':
         console.log('Archive board:', record);
+        break;
+
+      case 'attachments':
+        openAttachmentModal('BOARD', { id: record.id, record });
+        console.log('Attachments', record);
         break;
 
       case 'delete':
