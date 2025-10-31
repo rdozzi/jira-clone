@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 
@@ -11,13 +11,16 @@ export function AuthProviderContext({
 }: {
   children: React.ReactNode;
 }) {
+  const navigate = useNavigate();
   const [authState, setAuthState] = useState<AuthState>({
     token: null,
     isAuthenticated: false,
     organizationRole: null,
     userId: null,
   });
+
   const [isLoading, setIsLoading] = useState(true);
+  const loginTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const authState = localStorage.getItem('auth');
@@ -27,8 +30,6 @@ export function AuthProviderContext({
     }
     setIsLoading(false);
   }, []);
-
-  const navigate = useNavigate();
 
   function login(
     token: string,
@@ -48,7 +49,7 @@ export function AuthProviderContext({
     const safeDelay = Math.max(0, Math.min(delay, 24 * 60 * 60 * 1000));
 
     // Set logout timer
-    setTimeout(() => {
+    loginTimeout.current = setTimeout(() => {
       logout();
     }, safeDelay);
 
@@ -71,9 +72,16 @@ export function AuthProviderContext({
       userId: null,
     });
 
+    if (loginTimeout.current) clearTimeout(loginTimeout.current);
     localStorage.removeItem('auth');
     navigate('/login', { replace: true });
   }
+
+  // Rehydration step
+  // Check if expiresAt exists in the auth object
+  // If it exists and it is still more than the current time, reset the timer to the current expiration
+  // If it exists and it is less than the current time, logout
+  // If it does not, do nothing
 
   return (
     <AuthContext.Provider
