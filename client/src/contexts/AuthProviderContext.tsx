@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 
@@ -22,14 +22,53 @@ export function AuthProviderContext({
   const [isLoading, setIsLoading] = useState(true);
   const loginTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const logout = useCallback(
+    function logout() {
+      setAuthState({
+        token: null,
+        isAuthenticated: false,
+        organizationRole: null,
+        userId: null,
+      });
+
+      if (loginTimeout.current) clearTimeout(loginTimeout.current);
+      localStorage.removeItem('auth');
+      navigate('/login', { replace: true });
+    },
+    [navigate]
+  );
+
   useEffect(() => {
-    const authState = localStorage.getItem('auth');
-    if (authState) {
-      // Rehydrate state
-      setAuthState(JSON.parse(authState));
+    const stored = localStorage.getItem('auth');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setAuthState(parsed);
+
+      const { expiresAt } = parsed;
+      if (expiresAt) {
+        const now = Date.now();
+        const exp = Number(expiresAt);
+
+        if (exp > now) {
+          const delay = exp - now;
+          const safeDelay = Math.max(0, Math.min(delay, 24 * 60 * 60 * 1000));
+
+          if (loginTimeout.current) clearTimeout(loginTimeout.current);
+          loginTimeout.current = setTimeout(() => {
+            logout();
+          }, safeDelay);
+        } else {
+          logout();
+        }
+      }
     }
+
     setIsLoading(false);
-  }, []);
+
+    return () => {
+      if (loginTimeout.current) clearTimeout(loginTimeout.current);
+    };
+  }, [logout]);
 
   function login(
     token: string,
@@ -63,25 +102,6 @@ export function AuthProviderContext({
     // Store the auth payload in local storage
     localStorage.setItem('auth', JSON.stringify(authPayload));
   }
-
-  function logout() {
-    setAuthState({
-      token: null,
-      isAuthenticated: false,
-      organizationRole: null,
-      userId: null,
-    });
-
-    if (loginTimeout.current) clearTimeout(loginTimeout.current);
-    localStorage.removeItem('auth');
-    navigate('/login', { replace: true });
-  }
-
-  // Rehydration step
-  // Check if expiresAt exists in the auth object
-  // If it exists and it is still more than the current time, reset the timer to the current expiration
-  // If it exists and it is less than the current time, logout
-  // If it does not, do nothing
 
   return (
     <AuthContext.Provider
