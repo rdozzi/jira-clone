@@ -26,13 +26,13 @@ export async function loginUser(
 
     if (!user || !password || user.deletedAt) {
       await verifyPassword('fakePassword', fakeHash);
-      return res.status(401).json({ error: 'No user found' });
+      return res.status(401).json({ error: 'Invalid Credentials' });
     }
 
     const isPasswordValid = await verifyPassword(password, user.passwordHash);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid password' });
+      return res.status(401).json({ error: 'Invalid Credentials' });
     }
 
     const token = jwt.sign(
