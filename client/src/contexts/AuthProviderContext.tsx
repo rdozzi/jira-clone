@@ -50,7 +50,6 @@ export function AuthProviderContext({
     // Set logout timer
     setTimeout(() => {
       logout();
-      navigate('/login', { replace: true });
     }, safeDelay);
 
     const authPayload: StoredAuth = {
@@ -73,6 +72,7 @@ export function AuthProviderContext({
     });
 
     localStorage.removeItem('auth');
+    navigate('/login', { replace: true });
   }
 
   return (
