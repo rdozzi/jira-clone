@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLogout } from '../features/auth/useLogout';
 
@@ -8,7 +7,6 @@ import { LogoutOutlined } from '@ant-design/icons';
 function LogoutButton() {
   const { logout: frontendLogout } = useAuth();
   const { mutate: logoutMutation } = useLogout();
-  const navigate = useNavigate();
 
   function handleLogout() {
     console.log('Logging out...');
@@ -17,7 +15,6 @@ function LogoutButton() {
       onSuccess: () => {
         console.log('Logout successful');
         frontendLogout();
-        navigate('/login', { replace: true });
       },
       onError: (error) => {
         console.error('Logout failed:', error);
