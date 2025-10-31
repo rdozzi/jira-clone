@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 
 import { OrganizationRole } from '../types/OrganizationRole';
@@ -10,7 +11,6 @@ export function AuthProviderContext({
 }: {
   children: React.ReactNode;
 }) {
-  //authState, setAuthState: user, token, isAuthenticated
   const [authState, setAuthState] = useState<AuthState>({
     token: null,
     isAuthenticated: false,
@@ -28,6 +28,8 @@ export function AuthProviderContext({
     setIsLoading(false);
   }, []);
 
+  const navigate = useNavigate();
+
   function login(
     token: string,
     organizationRole: OrganizationRole,
@@ -41,11 +43,21 @@ export function AuthProviderContext({
       userId,
     });
 
+    const now = Date.now();
+    const delay = expiresIn > now ? expiresIn - now : expiresIn;
+    const safeDelay = Math.max(0, Math.min(delay, 24 * 60 * 60 * 1000));
+
+    // Set logout timer
+    setTimeout(() => {
+      logout();
+      navigate('/login', { replace: true });
+    }, safeDelay);
+
     const authPayload: StoredAuth = {
       token,
       userId: userId || null,
       organizationRole,
-      expiresAt: String(expiresIn), // 1 day expiration
+      expiresAt: String(now + safeDelay), // 1 day expiration
     };
 
     // Store the auth payload in local storage
