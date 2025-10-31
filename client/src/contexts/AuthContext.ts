@@ -7,7 +7,8 @@ type AuthContextType = {
   login: (
     _token: string,
     _organizationRole: OrganizationRole,
-    _userId: number
+    _userId: number,
+    _expiresIn: number
   ) => void;
   logout: () => void;
   isAuthenticated: boolean;

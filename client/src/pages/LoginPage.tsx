@@ -79,9 +79,9 @@ function LoginPage() {
       return;
     }
 
-    const { token, userId, organizationRole } = loginCheckPayload;
+    const { token, userId, organizationRole, expiresIn } = loginCheckPayload;
 
-    login(token, organizationRole, userId);
+    login(token, organizationRole, expiresIn, userId);
     console.log(`Logged in as ${organizationRole}`);
     console.log(`token: ${token}`);
     console.log(`userId: ${userId}`);

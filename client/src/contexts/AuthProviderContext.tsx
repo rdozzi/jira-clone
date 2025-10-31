@@ -31,6 +31,7 @@ export function AuthProviderContext({
   function login(
     token: string,
     organizationRole: OrganizationRole,
+    expiresIn: number,
     userId?: number
   ) {
     setAuthState({
@@ -44,10 +45,10 @@ export function AuthProviderContext({
       token,
       userId: userId || null,
       organizationRole,
-      expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 hour expiration
+      expiresAt: String(expiresIn), // 1 day expiration
     };
-    // Store the auth payload in local storage
 
+    // Store the auth payload in local storage
     localStorage.setItem('auth', JSON.stringify(authPayload));
   }
 
