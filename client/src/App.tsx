@@ -28,6 +28,7 @@ import ProjectBoards from './ui/ProjectBoards';
 import ProjectViewAll from './ui/ProjectViewAll';
 import ProjectInfoLayout from './ui/ProjectInfoLayout';
 import ModalLayer from './ui/ModalLayer';
+import UserProfile from './ui/UserProfile';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -72,6 +73,10 @@ function App() {
                                 <Route
                                   path='/user-homepage'
                                   element={<UserHome />}
+                                />
+                                <Route
+                                  path='user-profile'
+                                  element={<UserProfile />}
                                 />
 
                                 {/* Tickets Section */}
