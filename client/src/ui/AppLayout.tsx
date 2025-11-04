@@ -1,12 +1,12 @@
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Layout, Select, Avatar, Flex, Space } from 'antd';
+import { Outlet, useLocation } from 'react-router-dom';
+import { Layout, Select } from 'antd';
 import HeaderComp from './HeaderComp';
 import ThemeToggle from './ThemeToggle';
 import LogoutButton from './LogoutButton';
 import UserHomeButton from './UserHomeButton';
 import ProjectInfoLink from './ProjectInfoLink';
+import UserAvatar from './userAvatar';
 import { useProjectBoard } from '../contexts/useProjectBoard';
-import { useGetUserSelf } from '../features/users/useGetUserSelf';
 
 const { Sider, Footer, Content } = Layout;
 
@@ -31,44 +31,16 @@ function AppLayout() {
     isBoardLoading,
     // boardError,
   } = useProjectBoard();
-  const { userSelf } = useGetUserSelf();
   const location = useLocation();
-  const navigate = useNavigate();
-
-  function onClick() {
-    navigate('/user-profile', { replace: true });
-  }
 
   const isProjectInfoView = /^\/projects\//.test(location.pathname);
-
-  function getInitials(firstName: string, lastName: string) {
-    if (!firstName && !lastName) return '?';
-    const firstInitial = firstName?.[0] ?? '';
-    const lastInitial = lastName?.[0] ?? '';
-
-    const initials = firstInitial + lastInitial;
-    return initials || '?';
-  }
 
   return (
     <Layout>
       <Sider style={siderStyle}>
-        <Flex justify='flex-start' align='center'>
-          <Space>
-            <span>
-              <Avatar
-                size={'large'}
-                onClick={onClick}
-                style={{ cursor: 'pointer' }}
-              >
-                {userSelf
-                  ? getInitials(userSelf?.firstName, userSelf?.lastName)
-                  : '?'}
-              </Avatar>
-            </span>
-            <span>{`Hello, ${userSelf?.firstName}!`}</span>
-          </Space>
-        </Flex>
+        <div>
+          <UserAvatar />
+        </div>
         <div>
           <ThemeToggle />
         </div>
