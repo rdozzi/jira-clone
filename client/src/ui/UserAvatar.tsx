@@ -17,7 +17,7 @@ function UserAvatar() {
   const navigate = useNavigate();
 
   function onClick() {
-    navigate('/user-profile', { replace: true });
+    navigate('/user-profile');
   }
 
   return (
