@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDropdown } from '../contexts/DropdownContext';
 import { useModal } from '../contexts/useModal';
 import ProjectMembersModal from './ProjectMembersModal';
@@ -18,6 +19,10 @@ const dropdownItems = [
     key: 'removeMember',
     label: 'Remove Member',
   },
+  {
+    key: 'userInfo',
+    label: 'User Info',
+  },
 ];
 
 const ProjectMemberListItemButton = memo(function ProjectMemberListItemButton({
@@ -31,6 +36,7 @@ const ProjectMemberListItemButton = memo(function ProjectMemberListItemButton({
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
   const { removeProjectMember, isRemovingProjectMember } =
     useRemoveProjectMember();
+  const navigate = useNavigate();
 
   const isDropdownOpen = activeDropdown === record.userId;
 
@@ -50,6 +56,10 @@ const ProjectMemberListItemButton = memo(function ProjectMemberListItemButton({
           userId: record.userId,
         });
         console.log('Remove project member:', record);
+        break;
+
+      case 'userInfo':
+        navigate('/user-profile');
         break;
 
       default:
