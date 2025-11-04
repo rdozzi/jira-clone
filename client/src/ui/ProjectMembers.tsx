@@ -39,7 +39,7 @@ function ProjectMembers() {
         a.lastName.toLowerCase().localeCompare(b.lastName.toLowerCase()),
     },
     {
-      title: 'Role',
+      title: 'Project Role',
       dataIndex: 'projectRole',
       sorter: (a, b) => a.projectRole.localeCompare(b.projectRole),
     },
