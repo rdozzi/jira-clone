@@ -29,6 +29,7 @@ import ProjectViewAll from './ui/ProjectViewAll';
 import ProjectInfoLayout from './ui/ProjectInfoLayout';
 import ModalLayer from './ui/ModalLayer';
 import UserProfile from './ui/UserProfile';
+import PublicRoute from './utilities/PublicRoute';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -57,7 +58,14 @@ function App() {
                             <Routes>
                               {/* Public Routes */}
                               <Route path='/' element={<PublicHomepage />} />
-                              <Route path='/login' element={<LoginPage />} />
+                              <Route
+                                path='/login'
+                                element={
+                                  <PublicRoute>
+                                    <LoginPage />
+                                  </PublicRoute>
+                                }
+                              ></Route>
 
                               {/* Protected Routes */}
                               <Route
