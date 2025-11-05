@@ -45,3 +45,15 @@ export function getUpdatedProjectFields(originalProject: any, values: any) {
   }
   return updatedFields;
 }
+
+export function getUpdatedUserFields(originalUser: any, values: any) {
+  const updatedFields: any = {};
+  for (const key of Object.keys(values)) {
+    const original = originalUser[key];
+    const updated = values[key];
+    if (original !== updated) {
+      updatedFields[key] = updated;
+    }
+  }
+  return updatedFields;
+}
