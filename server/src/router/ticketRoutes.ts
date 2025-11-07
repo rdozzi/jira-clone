@@ -7,7 +7,7 @@ import { checkProjectRole } from '../middleware/checkProjectRole';
 import {
   getAllTickets,
   getTicketById,
-  // getTicketByAssigneeId,
+  getTicketsByAssigneeId,
   createNewTicket,
   updateTicket,
   deleteTicket,
@@ -23,6 +23,7 @@ import {
 } from '../schemas/ticket.schema';
 import { validateQuery } from '../middleware/validation/validateQuery';
 import { checkMaxUsageTotals } from '../middleware/organizationUsageMiddleware/checkMaxUsageTotals';
+import { selfOrAdminCheck } from '../middleware/ticketMiddleware/selfOrAdminCheck';
 
 const router = Router();
 
@@ -48,17 +49,14 @@ router.get(
   }
 );
 
-// Get all Tickets by User Id
-// Deprecated. Use get all ticket params with query to get tickets for specific users by assigneeId or reporterId.
-// router.get(
-//   '/tickets/:userId/assigneeId',
-//   resolveProjectIdForTicketRoute(),
-//   checkProjectMembership(),
-//   checkProjectRole(ProjectRole.USER),
-//   async (req: Request, res: Response): Promise<void> => {
-//     await getTicketByAssigneeId(req, res, prisma);
-//   }
-// );
+router.get(
+  '/tickets/:userId/assigneeId',
+  selfOrAdminCheck(),
+  validateParams,
+  async (req: Request, res: Response): Promise<void> => {
+    await getTicketsByAssigneeId(req, res, prisma);
+  }
+);
 
 // Get Tickets by Board Id
 router.get(
