@@ -80,28 +80,26 @@ export async function getTicketById(
   }
 }
 
-// This function is deprecated. Searching strictly by parameters that doesn't necessitate project association will be used with query terms in the getAllTickets.
-// export async function getTicketByAssigneeId(
-//   req: Request,
-//   res: Response,
-//   prisma: PrismaClient
-// ) {
-//   const { userId } = req.params;
-//   const userIdParsed = parseInt(userId, 10);
-//   try {
-//     const tickets = await prisma.ticket.findMany({
-//       where: { assigneeId: userIdParsed },
-//     });
-//     res
-//       .status(200)
-//       .json({ message: 'Ticket fetched successfully', data: tickets });
-//     return;
-//   } catch (error) {
-//     console.log('Error fetching tickets: ', error);
-//     res.status(500).json({ error: 'Failed to fetch tickets' });
-//     return;
-//   }
-// }
+export async function getTicketsByAssigneeId(
+  req: Request,
+  res: Response,
+  prisma: PrismaClient
+) {
+  const userId = res.locals.validatedParam;
+  try {
+    const tickets = await prisma.ticket.findMany({
+      where: { assigneeId: userId },
+    });
+    res
+      .status(200)
+      .json({ message: 'Tickets fetched successfully', data: tickets });
+    return;
+  } catch (error) {
+    console.log('Error fetching tickets: ', error);
+    res.status(500).json({ error: 'Failed to fetch tickets' });
+    return;
+  }
+}
 
 export async function getTicketsByBoardId(
   req: Request,
