@@ -1,8 +1,10 @@
+import { useEffect, useState } from 'react';
+import { useUser } from './useUser';
 import { UserHomeTicketContext } from './UserHomeTicketContext';
 import { useGetTicketByAssigneeId } from '../features/tickets/useGetTicketsByAssigneeId';
+import { useGetLogByUserId } from '../features/activityLogs/useGetLogByUserId';
 import { Tickets } from '../types/Tickets';
-import { useUser } from './useUser';
-import { useEffect, useState } from 'react';
+import { ActivityLogs } from '../types/ActivityLogs';
 
 type UserHomeTicketProviderProps = { children: React.ReactNode };
 
@@ -20,6 +22,9 @@ export const UserHomeTicketProvider = ({
 
   const { isFetchingTicketsById, ticketsById, ticketsByIdError } =
     useGetTicketByAssigneeId(assigneeId);
+
+  const { isFetchingLogs, activityLogs, activityLogsError } =
+    useGetLogByUserId(assigneeId);
 
   const activeTickets: Tickets[] = (ticketsById ?? []).filter(
     (ticketById: Tickets) => {
@@ -45,14 +50,20 @@ export const UserHomeTicketProvider = ({
     }
   );
 
+  const recentActivity: ActivityLogs[] = activityLogs ?? [];
+  console.log('recentActivity', recentActivity);
+
   return (
     <UserHomeTicketContext.Provider
       value={{
         activeTickets,
         overDueTickets,
         upcomingDeadlines,
+        recentActivity,
         isFetchingTicketsById,
         ticketsByIdError,
+        isFetchingLogs,
+        activityLogsError,
       }}
     >
       {children}

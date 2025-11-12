@@ -1,6 +1,5 @@
-import { Row, Col, Card, Space, List } from 'antd';
+import { Row, Col, Card, List } from 'antd';
 import { useUserHomeTicket } from '../contexts/useUserHomeTicket';
-import { Tickets } from '../types/Tickets';
 
 function dateFormat(date: Date) {
   const newDate = new Date(date);
@@ -18,11 +17,16 @@ function UserHome() {
     activeTickets,
     overDueTickets,
     upcomingDeadlines,
+    recentActivity,
     isFetchingTicketsById,
     ticketsByIdError,
+    isFetchingLogs,
+    activityLogsError,
   } = useUserHomeTicket();
 
   if (ticketsByIdError) return <div>Error fetching tickets</div>;
+
+  if (activityLogsError) return <div>Error fetching logs</div>;
 
   return (
     <Row gutter={[16, 16]}>
@@ -78,7 +82,22 @@ function UserHome() {
         </Card>
       </Col>
       <Col span={12}>
-        <Card title='Recent Activity'>...</Card>
+        <Card title='Recent Activity' loading={isFetchingLogs}>
+          <List
+            dataSource={recentActivity}
+            renderItem={(item) => (
+              <List.Item>
+                {item.action} {dateFormat(item.createdAt)}
+              </List.Item>
+            )}
+            pagination={{
+              onChange: (page) => {
+                console.log(page);
+              },
+              pageSize: 5,
+            }}
+          />
+        </Card>
       </Col>
     </Row>
   );
