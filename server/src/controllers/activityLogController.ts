@@ -48,7 +48,7 @@ export async function getLogByTicketId(
   }
 }
 
-// Get logs by userId
+// Get logs by userId - Restricted to fetch 10 for the UserHome page recent activity log.
 export async function getLogByUserId(
   req: Request,
   res: Response,
@@ -60,6 +60,8 @@ export async function getLogByUserId(
 
     const logs = await prisma.activityLog.findMany({
       where: { userId: userId, organizationId: organizationId },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
     });
 
     res.status(200).json({ message: 'Log fetch successful', data: logs });
