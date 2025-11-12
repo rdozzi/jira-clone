@@ -59,7 +59,19 @@ export async function getLogByUserId(
     const organizationId = res.locals.userInfo.organizationId;
 
     const logs = await prisma.activityLog.findMany({
-      where: { userId: userId, organizationId: organizationId },
+      where: {
+        userId: userId,
+        organizationId: organizationId,
+        OR: [
+          { action: { contains: 'DOWNLOAD' } },
+          { action: { contains: 'UPLOAD' } },
+          { action: { contains: 'UPDATE' } },
+          { action: { contains: 'DELETE' } },
+          { action: { contains: 'CREATE' } },
+          { action: { contains: 'ADD' } },
+          { action: { contains: 'REMOVE' } },
+        ],
+      },
       orderBy: { createdAt: 'desc' },
       take: 10,
     });
