@@ -37,7 +37,7 @@ router.get(
 
 router.get(
   '/activity-logs/:userId/user',
-  authorizeOrganizationRole(OrganizationRole.ADMIN),
+  authorizeOrganizationRole(OrganizationRole.GUEST),
   validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await getLogByUserId(req, res, prisma);
