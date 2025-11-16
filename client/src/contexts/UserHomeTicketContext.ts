@@ -1,12 +1,11 @@
 import { createContext } from 'react';
 import { Tickets } from '../types/Tickets';
-import { ActivityLogs } from '../types/ActivityLogs';
 
 interface UserHomeTicketContextType {
   activeTickets: Tickets[];
   overDueTickets: Tickets[];
   upcomingDeadlines: Tickets[];
-  recentActivity: ActivityLogs[];
+  recentActivity: { [key: string]: any }[];
   isFetchingTicketsById: boolean;
   ticketsByIdError: Error | null;
   isFetchingLogs: boolean;

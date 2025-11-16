@@ -87,7 +87,7 @@ function UserHome() {
             dataSource={recentActivity}
             renderItem={(item) => (
               <List.Item>
-                {item.action} {dateFormat(item.createdAt)}
+                {item.message}, {item.time}
               </List.Item>
             )}
             pagination={{
