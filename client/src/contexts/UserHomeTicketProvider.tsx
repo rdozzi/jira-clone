@@ -5,6 +5,7 @@ import { useGetTicketByAssigneeId } from '../features/tickets/useGetTicketsByAss
 import { useGetLogByUserId } from '../features/activityLogs/useGetLogByUserId';
 import { Tickets } from '../types/Tickets';
 import { ActivityLogs } from '../types/ActivityLogs';
+import { mapActivityToMessage } from '../utilities/mapActivityToMessage';
 
 type UserHomeTicketProviderProps = { children: React.ReactNode };
 
@@ -50,8 +51,11 @@ export const UserHomeTicketProvider = ({
     }
   );
 
-  const recentActivity: ActivityLogs[] = activityLogs ?? [];
-  console.log('recentActivity', recentActivity);
+  const recentActivity: { [key: string]: any }[] = (activityLogs ?? []).map(
+    (log: ActivityLogs) => {
+      return mapActivityToMessage(log);
+    }
+  );
 
   return (
     <UserHomeTicketContext.Provider
