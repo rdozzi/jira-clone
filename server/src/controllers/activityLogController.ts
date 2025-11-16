@@ -70,6 +70,7 @@ export async function getLogByUserId(
           { action: { contains: 'CREATE' } },
           { action: { contains: 'ADD' } },
           { action: { contains: 'REMOVE' } },
+          { action: { contains: 'BAN' } },
         ],
       },
       orderBy: { createdAt: 'desc' },
