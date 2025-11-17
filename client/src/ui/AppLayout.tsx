@@ -5,7 +5,7 @@ import ThemeToggle from './ThemeToggle';
 import LogoutButton from './LogoutButton';
 import UserHomeButton from './UserHomeButton';
 import ProjectInfoLink from './ProjectInfoLink';
-import UserAvatar from './userAvatar';
+import UserAvatar from './UserAvatar';
 import { useProjectBoard } from '../contexts/useProjectBoard';
 
 const { Sider, Footer, Content } = Layout;
@@ -102,7 +102,6 @@ function AppLayout() {
         <Content>
           <Outlet />
         </Content>
-        <Footer style={footerStyle}>Footer</Footer>
       </Layout>
     </Layout>
   );
