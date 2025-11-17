@@ -8,15 +8,11 @@ import ProjectInfoLink from './ProjectInfoLink';
 import UserAvatar from './UserAvatar';
 import { useProjectBoard } from '../contexts/useProjectBoard';
 
-const { Sider, Footer, Content } = Layout;
+const { Sider, Content } = Layout;
 
 type StyleObject = React.CSSProperties;
 
 const siderStyle: StyleObject = { backgroundColor: 'aqua', height: '100vh' };
-
-const footerStyle: StyleObject = {
-  backgroundColor: 'lightblue',
-};
 
 function AppLayout() {
   const {
