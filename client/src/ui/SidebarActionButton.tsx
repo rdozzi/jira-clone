@@ -25,12 +25,18 @@ function SidebarActionButton({
   return (
     <Tooltip title={tooltipTitle}>
       <Button
+        block
         type='text'
         onClick={onClick}
         style={{
           width: '100%',
           textAlign: 'left',
           fontSize: `${fontSize}px`,
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '6px 2px',
           transform: transform ?? undefined,
           transition: transition ?? undefined,
         }}
@@ -40,8 +46,8 @@ function SidebarActionButton({
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            lineHeight: 1, // ensures perfect centering for any font size
-            height: '100%', // prevents drift
+            lineHeight: 1,
+            height: '100%',
           }}
         >
           {icon}
