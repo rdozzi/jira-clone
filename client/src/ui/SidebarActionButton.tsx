@@ -13,7 +13,6 @@ interface SidebarActionButtonProps {
 }
 
 function SidebarActionButton({
-  children,
   icon,
   onClick,
   fontSize,
@@ -28,33 +27,20 @@ function SidebarActionButton({
         block
         type='text'
         onClick={onClick}
+        icon={icon}
+        iconPosition='start'
         style={{
-          width: '100%',
-          textAlign: 'left',
-          fontSize: `${fontSize}px`,
           display: 'flex',
           justifyContent: 'flex-start',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '6px 2px',
+          textAlign: 'left',
+          lineHeight: 1,
+          fontSize: `${fontSize}px`,
+          padding: '6px 4px',
           transform: transform ?? undefined,
           transition: transition ?? undefined,
         }}
       >
-        <span
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            lineHeight: 1,
-            height: '100%',
-          }}
-        >
-          {icon}
-          <span style={{ fontSize: `${fontSize}px` }}>
-            {children ?? `${text}`}
-          </span>
-        </span>
+        {text}
       </Button>
     </Tooltip>
   );
