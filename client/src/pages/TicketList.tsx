@@ -125,7 +125,13 @@ function TicketList() {
   }
 
   return (
-    <>
+    <div
+      style={{
+        borderRadius: 8,
+        padding: 4,
+        background: 'var(--antd-background, transparent)',
+      }}
+    >
       <Table<DataType>
         columns={columns}
         dataSource={tickets}
@@ -134,7 +140,7 @@ function TicketList() {
         loading={isLoading}
         pagination={false}
       />
-      <div>
+      <div style={{ marginTop: 4 }}>
         <Button onClick={handleCreate}>
           <PlusOutlined /> Create
         </Button>
@@ -146,7 +152,7 @@ function TicketList() {
         mode={mode}
         record={record}
       />
-    </>
+    </div>
   );
 }
 export default TicketList;
