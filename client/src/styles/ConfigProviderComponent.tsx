@@ -1,35 +1,29 @@
 import React from 'react';
+import { ConfigProvider, theme } from 'antd';
+import { darkTheme, lightTheme } from './themeConfig';
 
-import { ConfigProvider } from 'antd';
-
-interface ConfigProviderComponentProps extends React.PropsWithChildren {
-  themeTokens: object;
-  lightTheme: { colorText: string; colorPrimary: string };
-  darkTheme: { colorText: string; colorPrimary: string };
+interface Props {
   modeTheme: 'light' | 'dark';
+  children: React.ReactNode;
 }
 
-function ConfigProviderComponent({
-  themeTokens,
-  lightTheme,
-  darkTheme,
-  modeTheme,
-  children,
-}: ConfigProviderComponentProps) {
+function ConfigProviderComponent({ modeTheme, children }: Props) {
+  const selectedTheme = modeTheme === 'light' ? lightTheme : darkTheme;
   return (
     <ConfigProvider
       theme={{
-        token: { ...themeTokens },
+        algorithm:
+          modeTheme === 'light' ? theme.defaultAlgorithm : theme.darkAlgorithm,
+        token: selectedTheme.token,
         components: {
-          Tabs: {
-            itemColor:
-              modeTheme === 'light'
-                ? lightTheme.colorText
-                : darkTheme.colorText,
-            inkBarColor:
-              modeTheme === 'light'
-                ? lightTheme.colorPrimary
-                : darkTheme.colorPrimary,
+          Layout: {
+            headerBg: selectedTheme.layout.headerBg,
+            siderBg: selectedTheme.layout.siderBg,
+          },
+          Button: {
+            colorText: selectedTheme.token.colorText,
+            defaultColor: selectedTheme.token.colorText,
+            defaultHoverColor: selectedTheme.token.colorPrimary,
           },
         },
       }}
