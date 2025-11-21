@@ -2,3 +2,11 @@ body {
   margin: 0;
   padding: 0;
 }
+
+.ant-layout-header {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ant-layout-sider {
+  border-right: 1px solid var(--border-color);
+}

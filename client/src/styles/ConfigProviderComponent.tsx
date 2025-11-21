@@ -29,6 +29,13 @@ function ConfigProviderComponent({ modeTheme, children }: Props) {
         },
       }}
     >
+      <style>
+        {`
+      :root {
+        --border-color: ${selectedTheme.token.colorBorder};
+      }
+    `}
+      </style>
       {children}
     </ConfigProvider>
   );
