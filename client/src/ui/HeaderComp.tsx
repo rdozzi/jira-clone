@@ -24,7 +24,12 @@ function HeaderComp() {
   ];
 
   return (
-    <Header>
+    <Header
+      style={{
+        height: 64,
+        padding: '4px 16px',
+      }}
+    >
       <Tabs
         activeKey={location.pathname}
         onChange={(key) => navigate(key)}
