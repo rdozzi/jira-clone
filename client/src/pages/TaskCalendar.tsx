@@ -170,7 +170,14 @@ const TaskCalender = memo(function TaskCalender() {
   }
 
   return (
-    <>
+    <div
+      style={{
+        margin: '4px',
+        borderRadius: 8,
+        padding: 4,
+        background: 'var(--antd-background, transparent)',
+      }}
+    >
       <Calendar
         mode={viewMode}
         onPanelChange={(_, mode) => {
@@ -189,7 +196,7 @@ const TaskCalender = memo(function TaskCalender() {
         mode={mode}
         record={record}
       />
-    </>
+    </div>
   );
 });
 export default TaskCalender;
