@@ -1,31 +1,31 @@
-import { useEffect, ReactNode } from 'react';
-import { lightTheme, darkTheme } from '../styles/themeConfig';
+import { useEffect, useState, ReactNode } from 'react';
+import { Mode } from './ThemeContext';
 
-import useLocalStorageState from '../hooks/useLocalStorageState';
 import { ThemeContext } from './ThemeContext';
 import ConfigProviderComponent from '../styles/ConfigProviderComponent';
 
 export function ThemeProviderContext({ children }: { children: ReactNode }) {
-  const [modeTheme, setModeTheme] = useLocalStorageState('theme');
+  const [modeTheme, setModeTheme] = useState<Mode>('light');
 
-  // Update root html tag
+  // Load saved theme on mount
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', modeTheme);
+    const stored = localStorage.getItem('themeMode');
+    if (stored === 'light' || stored === 'dark') {
+      setModeTheme(stored);
+    }
+  }, []);
+
+  // Save theme on change
+  useEffect(() => {
+    localStorage.setItem('themeMode', modeTheme);
   }, [modeTheme]);
 
   const toggleTheme = () =>
-    setModeTheme(modeTheme === 'light' ? 'dark' : 'light');
-
-  const themeTokens = modeTheme === 'light' ? lightTheme : darkTheme;
+    setModeTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
 
   return (
     <ThemeContext.Provider value={{ modeTheme, toggleTheme }}>
-      <ConfigProviderComponent
-        themeTokens={themeTokens}
-        lightTheme={lightTheme}
-        darkTheme={darkTheme}
-        modeTheme={modeTheme}
-      >
+      <ConfigProviderComponent modeTheme={modeTheme}>
         {children}
       </ConfigProviderComponent>
     </ThemeContext.Provider>
