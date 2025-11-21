@@ -10,3 +10,13 @@ body {
 .ant-layout-sider {
   border-right: 1px solid var(--border-color);
 }
+
+.ant-picker-date-panel
+  .ant-picker-cell:not(.ant-picker-cell-in-view)
+  .ant-picker-cell-inner {
+  display: none;
+}
+
+.ant-picker-date-panel .ant-picker-cell:not(.ant-picker-cell-in-view) {
+  pointer-events: none;
+}
