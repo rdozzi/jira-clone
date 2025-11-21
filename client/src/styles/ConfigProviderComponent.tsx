@@ -19,6 +19,7 @@ function ConfigProviderComponent({ modeTheme, children }: Props) {
           Layout: {
             headerBg: selectedTheme.layout.headerBg,
             siderBg: selectedTheme.layout.siderBg,
+            bodyBg: selectedTheme.layout.bodyBg,
           },
           Button: {
             colorText: selectedTheme.token.colorText,
