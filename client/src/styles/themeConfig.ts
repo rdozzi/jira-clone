@@ -1,13 +1,15 @@
 export const lightTheme = {
   algorithm: 'light',
   layout: {
-    headerBg: '#EFEFEF',
-    siderBg: '#F5F5F5',
+    headerBg: '#FAFBFC',
+    siderBg: '#F4F5F7',
+    bodyBg: '#FFFFFF',
   },
   token: {
     colorPrimary: '#5154F0',
     colorText: '#1F2937',
-    colorBgContainer: '#FFFFFF',
+    colorBgBase: '#FAFBFC',
+    colorBgContainer: '#FAFBFC',
     borderRadius: 8,
     fontSize: 16,
     fontFamily: "'Inter', sans-serif",
@@ -19,11 +21,13 @@ export const darkTheme = {
   layout: {
     headerBg: '#262626',
     siderBg: '#1E1E1E',
+    bodyBg: '#1E1E1E',
   },
   token: {
     colorPrimary: '#5154F0',
     colorText: '#FDFDFD',
-    colorBgContainer: '#1E1E1E',
+    colorBgBase: '#1E1E1E',
+    colorBgContainer: '#323232',
     borderRadius: 8,
     fontSize: 16,
     fontFamily: "'Inter', sans-serif",
