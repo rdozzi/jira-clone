@@ -72,72 +72,81 @@ function AppLayout({ children }: { children: ReactNode }) {
       >
         <Sider
           style={{
-            display: 'flex',
-            flexDirection: 'column',
             padding: '8px',
             gap: '18px',
             overflow: 'hidden',
           }}
         >
-          <Flex vertical justify='flex-start'>
-            <UserAvatar />
-            {/*Light/Dark mode component*/}
-            <SidebarActionButton
-              children={children}
-              icon={modeTheme === 'light' ? <MoonOutlined /> : <SunOutlined />}
-              onClick={toggleTheme}
-              fontSize={16}
-              text={modeTheme === 'light' ? 'Dark Mode' : 'Light Mode'}
-              transition={'transform 0.3s ease-in-out'}
-              tooltipTitle={
-                modeTheme === 'light'
-                  ? 'Switch to Dark Mode'
-                  : 'Switch to Light Mode'
-              }
-            />
-          </Flex>
-          <Flex vertical style={{ marginTop: 24 }} align='flex-start'>
-            <Text type='secondary' style={{ fontSize: 12, letterSpacing: 0.5 }}>
-              WORKSPACE
-            </Text>
-            <GenericDropdown
-              option={project}
-              options={projects}
-              setSelected={setProject}
-              isSelectedLoading={isProjectLoading}
-              isProjectInfoView={isProjectInfoView}
-            />
-            <GenericDropdown
-              option={board}
-              options={boards}
-              setSelected={setBoard}
-              isSelectedLoading={isBoardLoading}
-              isProjectInfoView={isProjectInfoView}
-            />
-            <SidebarActionButton
-              children={children}
-              icon={<InfoCircleOutlined />}
-              onClick={() => navigate(`/projects/${projectIdNumber}/overview`)}
-              fontSize={16}
-              text={'Project Info'}
-            />
-          </Flex>
-          <Flex vertical justify='flex-end' style={{ marginTop: 24 }}>
-            <SidebarActionButton
-              children={children}
-              icon={<HomeOutlined />}
-              onClick={() => navigate('/user-homepage')}
-              fontSize={16}
-              text={'Home'}
-            />
-            <SidebarActionButton
-              children={children}
-              icon={<LogoutOutlined />}
-              onClick={handleLogout}
-              fontSize={16}
-              text={'Logout'}
-            />
-          </Flex>
+          <div
+            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+          >
+            <Flex vertical justify='flex-start'>
+              <UserAvatar />
+              {/*Light/Dark mode component*/}
+              <SidebarActionButton
+                children={children}
+                icon={
+                  modeTheme === 'light' ? <MoonOutlined /> : <SunOutlined />
+                }
+                onClick={toggleTheme}
+                fontSize={16}
+                text={modeTheme === 'light' ? 'Dark Mode' : 'Light Mode'}
+                transition={'transform 0.3s ease-in-out'}
+                tooltipTitle={
+                  modeTheme === 'light'
+                    ? 'Switch to Dark Mode'
+                    : 'Switch to Light Mode'
+                }
+              />
+            </Flex>
+            <Flex vertical style={{ marginTop: 24 }} align='flex-start'>
+              <Text
+                type='secondary'
+                style={{ fontSize: 12, letterSpacing: 0.5 }}
+              >
+                WORKSPACE
+              </Text>
+              <GenericDropdown
+                option={project}
+                options={projects}
+                setSelected={setProject}
+                isSelectedLoading={isProjectLoading}
+                isProjectInfoView={isProjectInfoView}
+              />
+              <GenericDropdown
+                option={board}
+                options={boards}
+                setSelected={setBoard}
+                isSelectedLoading={isBoardLoading}
+                isProjectInfoView={isProjectInfoView}
+              />
+              <SidebarActionButton
+                children={children}
+                icon={<InfoCircleOutlined />}
+                onClick={() =>
+                  navigate(`/projects/${projectIdNumber}/overview`)
+                }
+                fontSize={16}
+                text={'Project Info'}
+              />
+            </Flex>
+            <Flex vertical align='flex-end' style={{ marginTop: 'auto' }}>
+              <SidebarActionButton
+                children={children}
+                icon={<HomeOutlined />}
+                onClick={() => navigate('/user-homepage')}
+                fontSize={16}
+                text={'Home'}
+              />
+              <SidebarActionButton
+                children={children}
+                icon={<LogoutOutlined />}
+                onClick={handleLogout}
+                fontSize={16}
+                text={'Logout'}
+              />
+            </Flex>
+          </div>
         </Sider>
         <Content>
           <Outlet />
