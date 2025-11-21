@@ -22,10 +22,6 @@ const { Text } = Typography;
 
 const { Sider, Content } = Layout;
 
-type StyleObject = React.CSSProperties;
-
-const siderStyle: StyleObject = { backgroundColor: 'aqua', height: '100vh' };
-
 function AppLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const { logout: frontendLogout } = useAuth();
@@ -64,7 +60,7 @@ function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <Layout>
-      <Sider style={siderStyle}>
+      <Sider>
         <div
           style={{
             height: '100vh',
