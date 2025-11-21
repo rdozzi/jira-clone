@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 import type { CalendarProps, SegmentedProps } from 'antd';
 import { Record } from './TicketList';
-import { Calendar, Button, DatePicker, Segmented } from 'antd';
+import { Calendar, Button, DatePicker, Segmented, Tooltip } from 'antd';
 import {
   LeftCircleOutlined,
   RightCircleOutlined,
@@ -57,9 +57,11 @@ const TaskCalender = memo(function TaskCalender() {
           <LeftCircleOutlined />
         </Button>
         {viewMode === 'month' ? (
-          <Button type='link' onClick={() => setDate(dayjs())}>
-            Today
-          </Button>
+          <Tooltip title="Go to today's date">
+            <Button type='link' onClick={() => setDate(dayjs())}>
+              Today
+            </Button>
+          </Tooltip>
         ) : null}
         <Button type='link' onClick={handleNext}>
           <RightCircleOutlined />
