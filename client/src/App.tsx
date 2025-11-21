@@ -73,8 +73,7 @@ function App() {
                                 <Route
                                   element={
                                     <ProtectedRoute>
-                                      {' '}
-                                      {<AppLayout />}
+                                      <AppLayout>{<></>}</AppLayout>
                                       <ModalLayer />
                                     </ProtectedRoute>
                                   }
