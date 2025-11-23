@@ -26,6 +26,7 @@ function ConfigProviderComponent({ modeTheme, children }: Props) {
             defaultColor: selectedTheme.token.colorText,
             defaultHoverColor: selectedTheme.token.colorPrimary,
           },
+          Pagination: selectedTheme.components?.Pagination,
         },
       }}
     >
