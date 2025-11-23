@@ -42,6 +42,9 @@ function AppLayout({ children }: { children: ReactNode }) {
   } = useProjectBoard();
 
   const isProjectInfoView = /^\/projects\//.test(location.pathname);
+  const isUserHomePageView = /^\/user-homepage/.test(location.pathname);
+  const isUserProfileView = /^\/user-profile/.test(location.pathname);
+
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -111,14 +114,18 @@ function AppLayout({ children }: { children: ReactNode }) {
                 options={projects}
                 setSelected={setProject}
                 isSelectedLoading={isProjectLoading}
-                isProjectInfoView={isProjectInfoView}
+                isProjectInfoView={
+                  isProjectInfoView || isUserHomePageView || isUserProfileView
+                }
               />
               <GenericDropdown
                 option={board}
                 options={boards}
                 setSelected={setBoard}
                 isSelectedLoading={isBoardLoading}
-                isProjectInfoView={isProjectInfoView}
+                isProjectInfoView={
+                  isProjectInfoView || isUserHomePageView || isUserProfileView
+                }
               />
               <SidebarActionButton
                 children={children}
