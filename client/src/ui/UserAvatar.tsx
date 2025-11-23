@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Avatar, Flex, Space } from 'antd';
+import { useTheme } from '../contexts/useTheme';
 
 import { useGetUserSelf } from '../features/users/useGetUserSelf';
 
@@ -14,6 +15,7 @@ function getInitials(firstName: string, lastName: string) {
 
 function UserAvatar() {
   const { userSelf } = useGetUserSelf();
+  const { modeTheme } = useTheme();
   const navigate = useNavigate();
 
   function onClick() {
@@ -34,7 +36,9 @@ function UserAvatar() {
               : '?'}
           </Avatar>
         </span>
-        <span>{`Hello, ${userSelf?.firstName}!`}</span>
+        <span
+          style={{ color: modeTheme === 'dark' ? '#FDFDFD' : '#1F2937' }}
+        >{`Hello, ${userSelf?.firstName}!`}</span>
       </Space>
     </Flex>
   );
