@@ -42,10 +42,6 @@ function LoginPage() {
   const { login } = useAuth();
   const { newLoginInfo, loginInfoLoading } = useLogin();
 
-  function toHome() {
-    navigate('/');
-  }
-
   function error() {
     messageApi.open({
       type: 'error',
@@ -123,10 +119,40 @@ function LoginPage() {
             justifyContent: 'center',
             alignItems: 'center',
             padding: '24px',
-            background: '#f0f2f5',
+            background: 'linear-gradient(135deg, #e7e7e7 0%, #fafafa 100%)',
           }}
         >
           <Card title='Login' style={{ width: 400 }} bordered={false}>
+            <div style={{ marginBottom: 16, textAlign: 'center' }}>
+              <h2 style={{ margin: 0 }}>Jira Clone</h2>
+              <p
+                style={{
+                  margin: '4px 0',
+                  color: 'var(--antd-text-secondary, #666)',
+                }}
+              >
+                A full-stack project management application
+              </p>
+
+              <p
+                style={{
+                  marginTop: 8,
+                  fontSize: 13,
+                  color: 'var(--antd-text-secondary, #888)',
+                }}
+              >
+                Built with React, Ant Design, Node.js, PostgreSQL, Prisma, and
+                multi-tenant role-based authentication.
+              </p>
+            </div>
+
+            <div
+              style={{
+                height: 1,
+                background: 'var(--antd-border-color, #d9d9d9)',
+                marginBottom: 16,
+              }}
+            />
             <Form
               name='login'
               layout='vertical'
@@ -199,12 +225,22 @@ function LoginPage() {
                 </Form.Item>
               </Space>
             </Form>
+            <div
+              style={{
+                marginTop: 16,
+                textAlign: 'center',
+                fontSize: 12,
+                color: 'var(--antd-text-secondary, #999)',
+              }}
+            >
+              <p style={{ marginBottom: 4 }}>
+                Demo credentials available in the project README.
+              </p>
+              <a style={{ fontSize: 12 }}>Forgot password?</a>
+            </div>
           </Card>
         </Content>
       </Layout>
-      <div>
-        <Button onClick={toHome}>Go To Homepage</Button>
-      </div>
     </>
   );
 }
