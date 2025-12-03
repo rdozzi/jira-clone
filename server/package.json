@@ -15,7 +15,6 @@
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
   },
-  "type": "module",
   "author": "Raphael Dozzi",
   "license": "ISC",
   "devDependencies": {
