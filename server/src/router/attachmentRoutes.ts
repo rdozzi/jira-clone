@@ -16,10 +16,8 @@ import { resolveProjectIdForCreateAttachment } from '../middleware/attachments/r
 import { resolveProjectIdForGetAttachments } from '../middleware/attachments/resolveProjectIdForGetAttachments';
 import { resolveProjectIdForSingleDeletionAndDownload } from '../middleware/attachments/resolveProjectIdForSingleDeletionAndDownload';
 import { resolveProjectIdForMultipleDeletionAndDownload } from '../middleware/attachments/resolveProjectIdForMultipleDeletionAndDownload';
-import {
-  uploadSingleMiddleware,
-  uploadMultipleMiddleware,
-} from '../middleware/attachments/uploadMiddleware';
+import { uploadMultipleMiddleware } from '../middleware/attachments/uploadMiddleware';
+import { upload } from '../middleware/attachments/memoryStorage';
 import { validateAttachmentExistsAndStore } from '../middleware/attachments/validateAttachmentExistsAndStore';
 import { checkTicketOrCommentOwnershipForAttachments } from '../middleware/attachments/checkTicketAndCommentOwnershipForAttachments';
 import { checkBoardAndProjectAccess } from '../middleware/attachments/checkBoardAndProjectAccess';
@@ -73,7 +71,7 @@ router.get(
 router.post(
   '/attachments/single',
   authorizeOrganizationRole(OrganizationRole.USER),
-  uploadSingleMiddleware,
+  upload.single('file'),
   resolveProjectIdForCreateAttachment(prisma),
   checkProjectMembership(),
   checkProjectRole(ProjectRole.USER),
