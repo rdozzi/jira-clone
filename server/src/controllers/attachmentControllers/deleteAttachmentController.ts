@@ -7,6 +7,7 @@ import { buildLogEvent } from '../../services/buildLogEvent';
 import { deleteResourceService } from '../../services/organizationUsageServices/deleteResourceService';
 import { FileMetadata } from '../../types/file';
 import { logBus } from '../../lib/logBus';
+import { deleteFromCloud } from '../../utilities/deleteFromCloud';
 
 export async function deleteAttachment(
   req: CustomRequest,
@@ -20,18 +21,19 @@ export async function deleteAttachment(
     const storageType = attachment?.storageType;
     const organizationId = res.locals.userInfo.organizationId;
     if (storageType === 'LOCAL') {
-      // Improve for safety later
       const filePath = attachment?.filePath;
-
       if (filePath) {
         await fs.unlink(filePath);
       } else {
         throw new Error('File path is missing for local attachment.');
       }
     } else if (storageType === 'CLOUD') {
-      // await saveToCloud.deleteFile(attachment.path);
-      console.log('Deleting from cloud storage:', attachment?.filePath);
-      // Implement the logic to delete the file from cloud storage (Eventua lly!)
+      if (!attachment.fileUrl) {
+        throw new Error('No attachment key present');
+      }
+      const filenameKey = attachment.fileUrl;
+      console.log('Deleting from cloud storage:', attachment?.fileName);
+      await deleteFromCloud(filenameKey);
     }
 
     const logEntityId = generateEntityIdForLog(
@@ -51,7 +53,7 @@ export async function deleteAttachment(
       mimetype: deletedAttachment.entityType,
       size: deletedAttachment.fileSize,
       savedPath: deletedAttachment.filePath ?? undefined,
-      cloudUrl: deletedAttachment.fileUrl ?? undefined,
+      fileUrl: deletedAttachment.fileUrl ?? undefined,
       storageType: deletedAttachment.storageType,
     };
 
