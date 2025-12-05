@@ -13,6 +13,11 @@ lerna-debug.log*
 
 dist
 dist-ssr
+*.js.map
+
+src/**/*.js
+server/prisma/**/*.js
+
 *.local
 
 # Editor directories and files
