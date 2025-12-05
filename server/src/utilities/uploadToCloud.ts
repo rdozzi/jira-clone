@@ -1,22 +1,37 @@
+import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { s3 } from '../lib/s3Client';
 import { FileMetadata } from '../types/file';
+import { randomUUID } from 'crypto';
 
-export async function saveToCloud(
-  file: Express.Multer.File
+export async function uploadToCloud(
+  file: Express.Multer.File,
+  organizationId: number,
+  entityType: string,
+  entityId: number
 ): Promise<FileMetadata> {
-  // This is a placeholder function for cloud storage
-  // In a real implementation, you would use an SDK or API to upload the file to a cloud service
-  // and return the file metadata
   try {
-    const dummyCloudUrl = `https://cloudstorage.example.com/${Date.now()}-${file.originalname}`;
-    return {
-      filename: file.originalname,
-      mimetype: file.mimetype,
-      size: file.size,
-      storageType: 'CLOUD',
-      cloudUrl: dummyCloudUrl,
+    const { originalname, buffer: body, mimetype } = file;
+    const key = `org-${organizationId}/${entityType}-${entityId}/${randomUUID()}-${originalname}`;
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: key,
+      Body: body,
+      ContentType: mimetype,
+    });
+
+    const fileResponse = await s3.send(command);
+
+    const fileMetadata: FileMetadata = {
+      filename: originalname,
+      mimetype: mimetype,
+      size: fileResponse.Size ? fileResponse.Size : -1,
+      storageType: 'CLOUD' as const,
+      fileUrl: key,
     };
+
+    return fileMetadata;
   } catch (error) {
-    console.error('Error saving file to cloud storage:', error);
-    throw error;
+    console.error('S3 upload error:', error);
+    throw new Error('S3 Upload Failed');
   }
 }
