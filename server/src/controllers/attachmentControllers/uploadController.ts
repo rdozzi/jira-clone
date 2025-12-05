@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { CustomRequest } from '../../types/CustomRequest';
-import { handleFileUpload } from '../../services/uploadService';
+import { handleFileUpload } from '../../services/handleFileUpload';
 import { PrismaClient, AttachmentEntityType, Attachment } from '@prisma/client';
 import { validateEntityAndId } from '../../utilities/validateEntityAndId';
 import { buildLogEvent } from '../../services/buildLogEvent';
@@ -41,7 +41,10 @@ export async function handleSingleUpload(
     const logEntityId = generateEntityIdForLog(entityType, entityId);
 
     const fileMetadata: FileMetadata = await handleFileUpload(
-      req.file as Express.Multer.File
+      req.file as Express.Multer.File,
+      organizationId,
+      entityType,
+      entityId
     );
 
     const attachment = await createResourceService(
@@ -58,7 +61,7 @@ export async function handleSingleUpload(
             fileType: fileMetadata.mimetype,
             fileSize: fileMetadata.size,
             filePath: fileMetadata.savedPath,
-            fileUrl: fileMetadata.cloudUrl,
+            fileUrl: fileMetadata.fileUrl,
             storageType: fileMetadata.storageType,
             organizationId: organizationId,
           },
@@ -136,7 +139,12 @@ export async function handleMultipleUpload(
     let fileMetadata: FileMetadata;
 
     for (const file of files) {
-      fileMetadata = await handleFileUpload(file);
+      fileMetadata = await handleFileUpload(
+        file,
+        organizationId,
+        entityType,
+        entityId
+      );
       const attachment = await createResourceService(
         prisma,
         resourceType,
@@ -151,7 +159,7 @@ export async function handleMultipleUpload(
               fileType: fileMetadata.mimetype,
               fileSize: fileMetadata.size,
               filePath: fileMetadata.savedPath,
-              fileUrl: fileMetadata.cloudUrl,
+              fileUrl: fileMetadata.fileUrl,
               storageType: fileMetadata.storageType,
               organizationId: organizationId,
             },

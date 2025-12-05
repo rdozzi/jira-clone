@@ -1,19 +1,20 @@
 import { Request, Response } from 'express';
 import { access } from 'fs/promises';
 import path from 'path';
-import { generateSignedCloudUrl } from '../../utilities/generateSignedCloudUrl';
 import { Attachment } from '@prisma/client';
 import { buildLogEvent } from '../../services/buildLogEvent';
 import { generateEntityIdForLog } from '../../utilities/generateEntityIdForLog';
 import { FileMetadata } from '../../types/file';
 import { logBus } from '../../lib/logBus';
+import { downloadFromCloud } from '../../utilities/downloadFromCloud';
 
 export async function downloadSingleAttachment(req: Request, res: Response) {
   try {
     const attachment: Attachment = res.locals.attachment;
     const organizationId = res.locals.userInfo.organizationId;
+    const storageType = attachment?.storageType;
 
-    if (attachment.storageType === 'LOCAL') {
+    if (storageType === 'LOCAL') {
       const filePath = path.resolve(attachment.filePath || '');
       const logEvents = generatePayload(attachment, organizationId);
       logBus.emit('activityLog', logEvents);
@@ -21,13 +22,28 @@ export async function downloadSingleAttachment(req: Request, res: Response) {
       await access(filePath);
 
       return res.download(filePath, attachment.fileName);
-    } else if (attachment.storageType === 'CLOUD') {
-      const signedUrl = await generateSignedCloudUrl(attachment);
+    } else if (storageType === 'CLOUD') {
+      if (!attachment.fileUrl) {
+        throw new Error('No key associated with attachment record.');
+      }
+
+      console.log('!!!!!!!!!!!!', 'attachment.fileUrl', attachment.fileUrl);
+      const fileBuffer = await downloadFromCloud(attachment.fileUrl);
+
       const logEvents = generatePayload(attachment, organizationId);
       logBus.emit('activityLog', logEvents);
-      res.status(200).json({
-        message: `Download Successful; ${signedUrl} created successfully`,
-      });
+
+      res.setHeader(
+        'Content-Type',
+        attachment.fileType || 'application/octet-stream'
+      );
+
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${attachment.fileName}"`
+      );
+
+      return res.send(fileBuffer);
     } else {
       res.status(400).json({ error: 'Invalid storage type' });
       return;
@@ -56,7 +72,7 @@ function generatePayload(attachment: Attachment, organizationId: number) {
     mimetype: attachment.entityType,
     size: attachment.fileSize,
     savedPath: attachment.filePath ?? undefined,
-    cloudUrl: attachment.fileUrl ?? undefined,
+    fileUrl: attachment.fileUrl ?? undefined,
     storageType: attachment.storageType,
   };
 
