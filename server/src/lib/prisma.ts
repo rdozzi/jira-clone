@@ -6,6 +6,7 @@ const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     log: process.env.NODE_ENV === 'test' ? [] : ['query', 'error', 'warn'],
+    datasourceUrl: process.env.DATABASE_URL,
   });
 
 if (process.env.NODE_ENV !== 'production') {
