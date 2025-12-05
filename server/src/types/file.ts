@@ -8,5 +8,5 @@ export interface FileMetadata {
   size: number;
   storageType: StorageLocation;
   savedPath?: string;
-  cloudUrl?: string;
+  fileUrl?: string;
 }
