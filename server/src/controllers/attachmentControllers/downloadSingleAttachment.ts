@@ -26,8 +26,6 @@ export async function downloadSingleAttachment(req: Request, res: Response) {
       if (!attachment.fileUrl) {
         throw new Error('No key associated with attachment record.');
       }
-
-      console.log('!!!!!!!!!!!!', 'attachment.fileUrl', attachment.fileUrl);
       const fileBuffer = await downloadFromCloud(attachment.fileUrl);
 
       const logEvents = generatePayload(attachment, organizationId);
