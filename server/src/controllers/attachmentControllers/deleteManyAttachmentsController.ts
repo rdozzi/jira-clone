@@ -75,7 +75,7 @@ export async function deleteManyAttachments(
         mimetype: attachment.entityType,
         size: attachment.fileSize,
         savedPath: attachment.filePath ?? undefined,
-        cloudUrl: attachment.fileUrl ?? undefined,
+        fileUrl: attachment.fileUrl ?? undefined,
         storageType: attachment.storageType,
       };
 
