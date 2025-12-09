@@ -1,10 +1,10 @@
 export const DAILY_ORG_LIMITS = {
-  Project: 3,
-  Board: 10,
-  Ticket: 100,
-  Comment: 300,
+  Project: 10,
+  Board: 25,
+  Ticket: 2500,
+  Comment: 10000,
   User: undefined,
-  FileStorage: 100 * 1024 * 1024, // 100 MB/Day
+  FileStorage: 500 * 1024 * 1024, // 500 MB/Day
   ActivityLog: undefined,
   Label: undefined,
   BannedEmail: undefined,
