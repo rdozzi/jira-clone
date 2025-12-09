@@ -14,13 +14,6 @@ async function streamToBuffer(stream: S3Body): Promise<Buffer> {
 
 export async function downloadFromCloud(key: string): Promise<Buffer> {
   try {
-    console.log(
-      '!!!!!!!!!',
-      'AWS_S3_BUCKET_NAME',
-      process.env.AWS_BUCKET_NAME,
-      'key',
-      key
-    );
     const command = new GetObjectCommand({
       Bucket: process.env.AWS_BUCKET_NAME,
       Key: key,
