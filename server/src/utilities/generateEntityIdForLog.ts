@@ -33,7 +33,7 @@ export function generateEntityIdForLog(
       break;
     default:
       // User entity does not apply
-      console.log('User or invalid entity');
+      console.error('User or invalid entity');
   }
 
   return logIdObject;
