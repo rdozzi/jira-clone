@@ -61,28 +61,6 @@ export async function getProjectsByUserId(
   }
 }
 
-// Deprecated.
-// export async function getProjectById(
-//   req: Request,
-//   res: Response,
-//   prisma: PrismaClient
-// ) {
-//   const { projectId } = req.params;
-//   const projectIdParsed = parseInt(projectId, 10);
-
-//   try {
-//     const projects = await prisma.project.findUnique({
-//       where: { id: projectIdParsed },
-//     });
-//     res.status(200).json(projects);
-//     return;
-//   } catch (error) {
-//     console.error('Error fetching projects: ', error);
-//     res.status(500).json({ error: 'Failed to fetch projects' });
-//     return;
-//   }
-// }
-
 export async function createProject(
   req: Request,
   res: Response,

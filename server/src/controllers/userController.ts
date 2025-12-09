@@ -3,8 +3,6 @@ import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../utilities/password';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
-import { getStorageType } from '../config/storage';
-import { storageDispatcher } from '../utilities/storageDispatcher';
 import { deleteUserCascade } from '../services/deletionServices/deleteUserCascade';
 import { createResourceService } from '../services/organizationUsageServices/createResourceService';
 import { logBus } from '../lib/logBus';
@@ -325,49 +323,5 @@ export async function deleteUser(
   } catch (error) {
     console.error('Error soft-deleting user: ', error);
     res.status(500).json({ error: 'Failed to soft-delete user' });
-  }
-}
-
-// Update user avatar
-export async function updateUserAvatar(
-  req: Request,
-  res: Response,
-  prisma: PrismaClient
-) {
-  try {
-    const userId = res.locals.validatedParam;
-    const organizationId = res.locals.userInfo.organizationId;
-
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
-
-    const storageType = getStorageType();
-    const fileMetadata = await storageDispatcher(req.file, storageType);
-
-    const fileSource =
-      storageType === 'CLOUD' ? fileMetadata.cloudUrl : fileMetadata.savedPath;
-
-    const updatedUser = await prisma.user.update({
-      where: { id: userId, organizationId: organizationId },
-      data: {
-        avatarSource: fileSource,
-      },
-    });
-
-    res.status(200).json({
-      data: {
-        id: `${updatedUser.id}`,
-        avatarSource: updatedUser.avatarSource,
-        userName: `${updatedUser.firstName} ${updatedUser.lastName}`,
-        organizationId: `${updatedUser.organizationId}`,
-      },
-      message: 'User avatar updated successfully',
-    });
-    return;
-  } catch (error) {
-    console.error('Error updating user avatar: ', error);
-    res.status(500).json({ error: 'Failed to update user avatar' });
-    return;
   }
 }

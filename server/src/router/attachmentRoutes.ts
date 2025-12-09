@@ -16,7 +16,6 @@ import { resolveProjectIdForCreateAttachment } from '../middleware/attachments/r
 import { resolveProjectIdForGetAttachments } from '../middleware/attachments/resolveProjectIdForGetAttachments';
 import { resolveProjectIdForSingleDeletionAndDownload } from '../middleware/attachments/resolveProjectIdForSingleDeletionAndDownload';
 import { resolveProjectIdForMultipleDeletionAndDownload } from '../middleware/attachments/resolveProjectIdForMultipleDeletionAndDownload';
-import { uploadMultipleMiddleware } from '../middleware/attachments/uploadMiddleware';
 import { upload } from '../middleware/attachments/memoryStorage';
 import { validateAttachmentExistsAndStore } from '../middleware/attachments/validateAttachmentExistsAndStore';
 import { checkTicketOrCommentOwnershipForAttachments } from '../middleware/attachments/checkTicketAndCommentOwnershipForAttachments';
@@ -30,14 +29,10 @@ import { checkMaxUsageTotals } from '../middleware/organizationUsageMiddleware/c
 
 // Controller Functions
 import { getAllAttachments } from '../controllers/attachmentControllers/getAllAttachments';
-import {
-  handleSingleUpload,
-  handleMultipleUpload,
-} from '../controllers/attachmentControllers/uploadController';
+import { handleSingleUpload } from '../controllers/attachmentControllers/uploadController';
 import { deleteManyAttachments } from '../controllers/attachmentControllers/deleteManyAttachmentsController';
 import { deleteAttachment } from '../controllers/attachmentControllers/deleteAttachmentController';
 import { downloadSingleAttachment } from '../controllers/attachmentControllers/downloadSingleAttachment';
-import { downloadMultipleAttachments } from '../controllers/attachmentControllers/downloadMultipleAttachmentsController';
 
 const router = Router();
 
@@ -66,7 +61,7 @@ router.get(
   }
 );
 
-// Create single attachment
+// Upload single attachment
 // Body/Form-Data (Multer Required): {file, entityType, entityId}
 router.post(
   '/attachments/single',
@@ -82,25 +77,6 @@ router.post(
   checkMaxUsageTotals(prisma),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await handleSingleUpload(req as CustomRequest, res, next, prisma);
-  }
-);
-
-// Create several attachments
-// Body/Form-Data (Multer Required): {files, entityType, entityId}
-router.post(
-  '/attachments/many',
-  authorizeOrganizationRole(OrganizationRole.USER),
-  uploadMultipleMiddleware,
-  resolveProjectIdForCreateAttachment(prisma),
-  checkProjectMembership(),
-  checkProjectRole(ProjectRole.USER),
-  loadEntityIdAndEntityTypeForUpload,
-  checkTicketOrCommentOwnershipForAttachments,
-  checkBoardAndProjectAccess,
-  validateBody(uploadAttachmentSchema),
-  checkMaxUsageTotals(prisma),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await handleMultipleUpload(req as CustomRequest, res, next, prisma);
   }
 );
 
@@ -148,20 +124,6 @@ router.get(
   checkProjectRole(ProjectRole.USER, { allowOrganizationSuperAdmin: true }),
   async (req: Request, res: Response): Promise<void> => {
     await downloadSingleAttachment(req, res);
-  }
-);
-
-// Download multiple attachments by EntityId
-// Body: Array of Ids (attachmentIds), entityId, entityType
-router.post(
-  '/attachments/download',
-  authorizeOrganizationRole(OrganizationRole.USER),
-  validateAndSetAttachmentDeleteAndDownloadParams,
-  resolveProjectIdForMultipleDeletionAndDownload(prisma),
-  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
-  checkProjectRole(ProjectRole.USER, { allowOrganizationSuperAdmin: true }),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await downloadMultipleAttachments(req, res, next, prisma);
   }
 );
 

@@ -13,10 +13,8 @@ import {
   createUser,
   deleteUser,
   updateUser,
-  updateUserAvatar,
   getUserSelf,
 } from '../controllers/userController';
-import { uploadSingleMiddleware } from '../middleware/attachments/uploadMiddleware';
 import { validateQuery } from '../middleware/validation/validateQuery';
 import { validateParams } from '../middleware/validation/validateParams';
 import { validateBody } from '../middleware/validation/validateBody';
@@ -94,17 +92,6 @@ router.patch(
   validateBody(userUpdateSchema),
   async (req: Request, res: Response): Promise<void> => {
     await updateUser(req, res, prisma);
-  }
-);
-
-// Update user avatar
-router.patch(
-  '/users/:userId/avatar',
-  authorizeSelfOrAdminWithRoleCheck(),
-  uploadSingleMiddleware,
-  validateParams,
-  async (req: Request, res: Response) => {
-    await updateUserAvatar(req, res, prisma);
   }
 );
 

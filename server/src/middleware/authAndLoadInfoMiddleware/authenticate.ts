@@ -1,10 +1,9 @@
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
 import { Response, NextFunction, RequestHandler } from 'express';
 import { CustomRequest } from '../../types/CustomRequest';
 import { DecodedTokenPayload } from '../../types/DecodedTokenPayload';
 
-dotenv.config();
+// Used in main server app file as top level global middleware.
 
 function authenticateFn(req: CustomRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;

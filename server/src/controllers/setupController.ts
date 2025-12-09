@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
-import { PrismaClient, OrganizationRole /*GlobalRole*/ } from '@prisma/client';
+import { PrismaClient, OrganizationRole } from '@prisma/client';
 import { hashPassword } from '../utilities/password';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { createCountTables } from '../services/setupServices/createCountTables';
 import { logBus } from '../lib/logBus';
-
-// Add middleware protection layers later (Sanitization, rate limiter, input validation, IP Check)
 
 export async function seedOrganizationAndSuperAdmin(
   req: Request,
@@ -88,48 +86,3 @@ export async function seedOrganizationAndSuperAdmin(
     return;
   }
 }
-
-// export async function seedSuperUser(
-//   req: Request,
-//   res: Response,
-//   prisma: PrismaClient
-// ) {
-//   try {
-//     const { email, firstName, lastName, password } = res.locals.validatedBody;
-
-//     const hashedPassword = await hashPassword(password);
-
-//     const newUser = await prisma.user.create({
-//       data: {
-//         email: email,
-//         firstName: firstName,
-//         lastName: lastName,
-//         passwordHash: hashedPassword,
-//         globalRole: GlobalRole.SUPERUSER,
-//       },
-//     });
-
-//     res.locals.logEvent = buildLogEvent({
-//       userId: newUser.id,
-//       actorType: 'USER',
-//       action: 'SEED_SUPERUSER',
-//       targetId: newUser.id,
-//       targetType: 'USER',
-//       organizationId: null,
-//       metadata: {
-//         globalRole: `${newUser.globalRole}`,
-//         name: `${newUser.firstName}_${newUser.lastName}`,
-//         email: `${newUser.email}`,
-//       },
-//     });
-
-//     res.status(201).json({
-//       message: 'New SuperUser created successfully',
-//       data: newUser,
-//     });
-//   } catch (error) {
-//     console.error('Error creating user: ', error);
-//     res.status(500).json({ error: 'Failed to create user' });
-//     return;
-//   }
-// }
