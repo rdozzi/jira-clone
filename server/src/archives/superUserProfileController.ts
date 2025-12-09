@@ -2,8 +2,6 @@ import { GlobalRole, PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 import { generateDiff } from '../services/generateDiff';
 import { buildLogEvent } from '../services/buildLogEvent';
-import { getStorageType } from '../config/storage';
-import { storageDispatcher } from '../utilities/storageDispatcher';
 import { logBus } from '../lib/logBus';
 
 export async function getSuperUsers(
@@ -123,59 +121,6 @@ export async function updateSuperUser(
   } catch (error) {
     console.error('Error editing user: ', error);
     res.status(500).json({ error: 'Failed to edit user' });
-    return;
-  }
-}
-
-// Update SuperUser avatar
-export async function updateSuperUserAvatar(
-  req: Request,
-  res: Response,
-  prisma: PrismaClient
-) {
-  try {
-    const userId = res.locals.validatedParam;
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId, globalRole: GlobalRole.SUPERUSER },
-    });
-
-    if (user?.isDeleted || user?.deletedAt || user?.isBanned) {
-      return res
-        .status(400)
-        .json({ error: 'Deleted or banned user avatar cannot be changed' });
-    }
-
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
-
-    const storageType = getStorageType();
-    const fileMetadata = await storageDispatcher(req.file, storageType);
-
-    const fileSource =
-      storageType === 'CLOUD' ? fileMetadata.cloudUrl : fileMetadata.savedPath;
-
-    const updatedUser = await prisma.user.update({
-      where: { id: userId, globalRole: GlobalRole.SUPERUSER },
-      data: {
-        avatarSource: fileSource,
-      },
-    });
-
-    res.status(200).json({
-      data: {
-        id: `${updatedUser.id}`,
-        avatarSource: updatedUser.avatarSource,
-        userName: `${updatedUser.firstName} ${updatedUser.lastName}`,
-        organizationId: `${updatedUser.organizationId}`,
-      },
-      message: 'User avatar updated successfully',
-    });
-    return;
-  } catch (error) {
-    console.error('Error updating user avatar: ', error);
-    res.status(500).json({ error: 'Failed to update user avatar' });
     return;
   }
 }
