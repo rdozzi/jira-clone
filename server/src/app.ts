@@ -22,8 +22,6 @@ import labelRoutes from './router/labelRoutes';
 import projectMemberRoutes from './router/projectMemberRoutes';
 import projectRoutes from './router/projectRoutes';
 import setupRoutes from './router/setupRoutes';
-import superUserFunctionRoutes from './router/superUserFunctionRoutes';
-import superUserProfileRoutes from './router/superUserProfileRoutes';
 import ticketLabelRoutes from './router/ticketLabelRoutes';
 import ticketRoutes from './router/ticketRoutes';
 import userRoutes from './router/userRoutes';
@@ -84,7 +82,3 @@ app.use('/api', activityLogRoutes);
 app.use('/api', projectMemberRoutes);
 
 app.use('/api', ticketLabelRoutes);
-
-app.use('/api/superuser', superUserFunctionRoutes);
-
-app.use('/api/superuser', superUserProfileRoutes);
