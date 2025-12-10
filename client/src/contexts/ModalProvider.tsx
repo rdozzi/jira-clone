@@ -9,7 +9,7 @@ type ModalState = {
 
 type ModalProviderProps = { children: React.ReactNode };
 
-export function ModalProviderContext({ children }: ModalProviderProps) {
+export function ModalProvider({ children }: ModalProviderProps) {
   const [modalState, setModalState] = useState<ModalState>({
     isOpen: false,
     mode: null as 'create' | 'viewEdit' | null,

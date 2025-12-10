@@ -2,12 +2,12 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-import { ThemeProviderContext } from './contexts/ThemeProviderContext';
+import { ThemeProvider } from './contexts/ThemeProvider';
 import { DropdownProvider } from './contexts/DropdownContext';
-import { ModalProviderContext } from './contexts/ModalProviderContext';
-import { TicketProviderContext } from './contexts/TicketProviderContext';
-import { AuthProviderContext } from './contexts/AuthProviderContext';
-import { ProjectBoardProviderContext } from './contexts/ProjectBoardProviderContext';
+import { ModalProvider } from './contexts/ModalProvider';
+import { TicketProvider } from './contexts/TicketProvider';
+import { AuthProvider } from './contexts/AuthProvider';
+import { ProjectBoardProvider } from './contexts/ProjectBoardProvider';
 import { UserProviderContext } from './contexts/UserProvider';
 import { ProjectMemberProvider } from './contexts/ProjectMemberProvider';
 import { ProjectInfoProvider } from './contexts/ProjectInfoProvider';
@@ -45,14 +45,14 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
 
-      <ThemeProviderContext>
+      <ThemeProvider>
         <BrowserRouter>
-          <AuthProviderContext>
+          <AuthProvider>
             <DropdownProvider>
-              <ModalProviderContext>
+              <ModalProvider>
                 <UserProviderContext>
-                  <ProjectBoardProviderContext>
-                    <TicketProviderContext>
+                  <ProjectBoardProvider>
+                    <TicketProvider>
                       <UserHomeTicketProvider>
                         <ProjectInfoProvider>
                           <ProjectMemberProvider>
@@ -134,14 +134,14 @@ function App() {
                           </ProjectMemberProvider>
                         </ProjectInfoProvider>
                       </UserHomeTicketProvider>
-                    </TicketProviderContext>
-                  </ProjectBoardProviderContext>
+                    </TicketProvider>
+                  </ProjectBoardProvider>
                 </UserProviderContext>
-              </ModalProviderContext>
+              </ModalProvider>
             </DropdownProvider>
-          </AuthProviderContext>
+          </AuthProvider>
         </BrowserRouter>
-      </ThemeProviderContext>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
