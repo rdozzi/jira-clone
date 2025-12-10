@@ -6,11 +6,7 @@ import { OrganizationRole } from '../types/OrganizationRole';
 import { AuthState } from '../types/AuthState';
 import { StoredAuth } from '../types/StoredAuth';
 
-export function AuthProviderContext({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const [authState, setAuthState] = useState<AuthState>({
     token: null,
@@ -117,5 +113,3 @@ export function AuthProviderContext({
     </AuthContext.Provider>
   );
 }
-
-export default AuthProviderContext;

@@ -5,7 +5,7 @@ import { useProjectBoard } from './useProjectBoard';
 
 type TicketProviderProps = { children: React.ReactNode };
 
-export const TicketProviderContext = ({ children }: TicketProviderProps) => {
+export const TicketProvider = ({ children }: TicketProviderProps) => {
   const { boardId } = useProjectBoard();
   const { tickets, isLoading, error } = useGetTicketsByBoardId(boardId);
   const updateTicketMutation = useUpdateTicket();

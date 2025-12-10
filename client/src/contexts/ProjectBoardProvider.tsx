@@ -7,9 +7,7 @@ import { useGetBoardsByProjectId } from '../features/boards/useGetBoardsByProjec
 
 type ProjectBoardProviderProps = { children: React.ReactNode };
 
-export function ProjectBoardProviderContext({
-  children,
-}: ProjectBoardProviderProps) {
+export function ProjectBoardProvider({ children }: ProjectBoardProviderProps) {
   const [project, setProject] = useState<ProjectRef | null>(null);
   const [board, setBoard] = useState<BoardRef | null>(null);
 
