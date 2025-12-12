@@ -1,18 +1,19 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { logout as apiLogout } from '../../services/apiAuth';
+import { useAuth } from '../../contexts/useAuth';
 
 export function useLogout() {
-  const authData = localStorage.getItem('auth');
-  if (!authData) {
-    throw new Error('Auth data not found in localStorage');
-  }
-  const { token } = JSON.parse(authData);
-  if (!token) {
-    throw new Error('Token not found in auth data');
-  }
-  const logoutMutation = useMutation({
-    mutationFn: () => apiLogout(token),
+  const { logout: providerLogout, authState } = useAuth();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationKey: ['auth', 'logout'],
+    mutationFn: () => apiLogout(authState?.token),
+    onSuccess: () => {
+      queryClient.clear();
+      providerLogout();
+    },
   });
 
-  return logoutMutation;
+  return mutation;
 }
