@@ -26,7 +26,7 @@ export async function login({
   }
 }
 
-export async function logout(token: string) {
+export async function logout(token: string | null) {
   try {
     const res = await fetch('http://localhost:3000/api/auth/logout', {
       method: 'POST',
