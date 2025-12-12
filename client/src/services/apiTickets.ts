@@ -37,7 +37,6 @@ export async function getTickets() {
 
 export async function getTicketsByAssigneeId(userId: number | undefined) {
   try {
-    console.log(userId);
     const res = await fetch(
       `http://localhost:3000/api/tickets/${userId}/assigneeId`,
       {
@@ -48,7 +47,6 @@ export async function getTicketsByAssigneeId(userId: number | undefined) {
       }
     );
     if (!res.ok) {
-      console.log('!res.ok');
       const errorText = await res.text();
       console.error('Error:', res.status, res.statusText, errorText);
       throw new Error('Failed to add project member');
@@ -142,7 +140,6 @@ export async function deleteTicket(id: number) {
 
 export async function updateTicket(ticketId: number, ticket: UpdatedTicket) {
   try {
-    console.log('updateTicket Called');
     const res = await fetch(
       `http://localhost:3000/api/tickets/${ticketId}/update`,
       {
