@@ -5,7 +5,7 @@ export function useProjectInfo() {
   const context = useContext(ProjectInfoContext);
 
   if (!context) {
-    throw new Error('useProjectInfo must be used within a ThemeProvider');
+    throw new Error('useProjectInfo must be used within a ProjectInfoProvider');
   }
 
   return context;
