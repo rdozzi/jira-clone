@@ -1,12 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteTicket as apiDeleteTicket } from '../../services/apiTickets';
+import { useUser } from '../../contexts/useUser';
 
 export function useDeleteTicket() {
+  const { orgId } = useUser();
   const queryClient = useQueryClient();
   const { mutate: deleteTicket, status } = useMutation({
     mutationFn: apiDeleteTicket,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tickets'] });
+      queryClient.invalidateQueries({ queryKey: ['tickets', orgId] });
     },
   });
 
