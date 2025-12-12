@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateBoard as apiUpdateBoard } from '../../services/apiBoards';
+import { useUser } from '../../contexts/useUser';
 import { Boards } from '../../types/Boards';
 
 export function useUpdateBoard() {
+  const { orgId } = useUser();
   const queryClient = useQueryClient();
 
   const { mutate: updateBoard, status } = useMutation({
@@ -16,7 +18,7 @@ export function useUpdateBoard() {
         )
       );
 
-      queryClient.invalidateQueries({ queryKey: ['boards'] });
+      queryClient.invalidateQueries({ queryKey: ['boards', orgId] });
     },
     onError: (error) => {
       console.error('Mutation Failed:', error);

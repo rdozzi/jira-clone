@@ -1,16 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
 import { getProjectMembers as apiGetProjectMembers } from '../../services/apiProjectMembers';
+import { useUser } from '../../contexts/useUser';
 
 export function useGetProjectMembers(projectId: number | null | undefined) {
+  const { orgId } = useUser();
   const {
     data: projectMembers,
     isLoading: isLoadingProjectMember,
     error,
     refetch: refreshProjectMember,
   } = useQuery({
-    queryKey: ['projectMembers', projectId],
+    queryKey: ['projectMembers', projectId, orgId],
     queryFn: () => apiGetProjectMembers(projectId as number),
-    enabled: !!projectId,
+    enabled: !!projectId && !!orgId,
     staleTime: 0,
     gcTime: 1000 * 60 * 10,
     refetchOnWindowFocus: false,

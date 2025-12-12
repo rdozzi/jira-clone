@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { uploadSingleAttachment as apiUploadSingleAttachment } from '../../services/apiAttachments';
+import { useUser } from '../../contexts/useUser';
 
 export function useUploadSingleAttachment() {
+  const { orgId } = useUser();
   const queryClient = useQueryClient();
 
   const { mutate: uploadSingleAttachment, status } = useMutation({
@@ -22,7 +24,12 @@ export function useUploadSingleAttachment() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['attachment', variables.entityType, variables.entityId],
+        queryKey: [
+          'attachment',
+          variables.entityType,
+          variables.entityId,
+          orgId,
+        ],
       });
     },
   });

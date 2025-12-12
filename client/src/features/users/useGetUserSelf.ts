@@ -8,7 +8,7 @@ export function useGetUserSelf() {
     error,
     refetch: refreshUser,
   } = useQuery({
-    queryKey: ['user'],
+    queryKey: ['userSelf'],
     queryFn: apiGetUserSelf,
     staleTime: 0,
     gcTime: 1000 * 60 * 10,

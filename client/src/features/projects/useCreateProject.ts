@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createProject as apiCreateProject } from '../../services/apiProjects';
+import { useUser } from '../../contexts/useUser';
 
 export function useCreateProject() {
+  const { orgId } = useUser();
   const queryClient = useQueryClient();
   const {
     mutate: createProject,
@@ -10,7 +12,7 @@ export function useCreateProject() {
   } = useMutation({
     mutationFn: apiCreateProject,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['projects', orgId] });
     },
   });
 

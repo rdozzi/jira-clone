@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteProject as apiDeleteProject } from '../../services/apiProjects';
+import { useUser } from '../../contexts/useUser';
 
 export function useDeleteProject() {
+  const { orgId } = useUser();
   const queryClient = useQueryClient();
   const {
     mutate: deleteProject,
@@ -10,7 +12,7 @@ export function useDeleteProject() {
   } = useMutation({
     mutationFn: apiDeleteProject,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['projects', orgId] });
     },
   });
 
