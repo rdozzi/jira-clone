@@ -5,7 +5,9 @@ export function useProjectBoard() {
   const context = useContext(ProjectBoardContext);
 
   if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    throw new Error(
+      'useProjectBoard must be used within a ProjectBoardProvider'
+    );
   }
 
   return context;
