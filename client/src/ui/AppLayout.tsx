@@ -12,7 +12,7 @@ import SidebarActionButton from './SidebarActionButton';
 import HeaderComp from './HeaderComp';
 import UserAvatar from './UserAvatar';
 import { useProjectBoard } from '../contexts/useProjectBoard';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/useAuth';
 import { useLogout } from '../features/auth/useLogout';
 import { useProjectInfo } from '../contexts/useProjectInfo';
 import { useTheme } from '../contexts/useTheme';

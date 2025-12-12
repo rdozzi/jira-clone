@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/useAuth';
 import { useLogin } from '../features/auth/useLogin';
 
 import {
@@ -12,8 +12,6 @@ import {
   message,
   Space,
 } from 'antd';
-// import { UserRole } from '../types/UserRole';
-// import type { FormProps } from 'antd';
 
 const { Content } = Layout;
 
@@ -89,18 +87,11 @@ function LoginPage() {
       organizationRole === 'GUEST'
         ? '/user-homepage'
         : '*';
-    // role === 'ADMIN'
-    //   ? '/admin-dashboard'
-    //   : role === 'USER'
-    //   ? '/user-dashboard'
-    //   : '/guest-dashboard';
-    // Redirect to the appropriate dashboard based on the role
 
     navigate(redirectPath, { replace: true });
   }
 
   function onFinish(values: LoginFormValues): void {
-    console.log('Received values of form: ', values);
     const { email, password } = values;
     handleLogin(email, password);
   }
