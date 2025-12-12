@@ -1,13 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { getTicketById as apiGetTicketById } from '../../services/apiTickets';
+import { useUser } from '../../contexts/useUser';
 
 export function useGetTicketById(ticketId: any) {
+  const { orgId } = useUser();
   const {
     isLoading: isFetching,
     data: ticket,
     error,
   } = useQuery({
-    queryKey: ['ticket', ticketId],
+    queryKey: ['ticket', ticketId, orgId],
     queryFn: () => apiGetTicketById(ticketId),
     staleTime: 0,
     enabled: !!ticketId, // Only run the query if ticketId is truthy
