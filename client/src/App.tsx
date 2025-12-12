@@ -8,7 +8,7 @@ import { ModalProvider } from './contexts/ModalProvider';
 import { TicketProvider } from './contexts/TicketProvider';
 import { AuthProvider } from './contexts/AuthProvider';
 import { ProjectBoardProvider } from './contexts/ProjectBoardProvider';
-import { UserProviderContext } from './contexts/UserProvider';
+import { UserProvider } from './contexts/UserProvider';
 import { ProjectMemberProvider } from './contexts/ProjectMemberProvider';
 import { ProjectInfoProvider } from './contexts/ProjectInfoProvider';
 import { AttachmentModalProvider } from './contexts/AttachmentModalProvider';
@@ -50,7 +50,7 @@ function App() {
           <AuthProvider>
             <DropdownProvider>
               <ModalProvider>
-                <UserProviderContext>
+                <UserProvider>
                   <ProjectBoardProvider>
                     <TicketProvider>
                       <UserHomeTicketProvider>
@@ -136,7 +136,7 @@ function App() {
                       </UserHomeTicketProvider>
                     </TicketProvider>
                   </ProjectBoardProvider>
-                </UserProviderContext>
+                </UserProvider>
               </ModalProvider>
             </DropdownProvider>
           </AuthProvider>

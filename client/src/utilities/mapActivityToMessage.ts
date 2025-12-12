@@ -1,12 +1,11 @@
 import { ActivityLogs } from '../types/ActivityLogs';
-import { trimAttachmentName } from './trimAttachmentname';
+import { trimAttachmentName } from './trimAttachmentName';
 import dayjs from 'dayjs';
 
 export function mapActivityToMessage(log: ActivityLogs) {
   const { action, targetType, metadata, createdAt } = log;
 
   const time = dayjs(createdAt).format('MMM DD, YYYY h:mm A');
-  console.log(time);
 
   switch (action) {
     // User actions
