@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
 import { Table, Button } from 'antd';
-import type { TableColumnsType, TableProps } from 'antd';
+import type { TableColumnsType } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { useTickets } from '../contexts/useTickets';
@@ -39,13 +39,6 @@ export interface Record {
   type: string;
   updatedAt: Date;
 }
-
-const onChange: TableProps<DataType>['onChange'] = (
-  pagination,
-  filters,
-  sorter,
-  extra
-) => console.log('params', pagination, filters, sorter, extra);
 
 function TicketList() {
   const { isLoading, tickets, error } = useTickets();
@@ -136,7 +129,6 @@ function TicketList() {
         columns={columns}
         dataSource={tickets}
         rowKey='id'
-        onChange={onChange}
         loading={isLoading}
         pagination={false}
       />

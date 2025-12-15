@@ -14,10 +14,5 @@ export function sortCommentObjects(arrOfObjects: CommentObject[] | []) {
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
   );
 
-  if (arrOfObjects.length !== 0) {
-    console.log(arrOfObjects);
-    console.log(typeof arrOfObjects[0].createdAt);
-  }
-
   return arrOfObjects;
 }

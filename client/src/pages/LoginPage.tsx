@@ -61,10 +61,7 @@ function LoginPage() {
   }
 
   async function handleLogin(email: string, password: string) {
-    console.log(email, password);
     const loginCheckPayload = await checkUserLoginInfo(email, password);
-
-    console.log('Login Check Payload:', loginCheckPayload);
 
     if (!loginCheckPayload) {
       console.error('Login failed');
@@ -76,9 +73,6 @@ function LoginPage() {
     const { token, userId, organizationRole, expiresIn } = loginCheckPayload;
 
     login(token, organizationRole, expiresIn, userId);
-    console.log(`Logged in as ${organizationRole}`);
-    console.log(`token: ${token}`);
-    console.log(`userId: ${userId}`);
 
     const redirectPath =
       organizationRole === 'SUPERADMIN' ||
@@ -97,7 +91,7 @@ function LoginPage() {
   }
 
   function onFinishFailed(errorInfo: OnFinishFailedErrorInfo): void {
-    console.log('Failed:', errorInfo);
+    console.error('Failed:', errorInfo);
   }
 
   return (

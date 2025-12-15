@@ -48,11 +48,8 @@ function AppLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
 
   function handleLogout() {
-    console.log('Logging out...');
-
     logoutMutation(undefined, {
       onSuccess: () => {
-        console.log('Logout successful');
         frontendLogout();
       },
       onError: (error) => {
