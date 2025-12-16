@@ -43,10 +43,7 @@ export async function loginUser(
         organizationId: user.organizationId,
         organizationRole: user.organizationRole,
       },
-      process.env.JWT_SECRET as string,
-      {
-        expiresIn: Number(process.env.JWT_EXPIRATION),
-      }
+      process.env.JWT_SECRET as string
     );
 
     const logEvents = [
@@ -78,7 +75,6 @@ export async function loginUser(
       organizationRole: user.organizationRole,
       organizationId: user.organizationId,
       token: token,
-      expiresIn: Date.now() + Number(process.env.JWT_EXPIRATION) * 1000,
     });
   } catch (error) {
     console.error('Error logging in user: ', error);
