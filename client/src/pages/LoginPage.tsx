@@ -70,9 +70,9 @@ function LoginPage() {
       return;
     }
 
-    const { token, userId, organizationRole, expiresIn } = loginCheckPayload;
+    const { token, userId, organizationRole } = loginCheckPayload;
 
-    login(token, organizationRole, expiresIn, userId);
+    login(token, organizationRole, userId);
 
     const redirectPath =
       organizationRole === 'SUPERADMIN' ||

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 
@@ -16,7 +16,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
 
   const [isLoading, setIsLoading] = useState(true);
-  const loginTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const logout = useCallback(
     function logout() {
@@ -26,8 +25,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         organizationRole: null,
         userId: null,
       });
-
-      if (loginTimeout.current) clearTimeout(loginTimeout.current);
       localStorage.removeItem('auth');
       navigate('/login', { replace: true });
     },
@@ -38,38 +35,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const stored = localStorage.getItem('auth');
     if (stored) {
       const parsed = JSON.parse(stored);
-      setAuthState(parsed);
-
-      const { expiresAt } = parsed;
-      if (expiresAt) {
-        const now = Date.now();
-        const exp = Number(expiresAt);
-
-        if (exp > now) {
-          const delay = exp - now;
-          const safeDelay = Math.max(0, Math.min(delay, 24 * 60 * 60 * 1000));
-
-          if (loginTimeout.current) clearTimeout(loginTimeout.current);
-          loginTimeout.current = setTimeout(() => {
-            logout();
-          }, safeDelay);
-        } else {
-          logout();
-        }
-      }
+      setAuthState({
+        token: parsed.token,
+        isAuthenticated: true,
+        organizationRole: parsed.organizationRole,
+        userId: parsed.userId,
+      });
     }
 
     setIsLoading(false);
-
-    return () => {
-      if (loginTimeout.current) clearTimeout(loginTimeout.current);
-    };
-  }, [logout]);
+  }, []);
 
   function login(
     token: string,
     organizationRole: OrganizationRole,
-    expiresIn: number,
     userId?: number
   ) {
     setAuthState({
@@ -79,20 +58,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       userId,
     });
 
-    const now = Date.now();
-    const delay = expiresIn > now ? expiresIn - now : expiresIn;
-    const safeDelay = Math.max(0, Math.min(delay, 24 * 60 * 60 * 1000));
-
-    // Set logout timer
-    loginTimeout.current = setTimeout(() => {
-      logout();
-    }, safeDelay);
-
     const authPayload: StoredAuth = {
       token,
       userId: userId || null,
       organizationRole,
-      expiresAt: String(now + safeDelay), // 1 day expiration
     };
 
     // Store the auth payload in local storage
@@ -105,8 +74,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         authState,
         login,
         logout,
-        isAuthenticated: !!authState?.token,
+        isAuthenticated: authState?.isAuthenticated,
         isLoading,
+        userId: authState?.userId,
       }}
     >
       {children}
