@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { getTicketsByAssigneeId as apiGetTicketsByAssigneeId } from '../../services/apiTickets';
 import { useUser } from '../../contexts/useUser';
+import { useAuth } from '../../contexts/useAuth';
 
 export function useGetTicketByAssigneeId(userId: number | undefined) {
+  const { isAuthenticated } = useAuth();
   const { orgId } = useUser();
   const {
     isLoading: isFetchingTicketsById,
@@ -15,7 +17,7 @@ export function useGetTicketByAssigneeId(userId: number | undefined) {
       return apiGetTicketsByAssigneeId(userId);
     },
     staleTime: 0,
-    enabled: !!userId && !!orgId,
+    enabled: !!userId && !!orgId && isAuthenticated,
   });
 
   return { isFetchingTicketsById, ticketsById, ticketsByIdError };

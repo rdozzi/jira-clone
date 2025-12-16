@@ -2,12 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 import { getProjects, getProjectsByUserId } from '../../services/apiProjects';
 import { useGetUserSelf } from '../users/useGetUserSelf';
 import { useUser } from '../../contexts/useUser';
+import { useAuth } from '../../contexts/useAuth';
 
 type Scope = 'main' | 'info';
 
 export function useGetProjects(scope: Scope) {
   const { orgId } = useUser();
   const { userSelf } = useGetUserSelf();
+  const { isAuthenticated } = useAuth();
   const isAdmin =
     userSelf?.organizationRole === 'ADMIN' ||
     userSelf?.organizationRole === 'SUPERADMIN';
@@ -25,7 +27,7 @@ export function useGetProjects(scope: Scope) {
         return getProjectsByUserId();
       }
     },
-    enabled: !!userSelf && !!orgId,
+    enabled: !!userSelf && !!orgId && isAuthenticated,
     staleTime: 0,
     gcTime: 1000 * 60 * 10,
     refetchOnWindowFocus: false,

@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { getLogByUserId as apiGetLogByUserId } from '../../services/apiActivityLog';
 import { useUser } from '../../contexts/useUser';
+import { useAuth } from '../../contexts/useAuth';
 
 export function useGetLogByUserId(userId: number | undefined) {
+  const { isAuthenticated } = useAuth();
   const { orgId } = useUser();
   const {
     isLoading: isFetchingLogs,
@@ -15,7 +17,7 @@ export function useGetLogByUserId(userId: number | undefined) {
       return apiGetLogByUserId(userId);
     },
     staleTime: 0,
-    enabled: !!userId && !!orgId,
+    enabled: !!userId && !!orgId && isAuthenticated,
   });
 
   return { isFetchingLogs, activityLogs, activityLogsError };
