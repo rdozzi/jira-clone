@@ -4,5 +4,4 @@ export type StoredAuth = {
   token: string | null;
   userId: number | null;
   organizationRole: OrganizationRole | null;
-  expiresAt: string | null;
 };

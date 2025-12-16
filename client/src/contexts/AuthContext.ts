@@ -7,12 +7,12 @@ type AuthContextType = {
   login: (
     _token: string,
     _organizationRole: OrganizationRole,
-    _userId: number,
-    _expiresIn: number
+    _userId: number
   ) => void;
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
+  userId: number | null | undefined;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
