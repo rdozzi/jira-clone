@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { getBoards } from '../../services/apiBoards';
 import { useUser } from '../../contexts/useUser';
+import { useAuth } from '../../contexts/useAuth';
 
 export function useGetBoards() {
+  const { isAuthenticated } = useAuth();
   const { orgId } = useUser();
   const {
     isLoading,
@@ -14,7 +16,7 @@ export function useGetBoards() {
     staleTime: 0,
     gcTime: 1000 * 60 * 10,
     refetchOnWindowFocus: false,
-    enabled: !!orgId,
+    enabled: !!orgId && isAuthenticated,
   });
 
   return { isLoading, boards, error };
