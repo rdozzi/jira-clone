@@ -12,7 +12,7 @@ export function useLogin() {
       console.error('Login failed:', error);
     },
     onSuccess: () => {
-      queryClient.clear();
+      queryClient.removeQueries({ queryKey: ['userSelf'] });
     },
   });
 
