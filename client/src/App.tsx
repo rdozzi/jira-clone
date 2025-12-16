@@ -14,7 +14,6 @@ import { ProjectInfoProvider } from './contexts/ProjectInfoProvider';
 import { AttachmentModalProvider } from './contexts/AttachmentModalProvider';
 import { UserHomeTicketProvider } from './contexts/UserHomeTicketProvider';
 
-import PublicHomepage from './pages/PublicHomepage';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './router/ProtectedRoute';
 import UserHome from './pages/UserHome';
@@ -50,93 +49,68 @@ function App() {
           <AuthProvider>
             <DropdownProvider>
               <ModalProvider>
-                <UserProvider>
-                  <ProjectBoardProvider>
-                    <TicketProvider>
-                      <UserHomeTicketProvider>
-                        <ProjectInfoProvider>
-                          <ProjectMemberProvider>
-                            <AttachmentModalProvider>
-                              <Routes>
-                                {/* Public Routes */}
-                                <Route path='/' element={<PublicHomepage />} />
-                                <Route
-                                  path='/login'
-                                  element={
-                                    <PublicRoute>
-                                      <LoginPage />
-                                    </PublicRoute>
-                                  }
-                                ></Route>
+                <Routes>
+                  {/* -- Public Routes -- */}
+                  <Route
+                    path='/login'
+                    element={
+                      <PublicRoute>
+                        <LoginPage />
+                      </PublicRoute>
+                    }
+                  ></Route>
 
-                                {/* Protected Routes */}
-                                <Route
-                                  element={
-                                    <ProtectedRoute>
+                  {/* Protected Routes */}
+                  <Route
+                    element={
+                      <ProtectedRoute>
+                        <UserProvider>
+                          <ProjectBoardProvider>
+                            <TicketProvider>
+                              <UserHomeTicketProvider>
+                                <ProjectInfoProvider>
+                                  <ProjectMemberProvider>
+                                    <AttachmentModalProvider>
                                       <AppLayout>{<></>}</AppLayout>
                                       <ModalLayer />
-                                    </ProtectedRoute>
-                                  }
-                                >
-                                  {/* User Homepage; Renders depending on User Profile */}
-                                  <Route
-                                    path='/user-homepage'
-                                    element={<UserHome />}
-                                  />
-                                  <Route
-                                    path='user-profile'
-                                    element={<UserProfile />}
-                                  />
+                                    </AttachmentModalProvider>
+                                  </ProjectMemberProvider>
+                                </ProjectInfoProvider>
+                              </UserHomeTicketProvider>
+                            </TicketProvider>
+                          </ProjectBoardProvider>
+                        </UserProvider>
+                      </ProtectedRoute>
+                    }
+                  >
+                    {/* User Homepage; Renders depending on User Profile */}
+                    <Route path='/user-homepage' element={<UserHome />} />
+                    <Route path='user-profile' element={<UserProfile />} />
 
-                                  {/* Tickets Section */}
-                                  <Route path='/tickets'>
-                                    <Route
-                                      path='ticketlist'
-                                      element={<TicketList />}
-                                    />
-                                    <Route
-                                      path='taskboard'
-                                      element={<TaskBoard />}
-                                    />
-                                    <Route
-                                      path='calendar'
-                                      element={<TaskCalendar />}
-                                    />
-                                  </Route>
+                    {/* Tickets Section */}
+                    <Route path='/tickets'>
+                      <Route path='ticketlist' element={<TicketList />} />
+                      <Route path='taskboard' element={<TaskBoard />} />
+                      <Route path='calendar' element={<TaskCalendar />} />
+                    </Route>
 
-                                  <Route
-                                    path='/projects/:projectId/*'
-                                    element={<ProjectInfoLayout />}
-                                  >
-                                    <Route
-                                      path='overview'
-                                      element={<ProjectOverview />}
-                                    />
-                                    <Route
-                                      path='boards'
-                                      element={<ProjectBoards />}
-                                    />
-                                    <Route
-                                      path='members'
-                                      element={<ProjectMembers />}
-                                    />
-                                  </Route>
-                                  <Route
-                                    path='/projects/view-all'
-                                    element={<ProjectViewAll />}
-                                  />
-                                </Route>
+                    <Route
+                      path='/projects/:projectId/*'
+                      element={<ProjectInfoLayout />}
+                    >
+                      <Route path='overview' element={<ProjectOverview />} />
+                      <Route path='boards' element={<ProjectBoards />} />
+                      <Route path='members' element={<ProjectMembers />} />
+                    </Route>
+                    <Route
+                      path='/projects/view-all'
+                      element={<ProjectViewAll />}
+                    />
+                  </Route>
 
-                                {/* 404 Not Found */}
-                                <Route path='*' element={<NotFoundPage />} />
-                              </Routes>
-                            </AttachmentModalProvider>
-                          </ProjectMemberProvider>
-                        </ProjectInfoProvider>
-                      </UserHomeTicketProvider>
-                    </TicketProvider>
-                  </ProjectBoardProvider>
-                </UserProvider>
+                  {/* 404 Not Found */}
+                  <Route path='*' element={<NotFoundPage />} />
+                </Routes>
               </ModalProvider>
             </DropdownProvider>
           </AuthProvider>
