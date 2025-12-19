@@ -12,6 +12,7 @@ type AuthContextType = {
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
+  token: string | null;
   userId: number | null | undefined;
 };
 
