@@ -1,10 +1,9 @@
 import { getAuthToken } from '../lib/getAuthToken';
 import { ProjectViewAllProjects } from '../types/Projects';
 
-const token = getAuthToken();
-
 export async function getProjects() {
   try {
+    const token = getAuthToken();
     const res = await fetch(`http://localhost:3000/api/projects`, {
       method: 'GET',
       headers: {
@@ -24,6 +23,7 @@ export async function getProjects() {
 
 export async function getProjectsByUserId() {
   try {
+    const token = getAuthToken();
     const res = await fetch(`http://localhost:3000/api/projects/my-projects`, {
       method: 'GET',
       headers: {
@@ -43,6 +43,7 @@ export async function getProjectsByUserId() {
 
 export async function createProject(projectObject: object) {
   try {
+    const token = getAuthToken();
     const res = await fetch('http://localhost:3000/api/projects', {
       method: 'POST',
       headers: {
@@ -63,6 +64,7 @@ export async function createProject(projectObject: object) {
 
 export async function deleteProject(projectId: number) {
   try {
+    const token = getAuthToken();
     const res = await fetch(`http://localhost:3000/api/projects/${projectId}`, {
       method: 'DELETE',
       headers: {
@@ -87,6 +89,7 @@ export async function updateProject(
   project: Partial<ProjectViewAllProjects>
 ) {
   try {
+    const token = getAuthToken();
     const res = await fetch(`http://localhost:3000/api/projects/${projectId}`, {
       method: 'PATCH',
       headers: {

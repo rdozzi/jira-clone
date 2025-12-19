@@ -1,9 +1,9 @@
 import { getAuthToken } from '../lib/getAuthToken';
 import { EntityType } from '../types/Attachments';
-const token = getAuthToken();
 
 export async function getAttachments(entityType: EntityType, entityId: number) {
   try {
+    const token = getAuthToken();
     const res = await fetch(
       `http://localhost:3000/api/attachments/${entityType}/${entityId}`,
       {
@@ -28,6 +28,7 @@ export async function getAttachments(entityType: EntityType, entityId: number) {
 
 export async function uploadSingleAttachment(formData: FormData) {
   try {
+    const token = getAuthToken();
     const res = await fetch(`http://localhost:3000/api/attachments/single`, {
       method: 'POST',
       headers: {
@@ -49,6 +50,7 @@ export async function uploadSingleAttachment(formData: FormData) {
 
 export async function deleteSingleAttachment(attachmentId: number) {
   try {
+    const token = getAuthToken();
     const res = await fetch(
       `http://localhost:3000/api/attachments/${attachmentId}`,
       {
@@ -72,6 +74,7 @@ export async function deleteSingleAttachment(attachmentId: number) {
 
 export async function downloadAttachment(attachmentId: number) {
   try {
+    const token = getAuthToken();
     const res = await fetch(
       `http://localhost:3000/api/attachments/${attachmentId}/download`,
       {

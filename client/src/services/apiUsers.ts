@@ -3,9 +3,8 @@ import { Users } from '../types/Users';
 
 type UpdatedUser = Partial<Users>;
 
-const token = getAuthToken();
-
 export async function getUsers() {
+  const token = getAuthToken();
   try {
     const res = await fetch('http://localhost:3000/api/users/all', {
       method: 'GET',
@@ -25,26 +24,24 @@ export async function getUsers() {
 }
 
 export async function getUserSelf() {
-  try {
-    const res = await fetch('http://localhost:3000/api/users/self', {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    if (!res.ok) {
-      throw new Error('Failed to fetch users');
-    }
-    const { data } = await res.json();
-    return data;
-  } catch (err: any | unknown) {
-    console.error(err);
+  const token = getAuthToken();
+  const res = await fetch('http://localhost:3000/api/users/self', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) {
+    throw new Error('Failed to fetch users');
   }
+  const { data } = await res.json();
+  return data;
 }
 
 export async function getUsersByProjectId(projectId: number) {
   try {
+    const token = getAuthToken();
     const res = await fetch(
       `http://localhost:3000/api/users/${projectId}/project`,
       {
@@ -67,6 +64,7 @@ export async function getUsersByProjectId(projectId: number) {
 
 export async function updateUser(userId: number, userInfo: UpdatedUser) {
   try {
+    const token = getAuthToken();
     const res = await fetch(
       `http://localhost:3000/api/users/${userId}/update`,
       {

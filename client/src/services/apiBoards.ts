@@ -1,9 +1,8 @@
 import { getAuthToken } from '../lib/getAuthToken';
 import { Boards } from '../types/Boards';
 
-const token = getAuthToken();
-
 export async function getBoards() {
+  const token = getAuthToken();
   try {
     const res = await fetch(`http://localhost:3000/api/boards`, {
       method: 'GET',
@@ -23,6 +22,7 @@ export async function getBoards() {
 }
 
 export async function getBoardById(boardId: number) {
+  const token = getAuthToken();
   try {
     const res = await fetch(`http://localhost:3000/api/boards/${boardId}`, {
       method: 'GET',
@@ -44,6 +44,7 @@ export async function getBoardById(boardId: number) {
 }
 
 export async function getBoardsByProjectId(projectId: number) {
+  const token = getAuthToken();
   try {
     const res = await fetch(
       `http://localhost:3000/api/boards/${projectId}/project`,
@@ -66,6 +67,7 @@ export async function getBoardsByProjectId(projectId: number) {
 }
 
 export async function createBoard(boardObject: object) {
+  const token = getAuthToken();
   try {
     const res = await fetch('http://localhost:3000/api/boards', {
       method: 'POST',
@@ -88,6 +90,7 @@ export async function createBoard(boardObject: object) {
 }
 
 export async function deleteBoard(boardId: number) {
+  const token = getAuthToken();
   try {
     const res = await fetch(`http://localhost:3000/api//boards/${boardId}`, {
       method: 'DELETE',
@@ -109,6 +112,7 @@ export async function deleteBoard(boardId: number) {
 }
 
 export async function updateBoard(boardId: number, board: Partial<Boards>) {
+  const token = getAuthToken();
   try {
     const res = await fetch(`http://localhost:3000/api/boards/${boardId}`, {
       method: 'PATCH',

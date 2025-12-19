@@ -5,10 +5,10 @@ interface MemberInfo {
   projectRole: string;
 }
 
-const token = getAuthToken();
-
 export async function getProjectMembers(projectId: number) {
   try {
+    const token = getAuthToken();
+
     const res = await fetch(
       `http://localhost:3000/api/projectMembers/${projectId}/members`,
       {
@@ -34,6 +34,7 @@ export async function addProjectMember(
   memberInfo: MemberInfo
 ) {
   try {
+    const token = getAuthToken();
     const res = await fetch(
       `http://localhost:3000/api/projectMembers/${projectId}/members`,
       {
@@ -59,6 +60,7 @@ export async function addProjectMember(
 
 export async function removeProjectMember(projectId: number, userId: number) {
   try {
+    const token = getAuthToken();
     const res = await fetch(
       `http://localhost:3000/api/projectMembers/${projectId}/members/${userId}`,
       {
@@ -85,7 +87,7 @@ export async function updateProjectMemberRole(
   projectRole: any
 ) {
   try {
-    console.log('updateTicket Called');
+    const token = getAuthToken();
     const res = await fetch(
       `http://localhost:3000/api/projectMembers/${projectId}/members/${userId}`,
       {

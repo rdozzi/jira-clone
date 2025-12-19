@@ -1,8 +1,8 @@
 import { getAuthToken } from '../lib/getAuthToken';
-const token = getAuthToken();
 
 export async function getLogByUserId(userId: number) {
   try {
+    const token = getAuthToken();
     const res = await fetch(
       `http://localhost:3000/api/activity-logs/${userId}/user`,
       {
