@@ -15,7 +15,6 @@ import ProjectMembers from '../ui/ProjectMembers';
 import ProjectBoards from '../ui/ProjectBoards';
 import ProjectViewAll from '../ui/ProjectViewAll';
 import ProjectInfoLayout from '../ui/ProjectInfoLayout';
-import ModalLayer from '../ui/ModalLayer';
 import UserProfile from '../ui/UserProfile';
 import PublicRoute from '../utilities/PublicRoute';
 
@@ -37,8 +36,7 @@ export function AppRoutes() {
         element={
           <ProtectedRoute>
             <AuthBoundaryProviders>
-              <AppLayout>{<></>}</AppLayout>
-              <ModalLayer />
+              <AppLayout />
             </AuthBoundaryProviders>
           </ProtectedRoute>
         }
