@@ -7,10 +7,8 @@ export function getUpdatedFields(ticketDbEntry: Tickets, updatedValues: any) {
     const updated = updatedValues[key];
 
     if (key === 'dueDate') {
-      const dbDate =
-        original instanceof Date && original.toISOString().slice(0, 10);
-      const updatedDate =
-        updated instanceof Date && updated.toISOString().slice(0, 10);
+      const dbDate = original.toString().slice(0, 10);
+      const updatedDate = updated.toString().slice(0, 10);
 
       if (dbDate !== updatedDate) {
         updatedFields[key] = updated as Tickets[typeof key];
