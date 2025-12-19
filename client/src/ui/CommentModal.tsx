@@ -57,7 +57,6 @@ function CommentModal({
       const trimmedContent = content.trim();
       try {
         const editPayload = { commentId: commentId, content: trimmedContent };
-        console.log(editPayload);
         editComment(editPayload);
       } catch (error) {
         console.error('Error updating comment: ', error);
@@ -77,7 +76,6 @@ function CommentModal({
           ...values,
           ticketId: recordId,
         };
-        console.log('Comment Payload:', commentPayload);
         createNewComment(commentPayload);
       } catch (error) {
         console.error('Error creating comment: ', error);
@@ -91,7 +89,6 @@ function CommentModal({
   const handleDeleteComment = useCallback(
     async function handleDeleteComment(commentId: number) {
       try {
-        console.log('Deleting comment: ', commentId);
         deleteComment(commentId);
       } catch (error) {
         console.error('Error deleting comment: ', error);

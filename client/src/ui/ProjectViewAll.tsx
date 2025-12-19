@@ -4,19 +4,12 @@ import ProjectViewAllItemButton from './ProjectViewAllItemButton';
 import BackButton from './BackButton';
 
 import { Table, Button } from 'antd';
-import type { TableColumnsType, TableProps } from 'antd';
+import type { TableColumnsType } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { useModal } from '../contexts/useModal';
 import { useGetProjects } from '../features/projects/useGetProjects';
 import { ProjectViewAllProjects } from '../types/Projects';
-
-const onChange: TableProps<ProjectViewAllProjects>['onChange'] = (
-  pagination,
-  filters,
-  sorter,
-  extra
-) => console.log('params', pagination, filters, sorter, extra);
 
 function ProjectViewAll() {
   const {
@@ -95,7 +88,6 @@ function ProjectViewAll() {
         columns={columns}
         dataSource={projects}
         rowKey='id'
-        onChange={onChange}
         loading={isProjectsLoading}
         pagination={false}
       />

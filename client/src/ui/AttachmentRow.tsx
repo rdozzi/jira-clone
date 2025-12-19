@@ -53,7 +53,6 @@ function AttachmentRow({ attachment }: { attachment: Attachment }) {
         title='Delete Attachments'
         description='Are you sure you want to delete this attachment?'
         onConfirm={() => deleteSingleAttachment(attachment.id)}
-        onCancel={() => console.log('User canceled deletion')}
         placement='top'
         okText='Yes'
         cancelText='No'

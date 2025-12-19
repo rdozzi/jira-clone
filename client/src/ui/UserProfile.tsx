@@ -85,9 +85,7 @@ function UserProfile() {
     const updatedOrgRole = organizationRole.toUpperCase();
     const updatedValues = { organizationRole: updatedOrgRole, ...rest };
     const updatedFields = getUpdatedUserFields(userSelf, updatedValues);
-    console.log('updatedFields', updatedFields);
     if (Object.keys(updatedFields).length === 0) {
-      console.log('No fields were changed');
       setEditProfile(false);
       setCheckboxChecked(false);
       return;

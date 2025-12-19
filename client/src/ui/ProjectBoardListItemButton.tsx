@@ -58,7 +58,6 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
     switch (e.key) {
       case 'view_edit':
         openModal('viewEdit', { id: record.id, record });
-        console.log('View/Edit board:', record);
         break;
 
       case 'duplicate':
@@ -67,21 +66,18 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
           break;
         }
         createBoard(partialBoard);
-        console.log('Duplicate board created:', record);
         break;
 
       case 'archive':
-        console.log('Archive board:', record);
+        console.log(`Archive selected for board: ${record.name}`);
         break;
 
       case 'attachments':
         openAttachmentModal('BOARD', { id: record.id, record });
-        console.log('Attachments', record);
         break;
 
       case 'delete':
         deleteBoard(record.id);
-        console.log('Delete board:', record);
         break;
 
       default:
