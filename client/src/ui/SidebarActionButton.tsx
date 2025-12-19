@@ -2,7 +2,6 @@ import { ReactNode } from 'react';
 import { Button, Tooltip } from 'antd';
 
 interface SidebarActionButtonProps {
-  children: ReactNode;
   icon: ReactNode; // AntD component
   onClick: () => void;
   fontSize: number; // integrated as pixels 'px' for MVP
