@@ -7,7 +7,6 @@ interface ProjectInfoContextType {
   selectedProject: Projects | null;
   setSelectedProject: (_selectedProject: Projects | null) => void;
   projectIdNumber: number;
-  setProjectIdNumber: (_projectIdNumber: number) => void;
 }
 
 export const ProjectInfoContext = createContext<
