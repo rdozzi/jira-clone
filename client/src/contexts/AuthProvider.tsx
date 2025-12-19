@@ -19,34 +19,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(
     function logout() {
+      localStorage.removeItem('auth');
+
       setAuthState({
         token: null,
         isAuthenticated: false,
         organizationRole: null,
         userId: null,
       });
-      localStorage.removeItem('auth');
+
       navigate('/login', { replace: true });
     },
     [navigate]
   );
 
   useEffect(() => {
-    const stored = localStorage.getItem('auth');
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setAuthState({
-        token: parsed.token,
-        isAuthenticated: true,
-        organizationRole: parsed.organizationRole,
-        userId: parsed.userId,
-      });
+    try {
+      const stored = localStorage.getItem('auth');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setAuthState({
+          token: parsed.token,
+          isAuthenticated: true,
+          organizationRole: parsed.organizationRole,
+          userId: parsed.userId,
+        });
+      }
+    } catch {
+      localStorage.removeItem('auth');
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   }, []);
 
-  function login(
+  const login = useCallback(function login(
     token: string,
     organizationRole: OrganizationRole,
     userId?: number
@@ -66,7 +72,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Store the auth payload in local storage
     localStorage.setItem('auth', JSON.stringify(authPayload));
-  }
+  },
+  []);
 
   return (
     <AuthContext.Provider
@@ -76,6 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logout,
         isAuthenticated: authState?.isAuthenticated,
         isLoading,
+        token: authState?.token,
         userId: authState?.userId,
       }}
     >
