@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/useAuth';
 import { useLogout } from '../features/auth/useLogout';
 
 import { Button } from 'antd';

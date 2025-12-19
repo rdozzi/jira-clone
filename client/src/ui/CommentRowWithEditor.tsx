@@ -46,7 +46,6 @@ const CommentRowWithEditor = memo(function CommentRowWithEditor({
   const { openModal } = useAttachmentModal();
   function openAttachmentModal() {
     openModal('COMMENT', { id: comment.id, comment });
-    console.log('Attachments', comment);
   }
   return (
     <li key={comment.id} style={{ listStyleType: 'none' }}>
@@ -108,7 +107,6 @@ const CommentRowWithEditor = memo(function CommentRowWithEditor({
         title='Delete Comment'
         description='Are you sure you want to delete this comment?'
         onConfirm={() => handleDeleteComment(comment.id)}
-        onCancel={() => console.log('User canceled deletion')}
         placement='top'
         okText='Yes'
         cancelText='No'

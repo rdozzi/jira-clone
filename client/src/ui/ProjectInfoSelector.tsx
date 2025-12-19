@@ -10,7 +10,6 @@ function ProjectInfoSelector() {
     setSelectedProject,
     isProjectLoading,
     typedProjects,
-    setProjectIdNumber,
   } = useProjectInfo();
   const { userSelf } = useUser();
 
@@ -20,7 +19,6 @@ function ProjectInfoSelector() {
   function onChange(value: number | null | undefined) {
     const selectedProject = typedProjects?.find((p) => p.id === value) || null;
     setSelectedProject(selectedProject);
-    setProjectIdNumber(selectedProject!.id);
 
     const updatedPath = location.pathname.replace(
       /\/projects\/\d+/,

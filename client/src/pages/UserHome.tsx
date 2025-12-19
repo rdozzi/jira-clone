@@ -91,9 +91,6 @@ function UserHome() {
               </List.Item>
             )}
             pagination={{
-              onChange: (page) => {
-                console.log(page);
-              },
               pageSize: 5,
             }}
           />

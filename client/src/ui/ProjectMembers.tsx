@@ -1,7 +1,7 @@
 import { useProjectMembers } from '../contexts/useProjectMembers';
 import { useProjectInfo } from '../contexts/useProjectInfo';
 import { Spin, Table, Button } from 'antd';
-import type { TableColumnsType, TableProps } from 'antd';
+import type { TableColumnsType } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { ProjectMember } from '../types/ProjectMember';
@@ -9,13 +9,6 @@ import { useModal } from '../contexts/useModal';
 
 import ProjectMemberListItemButton from './ProjectMemberListItemButton';
 import ProjectMembersModal from './ProjectMembersModal';
-
-const onChange: TableProps<ProjectMember>['onChange'] = (
-  pagination,
-  filters,
-  sorter,
-  extra
-) => console.log('params', pagination, filters, sorter, extra);
 
 function ProjectMembers() {
   const { projectMembers, isLoadingProjectMember, error } = useProjectMembers();
@@ -66,7 +59,6 @@ function ProjectMembers() {
         columns={columns}
         dataSource={projectMembers}
         rowKey='userId'
-        onChange={onChange}
         loading={isLoadingProjectMember}
         pagination={false}
       />

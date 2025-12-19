@@ -4,19 +4,12 @@ import { useModal } from '../contexts/useModal';
 import ProjectBoardsModal from './ProjectBoardsModal';
 
 import { Spin, Table, Button } from 'antd';
-import type { TableColumnsType, TableProps } from 'antd';
+import type { TableColumnsType } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 import ProjectBoardListItemButton from './ProjectBoardListItemButton';
 
 import { Boards } from '../types/Boards';
-
-const onChange: TableProps<Boards>['onChange'] = (
-  pagination,
-  filters,
-  sorter,
-  extra
-) => console.log('params', pagination, filters, sorter, extra);
 
 function ProjectBoards() {
   const { projectIdNumber } = useProjectInfo();
@@ -66,7 +59,6 @@ function ProjectBoards() {
         columns={columns}
         dataSource={boards}
         rowKey='id'
-        onChange={onChange}
         loading={isBoardLoading}
         pagination={false}
       />

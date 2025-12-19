@@ -18,7 +18,6 @@ export function AttachmentModalProvider({ children }: ModalProviderProps) {
   });
 
   function openModal(mode: EntityType, modalProps = {}) {
-    console.log('AttachmentModalProvider', mode, modalProps);
     setModalState({ isOpen: true, mode, modalProps });
   }
 

@@ -103,7 +103,6 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
       };
       createNewTicket(updatedValues);
       setConfirmLoading(isCreating);
-      console.log('Creating new Ticket: ', updatedValues);
       form.resetFields();
       closeModal();
     } catch (error) {

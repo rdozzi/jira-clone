@@ -2,7 +2,6 @@ import { useProjectInfo } from '../contexts/useProjectInfo';
 
 export function ProjectOverview() {
   const { selectedProject } = useProjectInfo();
-  console.log(selectedProject);
 
   return (
     <>

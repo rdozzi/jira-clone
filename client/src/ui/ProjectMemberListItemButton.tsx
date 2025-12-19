@@ -55,7 +55,6 @@ const ProjectMemberListItemButton = memo(function ProjectMemberListItemButton({
           projectId: projectId,
           userId: record.userId,
         });
-        console.log('Remove project member:', record);
         break;
 
       case 'userInfo':

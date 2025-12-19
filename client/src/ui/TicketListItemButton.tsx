@@ -103,7 +103,6 @@ const TicketListItemButton = memo(function TicketListItemButton({
     switch (e.key) {
       case 'view_edit':
         openModal('viewEdit', { id: record.id, record });
-        console.log('View/Edit ticket:', record);
         break;
 
       case 'duplicate':
@@ -112,26 +111,22 @@ const TicketListItemButton = memo(function TicketListItemButton({
           break;
         }
         createNewTicket(duplicateTicket);
-        console.log('Duplicate ticket created:', record);
         break;
 
       case 'archive':
-        console.log('Archive ticket:', record);
+        console.log(`Archive option selected for ticket`, record.title);
         break;
 
       case 'add_view_comments':
         setIsCommentOpen(() => true);
-        console.log('Comment', record);
         break;
 
       case 'attachments':
         openAttachmentModal('TICKET', { id: record.id, record });
-        console.log('Attachments', record);
         break;
 
       case 'delete':
         deleteTicket(record.id);
-        console.log('Delete ticket:', record);
         break;
 
       default:

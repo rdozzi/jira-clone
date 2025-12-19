@@ -62,7 +62,6 @@ const ProjectViewAllItemButton = memo(function ProjectViewAllItemButton({
     switch (e.key) {
       case 'view_edit':
         openModal('viewEdit', { id: record.id, record });
-        console.log('View/Edit project:', record);
         break;
 
       case 'duplicate':
@@ -71,21 +70,18 @@ const ProjectViewAllItemButton = memo(function ProjectViewAllItemButton({
           break;
         }
         createProject(partialProject);
-        console.log('Duplicate project created:', record);
         break;
 
       case 'archive':
-        console.log('Archive project:', record);
+        console.log('Archive option selected for project:', record.name);
         break;
 
       case 'attachments':
         openAttachmentModal('PROJECT', { id: record.id, record });
-        console.log('Attachments', record);
         break;
 
       case 'delete':
         deleteProject(record.id);
-        console.log('Delete project:', record);
         break;
 
       default:
