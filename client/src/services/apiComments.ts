@@ -1,9 +1,8 @@
 import { getAuthToken } from '../lib/getAuthToken';
 
-const token = getAuthToken();
-
 export async function getCommentsById(ticketId: number) {
   try {
+    const token = getAuthToken();
     const res = await fetch(`http://localhost:3000/api/comments/${ticketId}`, {
       method: 'GET',
       headers: {
@@ -24,6 +23,7 @@ export async function getCommentsById(ticketId: number) {
 // Create a comment by ticket Id - Requires ticketId, authorId, content object
 export async function createComment(commentObject: object) {
   try {
+    const token = getAuthToken();
     const res = await fetch('http://localhost:3000/api/comments', {
       method: 'POST',
       headers: {
@@ -45,6 +45,7 @@ export async function createComment(commentObject: object) {
 // Delete a comment by ticket Id - Requires ticketId
 export async function deleteComment(ticketId: number) {
   try {
+    const token = getAuthToken();
     const res = await fetch(`http://localhost:3000/api/comments/${ticketId}`, {
       method: 'DELETE',
       headers: {
@@ -65,6 +66,7 @@ export async function deleteComment(ticketId: number) {
 // Edit a Comment - CommentId and payload required (updatedAt is updated via the ORM)
 export async function editComment(commentId: number, content: string) {
   try {
+    const token = getAuthToken();
     const res = await fetch(`http://localhost:3000/api/comments/${commentId}`, {
       method: 'PATCH',
       headers: {

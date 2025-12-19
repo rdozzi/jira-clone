@@ -12,12 +12,11 @@ interface Ticket {
   type: string;
 }
 
-const token = getAuthToken();
-
 type UpdatedTicket = Partial<Ticket>;
 
 export async function getTickets() {
   try {
+    const token = getAuthToken();
     const res = await fetch('http://localhost:3000/api/tickets', {
       method: 'GET',
       headers: {
@@ -37,6 +36,7 @@ export async function getTickets() {
 
 export async function getTicketsByAssigneeId(userId: number | undefined) {
   try {
+    const token = getAuthToken();
     const res = await fetch(
       `http://localhost:3000/api/tickets/${userId}/assigneeId`,
       {
@@ -60,6 +60,7 @@ export async function getTicketsByAssigneeId(userId: number | undefined) {
 
 export async function getTicketsByBoardId(boardId: number) {
   try {
+    const token = getAuthToken();
     const res = await fetch(
       `http://localhost:3000/api/tickets/${boardId}/board`,
       {
@@ -82,6 +83,7 @@ export async function getTicketsByBoardId(boardId: number) {
 
 export async function getTicketById(ticketId: number) {
   try {
+    const token = getAuthToken();
     const res = await fetch(`http://localhost:3000/api/tickets/${ticketId}`, {
       method: 'GET',
       headers: {
@@ -101,6 +103,7 @@ export async function getTicketById(ticketId: number) {
 
 export async function createTicket(ticket: Ticket) {
   try {
+    const token = getAuthToken();
     const res = await fetch('http://localhost:3000/api/tickets', {
       method: 'POST',
       headers: {
@@ -121,6 +124,7 @@ export async function createTicket(ticket: Ticket) {
 
 export async function deleteTicket(id: number) {
   try {
+    const token = getAuthToken();
     const res = await fetch(`http://localhost:3000/api/tickets/${id}`, {
       method: 'DELETE',
       headers: {
@@ -140,6 +144,7 @@ export async function deleteTicket(id: number) {
 
 export async function updateTicket(ticketId: number, ticket: UpdatedTicket) {
   try {
+    const token = getAuthToken();
     const res = await fetch(
       `http://localhost:3000/api/tickets/${ticketId}/update`,
       {
