@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Layout, Flex, Typography } from 'antd';
 import {
@@ -16,13 +15,14 @@ import { useAuth } from '../contexts/useAuth';
 import { useLogout } from '../features/auth/useLogout';
 import { useProjectInfo } from '../contexts/useProjectInfo';
 import { useTheme } from '../contexts/useTheme';
-import GenericDropdown from './GenericDropdown';
+import { GenericDropdown } from './GenericDropdown';
+import ModalLayer from '../ui/ModalLayer';
 
 const { Text } = Typography;
 
 const { Sider, Content } = Layout;
 
-function AppLayout({ children }: { children: ReactNode }) {
+function AppLayout() {
   const location = useLocation();
   const { logout: frontendLogout } = useAuth();
   const { mutate: logoutMutation } = useLogout();
@@ -31,14 +31,12 @@ function AppLayout({ children }: { children: ReactNode }) {
   const {
     projects,
     isProjectLoading,
-    // projectError,
     project,
     setProject,
     boards,
     board,
     setBoard,
     isBoardLoading,
-    // boardError,
   } = useProjectBoard();
 
   const isProjectInfoView = /^\/projects\//.test(location.pathname);
@@ -82,9 +80,7 @@ function AppLayout({ children }: { children: ReactNode }) {
           >
             <Flex vertical justify='flex-start'>
               <UserAvatar />
-              {/*Light/Dark mode component*/}
               <SidebarActionButton
-                children={children}
                 icon={
                   modeTheme === 'light' ? <MoonOutlined /> : <SunOutlined />
                 }
@@ -125,7 +121,6 @@ function AppLayout({ children }: { children: ReactNode }) {
                 }
               />
               <SidebarActionButton
-                children={children}
                 icon={<InfoCircleOutlined />}
                 onClick={() =>
                   navigate(`/projects/${projectIdNumber}/overview`)
@@ -136,14 +131,12 @@ function AppLayout({ children }: { children: ReactNode }) {
             </Flex>
             <Flex vertical align='flex-end' style={{ marginTop: 'auto' }}>
               <SidebarActionButton
-                children={children}
                 icon={<HomeOutlined />}
                 onClick={() => navigate('/user-homepage')}
                 fontSize={16}
                 text={'Home'}
               />
               <SidebarActionButton
-                children={children}
                 icon={<LogoutOutlined />}
                 onClick={handleLogout}
                 fontSize={16}
@@ -155,6 +148,7 @@ function AppLayout({ children }: { children: ReactNode }) {
         <Content>
           <Outlet />
         </Content>
+        <ModalLayer />
       </Layout>
     </Layout>
   );
