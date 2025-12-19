@@ -13,7 +13,7 @@ type GenericDropdownProps<T extends DropdownItem> = {
   isProjectInfoView?: boolean;
 };
 
-function GenericDropdown<T extends DropdownItem>({
+export function GenericDropdown<T extends DropdownItem>({
   option,
   options,
   setSelected,
@@ -42,5 +42,3 @@ function GenericDropdown<T extends DropdownItem>({
     </Select>
   );
 }
-
-export default GenericDropdown;
