@@ -14,20 +14,16 @@ export function AuthBoundaryProviders({ children }: { children: ReactNode }) {
 
   if (isLoading) return null;
 
-  const userKey = isAuthenticated ? `user-${userId}` : 'guest';
-
-  console.log(userKey);
+  const userKey = isAuthenticated && userId ? `user-${userId}` : 'guest';
 
   return (
     <UserProvider key={userKey}>
-      <ProjectBoardProvider key={userKey}>
-        <TicketProvider key={userKey}>
-          <UserHomeTicketProvider key={userKey}>
-            <ProjectInfoProvider key={userKey}>
-              <ProjectMemberProvider key={userKey}>
-                <AttachmentModalProvider key={userKey}>
-                  {children}
-                </AttachmentModalProvider>
+      <ProjectBoardProvider>
+        <TicketProvider>
+          <UserHomeTicketProvider>
+            <ProjectInfoProvider>
+              <ProjectMemberProvider>
+                <AttachmentModalProvider>{children}</AttachmentModalProvider>
               </ProjectMemberProvider>
             </ProjectInfoProvider>
           </UserHomeTicketProvider>
