@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 
 import type { Dayjs } from 'dayjs';
 import type { CalendarProps, SegmentedProps } from 'antd';
-import { Record } from './TicketList';
+import { TicketRecord } from '../types/Tickets';
 import { Calendar, Button, DatePicker, Segmented, Tooltip } from 'antd';
 import {
   LeftCircleOutlined,
@@ -17,7 +17,7 @@ import { useModal } from '../contexts/useModal';
 import TicketModal from '../ui/TicketModal';
 import TaskCalendarTicketList from '../ui/TaskCalendarTicketList';
 
-type CellRenderRecord = Record;
+type CellRenderRecord = TicketRecord;
 
 type ViewMode = 'month' | 'year';
 

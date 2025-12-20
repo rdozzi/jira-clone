@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 
 import { Modal, Form, Input, Radio, DatePicker, Select } from 'antd';
 
-import { Record } from '../pages/TicketList';
+import { TicketRecord } from '../types/Tickets';
 
 import { useCreateTickets } from '../features/tickets/useCreateTickets';
 import { useGetTicketById } from '../features/tickets/useGetTicketById';
@@ -29,7 +29,7 @@ function getOptions(
 export interface TicketModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  record?: Record;
+  record?: TicketRecord;
   mode: 'create' | 'viewEdit' | null;
 }
 
