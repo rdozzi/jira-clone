@@ -11,25 +11,11 @@ import Loading from '../ui/Loading';
 
 import { useDragHandler } from '../hooks/useDragHandler';
 
+import { Tickets } from '../types/Tickets';
+
 export interface Board {
   id: string;
   name: string;
-}
-
-export interface Tickets {
-  assignee: { firstName: string; lastName: string };
-  assigneeId: number;
-  boardId: number;
-  createdAt: Date;
-  description: string;
-  dueDate: Date;
-  id: number;
-  priority: 'HIGH' | 'MEDIUM' | 'LOW';
-  reporterId: number;
-  status: 'BACKLOG' | 'IN_PROGRESS' | 'DONE';
-  title: string;
-  type: 'BUG' | 'TASK' | 'STORY';
-  updatedAt: Date;
 }
 
 type BoardState = Record<string, Tickets[]>;
@@ -42,7 +28,7 @@ const boards: Board[] = [
 
 function TaskBoard() {
   const [boardState, setBoardState] = useState<BoardState>({});
-  const { isLoading, tickets = [], error } = useTickets(); // Add error later
+  const { isLoading, tickets = [], error } = useTickets();
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
   const handleOnDragEnd = useDragHandler(setBoardState);
 
