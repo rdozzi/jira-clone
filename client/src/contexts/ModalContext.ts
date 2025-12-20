@@ -1,17 +1,19 @@
 import { createContext } from 'react';
+import { TicketModalPayload } from '../types/Tickets';
 
-type ModalContextType = {
+type ModalContextType<TProps = object> = {
   isOpen: boolean;
   openModal: (_mode: 'create' | 'viewEdit', _modalProps: object) => void;
   closeModal: () => void;
   mode: 'create' | 'viewEdit' | null;
-  modalProps: Record<string, unknown>;
+  modalProps: TProps;
 };
 
-export const ModalContext = createContext<ModalContextType | null>({
-  isOpen: false,
-  openModal: () => {},
-  closeModal: () => {},
-  mode: null,
-  modalProps: {},
-});
+export const ModalContext =
+  createContext<ModalContextType<TicketModalPayload> | null>({
+    isOpen: false,
+    openModal: () => {},
+    closeModal: () => {},
+    mode: null,
+    modalProps: {},
+  });
