@@ -68,7 +68,9 @@ describe('getAllLogs', () => {
       .get('/api/activity-logs/all')
       .set('Authorization', `Bearer ${token}`);
     const logs: ActivityLog[] = res.body.data.filter((log: ActivityLog) =>
-      ['TICKET_getAllLogs_1', 'BOARD_getAllLogs_2'].includes(log.action)
+      ['TICKET_getAllLogs_1_UPDATE', 'BOARD_getAllLogs_2_UPDATE'].includes(
+        log.action
+      )
     );
 
     expect(res.status).toBe(200);
@@ -77,7 +79,7 @@ describe('getAllLogs', () => {
         expect.objectContaining({
           userId: expect.any(Number),
           actorType: expect.any(String),
-          action: 'TICKET_getAllLogs_1',
+          action: 'TICKET_getAllLogs_1_UPDATE',
           targetId: expect.any(Number),
           targetType: expect.any(String),
           metadata: expect.objectContaining({ count: expect.any(Number) }),
@@ -85,7 +87,7 @@ describe('getAllLogs', () => {
         expect.objectContaining({
           userId: expect.any(Number),
           actorType: expect.any(String),
-          action: 'BOARD_getAllLogs_2',
+          action: 'BOARD_getAllLogs_2_UPDATE',
           targetId: expect.any(Number),
           targetType: expect.any(String),
           metadata: expect.objectContaining({ count: expect.any(Number) }),

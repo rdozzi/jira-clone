@@ -20,7 +20,7 @@ export async function createActivityLog(
       data: {
         userId: userId,
         actorType: actorType,
-        action: `${targetType}_${testDescription}_${count}`,
+        action: `${targetType}_${testDescription}_${count}_UPDATE`,
         targetId: targetId,
         targetType: targetType,
         metadata: { count },
