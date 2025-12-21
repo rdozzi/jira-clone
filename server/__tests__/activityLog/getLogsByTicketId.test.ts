@@ -111,7 +111,7 @@ describe('getLogByTicketId', () => {
         expect.objectContaining({
           userId: expect.any(Number),
           actorType: expect.any(String),
-          action: 'TICKET_getLogByTicketId_1',
+          action: 'TICKET_getLogByTicketId_1_UPDATE',
           targetId: expect.any(Number),
           targetType: expect.any(String),
           metadata: expect.objectContaining({ count: expect.any(Number) }),
@@ -119,7 +119,7 @@ describe('getLogByTicketId', () => {
         expect.objectContaining({
           userId: expect.any(Number),
           actorType: expect.any(String),
-          action: 'TICKET_getLogByTicketId_2',
+          action: 'TICKET_getLogByTicketId_2_UPDATE',
           targetId: expect.any(Number),
           targetType: expect.any(String),
           metadata: expect.objectContaining({ count: expect.any(Number) }),
