@@ -2,6 +2,8 @@ import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
 import dotenv from 'dotenv';
 
+// NOTE: Test was written for local storage only. Will fail for cloud storage.
+
 import {
   User,
   ProjectRole,
