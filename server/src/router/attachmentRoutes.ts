@@ -15,14 +15,12 @@ import { checkProjectRole } from '../middleware/checkProjectRole';
 import { resolveProjectIdForCreateAttachment } from '../middleware/attachments/resolveProjectIdForCreateAttachment';
 import { resolveProjectIdForGetAttachments } from '../middleware/attachments/resolveProjectIdForGetAttachments';
 import { resolveProjectIdForSingleDeletionAndDownload } from '../middleware/attachments/resolveProjectIdForSingleDeletionAndDownload';
-import { resolveProjectIdForMultipleDeletionAndDownload } from '../middleware/attachments/resolveProjectIdForMultipleDeletionAndDownload';
 import { upload } from '../middleware/attachments/memoryStorage';
 import { validateAttachmentExistsAndStore } from '../middleware/attachments/validateAttachmentExistsAndStore';
 import { checkTicketOrCommentOwnershipForAttachments } from '../middleware/attachments/checkTicketAndCommentOwnershipForAttachments';
 import { checkBoardAndProjectAccess } from '../middleware/attachments/checkBoardAndProjectAccess';
 import { loadEntityIdAndEntityTypeForUpload } from '../middleware/attachments/loadEntityIdAndEntityTypeForUpload';
 import { loadEntityIdAndEntityTypeForSingleDeletion } from '../middleware/attachments/loadEntityIdAndEntityTypeForSingleDeletion';
-import { validateAndSetAttachmentDeleteAndDownloadParams } from '../middleware/attachments/validateAndSetAttachmentDeleteAndDownloadParams';
 import { validateBody } from '../middleware/validation/validateBody';
 import { uploadAttachmentSchema } from '../schemas/attachment.schema';
 import { checkMaxUsageTotals } from '../middleware/organizationUsageMiddleware/checkMaxUsageTotals';
@@ -30,7 +28,6 @@ import { checkMaxUsageTotals } from '../middleware/organizationUsageMiddleware/c
 // Controller Functions
 import { getAllAttachments } from '../controllers/attachmentControllers/getAllAttachments';
 import { handleSingleUpload } from '../controllers/attachmentControllers/uploadController';
-import { deleteManyAttachments } from '../controllers/attachmentControllers/deleteManyAttachmentsController';
 import { deleteAttachment } from '../controllers/attachmentControllers/deleteAttachmentController';
 import { downloadSingleAttachment } from '../controllers/attachmentControllers/downloadSingleAttachment';
 
@@ -94,22 +91,6 @@ router.delete(
   checkBoardAndProjectAccess,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     await deleteAttachment(req as CustomRequest, res, next, prisma);
-  }
-);
-
-// Delete many attachments
-// Body: Array of Id values (attachmentIds), entityId, entityType
-router.delete(
-  '/attachments',
-  authorizeOrganizationRole(OrganizationRole.USER),
-  validateAndSetAttachmentDeleteAndDownloadParams,
-  resolveProjectIdForMultipleDeletionAndDownload(prisma),
-  checkProjectMembership({ allowOrganizationSuperAdmin: true }),
-  checkProjectRole(ProjectRole.USER, { allowOrganizationSuperAdmin: true }),
-  checkTicketOrCommentOwnershipForAttachments,
-  checkBoardAndProjectAccess,
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    await deleteManyAttachments(req, res, next, prisma);
   }
 );
 
