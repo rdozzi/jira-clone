@@ -15,10 +15,8 @@ import { globalRateLimiter, routeRateLimiter } from './middleware/rateLimiter';
 import attachmentRoutes from './router/attachmentRoutes';
 import activityLogRoutes from './router/activityLogRoutes';
 import authRoutes from './router/authRoutes';
-import bannedEmailRoutes from './router/bannedEmailRoutes';
 import boardRoutes from './router/boardRoutes';
 import commentRoutes from './router/commentRoutes';
-import labelRoutes from './router/labelRoutes';
 import projectMemberRoutes from './router/projectMemberRoutes';
 import projectRoutes from './router/projectRoutes';
 import setupRoutes from './router/setupRoutes';
@@ -63,8 +61,6 @@ app.use(storeUserAndProjectInfo);
 // Protected routes
 app.use('/api', userRoutes);
 
-app.use('/api', bannedEmailRoutes);
-
 app.use('/api', projectRoutes);
 
 app.use('/api', ticketRoutes);
@@ -74,8 +70,6 @@ app.use('/api', commentRoutes);
 app.use('/api', attachmentRoutes);
 
 app.use('/api', boardRoutes);
-
-app.use('/api', labelRoutes);
 
 app.use('/api', activityLogRoutes);
 

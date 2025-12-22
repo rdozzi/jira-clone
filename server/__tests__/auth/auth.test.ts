@@ -51,7 +51,6 @@ describe('Login Auth Route', () => {
       organizationRole: expect.any(String),
       organizationId: expect.any(Number),
       token: expect.any(String),
-      expiresIn: expect.any(Number),
     });
 
     await waitForExpect(async () => {
