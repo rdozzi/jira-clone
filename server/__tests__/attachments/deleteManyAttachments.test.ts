@@ -30,7 +30,9 @@ import waitForExpect from 'wait-for-expect';
 
 dotenv.config();
 
-describe('deleteManyAttachments', () => {
+// Many Attachments route and controller removed for MVP
+
+describe.skip('deleteManyAttachments', () => {
   const testDescription = 'deleteManyAttachments';
   let attachments: Attachment[];
   let user1: User;

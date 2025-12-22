@@ -31,7 +31,9 @@ import waitForExpect from 'wait-for-expect';
 
 dotenv.config();
 
-describe('handleMultipleUpload', () => {
+// Multiple Upload route and controller removed for MVP
+
+describe.skip('handleMultipleUpload', () => {
   const testDescription = 'handleMultipleUpload';
   let user1: User;
   let token: string;

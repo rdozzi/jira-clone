@@ -29,15 +29,16 @@ import waitForExpect from 'wait-for-expect';
 
 dotenv.config();
 
-describe('downloadMultipleAttachments', () => {
-  const testDescription = 'downloadMultipleAttachments';
+// Many Attachments route and controller removed for MVP
+
+describe.skip('downloadManyAttachments', () => {
+  const testDescription = 'downloadManyAttachments';
   let attachments: Attachment[];
   let attachmentIds: number[];
   let user1: User;
   let token: string;
   let ticket: Ticket | undefined;
   let organization: Organization;
-  // let filePath: string;
 
   beforeAll(async () => {
     await prismaTest.$connect();
