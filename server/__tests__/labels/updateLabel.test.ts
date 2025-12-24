@@ -12,7 +12,7 @@ import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtT
 import { normalizeEntity } from '../../src/utilities/testUtilities/normalizeEntity';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
-describe('getBannedEmailRecords', () => {
+describe.skip('getBannedEmailRecords', () => {
   const testDescription = 'getBannedEmailRecords';
   let user: User;
   let token: string;

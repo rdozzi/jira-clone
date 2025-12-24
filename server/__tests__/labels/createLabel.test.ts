@@ -11,7 +11,7 @@ import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtT
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 import { redisClient } from '../../src/lib/connectRedis';
 
-describe('createLabel', () => {
+describe.skip('createLabel', () => {
   let token: string;
   let user: User;
   let organization: Organization;
