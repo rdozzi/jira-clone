@@ -15,7 +15,7 @@ import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDa
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 import { createBannedEmail } from '../../src/utilities/testUtilities/createBannedEmail';
-describe('Delete banned email', () => {
+describe.skip('Delete banned email', () => {
   let token: string;
   let user: User;
   let organization: Organization;

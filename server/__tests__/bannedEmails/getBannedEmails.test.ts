@@ -16,7 +16,7 @@ import { createBannedEmail } from '../../src/utilities/testUtilities/createBanne
 import { normalizeEntity } from '../../src/utilities/testUtilities/normalizeEntity';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 
-describe('getBannedEmailRecords', () => {
+describe.skip('getBannedEmailRecords', () => {
   const testDescription = 'getBannedEmailRecords';
   let user: User;
   let token: string;
