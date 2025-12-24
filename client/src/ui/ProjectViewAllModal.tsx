@@ -21,9 +21,9 @@ function ProjectViewAllModal({
   record,
 }: ProjectModalProps) {
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const { createProject, isCreatingProject, createProjectError } =
+  const { createProject, isCreatingProject } =
     useCreateProject();
-  const { updateProject, isUpdatingProject, projectUpdateError } =
+  const { updateProject, isUpdatingProject } =
     useUpdateProject();
 
   const [form] = Form.useForm();
