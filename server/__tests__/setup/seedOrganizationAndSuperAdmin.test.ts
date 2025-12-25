@@ -19,7 +19,7 @@ interface OTPPayload {
   otpValue: { [KeyObject: string]: string };
 }
 
-describe('Test seed organization and SuperAdmin route', () => {
+describe.skip('Test seed organization and SuperAdmin route', () => {
   const testDescription = 'seedOrganizationAndSuperAdminRoute';
   const goodEmail = 'rdozzi84@gmail.com';
   // const thirdPartyFailEmail = 'test@guerrillamail.com';

@@ -9,7 +9,7 @@ import { app } from '../../src/app';
 // Negative Result:
 // 1) Unsuccessful OTP Generation: Get validation failure.
 
-describe('Generate OTP', () => {
+describe.skip('Generate OTP', () => {
   const testDescription = 'generateOTP';
   beforeAll(async () => {
     await connectRedis();

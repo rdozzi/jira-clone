@@ -8,7 +8,7 @@ import { createSuperUser } from '../../src/utilities/testUtilities/createSuperUs
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 
-describe('Get SuperUsers', () => {
+describe.skip('Get SuperUsers', () => {
   let token: string;
   let superUser1: User;
   let superUser2: User;

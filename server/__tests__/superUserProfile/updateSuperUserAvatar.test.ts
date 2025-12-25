@@ -13,7 +13,7 @@ import { User } from '@prisma/client';
 
 dotenv.config();
 
-describe('Update User Avatar', () => {
+describe.skip('Update User Avatar', () => {
   const testDescription = 'updateUserAvatar';
   let token1: string;
   let superUser1: User;

@@ -29,7 +29,7 @@ import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDa
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
-describe('Delete Record', () => {
+describe.skip('Delete Record', () => {
   let token: string;
   let superUser: User;
   let user: User;

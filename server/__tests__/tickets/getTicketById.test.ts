@@ -78,6 +78,10 @@ describe('Get ticket by Id', () => {
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Ticket fetched successfully');
     expect(res.body.data).toEqual({
+      assignee: {
+        firstName: expect.any(String),
+        lastName: expect.any(String),
+      },
       id: expect.any(Number),
       title: expect.any(String),
       description: expect.any(String),
