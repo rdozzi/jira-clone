@@ -218,7 +218,7 @@ describe('Test board counters', () => {
   // Daily limit exceded
   it('should reject creation call due to daily limit reached', async () => {
     const key = `org:${organization.id}:${resourceType}:daily`;
-    await redisClient.set(key, 20);
+    await redisClient.set(key, 25);
     const res = await request(app)
       .post(`/api/boards`)
       .set('Authorization', `Bearer ${token}`)
@@ -227,6 +227,7 @@ describe('Test board counters', () => {
         description: `Description_${testDescription}`,
         projectId: project.id,
       });
+    console.log(res.body);
     expect(res.status).toBe(429);
     expect(res.body.message).toContain(
       'Requests exceeds daily limit for this resource'

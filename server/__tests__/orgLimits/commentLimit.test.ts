@@ -274,7 +274,7 @@ describe('Test comment counters', () => {
   // Daily limit exceded
   it('should reject creation call due to daily limit reached', async () => {
     const key = `org:${organization.id}:${resourceType}:daily`;
-    await redisClient.set(key, 300);
+    await redisClient.set(key, 10000);
     const res = await request(app)
       .post(`/api/comments`)
       .set('Authorization', `Bearer ${token}`)
