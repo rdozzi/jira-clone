@@ -260,7 +260,7 @@ describe('Test ticket counters', () => {
   // Daily limit exceded
   it('should reject creation call due to daily limit reached', async () => {
     const key = `org:${organization.id}:${resourceType}:daily`;
-    await redisClient.set(key, 100);
+    await redisClient.set(key, 2500);
     const res = await request(app)
       .post(`/api/tickets`)
       .set('Authorization', `Bearer ${token}`)

@@ -136,13 +136,17 @@ describe('Test project counters', () => {
       where: { organizationId: organization.id, projectId: projectId },
     });
 
+    await prismaTest.board.deleteMany({
+      where: { organizationId: organization.id, projectId: projectId },
+    });
+
     await prismaTest.project.deleteMany({ where: { id: projectId } });
   });
 
   // Off-by-one boundary
-  it('daily and org-level project should be 3 and 20 respectively', async () => {
+  it('daily and org-level project should be 10 and 20 respectively', async () => {
     const key = `org:${organization.id}:${resourceType}:daily`;
-    await redisClient.set(key, 2);
+    await redisClient.set(key, 9);
     await prismaTest.organizationProjectUsage.update({
       where: { organizationId: organization.id },
       data: { totalProjects: 19 },
@@ -156,7 +160,7 @@ describe('Test project counters', () => {
       });
     expect(res.status).toBe(201);
     const dailyCount = Number(await redisClient.get(key));
-    expect(dailyCount).toEqual(3);
+    expect(dailyCount).toEqual(10);
 
     const projectOrgTotal =
       await prismaTest.organizationProjectUsage.findUnique({
@@ -173,13 +177,17 @@ describe('Test project counters', () => {
       where: { organizationId: organization.id, projectId: projectId },
     });
 
+    await prismaTest.board.deleteMany({
+      where: { organizationId: organization.id, projectId: projectId },
+    });
+
     await prismaTest.project.deleteMany({ where: { id: projectId } });
   });
 
   // Daily limit exceded
   it('should reject creation call due to daily limit reached', async () => {
     const key = `org:${organization.id}:${resourceType}:daily`;
-    await redisClient.set(key, 3);
+    await redisClient.set(key, 10);
     const res = await request(app)
       .post(`/api/projects`)
       .set('Authorization', `Bearer ${token}`)

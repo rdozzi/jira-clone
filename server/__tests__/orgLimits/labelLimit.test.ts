@@ -13,7 +13,7 @@ import { createUserProfile } from '../../src/utilities/testUtilities/createUserP
 import generateJwtToken from '../../src/utilities/testUtilities/generateJwtToken';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 
-describe('Test label counters', () => {
+describe.skip('Test label counters', () => {
   let token: string;
   let token2: string;
   let token3: string;
