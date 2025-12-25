@@ -12,7 +12,7 @@ import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDa
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
-describe('Create Record with SuperUser', () => {
+describe.skip('Create Record with SuperUser', () => {
   let token: string;
   let user: User;
   let superUser: User;

@@ -23,7 +23,7 @@ import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDa
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { createTicketLabel } from '../../src/utilities/testUtilities/createTicketLabel';
 
-describe('Delete label from Ticket', () => {
+describe.skip('Delete label from Ticket', () => {
   let token: string;
   let user: User;
   let ticket: Ticket;

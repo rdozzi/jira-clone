@@ -227,7 +227,6 @@ describe('Test board counters', () => {
         description: `Description_${testDescription}`,
         projectId: project.id,
       });
-    console.log(res.body);
     expect(res.status).toBe(429);
     expect(res.body.message).toContain(
       'Requests exceeds daily limit for this resource'

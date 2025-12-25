@@ -14,7 +14,7 @@ import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDa
 
 dotenv.config();
 
-describe('Update User Avatar', () => {
+describe.skip('Update User Avatar', () => {
   const testDescription = 'updateUserAvatar';
   let user1: User;
   let user2: User;

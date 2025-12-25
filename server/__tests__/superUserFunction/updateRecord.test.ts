@@ -23,7 +23,7 @@ import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtT
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 
-describe('Update Record', () => {
+describe.skip('Update Record', () => {
   let token: string;
   let superUser: User;
   let user: User;

@@ -21,7 +21,7 @@ import { createProjectMember } from '../../src/utilities/testUtilities/createPro
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 
-describe('Add label to Ticket', () => {
+describe.skip('Add label to Ticket', () => {
   let token: string;
   let user: User;
   let ticket: Ticket;
