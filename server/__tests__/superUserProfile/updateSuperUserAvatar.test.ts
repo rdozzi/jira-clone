@@ -1,6 +1,5 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
-import dotenv from 'dotenv';
 
 import { app } from '../../src/app';
 import path from 'path';
@@ -10,8 +9,6 @@ import { createSuperUser } from '../../src/utilities/testUtilities/createSuperUs
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { User } from '@prisma/client';
-
-dotenv.config();
 
 describe.skip('Update User Avatar', () => {
   const testDescription = 'updateUserAvatar';
