@@ -1,6 +1,5 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
-import dotenv from 'dotenv';
 
 import {
   GlobalRole,
@@ -22,8 +21,6 @@ import { createTicket } from '../../src/utilities/testUtilities/createTicket';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
 import { createActivityLog } from '../../src/utilities/testUtilities/createActivityLog';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
-
-dotenv.config();
 
 describe('getLogByTicketId', () => {
   const testDescription = 'getLogByTicketId';

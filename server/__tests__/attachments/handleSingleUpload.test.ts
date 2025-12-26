@@ -1,6 +1,5 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
-import dotenv from 'dotenv';
 
 // NOTE: Test was written for local storage only. Will fail for cloud storage.
 
@@ -29,8 +28,6 @@ import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey
 import { deleteUploads } from '../../src/utilities/testUtilities/deleteUploads';
 import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
 import waitForExpect from 'wait-for-expect';
-
-dotenv.config();
 
 describe('handleSingleUpload', () => {
   const testDescription = 'handleSingleUpload';

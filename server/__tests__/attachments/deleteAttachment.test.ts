@@ -1,7 +1,6 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import { existsSync, PathLike } from 'fs';
 import request from 'supertest';
-import dotenv from 'dotenv';
 
 import {
   User,
@@ -27,8 +26,6 @@ import { createTestAttachment } from '../../src/utilities/testUtilities/createAt
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 import waitForExpect from 'wait-for-expect';
-
-dotenv.config();
 
 describe('deleteAttachment', () => {
   const testDescription = 'deleteAttachment';

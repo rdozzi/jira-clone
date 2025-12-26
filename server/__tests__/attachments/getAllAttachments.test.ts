@@ -1,7 +1,6 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import { unlink } from 'fs/promises';
 import request from 'supertest';
-import dotenv from 'dotenv';
 
 import {
   Organization,
@@ -25,8 +24,6 @@ import { createComment } from '../../src/utilities/testUtilities/createComment';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
 import { createTestAttachment } from '../../src/utilities/testUtilities/createAttachments';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
-
-dotenv.config();
 
 describe('getAllAttachment', () => {
   const testDescription = 'getAllAttachments';

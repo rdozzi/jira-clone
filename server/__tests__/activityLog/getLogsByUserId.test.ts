@@ -1,6 +1,5 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
-import dotenv from 'dotenv';
 
 import {
   User,
@@ -18,8 +17,6 @@ import { createBoard } from '../../src/utilities/testUtilities/createBoard';
 import { createTicket } from '../../src/utilities/testUtilities/createTicket';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
-
-dotenv.config();
 
 describe('getLogsByUserId', () => {
   const testDescription = 'getLogsByUserId';
