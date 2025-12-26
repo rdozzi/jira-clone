@@ -1,7 +1,6 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 // import fs from 'fs/promises';
 import request from 'supertest';
-import dotenv from 'dotenv';
 
 import {
   Organization,
@@ -26,8 +25,6 @@ import { createTestAttachments } from '../../src/utilities/testUtilities/createA
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 import waitForExpect from 'wait-for-expect';
-
-dotenv.config();
 
 // Many Attachments route and controller removed for MVP
 

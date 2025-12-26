@@ -1,7 +1,6 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 // import fs from 'fs/promises';
 import request from 'supertest';
-import dotenv from 'dotenv';
 
 import {
   User,
@@ -28,8 +27,6 @@ import { unlink } from 'fs/promises';
 import { lookup } from 'mime-types';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 import waitForExpect from 'wait-for-expect';
-
-dotenv.config();
 
 describe('downloadSingleAttachment', () => {
   const testDescription = 'downloadSingleAttachment';

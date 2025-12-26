@@ -1,6 +1,5 @@
 import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
 import request from 'supertest';
-import dotenv from 'dotenv';
 
 import {
   User,
@@ -28,8 +27,6 @@ import { deleteRedisKey } from '../../src/utilities/testUtilities/deleteRedisKey
 import { deleteUploads } from '../../src/utilities/testUtilities/deleteUploads';
 import { ResourceType } from '../../src/types/ResourceAndColumnTypes';
 import waitForExpect from 'wait-for-expect';
-
-dotenv.config();
 
 // Multiple Upload route and controller removed for MVP
 
