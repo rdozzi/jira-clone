@@ -9,10 +9,12 @@ This is a Jira-clone project management application MVP that I created as a part
 <h2> 2. Architecture Overview </h2>
 
 <h3>Frontend</h3>
-<li>React - UI Framework
-<li>TypeScript - type-safe application logic
-<li>Ant Design - component library and design system
-<li>Vite - build tool and development server
+<ul>
+  <li>React - UI Framework
+  <li>TypeScript - type-safe application logic
+  <li>Ant Design - component library and design system
+  <li>Vite - build tool and development server
+</ul>
 
 <h3> Backend </h3>
 <li> Express.js - REST API Framework
@@ -188,4 +190,58 @@ Deployment configuration and infrastructure details will be documented once the 
 
 <h3>Future Work</h3>
 
+<h4> Authentication Enhancements </h4>
+<li> Refresh token rotation and session invalidation (possible authentication overall to hybrid token and session-based systems)
+<li> OAuth / SSO providers
+<li> More robust organization-level permission models
+
+<h4> Testing & Quality </h4>
+<li> Frontend unit testing
+<li> E2E tesing for critical user flows
+<li> Expanded backend test coverage
+
+<h4> Architecture & Scalability </h4>
+<li> Abstract storage providers behind a service interface
+<li> Introduce query caching optimizations and query optimization
+<li> Add rate-limit tuning and app-admin observability (metrics, structured logging)
+
+<h4>Deployment & DevOps</h4>
+<li> Containerized deployment with Docker
+<li> CI/CD pipeline for automated testing and deployment
+<li> Environment-specific configuration hardening
+
+<h4>Product Features</h4>
+<li> Team communication: chats, polling, consistent asset update
+<li> Notifications (email/in-app)
+<li> Frontend toast notifications, improved frontend features
+<li> Audit dashboards and organization usage analytics
+
 <h2> 8. Reporting and Contributing </h2>
+
+<h3> Reporting Issues </h3>
+If you encounter a bug, unexpected behavior, or any other anomaly, please open an issue in the GitHub Issues tab.
+
+Try to include the following:
+
+<li> Steps to reproduce
+<li> Expected vs actual behavior
+<li> Relevant screenshots or logs if applicable
+
+This project is maintained on a best-effort basis.
+
+<h3> Contributing </h3>
+
+Contributions are welcome for bug fixes, small enhancements, and documentation improvements.
+
+For significant changes or new features, please open an issue first to discuss the proposal.
+
+Basic workflow:
+
+<ol>
+<li> Fork the repository
+<li> Create a feature branch
+<li> Commit clear and descriptive messages (My development workflow used the Conventional Commits extension)
+<li> Submit a pull request with a brief explanation
+</ol>
+
+By contributing, you agree that your contributions will be licensed under the MIT License.
