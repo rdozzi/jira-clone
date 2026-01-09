@@ -2,14 +2,14 @@
 
 <h2> Table of Contents </h2>
 
-<h2> 1. Introduction - What is this and who this for? </h2>
+<h2> 1. Introduction</h2>
 
 This is a Jira-clone project management application MVP that I created as a part of a personal education project in my ongoing journey into fullstack web development and software engineering. The application is designed to manage tasks among teams of users representing tickets/issues in tabular, Kanban-like, and calendar views.
 
 <h2> 2. Architecture Overview </h2>
 
 <h3>Frontend</h3>
-<ul>
+<ul style="padding-left: 1.25rem">
   <li>React - UI Framework
   <li>TypeScript - type-safe application logic
   <li>Ant Design - component library and design system
@@ -17,50 +17,69 @@ This is a Jira-clone project management application MVP that I created as a part
 </ul>
 
 <h3> Backend </h3>
+<ul style="padding-left: 1.25rem">
 <li> Express.js - REST API Framework
 <li> Node.js - Runtime environment
 <li> Typescript - Application logic and contracts
 <li> Prisma - ORM and migration tooling
+</ul>
 
 <h3> Database </h3>
+<ul style="padding-left: 1.25rem">
 <li> PostgreSQL - Primary relational datastore
 <li> Redis - Ephemeral data (counters, caching)
+</ul>
 
 <h2> 3. Application Features </h2>
 
 <h3> Authentication & Authorization </h3>
+<ul style="padding-left: 1.25rem">
 <li> User authentication with token-based access control (JWT)
 <li> Role awareness scoped to organizations and projects
 <li> Tenant-level data isolation across all resources
+</ul>
 
 <h3> Multi-Tenant Organization Model </h3>
+
+<ul style="padding-left: 1.25rem">
 <li> Organization-based hierarchy with user membership
 <li> Separation of data between organizations
 <li> Role-aware visibility of projects and tickets
+</ul>
 
 <h3> Entity Management </h3>
+<ul style="padding-left: 1.25rem">
 <li> Project, board, ticket, and comment hierarchy with full CRUD operations
 <li> Board-level organization of tickets by status
 <li> Assignments, due dates, priority, and status tracking for tickets
 <li> Activity log generation and tracking for CRUD operations
+</ul>
 
 <h3> Multiple Task Views </h3>
+<ul style="padding-left: 1.25rem">
 <li> List view with filtering capabilities
 <li> Kanban board view for workflow management
 <li> Calendar view listing tickets by due date
+</ul>
 
 <h3> File Attachments </h3>
+<ul style="padding-left: 1.25rem">
 <li> Attachment upload and download capabilities for projects, boards, tickets, and comments
 <li> Local and cloud (S3) storage layer
+</ul>
 
 <h3> User Experience (UX) & UI </h3>
+<ul style="padding-left: 1.25rem">
 <li> UI/UX features based on Ant Design component library
 <li> Light and Dark Theme support
+</ul>
 
 <h3> System Foundations </h3>
+<ul style="padding-left: 1.25rem">
 <li> RESTful API architecture
 <li> Centralized validation and error handling
 <li> Environment-aware configuration for development and production
+</ul>
 
 <h2> 4. Testing Strategy </h2>
 
@@ -68,9 +87,11 @@ This is a Jira-clone project management application MVP that I created as a part
 
 The testing strategy implements a conscious balance of engineering rigor, pragmatic considerations and MVP delivery constraints that includes:
 
+<ul style="padding-left: 1.25rem">
 <li> Active backend logic that impacts data integrity, protection, segregation. and security within a multi-tenant database architecture
 <li> Non-critical or deferred, "skipped," functionality is excluded from the initial test suite
 <li> Frontend automation tests are postponed in favor of rapid iteration and manual validation
+</ul>
 
 <h3> Backend Testing </h3>
 
@@ -99,14 +120,19 @@ No automated frontend tests were implemented for this MVP release.
 
 This decision was intentional based on:
 
+<ul style="padding-left: 1.25rem">
 <li> The project is a portfolio MVP that prioritzes backend robustness and functionality.
 <li> Time-constraint limits and the desire to reach a minimal deployment state (i.e. the MVP is "good enough" and "overdue" for deployment)
 
 <li> Reliance on manual validation and qualitative smoke testing for UI flows, including:
+</ul>
+
+<ul style="padding-left: 2.50rem">
 <li> Authentication and session handling
 <li> Project, board, and ticket interactions
 <li> File upload and download behavior
 <li> State synchronization across views
+</ul>
 
 Frontend testing is intentionally deferred to post-deployment with future plans to introduce targeted component and integration tests.
 
@@ -165,56 +191,76 @@ Deployment configuration and infrastructure details will be documented once the 
 
 <h4> Authentication & Authorization Architecture </h4>
 
+<ul style="padding-left: 1.25rem">
 <li> JWT-based auth<sup>1</sup>
 <li> No refresh token rotation or server-side invaliation
 <li> Route-level Role Based Access Control (RBAC); no fine-grained Authorization Control List (ACL)
+</ul>
 
 <sup>1</sup>For a browser-only MVP, a session-based authentication model would likely have reduced complexity around token invalidation and logout semantics. JWTs were selected to explore token-based patterns and for future API consumers.
 
 <h4> Testing Coverage </h4>
 
+<ul style="padding-left: 1.25rem">
 <li> Backend integration tests only
 <li> No frontend unit or E2E tests
+</ul>
 
 <h4> Scalability & Performance </h4>
+<ul style="padding-left: 1.25rem">
 <li> Tuned for small times; currently no load testing
 <li> Limited Redis usage (no response caching)
+</ul>
 
 <h4> Storage & Infrastructure </h4>
+<ul style="padding-left: 1.25rem">
 <li>S3 tightly coupled; no storage abstraction
 <li>No CDN for attachments
+</ul>
 
 <h4> UI/UX </h4>
+<ul style="padding-left: 1.25rem">
 <li> Desktop-first layout (not optimized for tablet or mobile)
 <li> Partial accessibility coverage (ARIA attributes, keyboard navigation)
+</ul>
 
 <h3>Future Work</h3>
 
 <h4> Authentication Enhancements </h4>
+<ul style="padding-left: 1.25rem">
 <li> Refresh token rotation and session invalidation (possible authentication overall to hybrid token and session-based systems)
 <li> OAuth / SSO providers
 <li> More robust organization-level permission models
+</ul>
 
 <h4> Testing & Quality </h4>
+<ul style="padding-left: 1.25rem">
 <li> Frontend unit testing
 <li> E2E tesing for critical user flows
 <li> Expanded backend test coverage
+</ul>
 
 <h4> Architecture & Scalability </h4>
+<ul style="padding-left: 1.25rem">
 <li> Abstract storage providers behind a service interface
 <li> Introduce query caching optimizations and query optimization
 <li> Add rate-limit tuning and app-admin observability (metrics, structured logging)
+</ul>
 
 <h4>Deployment & DevOps</h4>
+<ul style="padding-left: 1.25rem">
 <li> Containerized deployment with Docker
 <li> CI/CD pipeline for automated testing and deployment
 <li> Environment-specific configuration hardening
+</ul>
 
 <h4>Product Features</h4>
+<ul style="padding-left: 1.25rem">
 <li> Team communication: chats, polling, consistent asset update
 <li> Notifications (email/in-app)
 <li> Frontend toast notifications, improved frontend features
 <li> Audit dashboards and organization usage analytics
+</ul>
 
 <h2> 8. Reporting and Contributing </h2>
 
@@ -223,9 +269,11 @@ If you encounter a bug, unexpected behavior, or any other anomaly, please open a
 
 Try to include the following:
 
+<ul style="padding-left: 1.25rem">
 <li> Steps to reproduce
 <li> Expected vs actual behavior
 <li> Relevant screenshots or logs if applicable
+</ul>
 
 This project is maintained on a best-effort basis.
 
@@ -237,7 +285,7 @@ For significant changes or new features, please open an issue first to discuss t
 
 Basic workflow:
 
-<ol>
+<ol style="padding-left: 1.25rem">
 <li> Fork the repository
 <li> Create a feature branch
 <li> Commit clear and descriptive messages (My development workflow used the Conventional Commits extension)
