@@ -5,7 +5,6 @@ const globalForPrisma = global as unknown as { prisma?: PrismaClient };
 const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    log: process.env.NODE_ENV === 'test' ? [] : ['query', 'error', 'warn'],
     datasourceUrl: process.env.DATABASE_URL,
   });
 
