@@ -77,18 +77,15 @@ describe('Update Board', () => {
         name: `Name_${testDescription}_UPDATE`,
       });
     expect(res.status).toBe(200);
-    expect(res.body).toEqual(
-      expect.objectContaining({
-        data: expect.objectContaining({
-          id: expect.any(Number),
-          name: `Name_${testDescription}_UPDATE`,
-          projectId: expect.any(Number),
-          description: expect.any(String),
-          createdAt: expect.any(String),
-          updatedAt: expect.any(String),
-        }),
-        message: expect.any(String),
-      })
-    );
+    expect(res.body.message).toBe('Board updated successfully');
+    expect(res.body.data).toEqual({
+      id: expect.any(Number),
+      name: `Name_${testDescription}_UPDATE`,
+      projectId: expect.any(Number),
+      description: expect.any(String),
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+      organizationId: expect.any(Number),
+    });
   });
 });
