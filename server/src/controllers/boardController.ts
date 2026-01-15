@@ -60,13 +60,15 @@ export async function getBoardById(
   res: Response,
   prisma: PrismaClient
 ) {
-  const { boardId } = req.params;
-  const convertedBoardId = parseInt(boardId, 10);
+  const boardId = res.locals.validatedParam;
+
   try {
     const board = await prisma.board.findUnique({
-      where: { id: convertedBoardId },
+      where: { id: boardId },
     });
-    res.status(200).json(board);
+    res
+      .status(200)
+      .json({ message: 'Board fetched successfully', data: board });
     return;
   } catch (error) {
     console.error('Error fetching board: ', error);
