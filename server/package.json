@@ -9,8 +9,8 @@
     "test": "npm run db:push:test && cross-env NODE_ENV=test dotenv -e .env.test -- jest",
     "build": "tsc",
     "watch-ts": "tsc --watch",
-    "start": "nodemon dist/index.js",
-    "dev": "concurrently \"npm:watch-ts\" \"npm:start\""
+    "start": "node dist/index.js",
+    "dev": "concurrently \"npm:watch-ts\" \"nodemon dist/index.js\""
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
