@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 export function checkAttachmentOwnership(prisma: PrismaClient) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const userId = res.locals.userInfo.id;
-    const attachmentId = parseInt(req.params.id, 10);
+    const attachmentId = parseInt(req.params.id as string, 10);
 
     const attachment = await prisma.attachment.findUnique({
       where: { id: attachmentId },
