@@ -36,7 +36,7 @@ export async function getBoardById(boardId: number) {
       console.error('Error:', res.status, res.statusText, errorText);
       throw new Error('Failed to get board');
     }
-    const data = await res.json();
+    const { data } = await res.json();
     return data;
   } catch (err: any | unknown) {
     console.error(err);
