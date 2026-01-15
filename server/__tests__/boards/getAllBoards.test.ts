@@ -24,7 +24,7 @@ describe('Get boards', () => {
   let board1: Board;
   let organization: Organization;
 
-  const testDescription = 'getBoards';
+  const testDescription = 'getAllBoards';
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
