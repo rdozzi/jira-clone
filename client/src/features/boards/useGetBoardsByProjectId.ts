@@ -13,7 +13,7 @@ export function useGetBoardsByProjectId(projectId: number | null) {
   } = useQuery({
     queryKey: ['boards', projectId, orgId],
     queryFn: () => getBoardsByProjectId(projectId as number),
-    enabled: !!projectId && isAuthenticated,
+    enabled: !!projectId && projectId != -1 && isAuthenticated,
     staleTime: 0,
     gcTime: 1000 * 60 * 10,
     refetchOnWindowFocus: false,
