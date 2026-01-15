@@ -20,7 +20,7 @@ export function resolveProjectIdForGetAttachments(prisma: PrismaClient) {
       return;
     }
 
-    const entityId = parseInt(entityIdRaw, 10);
+    const entityId = parseInt(entityIdRaw as string, 10);
     const entityType = entityTypeRaw as AttachmentEntityType;
     try {
       let projectId: number | undefined;

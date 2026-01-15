@@ -10,7 +10,7 @@ export function checkTicketOwnership(prisma: PrismaClient): RequestHandler {
     if (!ticketId) {
       res.status(400).json({ message: 'Invalid ticket id' });
     }
-    const ticketIdParsed = parseInt(ticketId, 10);
+    const ticketIdParsed = parseInt(ticketId as string, 10);
 
     // If the user is a SUPERADMIN, allow access to all comments
     if (userRole === 'SUPERADMIN') {

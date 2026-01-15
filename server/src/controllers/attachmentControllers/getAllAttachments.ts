@@ -14,7 +14,7 @@ export async function getAllAttachments(
       }
     | undefined;
   const { entityType, entityId } = req.params;
-  const parsedEntityId = parseInt(entityId, 10);
+  const parsedEntityId = parseInt(entityId as string, 10);
   const isValidId = Number.isInteger(parsedEntityId) && parsedEntityId > 0;
   const isValidEntity = Object.values(AttachmentEntityType).includes(
     entityType as AttachmentEntityType
@@ -24,7 +24,7 @@ export async function getAllAttachments(
   if (entityType && entityId && isValidId && isValidEntity) {
     whereClause = {
       entityType: entityType as AttachmentEntityType,
-      entityId: parseInt(entityId, 10),
+      entityId: parsedEntityId,
       organizationId: organizationId,
     };
   } else if (entityType || entityId) {

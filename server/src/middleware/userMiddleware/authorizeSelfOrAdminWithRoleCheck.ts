@@ -8,7 +8,7 @@ export function authorizeSelfOrAdminWithRoleCheck() {
     const { userId } = req.params;
     const { organizationRole } = req.body;
 
-    const userIdParsed = parseInt(userId, 10);
+    const userIdParsed = parseInt(userId as string, 10);
     const isAdmin =
       requestUserOrganizationRole === OrganizationRole.ADMIN ||
       requestUserOrganizationRole === OrganizationRole.SUPERADMIN;

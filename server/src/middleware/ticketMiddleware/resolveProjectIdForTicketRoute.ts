@@ -12,7 +12,7 @@ export function resolveProjectIdForTicketRoute() {
       const boardId = boardIdParam ?? req.body.boardId;
 
       if (ticketId) {
-        const ticketIdParsed = parseInt(ticketId, 10);
+        const ticketIdParsed = parseInt(ticketId as string, 10);
         if (isNaN(ticketIdParsed)) {
           res.status(400).json({ message: 'Invalid ticket ID' });
           return;
@@ -34,7 +34,7 @@ export function resolveProjectIdForTicketRoute() {
       }
 
       if (boardId) {
-        const boardIdParsed = parseInt(boardId, 10);
+        const boardIdParsed = parseInt(boardId as string, 10);
         if (isNaN(boardIdParsed)) {
           res.status(400).json({ message: 'Invalid board ID' });
           return;

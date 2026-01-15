@@ -6,7 +6,7 @@ export function selfOrAdminCheck() {
     const { id: requestUserId, organizationRole } = res.locals.userInfo;
     const { userId } = req.params;
 
-    const userIdParsed = parseInt(userId, 10);
+    const userIdParsed = parseInt(userId as string, 10);
     const isAdmin =
       organizationRole === OrganizationRole.ADMIN ||
       organizationRole === OrganizationRole.SUPERADMIN;

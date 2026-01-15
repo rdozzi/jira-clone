@@ -6,7 +6,7 @@ export function checkCommentOwnership(options?: {
   allowOrganizationSuperAdmin?: boolean;
 }) {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const commentId = parseInt(req.params.commentId, 10);
+    const commentId = parseInt(req.params.commentId as string, 10);
 
     if (!commentId || isNaN(commentId)) {
       res.status(400).json({ message: 'Invalid comment Id' });

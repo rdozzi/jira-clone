@@ -8,7 +8,7 @@ export async function validateAttachmentExistsAndStore(
   next: NextFunction
 ): Promise<void> {
   const { attachmentId } = req.params;
-  const attachmentIdParsed = parseInt(attachmentId, 10);
+  const attachmentIdParsed = parseInt(attachmentId as string, 10);
 
   try {
     const attachment = await prisma.attachment.findUnique({
