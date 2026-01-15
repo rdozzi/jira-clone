@@ -35,6 +35,7 @@ router.get(
 router.get(
   '/boards/:boardId',
   authorizeOrganizationRole(OrganizationRole.USER),
+  validateParams,
   async (req: Request, res: Response): Promise<void> => {
     await getBoardById(req, res, prisma);
   }
