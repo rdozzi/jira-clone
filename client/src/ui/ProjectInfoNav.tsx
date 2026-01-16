@@ -1,4 +1,4 @@
-import { Layout, Flex } from 'antd';
+import { Layout } from 'antd';
 import { NavLink, useParams } from 'react-router-dom';
 
 const { Footer } = Layout;
