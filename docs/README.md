@@ -181,9 +181,9 @@ The frontend does not require environment-specific configuration for this MVP.
 Redis runs inside a local Docker container and is exposed on port 6379. 
 The Node.js application connects via localhost using the Redis TCP protocol.
 
-<h2> 6. Deployment (Deferred) </h2>
+<h2> 6. Deployment </h2>
 
-Deployment configuration and infrastructure details will be documented once the application reaches production deployment. This section is intentionally deferred while the focus remains on completing and stabilizing the MVP.
+The backend was deployed on Render using a production-specific TypeScript build configuration.
 
 <h2> 7. Known Limitations & Future Work </h2>
 

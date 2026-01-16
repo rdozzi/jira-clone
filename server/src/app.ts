@@ -40,6 +40,11 @@ app.use(express.json());
 // Global rate limiter middleware
 app.use(globalRateLimiter);
 
+// Public health check - In production
+app.get('/health', (_req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 // Initialize log service PubSub listener
 initLogService();
 

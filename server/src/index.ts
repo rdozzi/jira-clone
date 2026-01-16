@@ -11,5 +11,5 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is Running on port ${PORT} with Nodemon!`);
+  console.log(`Server is Running on port ${PORT}`);
 });
