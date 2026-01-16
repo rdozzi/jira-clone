@@ -3,5 +3,5 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/__tests__/**"]
+  "exclude": ["prisma", "**/*.test.ts", "**/*.spec.ts", "**/__tests__/**"]
 }
