@@ -44,9 +44,6 @@ function ProjectInfoSelector() {
           );
         })}
       </Select>
-      <div>{selectedProject?.name}</div>
-      <div>{selectedProject?.description}</div>
-      <div>{selectedProject?.status}</div>
       {userSelf?.organizationRole === 'ADMIN' ||
       userSelf?.organizationRole === 'SUPERADMIN' ? (
         <>
