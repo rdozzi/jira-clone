@@ -3,5 +3,11 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "exclude": ["prisma", "**/*.test.ts", "**/*.spec.ts", "**/__tests__/**"]
+  "exclude": [
+    "src/archives",
+    "prisma",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**"
+  ]
 }
