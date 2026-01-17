@@ -24,6 +24,8 @@ export async function verifyRedisConnection() {
   if (result !== value) {
     throw new Error('Redis health check failed');
   }
+
+  console.log('Redis connected and verified');
 }
 
 export async function checkRedis() {
