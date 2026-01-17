@@ -5,6 +5,9 @@ import cors from 'cors';
 // Log Service
 import { initLogService } from './services/logService';
 
+// Redis Service
+import { checkRedis } from './lib/connectRedis';
+
 // Middleware
 import { authenticate } from './middleware/authAndLoadInfoMiddleware/authenticate';
 import { loadUserProjects } from './middleware/authAndLoadInfoMiddleware/loadUserProjects';
@@ -44,6 +47,9 @@ app.use(globalRateLimiter);
 app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'ok' });
 });
+
+// Redis startup check
+checkRedis();
 
 // Initialize log service PubSub listener
 initLogService();

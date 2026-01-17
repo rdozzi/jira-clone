@@ -13,3 +13,20 @@ export async function connectRedis() {
     await redisClient.connect();
   }
 }
+
+export async function verifyRedisConnection() {
+  const key = 'redis_healthcheck';
+  const value = Date.now().toString();
+
+  await redisClient.set(key, value, { EX: 30 });
+  const result = await redisClient.get(key);
+
+  if (result !== value) {
+    throw new Error('Redis health check failed');
+  }
+}
+
+export async function checkRedis() {
+  await connectRedis();
+  await verifyRedisConnection();
+}
