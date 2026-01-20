@@ -20,7 +20,7 @@ function ProjectBoards() {
   } = useGetBoardsByProjectId(projectIdNumber);
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
-  const record = modalProps.record as Boards;
+  const record = modalProps.record as unknown as Boards;
 
   if (isBoardLoading)
     return (
