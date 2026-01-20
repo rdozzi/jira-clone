@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { DropResult } from '@hello-pangea/dnd';
-import { Tickets } from '../pages/TaskBoard';
+import { Tickets } from '../types/Tickets';
 
 type BoardState = Record<string, Tickets[]>; // Tickets is a type from TaskBoard.tsx
 
