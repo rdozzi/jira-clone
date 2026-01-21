@@ -89,12 +89,8 @@ export async function downloadAttachment(attachmentId: number) {
       throw new Error(`Download failed: ${errText}`);
     }
 
-    console.log(res);
-
     const contentDisposition = res.headers.get('Content-Disposition');
     let fileName = 'downloaded-file';
-
-    console.log(contentDisposition);
 
     if (contentDisposition) {
       const match = contentDisposition.match(/filename=""?([^"]+)"?/);
