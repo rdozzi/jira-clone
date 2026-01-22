@@ -1,16 +1,7 @@
 import { getAuthToken } from '../lib/getAuthToken';
+import { Tickets } from '../types/Tickets';
 
-interface Ticket {
-  assigneeId: number;
-  boardId: number;
-  description: string;
-  dueDate: string | Date;
-  priority: string;
-  reporterId: number;
-  status: string;
-  title: string;
-  type: string;
-}
+type Ticket = Partial<Tickets>;
 
 type UpdatedTicket = Partial<Ticket>;
 
