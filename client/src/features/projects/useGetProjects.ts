@@ -4,6 +4,7 @@ import { useGetUserSelf } from '../users/useGetUserSelf';
 import { useUser } from '../../contexts/useUser';
 import { useAuth } from '../../contexts/useAuth';
 
+// Scope defined to prevent caching collisions between different project views that call getProjects or getProjectsByUserId
 type Scope = 'main' | 'info';
 
 export function useGetProjects(scope: Scope) {
