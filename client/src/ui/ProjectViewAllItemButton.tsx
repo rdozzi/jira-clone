@@ -41,10 +41,8 @@ const ProjectViewAllItemButton = memo(function ProjectViewAllItemButton({
   record: ProjectViewAllProjects;
 }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
-  const { createProject, isCreatingProject, createProjectError } =
-    useCreateProject();
-  const { deleteProject, isDeletingProject, deleteProjectError } =
-    useDeleteProject();
+  const { createProject, isCreatingProject } = useCreateProject();
+  const { deleteProject, isDeletingProject } = useDeleteProject();
   const { openModal } = useModal();
   const { openModal: openAttachmentModal } = useAttachmentModal();
 
