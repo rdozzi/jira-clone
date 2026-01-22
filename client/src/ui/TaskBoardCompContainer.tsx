@@ -7,7 +7,7 @@ import TaskBoardCardComp from './TaskBoardCardComp';
 import TaskBoardTicketCardComp from './TaskBoardTicketCardComp';
 import PhantomDraggable from './PhantomDraggable';
 
-import { Tickets } from '../pages/TaskBoard';
+import { Tickets } from '../types/Tickets';
 
 const TaskBoardCompContainer = memo(function TaskBoardCompContainer({
   board,

@@ -1,5 +1,6 @@
 import { ConfigProvider } from 'antd';
-import { Board, Tickets } from '../pages/TaskBoard';
+import { Board } from '../pages/TaskBoard';
+import { Tickets } from '../types/Tickets';
 import TaskBoardCompContainer from './TaskBoardCompContainer';
 
 export interface TaskBoardColumnProps {
