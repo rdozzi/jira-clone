@@ -1,8 +1,8 @@
-import { Tickets } from '../types/Tickets';
+import { Ticket } from '../types/Ticket';
 
-export function getUpdatedFields(ticketDbEntry: Tickets, updatedValues: any) {
+export function getUpdatedFields(ticketDbEntry: Ticket, updatedValues: any) {
   const updatedFields: any = {};
-  for (const key of Object.keys(updatedValues) as (keyof Tickets)[]) {
+  for (const key of Object.keys(updatedValues) as (keyof Ticket)[]) {
     const original = ticketDbEntry[key];
     const updated = updatedValues[key];
 
@@ -11,10 +11,10 @@ export function getUpdatedFields(ticketDbEntry: Tickets, updatedValues: any) {
       const updatedDate = updated.toString().slice(0, 10);
 
       if (dbDate !== updatedDate) {
-        updatedFields[key] = updated as Tickets[typeof key];
+        updatedFields[key] = updated as Ticket[typeof key];
       }
     } else if (updated !== undefined && updated !== original) {
-      updatedFields[key] = updated as Tickets[typeof key];
+      updatedFields[key] = updated as Ticket[typeof key];
     }
   }
   return updatedFields;

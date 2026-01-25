@@ -6,10 +6,10 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { useTickets } from '../contexts/useTickets';
 import { useModal } from '../contexts/useModal';
-import { TicketRecord } from '../types/Tickets';
 
 import TicketModal from '../ui/TicketModal';
 import TicketListItemButton from '../ui/TicketListItemButton';
+import { Ticket } from '../types/Ticket';
 
 const priorityOrder = { HIGH: 3, MEDIUM: 2, LOW: 1 };
 const statusOrder = { BACKLOG: 3, IN_PROGRESS: 2, DONE: 1 };
@@ -29,7 +29,7 @@ function TicketList() {
   const { isLoading, tickets, error } = useTickets();
   const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
 
-  const record = modalProps?.record as TicketRecord;
+  const record = modalProps?.record as Ticket;
 
   if (error) {
     return <div>Error loading tickets: {error.message}</div>;

@@ -11,14 +11,14 @@ import Loading from '../ui/Loading';
 
 import { useDragHandler } from '../hooks/useDragHandler';
 
-import { Tickets } from '../types/Tickets';
+import { Ticket } from '../types/Ticket';
 
 export interface Board {
   id: string;
   name: string;
 }
 
-type BoardState = Record<string, Tickets[]>;
+type BoardState = Record<string, Ticket[]>;
 
 const boards: Board[] = [
   { id: 'BACKLOG', name: 'Backlog' },
@@ -51,14 +51,14 @@ function TaskBoard() {
     openModal('create', {});
   }
 
-  function initializeBoards(boards: Board[], tickets: Tickets[]) {
+  function initializeBoards(boards: Board[], tickets: Ticket[]) {
     // Create an object with board IDs as keys and empty arrys as values
-    const initialState: Record<string, Tickets[]> = boards.reduce(
+    const initialState: Record<string, Ticket[]> = boards.reduce(
       (acc, board) => {
         acc[board.id] = []; // Initialize each board's ticket list as empty
         return acc;
       },
-      {} as Record<string, Tickets[]>
+      {} as Record<string, Ticket[]>,
     );
 
     tickets.forEach((ticket) => {

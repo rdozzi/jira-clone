@@ -1,9 +1,9 @@
 import { createContext } from 'react';
 import { UseMutateFunction } from '@tanstack/react-query';
-import { Tickets } from '../types/Tickets';
+import { Ticket } from '../types/Ticket';
 
 interface TicketContextType {
-  tickets: Tickets[];
+  tickets: Ticket[];
   isLoading: boolean;
   error: Error | null;
   updateTicketMutation: {
@@ -17,5 +17,5 @@ interface TicketContextType {
 }
 
 export const TicketContext = createContext<TicketContextType | undefined>(
-  undefined
+  undefined,
 );

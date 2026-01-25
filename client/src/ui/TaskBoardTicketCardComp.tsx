@@ -1,23 +1,10 @@
 import { memo } from 'react';
 import { Card } from 'antd';
 import TicketListItemButton from './TicketListItemButton';
+import { Ticket } from '../types/Ticket';
 
 interface TaskBoardTicketCardCompProps {
-  ticket: {
-    assignee: { first_name: string; last_name: string };
-    assigneeId: number;
-    boardId: number;
-    createdAt: Date;
-    description: string;
-    dueDate: Date;
-    id: number;
-    priority: string;
-    reporterId: number;
-    status: string;
-    title: string;
-    type: string;
-    updatedAt: Date;
-  };
+  ticket: Ticket;
 }
 
 const TaskBoardTicketCardComp = memo(function TaskBoardTicketCardComp({
@@ -61,7 +48,7 @@ const TaskBoardTicketCardComp = memo(function TaskBoardTicketCardComp({
 
 function arePropsEqual(
   prevProps: TaskBoardTicketCardCompProps,
-  nextProps: TaskBoardTicketCardCompProps
+  nextProps: TaskBoardTicketCardCompProps,
 ): boolean {
   return (
     prevProps.ticket.title === nextProps.ticket.title &&

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateTicket as apiUpdateTicket } from '../../services/apiTickets';
 import { useUser } from '../../contexts/useUser';
-import { Tickets } from '../../types/Tickets';
+import { Ticket } from '../../types/Ticket';
 
 export function useUpdateTicket() {
   const { orgId } = useUser();
@@ -14,10 +14,10 @@ export function useUpdateTicket() {
     onSuccess: (updatedTicket) => {
       queryClient.setQueryData(
         ['tickets', orgId],
-        (oldTickets: Tickets[] = []) =>
+        (oldTickets: Ticket[] = []) =>
           oldTickets.map((t) =>
-            t.id === updatedTicket.id ? { ...t, ...updatedTicket } : t
-          )
+            t.id === updatedTicket.id ? { ...t, ...updatedTicket } : t,
+          ),
       );
 
       queryClient.invalidateQueries({ queryKey: ['tickets', orgId] });

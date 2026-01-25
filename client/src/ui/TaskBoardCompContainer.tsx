@@ -7,7 +7,7 @@ import TaskBoardCardComp from './TaskBoardCardComp';
 import TaskBoardTicketCardComp from './TaskBoardTicketCardComp';
 import PhantomDraggable from './PhantomDraggable';
 
-import { Tickets } from '../types/Tickets';
+import { Ticket } from '../types/Ticket';
 
 const TaskBoardCompContainer = memo(function TaskBoardCompContainer({
   board,
@@ -45,7 +45,7 @@ const TaskBoardCompContainer = memo(function TaskBoardCompContainer({
                 />
               )}
 
-              {tickets.map((ticket: Tickets, index: number) => (
+              {tickets.map((ticket: Ticket, index: number) => (
                 <Draggable
                   key={ticket.id}
                   draggableId={ticket.id.toString()}
@@ -83,12 +83,11 @@ const TaskBoardCompContainer = memo(function TaskBoardCompContainer({
       )}
     </Droppable>
   );
-},
-arePropsEqual);
+}, arePropsEqual);
 
 function arePropsEqual(
   prevProps: TaskBoardColumnProps,
-  nextProps: TaskBoardColumnProps
+  nextProps: TaskBoardColumnProps,
 ): boolean {
   if (prevProps.board !== nextProps.board) return false;
   if (prevProps.tickets.length !== nextProps.tickets.length) return false;
@@ -97,7 +96,7 @@ function arePropsEqual(
       ticket.id === nextProps.tickets[i]?.id &&
       ticket.status === nextProps.tickets[i]?.status &&
       ticket.title === nextProps.tickets[i]?.title &&
-      ticket.description === nextProps.tickets[i]?.description
+      ticket.description === nextProps.tickets[i]?.description,
   );
 }
 

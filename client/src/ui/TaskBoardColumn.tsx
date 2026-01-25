@@ -1,11 +1,11 @@
 import { ConfigProvider } from 'antd';
 import { Board } from '../pages/TaskBoard';
-import { Tickets } from '../types/Tickets';
+import { Ticket } from '../types/Ticket';
 import TaskBoardCompContainer from './TaskBoardCompContainer';
 
 export interface TaskBoardColumnProps {
   board: Board;
-  tickets: Tickets[];
+  tickets: Ticket[];
   openCreateTicketModal: () => void;
 }
 
