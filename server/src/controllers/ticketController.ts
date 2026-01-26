@@ -10,7 +10,7 @@ import { logBus } from '../lib/logBus';
 export async function getAllTickets(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const queryKeys = Object.keys(res.locals.validatedQuery || {});
@@ -55,7 +55,7 @@ export async function getAllTickets(
 export async function getTicketById(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   const ticketId = res.locals.validatedParam;
   const organizationId = res.locals.userInfo.organizationId;
@@ -83,7 +83,7 @@ export async function getTicketById(
 export async function getTicketsByAssigneeId(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   const userId = res.locals.validatedParam;
   try {
@@ -104,7 +104,7 @@ export async function getTicketsByAssigneeId(
 export async function getTicketsByBoardId(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   const boardId = res.locals.validatedParam;
   const organizationId = res.locals.userInfo.organizationId;
@@ -128,9 +128,10 @@ export async function getTicketsByBoardId(
 export async function createNewTicket(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
+    console.log('Inside createNewTicket function');
     const userId = res.locals.userInfo.id;
     const organizationId = res.locals.userInfo.organizationId;
     const resourceType = res.locals.resourceType;
@@ -147,7 +148,7 @@ export async function createNewTicket(
       async (tx) =>
         await tx.ticket.create({
           data: ticketData,
-        })
+        }),
     );
 
     const logEvents = [
@@ -182,7 +183,7 @@ export async function createNewTicket(
 export async function deleteTicket(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const userId = res.locals.userInfo.id;
@@ -201,7 +202,7 @@ export async function deleteTicket(
         AttachmentEntityType.TICKET,
         ticketId,
         userId,
-        organizationId
+        organizationId,
       );
       await tx.ticket.delete({
         where: { id: ticketId },
@@ -239,7 +240,7 @@ export async function deleteTicket(
 export async function updateTicket(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const userId = res.locals.userInfo.id;

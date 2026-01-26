@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 
 import type { Dayjs } from 'dayjs';
 import type { CalendarProps, SegmentedProps } from 'antd';
-import { TicketRecord } from '../types/Tickets';
+import { Ticket } from '../types/Ticket';
 import { Calendar, Button, DatePicker, Segmented, Tooltip } from 'antd';
 import {
   LeftCircleOutlined,
@@ -17,9 +17,9 @@ import { useModal } from '../contexts/useModal';
 import TicketModal from '../ui/TicketModal';
 import TaskCalendarTicketList from '../ui/TaskCalendarTicketList';
 
-type CellRenderRecord = TicketRecord;
-
 type ViewMode = 'month' | 'year';
+
+type CalendarTicket = Omit<Ticket, 'dueDate'> & { dueDate: string };
 
 const TaskCalender = memo(function TaskCalender() {
   const [date, setDate] = useState(dayjs());
@@ -33,21 +33,21 @@ const TaskCalender = memo(function TaskCalender() {
     function handleCreate() {
       openModal('create', {});
     },
-    [openModal]
+    [openModal],
   );
 
   const navType = useMemo(
     () => (viewMode === 'month' ? 'month' : 'year'),
-    [viewMode]
+    [viewMode],
   );
 
   const handlePrev = useCallback(
     () => setDate(date.add(-1, navType)),
-    [date, navType]
+    [date, navType],
   );
   const handleNext = useCallback(
     () => setDate(date.add(1, navType)),
-    [date, navType]
+    [date, navType],
   );
 
   const controls = useMemo(
@@ -76,19 +76,19 @@ const TaskCalender = memo(function TaskCalender() {
         />
       </span>
     ),
-    [navType, viewMode, date, handlePrev, handleNext]
+    [navType, viewMode, date, handlePrev, handleNext],
   );
 
   const handleViewModeChange = useCallback(
     (mode: ViewMode) => {
       setViewMode(mode);
     },
-    [setViewMode]
+    [setViewMode],
   );
 
   const formattedTickets = useMemo(() => {
     if (!tickets) return [];
-    return tickets.map((ticket: CellRenderRecord) => ({
+    return tickets.map((ticket: Ticket) => ({
       ...ticket,
       dueDate: dayjs(ticket.dueDate).format('YYYY-MM-DD'),
     }));
@@ -99,7 +99,7 @@ const TaskCalender = memo(function TaskCalender() {
       { label: 'Month', value: 'month' },
       { label: 'Year', value: 'year' },
     ],
-    []
+    [],
   );
 
   const headerRender = useCallback(
@@ -133,7 +133,7 @@ const TaskCalender = memo(function TaskCalender() {
         </div>
       );
     },
-    [controls, handleCreate, viewMode, segmentOptions, handleViewModeChange]
+    [controls, handleCreate, viewMode, segmentOptions, handleViewModeChange],
   );
 
   type CellRenderInfoType = Parameters<
@@ -144,15 +144,14 @@ const TaskCalender = memo(function TaskCalender() {
     if (info?.type === 'date' && viewMode === 'month') {
       const formattedDate = dayjs(date).format('YYYY-MM-DD');
       const ticketsForDate = formattedTickets.filter(
-        (ticket: CellRenderRecord) =>
-          ticket.dueDate.toString() === formattedDate
+        (ticket) => ticket.dueDate === formattedDate,
       );
       return <TaskCalendarTicketList tickets={ticketsForDate} />;
     } else if (info?.type === 'month' && viewMode === 'year') {
       const formattedDate = dayjs(date).format('YYYY-MM');
       const groupedTickets = formattedTickets.reduce<{
-        [key: string]: CellRenderRecord[];
-      }>((acc, ticket: CellRenderRecord) => {
+        [key: string]: CalendarTicket[];
+      }>((acc, ticket) => {
         const monthKey = dayjs(ticket.dueDate).format('YYYY-MM');
         acc[monthKey] = acc[monthKey] || [];
         acc[monthKey].push(ticket);

@@ -1,6 +1,6 @@
 import { useState, memo } from 'react';
 import dayjs from 'dayjs';
-import { Tickets } from '../types/Tickets';
+import { Ticket } from '../types/Ticket';
 
 import { Dropdown, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
@@ -13,33 +13,9 @@ import { useAttachmentModal } from '../contexts/useAttachmentModal';
 
 import CommentModal from './CommentModal';
 
-export interface Record {
-  assignee: { firstName: string; lastName: string };
-  assigneeId: number;
-  boardId: number;
-  createdAt: Date;
-  description: string;
-  dueDate: Date | string;
-  id: number;
-  priority: string;
-  reporterId: number;
-  status: string;
-  title: string;
-  type: string;
-  updatedAt: Date;
-}
+type TicketBase = Omit<Ticket, 'dueDate'> & { dueDate?: string | Date };
 
-interface Ticket {
-  assigneeId: number;
-  boardId: number;
-  description: string;
-  dueDate: Date | string;
-  priority: string;
-  reporterId: number;
-  status: string;
-  title: string;
-  type: string;
-}
+type TicketListItemButtonProps<T extends TicketBase> = { record: T };
 
 const dropdownItems = [
   {
@@ -65,11 +41,9 @@ const dropdownItems = [
   },
 ];
 
-const TicketListItemButton = memo(function TicketListItemButton({
-  record,
-}: {
-  record: Tickets;
-}) {
+const TicketListItemButton = memo(function TicketListItemButton<
+  T extends TicketBase,
+>({ record }: TicketListItemButtonProps<T>) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
   const { openModal } = useModal();
   const { deleteTicket, isDeleting } = useDeleteTicket();
@@ -89,7 +63,7 @@ const TicketListItemButton = memo(function TicketListItemButton({
   }
 
   function handleMenuClick(e: { key: string }) {
-    const duplicateTicket: Ticket = {
+    const duplicateTicket = {
       assigneeId: record.assigneeId,
       boardId: record.boardId,
       description: record.description,

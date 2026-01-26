@@ -1,12 +1,12 @@
-import { Record } from '../ui/TicketListItemButton';
 import TaskCalendarTicketItem from './TaskCalendarTicketItem';
+import { Ticket } from '../types/Ticket';
 
-type CellRenderRecord = Record;
+type CalendarTicket = Omit<Ticket, 'dueDate'> & { dueDate: string };
 
-function TaskCalendarTicketList({ tickets }: { tickets: CellRenderRecord[] }) {
+function TaskCalendarTicketList({ tickets }: { tickets: CalendarTicket[] }) {
   return (
     <ul style={{ listStyleType: 'none', padding: '0' }}>
-      {tickets.map((ticket: CellRenderRecord) => (
+      {tickets.map((ticket: CalendarTicket) => (
         <TaskCalendarTicketItem key={ticket.id} record={ticket} />
       ))}
     </ul>

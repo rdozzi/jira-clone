@@ -1,12 +1,12 @@
 import { Popover, Descriptions } from 'antd';
-import { Record } from './TicketListItemButton';
+import { Ticket } from '../types/Ticket';
 import TicketListItemButton from './TicketListItemButton';
 import { useTheme } from '../contexts/useTheme';
 
-type CellRenderRecord = Record;
+type CalendarTicket = Omit<Ticket, 'dueDate'> & { dueDate: string };
 
 // "record" is used in place of "ticket"
-function TaskCalendarCellRender({ record }: { record: CellRenderRecord }) {
+function TaskCalendarCellRender({ record }: { record: CalendarTicket }) {
   const { modeTheme } = useTheme();
 
   const content = (
@@ -28,9 +28,7 @@ function TaskCalendarCellRender({ record }: { record: CellRenderRecord }) {
       </Descriptions.Item>
       <Descriptions.Item label='Status'>{record.status}</Descriptions.Item>
       <Descriptions.Item label='Due Date'>
-        {typeof record.dueDate === 'string'
-          ? record.dueDate
-          : record.dueDate.toLocaleString()}
+        {typeof record.dueDate === 'string' && record.dueDate}
       </Descriptions.Item>
     </Descriptions>
   );

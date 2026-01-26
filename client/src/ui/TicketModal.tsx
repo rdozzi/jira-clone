@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 
 import { Modal, Form, Input, Radio, DatePicker, Select } from 'antd';
 
-import { TicketRecord } from '../types/Tickets';
+import { Ticket, Priority, Status, Type } from '../types/Ticket';
 
 import { useCreateTickets } from '../features/tickets/useCreateTickets';
 import { useGetTicketById } from '../features/tickets/useGetTicketById';
@@ -16,7 +16,7 @@ import { ProjectMember } from '../types/ProjectMember';
 import { getUpdatedFields } from '../utilities/getUpdatedFields';
 
 function getOptions(
-  projectMembers?: ProjectMember[]
+  projectMembers?: ProjectMember[],
 ): { value: number; label: string }[] {
   return (
     projectMembers?.map((projectMember) => ({
@@ -29,7 +29,7 @@ function getOptions(
 export interface TicketModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  record?: TicketRecord;
+  record?: Ticket;
   mode: 'create' | 'viewEdit' | null;
 }
 
@@ -100,7 +100,11 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
         reporterId: userSelf.id,
         assigneeId: assignee,
         dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
+        priority: values.priority as Priority,
+        status: values.status as Status,
+        type: values.type as Type,
       };
+
       createNewTicket(updatedValues);
       setConfirmLoading(isCreating);
       form.resetFields();
@@ -279,7 +283,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
         </Form.Item>
       </Form>
     </Modal>,
-    document.body
+    document.body,
   );
 }
 

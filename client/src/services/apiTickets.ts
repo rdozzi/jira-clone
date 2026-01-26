@@ -1,9 +1,5 @@
 import { getAuthToken } from '../lib/getAuthToken';
-import { Tickets } from '../types/Tickets';
-
-type Ticket = Partial<Tickets>;
-
-type UpdatedTicket = Partial<Ticket>;
+import { Ticket, TicketDTO } from '../types/Ticket';
 
 export async function getTickets() {
   try {
@@ -35,7 +31,7 @@ export async function getTicketsByAssigneeId(userId: number | undefined) {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     if (!res.ok) {
       const errorText = await res.text();
@@ -60,7 +56,7 @@ export async function getTicketsByBoardId(boardId: number) {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
     if (!res.ok) {
       throw new Error('Failed to fetch tickets');
@@ -92,8 +88,9 @@ export async function getTicketById(ticketId: number) {
   }
 }
 
-export async function createTicket(ticket: Ticket) {
+export async function createTicket(ticket: Partial<TicketDTO>) {
   try {
+    console.log(ticket);
     const token = getAuthToken();
     const res = await fetch('http://localhost:3000/api/tickets', {
       method: 'POST',
@@ -133,7 +130,7 @@ export async function deleteTicket(id: number) {
   }
 }
 
-export async function updateTicket(ticketId: number, ticket: UpdatedTicket) {
+export async function updateTicket(ticketId: number, ticket: Partial<Ticket>) {
   try {
     const token = getAuthToken();
     const res = await fetch(
@@ -145,7 +142,7 @@ export async function updateTicket(ticketId: number, ticket: UpdatedTicket) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(ticket),
-      }
+      },
     );
     if (!res.ok) {
       throw new Error('Failed to update ticket');

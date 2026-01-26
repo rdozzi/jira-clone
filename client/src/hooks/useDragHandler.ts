@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 import { DropResult } from '@hello-pangea/dnd';
-import { Tickets } from '../types/Tickets';
+import { Ticket } from '../types/Ticket';
 
-type BoardState = Record<string, Tickets[]>; // Tickets is a type from TaskBoard.tsx
+type BoardState = Record<string, Ticket[]>; // Tickets is a type from TaskBoard.tsx
 
 export function useDragHandler(
-  setBoardState: React.Dispatch<React.SetStateAction<BoardState>>
+  setBoardState: React.Dispatch<React.SetStateAction<BoardState>>,
 ) {
   const handleOnDragEnd = useCallback(
     (result: DropResult) => {
@@ -64,7 +64,7 @@ export function useDragHandler(
         }
       });
     },
-    [setBoardState]
+    [setBoardState],
   );
 
   return handleOnDragEnd;
