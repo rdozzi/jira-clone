@@ -8,7 +8,7 @@ import { logBus } from '../lib/logBus';
 export async function viewProjectMembers(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const projectId = res.locals.validatedParam;
@@ -56,7 +56,7 @@ export async function viewProjectMembers(
 export async function addProjectMember(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     // From storeUserAndProjectInfo
@@ -132,13 +132,26 @@ export async function addProjectMember(
 export async function removeProjectMember(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     // From storeUserAndProjectInfo
     const userInfo = res.locals.userInfo;
     const { projectId, userId } = res.locals.validatedParams;
     const organizationId = res.locals.userInfo.organizationId;
+
+    // Guard to prevent deletion of last project member
+    const projectMemberCount = await prisma.projectMember.count({
+      where: { projectId: projectId },
+    });
+
+    if (projectMemberCount <= 1) {
+      res.status(400).json({
+        message:
+          'A project must have at least one member. The last project member cannot be removed.',
+      });
+      return;
+    }
 
     const projectMember = await prisma.projectMember.findUnique({
       where: {
@@ -201,7 +214,7 @@ export async function removeProjectMember(
 export async function updateProjectMemberRole(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     // From storeUserAndProjectInfo
@@ -238,7 +251,7 @@ export async function updateProjectMemberRole(
         metadata: {
           changes: generateDiff(
             { projectRole: projectMember.projectRole },
-            { projectRole: updatedProjectMember.projectRole }
+            { projectRole: updatedProjectMember.projectRole },
           ),
         },
       }),
