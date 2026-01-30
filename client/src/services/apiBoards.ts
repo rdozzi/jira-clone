@@ -15,7 +15,12 @@ export async function getBoards() {
       throw new Error('Failed to fetch boards');
     }
     const { data } = await res.json();
-    return data;
+
+    const sortedData = data.toSorted((a: Board, b: Board) =>
+      a.name.localeCompare(b.name),
+    );
+
+    return sortedData;
   } catch (err: any | unknown) {
     console.error(err);
   }
@@ -60,7 +65,10 @@ export async function getBoardsByProjectId(projectId: number) {
       throw new Error('Failed to fetch boards');
     }
     const { data } = await res.json();
-    return data;
+    const sortedData = data.toSorted((a: Board, b: Board) =>
+      a.name.localeCompare(b.name),
+    );
+    return sortedData;
   } catch (err: any | unknown) {
     console.error(err);
   }
