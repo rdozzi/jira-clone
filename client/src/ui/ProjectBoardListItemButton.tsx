@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Board } from '../types/Board';
 import { useDropdown } from '../contexts/DropdownContext';
 import { useProjectMemberModal } from '../contexts/modalContexts/useProjectMemberModal';
+import { useBoardModal } from '../contexts/modalContexts/useBoardModal';
 import { useCreateBoard } from '../features/boards/useCreateBoard';
 import { useDeleteBoard } from '../features/boards/useDeleteBoard';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
@@ -38,7 +39,7 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
   record: Board;
 }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
-  const { openModal } = useProjectMemberModal();
+  const { openModal: openBoardModal } = useBoardModal();
   const { openModal: openAttachmentModal } = useAttachmentModal();
   const { createBoard, isCreatingBoard } = useCreateBoard();
   const { deleteBoard, isDeletingBoard } = useDeleteBoard();
@@ -57,7 +58,7 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
     };
     switch (e.key) {
       case 'view_edit':
-        openModal('viewEdit', { id: record.id, record });
+        openBoardModal('viewEdit', { id: record.id, record });
         break;
 
       case 'duplicate':
