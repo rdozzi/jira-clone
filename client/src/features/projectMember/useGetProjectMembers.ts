@@ -14,7 +14,7 @@ export function useGetProjectMembers(projectId: number | null | undefined) {
   } = useQuery({
     queryKey: ['projectMembers', projectId, orgId],
     queryFn: () => apiGetProjectMembers(projectId as number),
-    enabled: !!projectId && !!orgId && isAuthenticated,
+    enabled: !!projectId && projectId > 0 && !!orgId && isAuthenticated,
     staleTime: 0,
     gcTime: 1000 * 60 * 10,
     refetchOnWindowFocus: false,

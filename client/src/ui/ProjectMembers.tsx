@@ -1,4 +1,4 @@
-import { useProjectMembers } from '../contexts/useProjectMembers';
+import { useGetProjectMembers } from '../features/projectMember/useGetProjectMembers';
 import { useProjectInfo } from '../contexts/useProjectInfo';
 import { Spin, Table, Button } from 'antd';
 import type { TableColumnsType } from 'antd';
@@ -11,10 +11,11 @@ import ProjectMemberListItemButton from './ProjectMemberListItemButton';
 import ProjectMembersModal from './ProjectMembersModal';
 
 function ProjectMembers() {
-  const { projectMembers, isLoadingProjectMember, error } = useProjectMembers();
   const { projectIdNumber } = useProjectInfo();
   const { isOpen, openModal, closeModal, mode, modalProps } =
     useProjectMemberModal();
+  const { isLoadingProjectMember, projectMembers } =
+    useGetProjectMembers(projectIdNumber);
 
   if (isLoadingProjectMember)
     return (
@@ -22,7 +23,6 @@ function ProjectMembers() {
         <Spin />
       </div>
     );
-  if (error) return <div>Error Loading Project Members!</div>;
 
   const columns: TableColumnsType<ProjectMember> = [
     {

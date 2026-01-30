@@ -11,9 +11,9 @@ import { useGetTicketById } from '../features/tickets/useGetTicketById';
 import { useUpdateTicket } from '../features/tickets/useUpdateTicket';
 import { useProjectBoard } from '../contexts/useProjectBoard';
 import { useGetUserSelf } from '../features/users/useGetUserSelf';
-import { useProjectMembers } from '../contexts/useProjectMembers';
 import { ProjectMember } from '../types/ProjectMember';
 import { getUpdatedFields } from '../utilities/getUpdatedFields';
+import { useGetProjectMembers } from '../features/projectMember/useGetProjectMembers';
 
 function getOptions(
   projectMembers?: ProjectMember[],
@@ -38,9 +38,10 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
   const { createNewTicket, isCreating } = useCreateTickets();
   const { ticket } = useGetTicketById(record?.id);
   const { updateTicket, isUpdating } = useUpdateTicket();
-  const { boardId } = useProjectBoard();
+  const { projectId, boardId } = useProjectBoard();
   const { userSelf, isLoadingUser } = useGetUserSelf();
-  const { isLoadingProjectMember, projectMembers } = useProjectMembers();
+  const { isLoadingProjectMember, projectMembers } =
+    useGetProjectMembers(projectId);
 
   const [form] = Form.useForm();
 

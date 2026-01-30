@@ -5,7 +5,8 @@ interface MemberInfo {
   projectRole: string;
 }
 
-export async function getProjectMembers(projectId: number) {
+export async function getProjectMembers(projectId: number | null) {
+  if (projectId === null) return;
   try {
     const token = getAuthToken();
 
@@ -17,7 +18,7 @@ export async function getProjectMembers(projectId: number) {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
     if (!res.ok) {
       throw new Error('Failed to fetch project members');
@@ -31,7 +32,7 @@ export async function getProjectMembers(projectId: number) {
 
 export async function addProjectMember(
   projectId: number,
-  memberInfo: MemberInfo
+  memberInfo: MemberInfo,
 ) {
   try {
     const token = getAuthToken();
@@ -44,7 +45,7 @@ export async function addProjectMember(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(memberInfo),
-      }
+      },
     );
     if (!res.ok) {
       const errorText = await res.text();
@@ -69,7 +70,7 @@ export async function removeProjectMember(projectId: number, userId: number) {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
     if (!res.ok) {
       throw new Error('Failed to remove project member');
@@ -84,7 +85,7 @@ export async function removeProjectMember(projectId: number, userId: number) {
 export async function updateProjectMemberRole(
   projectId: number,
   userId: number,
-  projectRole: any
+  projectRole: any,
 ) {
   try {
     const token = getAuthToken();
@@ -97,7 +98,7 @@ export async function updateProjectMemberRole(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(projectRole),
-      }
+      },
     );
     if (!res.ok) {
       throw new Error('Failed to update user project role');

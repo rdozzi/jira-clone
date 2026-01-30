@@ -130,7 +130,7 @@ function ProjectMembersModal({ isOpen, closeModal, record, mode }: ModalProps) {
             placeholder='Please select a project'
             disabled={mode === 'viewEdit'}
           >
-            {typedProjects.map((project) => {
+            {typedProjects?.map((project) => {
               return (
                 <Select.Option key={project.id} value={project.id}>
                   {project.name}
@@ -188,7 +188,7 @@ function ProjectMembersModal({ isOpen, closeModal, record, mode }: ModalProps) {
         </Form.Item>
       </Form>
     </Modal>,
-    document.body
+    document.body,
   );
 }
 
