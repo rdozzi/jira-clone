@@ -8,7 +8,7 @@ import { EllipsisOutlined } from '@ant-design/icons';
 import { useDeleteTicket } from '../features/tickets/useDeleteTicket';
 import { useCreateTickets } from '../features/tickets/useCreateTickets';
 import { useDropdown } from '../contexts/DropdownContext';
-import { useModal } from '../contexts/useModal';
+import { useTicketModal } from '../contexts/modalContexts/useTicketModal';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
 
 import CommentModal from './CommentModal';
@@ -45,7 +45,7 @@ const TicketListItemButton = memo(function TicketListItemButton<
   T extends TicketBase,
 >({ record }: TicketListItemButtonProps<T>) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
-  const { openModal } = useModal();
+  const { openModal } = useTicketModal();
   const { deleteTicket, isDeleting } = useDeleteTicket();
   const { createNewTicket, isCreating } = useCreateTickets();
   const { openModal: openAttachmentModal } = useAttachmentModal();

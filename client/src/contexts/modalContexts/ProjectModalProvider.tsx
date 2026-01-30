@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from 'react';
-import { ModalContext } from './ModalContext';
-import { TicketModalPayload } from '../types/Tickets';
+import React, { useState } from 'react';
+import { ProjectModalContext } from './ProjectModalContext';
+import { Project } from '../../types/Projects';
 
 type ModalState<TProps = object> = {
   isOpen: boolean;
@@ -8,10 +8,12 @@ type ModalState<TProps = object> = {
   modalProps: TProps;
 };
 
+type ProjectModalProps = { record?: Project };
+
 type ModalProviderProps = { children: React.ReactNode };
 
-export function ModalProvider({ children }: ModalProviderProps) {
-  const [modalState, setModalState] = useState<ModalState<TicketModalPayload>>({
+export function ProjectModalProvider({ children }: ModalProviderProps) {
+  const [modalState, setModalState] = useState<ModalState<ProjectModalProps>>({
     isOpen: false,
     mode: null as 'create' | 'viewEdit' | null,
     modalProps: {},
@@ -19,20 +21,17 @@ export function ModalProvider({ children }: ModalProviderProps) {
 
   function openModal(
     mode: 'create' | 'viewEdit',
-    modalProps: TicketModalPayload = {}
+    modalProps: ProjectModalProps = {},
   ) {
     setModalState({ isOpen: true, mode, modalProps });
   }
 
-  const closeModal = useCallback(function closeModal() {
+  function closeModal() {
     setModalState((prev) => ({ ...prev, isOpen: false }));
-    setTimeout(() => {
-      setModalState({ isOpen: false, mode: null, modalProps: {} });
-    }, 0);
-  }, []);
+  }
 
   return (
-    <ModalContext.Provider
+    <ProjectModalContext.Provider
       value={{
         isOpen: modalState.isOpen,
         openModal,
@@ -42,6 +41,6 @@ export function ModalProvider({ children }: ModalProviderProps) {
       }}
     >
       {children}
-    </ModalContext.Provider>
+    </ProjectModalContext.Provider>
   );
 }

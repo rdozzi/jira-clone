@@ -6,7 +6,7 @@ export function useProjectBoard() {
 
   if (!context) {
     throw new Error(
-      'useProjectBoard must be used within a ProjectBoardProvider'
+      'useProjectBoard must be used within a ProjectBoardProvider',
     );
   }
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BoardRef, ProjectRef } from '../types/projectBoard';
-import { Boards } from '../types/Boards';
+import { Board } from '../types/Board';
 import { ProjectBoardContext } from './ProjectBoardContext';
 import { useGetProjects } from '../features/projects/useGetProjects';
 import { useGetBoardsByProjectId } from '../features/boards/useGetBoardsByProjectId';
@@ -50,7 +50,7 @@ export function ProjectBoardProvider({ children }: ProjectBoardProviderProps) {
   useEffect(() => {
     if (project && boards?.length) {
       const boardBelongsToProject = boards.some(
-        (b: Boards) => b.projectId === project.id && b.id === board?.id
+        (b: Board) => b.projectId === project.id && b.id === board?.id,
       );
 
       if (!boardBelongsToProject) {

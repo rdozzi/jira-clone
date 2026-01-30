@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDropdown } from '../contexts/DropdownContext';
-import { useModal } from '../contexts/useModal';
+import { useProjectMemberModal } from '../contexts/modalContexts/useProjectMemberModal';
 import ProjectMembersModal from './ProjectMembersModal';
 
 import { Dropdown, Button } from 'antd';
@@ -33,7 +33,8 @@ const ProjectMemberListItemButton = memo(function ProjectMemberListItemButton({
   projectId: number;
 }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
-  const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
+  const { isOpen, openModal, closeModal, mode, modalProps } =
+    useProjectMemberModal();
   const { removeProjectMember, isRemovingProjectMember } =
     useRemoveProjectMember();
   const navigate = useNavigate();

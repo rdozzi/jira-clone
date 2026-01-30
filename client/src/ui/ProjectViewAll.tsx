@@ -7,9 +7,19 @@ import { Table, Button } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-import { useModal } from '../contexts/useModal';
 import { useGetProjects } from '../features/projects/useGetProjects';
-import { ProjectViewAllProjects } from '../types/Projects';
+import { useProjectModal } from '../contexts/modalContexts/useProjectModal';
+import { Project } from '../types/Projects';
+
+export type ProjectViewAllProjects = Pick<
+  Project,
+  'id' | 'name' | 'status' | 'description' | 'status' | 'isPublic'
+> & {
+  owner: {
+    firstName: string;
+    lastName: string;
+  };
+};
 
 function ProjectViewAll() {
   const {
@@ -17,9 +27,9 @@ function ProjectViewAll() {
     projects,
     error,
   } = useGetProjects('info');
-  const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
+  const { isOpen, openModal, closeModal, mode, modalProps } = useProjectModal();
 
-  const record = modalProps.record as ProjectViewAllProjects;
+  const record = modalProps.record;
 
   if (isProjectsLoading) return <Loading />;
   if (error) return <div>Error loading Projects!</div>;

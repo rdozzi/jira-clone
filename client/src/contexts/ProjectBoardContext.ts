@@ -1,16 +1,16 @@
 import { Dispatch, SetStateAction, createContext } from 'react';
 import { BoardRef, ProjectRef } from '../types/projectBoard';
-import { Projects } from '../types/Projects';
-import { Boards } from '../types/Boards';
+import { Project } from '../types/Projects';
+import { Board } from '../types/Board';
 
 type ProjectBoardContextType = {
   // Projects list
-  projects: Projects[];
+  projects: Project[];
   isProjectLoading: boolean;
   projectError: Error | null;
 
   // Boards list
-  boards: Boards[];
+  boards: Board[];
   isBoardLoading: boolean;
   boardError: Error | null;
 

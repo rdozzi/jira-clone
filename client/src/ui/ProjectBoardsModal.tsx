@@ -5,15 +5,15 @@ import { useProjectInfo } from '../contexts/useProjectInfo';
 import { useGetBoardById } from '../features/boards/useGetBoardsById';
 import { useUpdateBoard } from '../features/boards/useUpdateBoard';
 import { getUpdatedBoardFields } from '../utilities/getUpdatedFields';
-import { Boards } from '../types/Boards';
-import { Projects } from '../types/Projects';
+import { Board } from '../types/Board';
+import { Project } from '../types/Projects';
 
 import { useCreateBoard } from '../features/boards/useCreateBoard';
 
 export interface ModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  record?: Boards;
+  record?: Board;
   mode: 'create' | 'viewEdit' | null;
 }
 
@@ -23,7 +23,7 @@ export interface Value {
   description: string;
 }
 
-function getOptions(projects?: Projects[]): { value: number; label: string }[] {
+function getOptions(projects?: Project[]): { value: number; label: string }[] {
   return (
     projects?.map((project) => ({
       value: project.id,
@@ -187,7 +187,7 @@ function ProjectBoardsModal({ isOpen, closeModal, record, mode }: ModalProps) {
         </Form.Item>
       </Form>
     </Modal>,
-    document.body
+    document.body,
   );
 }
 

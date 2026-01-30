@@ -1,7 +1,7 @@
 import { memo } from 'react';
-import { Boards } from '../types/Boards';
+import { Board } from '../types/Board';
 import { useDropdown } from '../contexts/DropdownContext';
-import { useModal } from '../contexts/useModal';
+import { useProjectMemberModal } from '../contexts/modalContexts/useProjectMemberModal';
 import { useCreateBoard } from '../features/boards/useCreateBoard';
 import { useDeleteBoard } from '../features/boards/useDeleteBoard';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
@@ -35,10 +35,10 @@ const dropdownItems = [
 const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
   record,
 }: {
-  record: Boards;
+  record: Board;
 }) {
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
-  const { openModal } = useModal();
+  const { openModal } = useProjectMemberModal();
   const { openModal: openAttachmentModal } = useAttachmentModal();
   const { createBoard, isCreatingBoard } = useCreateBoard();
   const { deleteBoard, isDeletingBoard } = useDeleteBoard();
@@ -50,7 +50,7 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
   }
 
   function handleMenuClick(e: { key: string }) {
-    const partialBoard: Partial<Boards> = {
+    const partialBoard: Partial<Board> = {
       name: record.name,
       projectId: record.projectId,
       description: record.description,

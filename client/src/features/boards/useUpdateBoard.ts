@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateBoard as apiUpdateBoard } from '../../services/apiBoards';
 import { useUser } from '../../contexts/useUser';
-import { Boards } from '../../types/Boards';
+import { Board } from '../../types/Board';
 
 export function useUpdateBoard() {
   const { orgId } = useUser();
@@ -12,10 +12,10 @@ export function useUpdateBoard() {
       return apiUpdateBoard(boardId, values);
     },
     onSuccess: (updatedBoard) => {
-      queryClient.setQueryData(['boards'], (oldBoards: Boards[] = []) =>
+      queryClient.setQueryData(['boards'], (oldBoards: Board[] = []) =>
         oldBoards.map((b) =>
-          b.id === updatedBoard.id ? { ...b, ...updatedBoard } : b
-        )
+          b.id === updatedBoard.id ? { ...b, ...updatedBoard } : b,
+        ),
       );
 
       queryClient.invalidateQueries({ queryKey: ['boards', orgId] });

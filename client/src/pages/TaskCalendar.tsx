@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons';
 
 import { useTickets } from '../contexts/useTickets';
-import { useModal } from '../contexts/useModal';
+import { useTicketModal } from '../contexts/modalContexts/useTicketModal';
 
 import TicketModal from '../ui/TicketModal';
 import TaskCalendarTicketList from '../ui/TaskCalendarTicketList';
@@ -25,7 +25,7 @@ const TaskCalender = memo(function TaskCalender() {
   const [date, setDate] = useState(dayjs());
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const { isLoading, tickets = [] } = useTickets(); // Add error later
-  const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
+  const { isOpen, openModal, closeModal, mode, modalProps } = useTicketModal();
 
   const record = modalProps?.record;
 

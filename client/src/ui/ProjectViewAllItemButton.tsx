@@ -1,14 +1,14 @@
 import { memo } from 'react';
 import { useDropdown } from '../contexts/DropdownContext';
-import { useModal } from '../contexts/useModal';
+import { useProjectModal } from '../contexts/modalContexts/useProjectModal';
 
-import { ProjectViewAllProjects } from '../types/Projects';
 import { useCreateProject } from '../features/projects/useCreateProject';
 import { useDeleteProject } from '../features/projects/useDeleteProject';
 
 import { Dropdown, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
+import { ProjectViewAllProjects } from './ProjectViewAll';
 
 // ADJUST PROJECT EDIT SCHEMA TO ALLOW FOR EDITING STATUS, PRIVATE/PUBLIC BOOLEAN, AND OWNER. WILL NEED TO IMPLEMENT A VALID USER'S LIST FOR EDIT MODAL AND STATUS AND IS PROJECT PUBLIC OPTIONS. ADD CONDITIONAL RENDERING FEATURES THAT GIVE THE STATUS AND PUBLIC/NON-PUBLIC FEATURES WEIGHT.
 
@@ -43,7 +43,7 @@ const ProjectViewAllItemButton = memo(function ProjectViewAllItemButton({
   const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
   const { createProject, isCreatingProject } = useCreateProject();
   const { deleteProject, isDeletingProject } = useDeleteProject();
-  const { openModal } = useModal();
+  const { openModal } = useProjectModal();
   const { openModal: openAttachmentModal } = useAttachmentModal();
 
   const isDropdownOpen = activeDropdown === record.id;

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
 
 import { useTickets } from '../contexts/useTickets';
-import { useModal } from '../contexts/useModal';
+import { useTicketModal } from '../contexts/modalContexts/useTicketModal';
 
 import TicketModal from '../ui/TicketModal';
 import TaskBoardColumn from '../ui/TaskBoardColumn';
@@ -13,14 +13,15 @@ import { useDragHandler } from '../hooks/useDragHandler';
 
 import { Ticket } from '../types/Ticket';
 
-export interface Board {
+// The statuses of the task boards are hard coded in this component.
+export interface TaskBoardStatus {
   id: string;
   name: string;
 }
 
 type BoardState = Record<string, Ticket[]>;
 
-const boards: Board[] = [
+const boards: TaskBoardStatus[] = [
   { id: 'BACKLOG', name: 'Backlog' },
   { id: 'IN_PROGRESS', name: 'In Progress' },
   { id: 'DONE', name: 'Done' },
@@ -29,7 +30,7 @@ const boards: Board[] = [
 function TaskBoard() {
   const [boardState, setBoardState] = useState<BoardState>({});
   const { isLoading, tickets = [], error } = useTickets();
-  const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
+  const { isOpen, openModal, closeModal, mode, modalProps } = useTicketModal();
   const handleOnDragEnd = useDragHandler(setBoardState);
 
   const record = modalProps?.record;
@@ -51,7 +52,7 @@ function TaskBoard() {
     openModal('create', {});
   }
 
-  function initializeBoards(boards: Board[], tickets: Ticket[]) {
+  function initializeBoards(boards: TaskBoardStatus[], tickets: Ticket[]) {
     // Create an object with board IDs as keys and empty arrys as values
     const initialState: Record<string, Ticket[]> = boards.reduce(
       (acc, board) => {

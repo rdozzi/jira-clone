@@ -5,7 +5,7 @@ import type { TableColumnsType } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { useTickets } from '../contexts/useTickets';
-import { useModal } from '../contexts/useModal';
+import { useTicketModal } from '../contexts/modalContexts/useTicketModal';
 
 import TicketModal from '../ui/TicketModal';
 import TicketListItemButton from '../ui/TicketListItemButton';
@@ -27,7 +27,7 @@ interface DataType {
 
 function TicketList() {
   const { isLoading, tickets, error } = useTickets();
-  const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
+  const { isOpen, openModal, closeModal, mode, modalProps } = useTicketModal();
 
   const record = modalProps?.record as Ticket;
 

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { ProjectViewAllProjects } from '../types/Projects';
 import { ModalProps } from '../types/ModalProps';
 import { Modal, Form, Input } from 'antd';
 import { useCreateProject } from '../features/projects/useCreateProject';
 import { useUpdateProject } from '../features/projects/useUpdateProject';
 import { getUpdatedProjectFields } from '../utilities/getUpdatedFields';
+import { Project } from '../types/Projects';
 
-type ProjectModalProps = ModalProps<ProjectViewAllProjects>;
+type ProjectModalProps = ModalProps<Project>;
 
 export interface Values {
   name: string;
@@ -21,10 +21,8 @@ function ProjectViewAllModal({
   record,
 }: ProjectModalProps) {
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const { createProject, isCreatingProject } =
-    useCreateProject();
-  const { updateProject, isUpdatingProject } =
-    useUpdateProject();
+  const { createProject, isCreatingProject } = useCreateProject();
+  const { updateProject, isUpdatingProject } = useUpdateProject();
 
   const [form] = Form.useForm();
 
@@ -144,7 +142,7 @@ function ProjectViewAllModal({
         </Form.Item>
       </Form>
     </Modal>,
-    document.body
+    document.body,
   );
 }
 

@@ -1,4 +1,4 @@
-export interface Projects {
+export interface Project {
   id: number;
   name: string;
   description: string;
@@ -8,8 +8,4 @@ export interface Projects {
   organizationId: number;
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface ProjectViewAllProjects extends Projects {
-  owner: any;
 }

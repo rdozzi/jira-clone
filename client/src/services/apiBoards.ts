@@ -1,5 +1,5 @@
 import { getAuthToken } from '../lib/getAuthToken';
-import { Boards } from '../types/Boards';
+import { Board } from '../types/Board';
 
 export async function getBoards() {
   const token = getAuthToken();
@@ -54,7 +54,7 @@ export async function getBoardsByProjectId(projectId: number) {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
     if (!res.ok) {
       throw new Error('Failed to fetch boards');
@@ -111,7 +111,7 @@ export async function deleteBoard(boardId: number) {
   }
 }
 
-export async function updateBoard(boardId: number, board: Partial<Boards>) {
+export async function updateBoard(boardId: number, board: Partial<Board>) {
   const token = getAuthToken();
   try {
     const res = await fetch(`http://localhost:3000/api/boards/${boardId}`, {

@@ -5,7 +5,7 @@ import type { TableColumnsType } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { ProjectMember } from '../types/ProjectMember';
-import { useModal } from '../contexts/useModal';
+import { useProjectMemberModal } from '../contexts/modalContexts/useProjectMemberModal';
 
 import ProjectMemberListItemButton from './ProjectMemberListItemButton';
 import ProjectMembersModal from './ProjectMembersModal';
@@ -13,7 +13,8 @@ import ProjectMembersModal from './ProjectMembersModal';
 function ProjectMembers() {
   const { projectMembers, isLoadingProjectMember, error } = useProjectMembers();
   const { projectIdNumber } = useProjectInfo();
-  const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
+  const { isOpen, openModal, closeModal, mode, modalProps } =
+    useProjectMemberModal();
 
   if (isLoadingProjectMember)
     return (

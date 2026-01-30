@@ -1,6 +1,6 @@
 import { useProjectInfo } from '../contexts/useProjectInfo';
 import { useGetBoardsByProjectId } from '../features/boards/useGetBoardsByProjectId';
-import { useModal } from '../contexts/useModal';
+import { useBoardModal } from '../contexts/modalContexts/useBoardModal';
 import ProjectBoardsModal from './ProjectBoardsModal';
 
 import { Spin, Table, Button } from 'antd';
@@ -9,7 +9,7 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import ProjectBoardListItemButton from './ProjectBoardListItemButton';
 
-import { Boards } from '../types/Boards';
+import { Board } from '../types/Board';
 
 function ProjectBoards() {
   const { projectIdNumber } = useProjectInfo();
@@ -18,9 +18,9 @@ function ProjectBoards() {
     boards,
     error,
   } = useGetBoardsByProjectId(projectIdNumber);
-  const { isOpen, openModal, closeModal, mode, modalProps } = useModal();
+  const { isOpen, openModal, closeModal, mode, modalProps } = useBoardModal();
 
-  const record = modalProps.record as unknown as Boards;
+  const record = modalProps.record as Board;
 
   if (isBoardLoading)
     return (
@@ -30,7 +30,7 @@ function ProjectBoards() {
     );
   if (error) return <div>Error Loading Projects!</div>;
 
-  const columns: TableColumnsType<Boards> = [
+  const columns: TableColumnsType<Board> = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -55,7 +55,7 @@ function ProjectBoards() {
 
   return (
     <>
-      <Table<Boards>
+      <Table<Board>
         columns={columns}
         dataSource={boards}
         rowKey='id'
