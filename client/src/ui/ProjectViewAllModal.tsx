@@ -5,7 +5,7 @@ import { Modal, Form, Input } from 'antd';
 import { useCreateProject } from '../features/projects/useCreateProject';
 import { useUpdateProject } from '../features/projects/useUpdateProject';
 import { getUpdatedProjectFields } from '../utilities/getUpdatedFields';
-import { Project } from '../types/Projects';
+import { Project } from '../types/Project';
 
 type ProjectModalProps = ModalProps<Project>;
 

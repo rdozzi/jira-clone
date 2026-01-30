@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, createContext } from 'react';
 import { BoardRef, ProjectRef } from '../types/projectBoard';
-import { Project } from '../types/Projects';
+import { Project } from '../types/Project';
 import { Board } from '../types/Board';
 
 type ProjectBoardContextType = {

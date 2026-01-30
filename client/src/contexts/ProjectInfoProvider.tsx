@@ -1,18 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useGetProjects } from '../features/projects/useGetProjects';
-import { Projects } from '../types/Projects';
+import { Project } from '../types/Project';
 import { ProjectInfoContext } from './ProjectInfoContext';
 
 type ProjectInfoProviderProps = { children: React.ReactNode };
 
 export function ProjectInfoProvider({ children }: ProjectInfoProviderProps) {
-  const [selectedProject, setSelectedProject] = useState<Projects | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  const {
-    projects,
-    isLoading: isProjectLoading,
-    // error: projectInfoError,
-  } = useGetProjects('info');
+  const { projects, isLoading: isProjectLoading } = useGetProjects('info');
 
   useEffect(() => {
     if (!selectedProject && projects && projects.length > 0) {
@@ -22,7 +18,7 @@ export function ProjectInfoProvider({ children }: ProjectInfoProviderProps) {
 
   const projectIdNumber = selectedProject?.id ?? -1;
 
-  const typedProjects = (projects as Projects[]) || null;
+  const typedProjects = (projects as Project[]) || null;
 
   return (
     <ProjectInfoContext.Provider

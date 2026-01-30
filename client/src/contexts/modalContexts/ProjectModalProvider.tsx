@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ProjectModalContext } from './ProjectModalContext';
-import { Project } from '../../types/Projects';
+import { Project } from '../../types/Project';
 
 type ModalState<TProps = object> = {
   isOpen: boolean;

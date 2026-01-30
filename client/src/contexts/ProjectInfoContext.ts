@@ -1,11 +1,11 @@
 import { createContext } from 'react';
-import { Projects } from '../types/Projects';
+import { Project } from '../types/Project';
 
 interface ProjectInfoContextType {
-  typedProjects: Projects[];
+  typedProjects: Project[];
   isProjectLoading: boolean;
-  selectedProject: Projects | null;
-  setSelectedProject: (_selectedProject: Projects | null) => void;
+  selectedProject: Project | null;
+  setSelectedProject: (_selectedProject: Project | null) => void;
   projectIdNumber: number;
 }
 

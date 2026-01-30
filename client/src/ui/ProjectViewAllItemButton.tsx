@@ -8,7 +8,7 @@ import { useDeleteProject } from '../features/projects/useDeleteProject';
 import { Dropdown, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
-import { ProjectViewAllProjects } from './ProjectViewAll';
+import { ProjectViewAllProjects } from '../types/Project';
 
 // ADJUST PROJECT EDIT SCHEMA TO ALLOW FOR EDITING STATUS, PRIVATE/PUBLIC BOOLEAN, AND OWNER. WILL NEED TO IMPLEMENT A VALID USER'S LIST FOR EDIT MODAL AND STATUS AND IS PROJECT PUBLIC OPTIONS. ADD CONDITIONAL RENDERING FEATURES THAT GIVE THE STATUS AND PUBLIC/NON-PUBLIC FEATURES WEIGHT.
 

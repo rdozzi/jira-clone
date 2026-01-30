@@ -9,17 +9,7 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { useGetProjects } from '../features/projects/useGetProjects';
 import { useProjectModal } from '../contexts/modalContexts/useProjectModal';
-import { Project } from '../types/Projects';
-
-export type ProjectViewAllProjects = Pick<
-  Project,
-  'id' | 'name' | 'status' | 'description' | 'status' | 'isPublic'
-> & {
-  owner: {
-    firstName: string;
-    lastName: string;
-  };
-};
+import { ProjectViewAllProjects } from '../types/Project';
 
 function ProjectViewAll() {
   const {

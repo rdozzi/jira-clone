@@ -6,7 +6,7 @@ import { useGetBoardById } from '../features/boards/useGetBoardsById';
 import { useUpdateBoard } from '../features/boards/useUpdateBoard';
 import { getUpdatedBoardFields } from '../utilities/getUpdatedFields';
 import { Board } from '../types/Board';
-import { Project } from '../types/Projects';
+import { Project } from '../types/Project';
 
 import { useCreateBoard } from '../features/boards/useCreateBoard';
 

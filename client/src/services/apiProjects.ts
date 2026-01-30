@@ -1,5 +1,6 @@
 import { getAuthToken } from '../lib/getAuthToken';
-import { ProjectViewAllProjects } from '../types/Projects';
+import { ProjectViewAllProjects } from '../types/Project';
+import { Project } from '../types/Project';
 
 export async function getProjects() {
   try {
@@ -15,7 +16,12 @@ export async function getProjects() {
       throw new Error('Failed to fetch projects');
     }
     const { data } = await res.json();
-    return data;
+
+    const sortedData = data.toSorted((a: Project, b: Project) =>
+      a.name.localeCompare(b.name),
+    );
+
+    return sortedData;
   } catch (err: any | unknown) {
     console.error(err);
   }
@@ -35,7 +41,12 @@ export async function getProjectsByUserId() {
       throw new Error('Failed to fetch projects');
     }
     const { data } = await res.json();
-    return data;
+
+    const sortedData = data.toSorted((a: Project, b: Project) =>
+      a.name.localeCompare(b.name),
+    );
+
+    return sortedData;
   } catch (err: any | unknown) {
     console.error(err);
   }
@@ -86,7 +97,7 @@ export async function deleteProject(projectId: number) {
 
 export async function updateProject(
   projectId: number,
-  project: Partial<ProjectViewAllProjects>
+  project: Partial<ProjectViewAllProjects>,
 ) {
   try {
     const token = getAuthToken();

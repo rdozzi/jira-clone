@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { Project } from '../../types/Projects';
+import { Project } from '../../types/Project';
 
 type ProjectModalProps = {
   record?: Project;

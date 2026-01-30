@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateProject as apiUpdateProject } from '../../services/apiProjects';
-import { Projects } from '../../types/Projects';
+import { Project } from '../../types/Project';
 import { useUser } from '../../contexts/useUser';
 
 export function useUpdateProject() {
@@ -18,10 +18,10 @@ export function useUpdateProject() {
     onSuccess: (updatedProject) => {
       queryClient.setQueryData(
         ['projects', orgId],
-        (oldProjects: Projects[] = []) =>
+        (oldProjects: Project[] = []) =>
           oldProjects.map((p) =>
-            p.id === updatedProject.id ? { ...p, ...updatedProject } : p
-          )
+            p.id === updatedProject.id ? { ...p, ...updatedProject } : p,
+          ),
       );
 
       queryClient.invalidateQueries({ queryKey: ['projects', orgId] });
