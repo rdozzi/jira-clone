@@ -1,7 +1,6 @@
 import { memo } from 'react';
 import { Board } from '../types/Board';
 import { useDropdown } from '../contexts/DropdownContext';
-import { useProjectMemberModal } from '../contexts/modalContexts/useProjectMemberModal';
 import { useBoardModal } from '../contexts/modalContexts/useBoardModal';
 import { useCreateBoard } from '../features/boards/useCreateBoard';
 import { useDeleteBoard } from '../features/boards/useDeleteBoard';
