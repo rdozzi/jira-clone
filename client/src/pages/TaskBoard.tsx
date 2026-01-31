@@ -14,14 +14,14 @@ import { useDragHandler } from '../hooks/useDragHandler';
 import { Ticket } from '../types/Ticket';
 
 // The statuses of the task boards are hard coded in this component.
-export interface TaskBoardStatus {
+export interface StaticTaskBoards {
   id: string;
   name: string;
 }
 
 type BoardState = Record<string, Ticket[]>;
 
-const boards: TaskBoardStatus[] = [
+const boards: StaticTaskBoards[] = [
   { id: 'BACKLOG', name: 'Backlog' },
   { id: 'IN_PROGRESS', name: 'In Progress' },
   { id: 'DONE', name: 'Done' },
@@ -52,7 +52,7 @@ function TaskBoard() {
     openModal('create', {});
   }
 
-  function initializeBoards(boards: TaskBoardStatus[], tickets: Ticket[]) {
+  function initializeBoards(boards: StaticTaskBoards[], tickets: Ticket[]) {
     // Create an object with board IDs as keys and empty arrys as values
     const initialState: Record<string, Ticket[]> = boards.reduce(
       (acc, board) => {
