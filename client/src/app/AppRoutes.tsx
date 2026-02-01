@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AuthBoundaryProviders } from './AuthBoundaryProviders';
 
@@ -22,6 +22,7 @@ export function AppRoutes() {
   return (
     <Routes>
       {/* -- Public Routes -- */}
+      <Route path='/' element={<Navigate to='/login' replace />} />
       <Route
         path='/login'
         element={
