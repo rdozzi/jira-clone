@@ -20,6 +20,7 @@ export async function seedBoards({ prisma, projects }: SeedBoardsArgs) {
       name: 'board1',
       projectId: projects.project1.id,
       description: 'This is a description for board1',
+      organizationId: 1,
     },
   });
   const board2 = await prisma.board.upsert({
@@ -29,6 +30,7 @@ export async function seedBoards({ prisma, projects }: SeedBoardsArgs) {
       name: 'board2',
       projectId: projects.project2.id,
       description: 'This is a description for board2',
+      organizationId: 1,
     },
   });
 

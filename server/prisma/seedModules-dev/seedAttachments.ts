@@ -20,6 +20,7 @@ export async function seedAttachments(prisma: PrismaClient) {
       filePath: 'filepath_attachment1',
       uploadedBy: randomNumberGen(1, 2),
       storageType: 'LOCAL',
+      organizationId: 1,
     },
   });
 
@@ -37,6 +38,7 @@ export async function seedAttachments(prisma: PrismaClient) {
       filePath: 'filepath_attachment2',
       uploadedBy: randomNumberGen(1, 2),
       storageType: 'LOCAL',
+      organizationId: 1,
     },
   });
 

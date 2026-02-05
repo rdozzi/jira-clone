@@ -22,9 +22,6 @@ export async function seedActivityLog(prisma: PrismaClient) {
         beforeValue: 'None. Seed Value',
         afterValue: 'NA',
       },
-      ticketId: 1,
-      projectId: 1,
-      boardId: 1,
     },
   });
 }

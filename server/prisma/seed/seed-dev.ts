@@ -1,4 +1,4 @@
-import prisma from '../src/lib/prisma';
+import prisma from '../../src/lib/prisma';
 // import { seedUsers } from './seed/seedUsers';
 // import { seedProjects } from './seed/seedProjects';
 // import { seedBoards } from './seed/seedBoards';
@@ -8,7 +8,7 @@ import prisma from '../src/lib/prisma';
 // import { seedLabels } from './seed/seedLabels';
 // import { seedLabelsWithTickets } from './seed/seedLabelsWithTickets';
 // import { seedActivityLog } from './seed/seedActivityLog';
-import { seedProjectMember } from './seed/seedProjectMember';
+// import { seedProjectMember } from './seed/seedProjectMember';
 
 async function main() {
   // const users = await seedUsers(prisma);
@@ -16,7 +16,6 @@ async function main() {
   // const boards = await seedBoards({ prisma, projects });
   // const tickets = await seedTickets({ prisma, users, boards });
   // const labels = await seedLabels(prisma);
-
   // await seedUsers(prisma);
   // await seedProjects({ prisma, users });
   // await seedBoards({ prisma, projects });
@@ -34,7 +33,7 @@ async function main() {
   //   tickets,
   // });
   // await seedActivityLog(prisma);
-  await seedProjectMember(prisma);
+  // await seedProjectMember(prisma);
 }
 
 main()

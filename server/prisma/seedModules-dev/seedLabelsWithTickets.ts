@@ -19,8 +19,16 @@ export async function seedLabelsWithTickets({
 }: SeedLabelsWithTicketsArgs) {
   const result = await prisma.ticketLabel.createMany({
     data: [
-      { ticketId: tickets.ticket1.id, labelId: labels.label1.id },
-      { ticketId: tickets.ticket1.id, labelId: labels.label2.id },
+      {
+        ticketId: tickets.ticket1.id,
+        labelId: labels.label1.id,
+        organizationId: 1,
+      },
+      {
+        ticketId: tickets.ticket1.id,
+        labelId: labels.label2.id,
+        organizationId: 1,
+      },
     ],
     skipDuplicates: true,
   });

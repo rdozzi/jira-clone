@@ -13,7 +13,7 @@
     "dev": "concurrently \"npm:watch-ts\" \"nodemon dist/index.js\""
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed:dev": "ts-node prisma/seed/seed-dev.ts"
   },
   "author": "Raphael Dozzi",
   "license": "ISC",

@@ -12,6 +12,7 @@ export async function seedLabels(prisma: PrismaClient) {
     create: {
       name: 'Urgent',
       color: '#FF0000',
+      organizationId: 1,
     },
   });
 
@@ -21,6 +22,7 @@ export async function seedLabels(prisma: PrismaClient) {
     create: {
       name: 'Feature',
       color: '#0000FF',
+      organizationId: 1,
     },
   });
 

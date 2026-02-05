@@ -28,6 +28,7 @@ export async function seedComments({
       content: 'This is a comment on ticket 1',
       ticketId: tickets.ticket1.id,
       authorId: users.user1.id,
+      organizationId: 1,
     },
   });
   const comment2 = await prisma.comment.upsert({
@@ -37,6 +38,7 @@ export async function seedComments({
       content: 'This is a comment on ticket 2',
       ticketId: tickets.ticket2.id,
       authorId: users.user2.id,
+      organizationId: 1,
     },
   });
 
