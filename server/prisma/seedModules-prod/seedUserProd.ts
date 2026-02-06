@@ -12,7 +12,7 @@ export async function seedUserProd(
 
   const user = await tx.user.upsert({
     where: { email: 'demo@jira-clone.local' },
-    update: {},
+    update: { passwordHash: hashedPassword },
     create: {
       firstName: 'Demo',
       lastName: 'User',

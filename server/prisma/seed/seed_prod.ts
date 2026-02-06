@@ -27,6 +27,10 @@ async function main() {
     throw new Error('Refusing to run production seed against localhost');
   }
 
+  if (!process.env.DATABASE_URL?.includes('oregon-postgres.render.com')) {
+    throw new Error('Seed is NOT using Render external DB URL');
+  }
+
   console.log('DATABASE_URL', process.env.DATABASE_URL);
 
   // Core entities
