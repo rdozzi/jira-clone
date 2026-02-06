@@ -14,5 +14,5 @@
     "typeRoots": ["node_modules/@types"]
   },
   "exclude": ["node_modules", "dist", "prisma", "src/archives"],
-  "include": ["src/**/*", "prisma/*.ts", "prisma/seed/seed-dev.ts"]
+  "include": ["src/**/*", "prisma/*.ts", "prisma/seed/seed_dev.ts"]
 }
