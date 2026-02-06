@@ -61,6 +61,9 @@ model Project {
 
   // Parent
   Organization Organization @relation(fields: [organizationId], references: [id])
+
+  // Composite Key
+  @@unique([name, organizationId])
 }
 
 model Board {
@@ -78,6 +81,9 @@ model Board {
 
   //Child
   tickets Ticket[]
+
+  // Composite Key
+  @@unique([name, organizationId])
 }
 
 model Ticket {
@@ -106,6 +112,9 @@ model Ticket {
 
   //Member
   ticketLabels TicketLabel[]
+
+  // Composite Key
+  @@unique([title, organizationId])
 }
 
 model Comment {
