@@ -36,25 +36,25 @@ export async function seedUsers(prisma: PrismaClient) {
 
   const user4 = await prisma.user.upsert({
     where: { id: 4 },
-    update: { deletedAt: null, globalRole: 'GUEST' },
+    update: { deletedAt: null, globalRole: 'USER' },
     create: {
       email: 'fdrescher@example.com',
       firstName: 'Fran',
       lastName: 'Drescher',
       passwordHash: hashedPassword,
-      globalRole: 'GUEST',
+      globalRole: 'USER',
     },
   });
 
   const user5 = await prisma.user.upsert({
     where: { id: 5 },
-    update: { deletedAt: null, globalRole: 'ADMIN' },
+    update: { deletedAt: null, globalRole: 'USER' },
     create: {
       email: 'mfreeman@example.com',
       firstName: 'Morgan',
       lastName: 'Freeman',
       passwordHash: hashedPassword,
-      globalRole: 'ADMIN',
+      globalRole: 'USER',
     },
   });
 
