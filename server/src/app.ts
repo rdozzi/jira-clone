@@ -30,12 +30,23 @@ import otpRoutes from './router/otpRoutes';
 
 export const app: Application = express();
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://jira-clone-client.onrender.com',
+];
+
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: (origin, cb) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        cb(null, true);
+      } else {
+        cb(new Error('CORS blocked'));
+      }
+    },
     credentials: true,
     exposedHeaders: ['Content-Disposition'],
-  })
+  }),
 );
 
 app.use(express.json());
