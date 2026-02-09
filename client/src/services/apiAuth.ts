@@ -1,3 +1,5 @@
+import { apiFetch } from './apiClient';
+
 export async function login({
   email,
   password,
@@ -6,7 +8,7 @@ export async function login({
   password: string;
 }) {
   try {
-    const res = await fetch('http://localhost:3000/api/auth/login', {
+    const res = await apiFetch('/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -28,7 +30,7 @@ export async function login({
 
 export async function logout(token: string | null) {
   try {
-    const res = await fetch('http://localhost:3000/api/auth/logout', {
+    const res = await apiFetch('/api/auth/logout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
