@@ -1,10 +1,11 @@
 import { getAuthToken } from '../lib/getAuthToken';
 import { Board } from '../types/Board';
+import { apiFetch } from './apiClient';
 
 export async function getBoards() {
   const token = getAuthToken();
   try {
-    const res = await fetch(`http://localhost:3000/api/boards`, {
+    const res = await apiFetch(`/api/boards`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -29,7 +30,7 @@ export async function getBoards() {
 export async function getBoardById(boardId: number) {
   const token = getAuthToken();
   try {
-    const res = await fetch(`http://localhost:3000/api/boards/${boardId}`, {
+    const res = await apiFetch(`/api/boards/${boardId}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -51,16 +52,13 @@ export async function getBoardById(boardId: number) {
 export async function getBoardsByProjectId(projectId: number) {
   const token = getAuthToken();
   try {
-    const res = await fetch(
-      `http://localhost:3000/api/boards/${projectId}/project`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+    const res = await apiFetch(`/api/boards/${projectId}/project`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-    );
+    });
     if (!res.ok) {
       throw new Error('Failed to fetch boards');
     }
@@ -77,7 +75,7 @@ export async function getBoardsByProjectId(projectId: number) {
 export async function createBoard(boardObject: object) {
   const token = getAuthToken();
   try {
-    const res = await fetch('http://localhost:3000/api/boards', {
+    const res = await apiFetch(`/api/boards`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -100,7 +98,7 @@ export async function createBoard(boardObject: object) {
 export async function deleteBoard(boardId: number) {
   const token = getAuthToken();
   try {
-    const res = await fetch(`http://localhost:3000/api//boards/${boardId}`, {
+    const res = await apiFetch(`/api//boards/${boardId}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -122,7 +120,7 @@ export async function deleteBoard(boardId: number) {
 export async function updateBoard(boardId: number, board: Partial<Board>) {
   const token = getAuthToken();
   try {
-    const res = await fetch(`http://localhost:3000/api/boards/${boardId}`, {
+    const res = await apiFetch(`/api/boards/${boardId}`, {
       method: 'PATCH',
       headers: {
         Authorization: `Bearer ${token}`,

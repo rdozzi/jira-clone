@@ -1,4 +1,5 @@
 import { getAuthToken } from '../lib/getAuthToken';
+import { apiFetch } from './apiClient';
 
 interface MemberInfo {
   userId: number;
@@ -10,16 +11,13 @@ export async function getProjectMembers(projectId: number | null) {
   try {
     const token = getAuthToken();
 
-    const res = await fetch(
-      `http://localhost:3000/api/projectMembers/${projectId}/members`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+    const res = await apiFetch(`/api/projectMembers/${projectId}/members`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-    );
+    });
     if (!res.ok) {
       throw new Error('Failed to fetch project members');
     }
@@ -36,17 +34,14 @@ export async function addProjectMember(
 ) {
   try {
     const token = getAuthToken();
-    const res = await fetch(
-      `http://localhost:3000/api/projectMembers/${projectId}/members`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(memberInfo),
+    const res = await apiFetch(`/api/projectMembers/${projectId}/members`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify(memberInfo),
+    });
     if (!res.ok) {
       const errorText = await res.text();
       console.error('Error:', res.status, res.statusText, errorText);
@@ -62,8 +57,9 @@ export async function addProjectMember(
 export async function removeProjectMember(projectId: number, userId: number) {
   try {
     const token = getAuthToken();
-    const res = await fetch(
-      `http://localhost:3000/api/projectMembers/${projectId}/members/${userId}`,
+
+    const res = await apiFetch(
+      `/api/projectMembers/${projectId}/members/${userId}`,
       {
         method: 'DELETE',
         headers: {
@@ -89,8 +85,8 @@ export async function updateProjectMemberRole(
 ) {
   try {
     const token = getAuthToken();
-    const res = await fetch(
-      `http://localhost:3000/api/projectMembers/${projectId}/members/${userId}`,
+    const res = await apiFetch(
+      `/api/projectMembers/${projectId}/members/${userId}`,
       {
         method: 'PATCH',
         headers: {

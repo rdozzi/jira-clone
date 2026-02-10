@@ -1,12 +1,13 @@
 import { getAuthToken } from '../lib/getAuthToken';
 import { Users } from '../types/Users';
+import { apiFetch } from './apiClient';
 
 type UpdatedUser = Partial<Users>;
 
 export async function getUsers() {
   const token = getAuthToken();
   try {
-    const res = await fetch('http://localhost:3000/api/users/all', {
+    const res = await apiFetch(`/api/users/all`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -25,7 +26,7 @@ export async function getUsers() {
 
 export async function getUserSelf() {
   const token = getAuthToken();
-  const res = await fetch('http://localhost:3000/api/users/self', {
+  const res = await apiFetch(`/api/users/self`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -42,16 +43,13 @@ export async function getUserSelf() {
 export async function getUsersByProjectId(projectId: number) {
   try {
     const token = getAuthToken();
-    const res = await fetch(
-      `http://localhost:3000/api/users/${projectId}/project`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const res = await apiFetch(`/api/users/${projectId}/project`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
     if (!res.ok) {
       throw new Error('Failed to fetch users');
     }
@@ -65,17 +63,14 @@ export async function getUsersByProjectId(projectId: number) {
 export async function updateUser(userId: number, userInfo: UpdatedUser) {
   try {
     const token = getAuthToken();
-    const res = await fetch(
-      `http://localhost:3000/api/users/${userId}/update`,
-      {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userInfo),
-      }
-    );
+    const res = await apiFetch(`/api/users/${userId}/update`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userInfo),
+    });
     if (!res.ok) {
       throw new Error('Failed to update User');
     }

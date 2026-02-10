@@ -1,10 +1,11 @@
 import { getAuthToken } from '../lib/getAuthToken';
 import { Ticket, TicketDTO } from '../types/Ticket';
+import { apiFetch } from './apiClient';
 
 export async function getTickets() {
   try {
     const token = getAuthToken();
-    const res = await fetch('http://localhost:3000/api/tickets', {
+    const res = await apiFetch(`/api/tickets`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -24,15 +25,12 @@ export async function getTickets() {
 export async function getTicketsByAssigneeId(userId: number | undefined) {
   try {
     const token = getAuthToken();
-    const res = await fetch(
-      `http://localhost:3000/api/tickets/${userId}/assigneeId`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    const res = await apiFetch(`/api/tickets/${userId}/assigneeId`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
     if (!res.ok) {
       const errorText = await res.text();
       console.error('Error:', res.status, res.statusText, errorText);
@@ -48,16 +46,13 @@ export async function getTicketsByAssigneeId(userId: number | undefined) {
 export async function getTicketsByBoardId(boardId: number) {
   try {
     const token = getAuthToken();
-    const res = await fetch(
-      `http://localhost:3000/api/tickets/${boardId}/board`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+    const res = await apiFetch(`/api/tickets/${boardId}/board`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-    );
+    });
     if (!res.ok) {
       throw new Error('Failed to fetch tickets');
     }
@@ -71,7 +66,7 @@ export async function getTicketsByBoardId(boardId: number) {
 export async function getTicketById(ticketId: number) {
   try {
     const token = getAuthToken();
-    const res = await fetch(`http://localhost:3000/api/tickets/${ticketId}`, {
+    const res = await apiFetch(`/api/tickets/${ticketId}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -90,9 +85,8 @@ export async function getTicketById(ticketId: number) {
 
 export async function createTicket(ticket: Partial<TicketDTO>) {
   try {
-    console.log(ticket);
     const token = getAuthToken();
-    const res = await fetch('http://localhost:3000/api/tickets', {
+    const res = await apiFetch(`/api/tickets`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -113,7 +107,7 @@ export async function createTicket(ticket: Partial<TicketDTO>) {
 export async function deleteTicket(id: number) {
   try {
     const token = getAuthToken();
-    const res = await fetch(`http://localhost:3000/api/tickets/${id}`, {
+    const res = await apiFetch(`/api/tickets/${id}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -133,17 +127,14 @@ export async function deleteTicket(id: number) {
 export async function updateTicket(ticketId: number, ticket: Partial<Ticket>) {
   try {
     const token = getAuthToken();
-    const res = await fetch(
-      `http://localhost:3000/api/tickets/${ticketId}/update`,
-      {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(ticket),
+    const res = await apiFetch(`/api/tickets/${ticketId}/update`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify(ticket),
+    });
     if (!res.ok) {
       throw new Error('Failed to update ticket');
     }

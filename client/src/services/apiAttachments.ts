@@ -1,19 +1,18 @@
 import { getAuthToken } from '../lib/getAuthToken';
 import { EntityType } from '../types/Attachments';
+import { apiFetch } from './apiClient';
 
 export async function getAttachments(entityType: EntityType, entityId: number) {
   try {
     const token = getAuthToken();
-    const res = await fetch(
-      `http://localhost:3000/api/attachments/${entityType}/${entityId}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const res = await apiFetch(`/api/attachments/${entityType}/${entityId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
     if (!res.ok) {
       throw new Error('Failed to fetch attachments');
     }
@@ -29,8 +28,8 @@ export async function getAttachments(entityType: EntityType, entityId: number) {
 export async function uploadSingleAttachment(formData: FormData) {
   try {
     const token = getAuthToken();
-    const res = await fetch(`http://localhost:3000/api/attachments/single`, {
-      method: 'POST',
+    const res = await apiFetch(`/api/attachments/single`, {
+      skipJSONContextType: true,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -51,15 +50,13 @@ export async function uploadSingleAttachment(formData: FormData) {
 export async function deleteSingleAttachment(attachmentId: number) {
   try {
     const token = getAuthToken();
-    const res = await fetch(
-      `http://localhost:3000/api/attachments/${attachmentId}`,
-      {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const res = await apiFetch(`/api/attachments/${attachmentId}`, {
+      skipJSONContextType: true,
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     if (!res.ok) {
       const errorText = await res.text();
       console.error('Error:', res.status, res.statusText, errorText);
@@ -75,15 +72,13 @@ export async function deleteSingleAttachment(attachmentId: number) {
 export async function downloadAttachment(attachmentId: number) {
   try {
     const token = getAuthToken();
-    const res = await fetch(
-      `http://localhost:3000/api/attachments/${attachmentId}/download`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const res = await apiFetch(`/api/attachments/${attachmentId}/download`, {
+      skipJSONContextType: true,
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     if (!res.ok) {
       const errText = await res.text();
       throw new Error(`Download failed: ${errText}`);
@@ -106,7 +101,7 @@ export async function downloadAttachment(attachmentId: number) {
       const MAX_SIZE_MB = 100;
       if (blob.size > MAX_SIZE_MB * 1024 * 1024) {
         throw new Error(
-          `File too large (${(blob.size / 1024 / 1024).toFixed(1)} MB)`
+          `File too large (${(blob.size / 1024 / 1024).toFixed(1)} MB)`,
         );
       }
 

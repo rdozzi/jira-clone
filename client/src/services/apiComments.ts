@@ -1,9 +1,10 @@
 import { getAuthToken } from '../lib/getAuthToken';
+import { apiFetch } from './apiClient';
 
 export async function getCommentsById(ticketId: number) {
   try {
     const token = getAuthToken();
-    const res = await fetch(`http://localhost:3000/api/comments/${ticketId}`, {
+    const res = await apiFetch(`/api/comments/${ticketId}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -24,7 +25,7 @@ export async function getCommentsById(ticketId: number) {
 export async function createComment(commentObject: object) {
   try {
     const token = getAuthToken();
-    const res = await fetch('http://localhost:3000/api/comments', {
+    const res = await apiFetch(`/api/comments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ export async function createComment(commentObject: object) {
 export async function deleteComment(ticketId: number) {
   try {
     const token = getAuthToken();
-    const res = await fetch(`http://localhost:3000/api/comments/${ticketId}`, {
+    const res = await apiFetch(`/api/comments/${ticketId}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -67,7 +68,7 @@ export async function deleteComment(ticketId: number) {
 export async function editComment(commentId: number, content: string) {
   try {
     const token = getAuthToken();
-    const res = await fetch(`http://localhost:3000/api/comments/${commentId}`, {
+    const res = await apiFetch(`/api/comments/${commentId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

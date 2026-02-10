@@ -1,11 +1,12 @@
 import { getAuthToken } from '../lib/getAuthToken';
 import { ProjectViewAllProjects } from '../types/Project';
 import { Project } from '../types/Project';
+import { apiFetch } from './apiClient';
 
 export async function getProjects() {
   try {
     const token = getAuthToken();
-    const res = await fetch(`http://localhost:3000/api/projects`, {
+    const res = await apiFetch(`/api/projects`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -30,7 +31,7 @@ export async function getProjects() {
 export async function getProjectsByUserId() {
   try {
     const token = getAuthToken();
-    const res = await fetch(`http://localhost:3000/api/projects/my-projects`, {
+    const res = await apiFetch(`/api/projects/my-projects`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -55,7 +56,7 @@ export async function getProjectsByUserId() {
 export async function createProject(projectObject: object) {
   try {
     const token = getAuthToken();
-    const res = await fetch('http://localhost:3000/api/projects', {
+    const res = await apiFetch(`/api/projects`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ export async function createProject(projectObject: object) {
 export async function deleteProject(projectId: number) {
   try {
     const token = getAuthToken();
-    const res = await fetch(`http://localhost:3000/api/projects/${projectId}`, {
+    const res = await apiFetch(`/api/projects/${projectId}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -101,7 +102,7 @@ export async function updateProject(
 ) {
   try {
     const token = getAuthToken();
-    const res = await fetch(`http://localhost:3000/api/projects/${projectId}`, {
+    const res = await apiFetch(`/api/projects/${projectId}`, {
       method: 'PATCH',
       headers: {
         Authorization: `Bearer ${token}`,

@@ -1,17 +1,16 @@
+import { apiFetch } from './apiClient';
 import { getAuthToken } from '../lib/getAuthToken';
 
 export async function getLogByUserId(userId: number) {
   try {
     const token = getAuthToken();
-    const res = await fetch(
-      `http://localhost:3000/api/activity-logs/${userId}/user`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const res = await apiFetch(`/api/activity-logs/${userId}/user`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     if (!res.ok) {
       throw new Error('Failed to fetch activity logs');
     }
