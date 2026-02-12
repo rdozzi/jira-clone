@@ -15,8 +15,6 @@ const queryClient = new QueryClient({
   },
 });
 
-console.log(import.meta.env.DEV);
-
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
