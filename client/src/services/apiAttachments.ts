@@ -29,6 +29,7 @@ export async function uploadSingleAttachment(formData: FormData) {
   try {
     const token = getAuthToken();
     const res = await apiFetch(`/api/attachments/single`, {
+      method: 'POST',
       skipJSONContextType: true,
       headers: {
         Authorization: `Bearer ${token}`,
