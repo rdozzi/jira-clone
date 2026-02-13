@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button, Checkbox, Form, Input, Select, Space } from 'antd';
+import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useUser } from '../contexts/useUser';
 import { useUpdateUser } from '../features/users/useUpdateUser';
 import { getUpdatedUserFields } from '../utilities/getUpdatedFields';
@@ -30,9 +31,16 @@ interface Value {
   email: string;
 }
 
+interface Password {
+  newPassword: string;
+  confirmedPassword: string;
+}
+
 function UserProfile() {
-  const [checkboxChecked, setCheckboxChecked] = useState(false);
+  const [profileCheckboxChecked, setProfileCheckboxChecked] = useState(false);
+  const [passwordCheckBoxChecked, setPasswordCheckBoxChecked] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
+  const [editPassword, setEditPassword] = useState(false);
   const { userSelf, isLoadingUser, error: userSelfError } = useUser();
   const { updateUser, isUpdatingUser } = useUpdateUser();
 
@@ -44,12 +52,21 @@ function UserProfile() {
     };
   }
 
-  function onCheckboxChange(e: CheckboxChangeEvent): void {
-    setCheckboxChecked(e.target.checked);
+  function onProfileCheckboxChange(e: CheckboxChangeEvent): void {
+    setProfileCheckboxChecked(e.target.checked);
     if (!editProfile) {
       setEditProfile(true);
     } else {
       setEditProfile(false);
+    }
+  }
+
+  function onPasswordCheckboxChange(e: CheckboxChangeEvent): void {
+    setPasswordCheckBoxChecked(e.target.checked);
+    if (!editPassword) {
+      setEditPassword(true);
+    } else {
+      setEditPassword(false);
     }
   }
 
@@ -80,14 +97,14 @@ function UserProfile() {
     wrapperCol: { span: 18 },
   };
 
-  function onFinishEdit(values: Value) {
+  function onFinishProfileEdit(values: Value) {
     const { organizationRole, ...rest } = values;
     const updatedOrgRole = organizationRole.toUpperCase();
     const updatedValues = { organizationRole: updatedOrgRole, ...rest };
     const updatedFields = getUpdatedUserFields(userSelf, updatedValues);
     if (Object.keys(updatedFields).length === 0) {
       setEditProfile(false);
-      setCheckboxChecked(false);
+      setProfileCheckboxChecked(false);
       return;
     }
     if (userSelf?.id !== undefined) {
@@ -97,58 +114,146 @@ function UserProfile() {
       updateUser(input);
     }
     setEditProfile(false);
-    setCheckboxChecked(false);
+    setProfileCheckboxChecked(false);
     return;
+  }
+
+  function onFinishPasswordEdit(value: Password) {
+    console.log('Password Box Clicked');
+    setEditPassword(false);
+    setPasswordCheckBoxChecked(false);
   }
 
   return (
     <>
-      <Form
-        name='userSelfForm'
-        {...formItemLayout}
-        style={{ maxWidth: 600 }}
-        form={form}
-        disabled={!editProfile || isUpdatingUser}
-        onFinish={onFinishEdit}
-      >
-        <Form.Item
-          name='firstName'
-          label='First Name'
-          rules={[{ required: true, min: 2, max: 150 }]}
-        >
-          <Input />
-        </Form.Item>
+      {/* Profile edit section */}
 
-        <Form.Item
-          name='lastName'
-          label='Last Name'
-          rules={[{ required: true, min: 2, max: 150 }]}
+      <section>
+        <div
+          style={{
+            maxWidth: 600,
+            margin: '20px 0px 0px 20px',
+            fontWeight: 'bold',
+            fontSize: '24px',
+          }}
         >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label='Email'
-          name='email'
-          rules={[{ required: true, min: 5, max: 255 }]}
+          User Profile Information
+        </div>
+        <Form
+          name='userSelfForm'
+          {...formItemLayout}
+          style={{ maxWidth: 600, margin: '20px 50px 10px 20px' }}
+          form={form}
+          disabled={!editProfile || isUpdatingUser}
+          onFinish={onFinishProfileEdit}
         >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label='Organization Role'
-          name='organizationRole'
-          rules={[{ required: true }]}
+          <Form.Item
+            name='firstName'
+            label='First Name'
+            rules={[{ required: true, min: 2, max: 150 }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name='lastName'
+            label='Last Name'
+            rules={[{ required: true, min: 2, max: 150 }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label='Email'
+            name='email'
+            rules={[{ required: true, min: 5, max: 255 }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label='Organization Role'
+            name='organizationRole'
+            rules={[{ required: true }]}
+          >
+            <Select options={orgRoleObject}></Select>
+          </Form.Item>
+        </Form>
+        <div style={{ maxWidth: 600, margin: '0px 20px 10px 20px' }}>
+          <Space>
+            <Button disabled={!editProfile} onClick={() => form.submit()}>
+              Update
+            </Button>
+            <Checkbox
+              checked={profileCheckboxChecked}
+              onChange={onProfileCheckboxChange}
+            >
+              Edit Profile
+            </Checkbox>
+          </Space>
+        </div>
+      </section>
+
+      {/* Password edit section */}
+
+      <section>
+        <div
+          style={{
+            maxWidth: 600,
+            margin: '20px 0px 0px 20px',
+            fontWeight: 'bold',
+            fontSize: '24px',
+          }}
         >
-          <Select options={orgRoleObject}></Select>
-        </Form.Item>
-      </Form>
-      <Space>
-        <Button disabled={!editProfile} onClick={() => form.submit()}>
-          Update
-        </Button>
-        <Checkbox checked={checkboxChecked} onChange={onCheckboxChange}>
-          Edit Profile
-        </Checkbox>
-      </Space>
+          Change Password
+        </div>
+        <div>
+          <Form
+            name='userPasswordForm'
+            {...formItemLayout}
+            style={{ maxWidth: 600, margin: '20px 50px 10px 20px' }}
+            form={form}
+            disabled={!editPassword}
+            onFinish={onFinishPasswordEdit}
+          >
+            <Form.Item
+              name='newPassword'
+              label='New Password'
+              rules={[{ required: true, min: 2, max: 150 }]}
+            >
+              <Input.Password
+                placeholder='New Password'
+                iconRender={(visible) =>
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+              />
+            </Form.Item>
+            <Form.Item
+              name='confirmPassword'
+              label='Confirm Password'
+              rules={[{ required: true, min: 2, max: 150 }]}
+            >
+              <Input.Password
+                placeholder='Confirm New Password'
+                iconRender={(visible) =>
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+              />
+            </Form.Item>
+          </Form>
+        </div>
+        <div style={{ maxWidth: 600, margin: '0px 20px 10px 20px' }}>
+          <Space>
+            <Button disabled={!editPassword} onClick={() => form.submit()}>
+              Update
+            </Button>
+            <Checkbox
+              checked={passwordCheckBoxChecked}
+              onChange={onPasswordCheckboxChange}
+            >
+              Edit Password
+            </Checkbox>
+          </Space>
+        </div>
+      </section>
       <div>
         <BackButton>Back</BackButton>
       </div>
