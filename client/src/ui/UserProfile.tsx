@@ -44,7 +44,8 @@ function UserProfile() {
   const { userSelf, isLoadingUser, error: userSelfError } = useUser();
   const { updateUser, isUpdatingUser } = useUpdateUser();
 
-  const [form] = Form.useForm();
+  const [profileForm] = Form.useForm();
+  const [passwordForm] = Form.useForm();
 
   interface CheckboxChangeEvent {
     target: {
@@ -72,7 +73,7 @@ function UserProfile() {
 
   useEffect(() => {
     if (!userSelf) return;
-    form.setFieldsValue({
+    profileForm.setFieldsValue({
       firstName: userSelf?.firstName,
       lastName: userSelf?.lastName,
       email: userSelf?.email,
@@ -81,7 +82,7 @@ function UserProfile() {
         : '',
     });
   }, [
-    form,
+    profileForm,
     userSelf,
     userSelf?.firstName,
     userSelf?.lastName,
@@ -120,6 +121,7 @@ function UserProfile() {
 
   function onFinishPasswordEdit(value: Password) {
     console.log('Password Box Clicked');
+    passwordForm.resetFields();
     setEditPassword(false);
     setPasswordCheckBoxChecked(false);
   }
@@ -143,7 +145,7 @@ function UserProfile() {
           name='userSelfForm'
           {...formItemLayout}
           style={{ maxWidth: 600, margin: '20px 50px 10px 20px' }}
-          form={form}
+          form={profileForm}
           disabled={!editProfile || isUpdatingUser}
           onFinish={onFinishProfileEdit}
         >
@@ -179,7 +181,10 @@ function UserProfile() {
         </Form>
         <div style={{ maxWidth: 600, margin: '0px 20px 10px 20px' }}>
           <Space>
-            <Button disabled={!editProfile} onClick={() => form.submit()}>
+            <Button
+              disabled={!editProfile}
+              onClick={() => profileForm.submit()}
+            >
               Update
             </Button>
             <Checkbox
@@ -210,7 +215,7 @@ function UserProfile() {
             name='userPasswordForm'
             {...formItemLayout}
             style={{ maxWidth: 600, margin: '20px 50px 10px 20px' }}
-            form={form}
+            form={passwordForm}
             disabled={!editPassword}
             onFinish={onFinishPasswordEdit}
           >
@@ -242,7 +247,10 @@ function UserProfile() {
         </div>
         <div style={{ maxWidth: 600, margin: '0px 20px 10px 20px' }}>
           <Space>
-            <Button disabled={!editPassword} onClick={() => form.submit()}>
+            <Button
+              disabled={!editPassword}
+              onClick={() => passwordForm.submit()}
+            >
               Update
             </Button>
             <Checkbox
