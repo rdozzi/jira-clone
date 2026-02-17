@@ -134,20 +134,21 @@ model Comment {
 }
 
 model User {
-  id               Int               @id @default(autoincrement())
-  firstName        String?           @db.VarChar(150)
-  lastName         String?           @db.VarChar(150)
-  email            String            @unique @db.VarChar(255)
-  passwordHash     String
-  organizationRole OrganizationRole?
-  globalRole       GlobalRole        @default(USER)
-  avatarSource     String?           @default("NA") @db.VarChar(2048)
-  isBanned         Boolean           @default(false)
-  organizationId   Int?
-  createdAt        DateTime          @default(now()) @db.Timestamptz()
-  updatedAt        DateTime          @updatedAt @db.Timestamptz()
-  deletedAt        DateTime?         @db.Timestamptz()
-  isDeleted        Boolean?          @default(false)
+  id                 Int               @id @default(autoincrement())
+  firstName          String?           @db.VarChar(150)
+  lastName           String?           @db.VarChar(150)
+  email              String            @unique @db.VarChar(255)
+  passwordHash       String
+  organizationRole   OrganizationRole?
+  globalRole         GlobalRole        @default(USER)
+  avatarSource       String?           @default("NA") @db.VarChar(2048)
+  isBanned           Boolean           @default(false)
+  organizationId     Int?
+  createdAt          DateTime          @default(now()) @db.Timestamptz()
+  updatedAt          DateTime          @updatedAt @db.Timestamptz()
+  deletedAt          DateTime?         @db.Timestamptz()
+  isDeleted          Boolean?          @default(false)
+  mustChangePassword Boolean?          @default(false)
 
   //passwordHash is the input password hashed by bcrypt
 

@@ -11,7 +11,7 @@ import { logBus } from '../lib/logBus';
 export async function getAllUsers(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const organizationId = res.locals.userInfo.organizationId;
@@ -33,7 +33,7 @@ export async function getAllUsers(
 export async function getUser(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const query = Object.keys(res.locals.validatedQuery)[0];
@@ -78,7 +78,7 @@ export async function getUser(
 export async function getUserSelf(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const userInfo = res.locals.userInfo;
@@ -102,7 +102,7 @@ export async function getUserSelf(
 export async function getUserByProjectId(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const projectId = res.locals.validatedParam;
@@ -141,7 +141,7 @@ export async function getUserByProjectId(
 export async function createUser(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     // From storeUserAndProjectInfo
@@ -166,7 +166,7 @@ export async function createUser(
             organizationRole: organizationRole,
             organizationId: organizationId,
           },
-        })
+        }),
     );
 
     const logEvents = [
@@ -200,7 +200,7 @@ export async function createUser(
 export async function updateUser(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   // Information about the user performing this action
   // const userInfo: { id: number; globalRole: GlobalRole } = res.locals.userInfo;
@@ -266,11 +266,83 @@ export async function updateUser(
   }
 }
 
+// Update Self Password
+export async function updatePasswordSelf(
+  req: Request,
+  res: Response,
+  prisma: PrismaClient,
+) {
+  // Information about the user performing this action (Admin or self)
+  // const userInfo: { id: number, organizationId: number} = res.locals.userInfo;
+  const userInfo = res.locals.userInfo;
+
+  // passwordData newPassword, confirmPassword
+  const { confirmPassword } = res.locals.validatedBody;
+
+  const organizationId = userInfo.organizationId;
+
+  const hashedPassword = await hashPassword(confirmPassword);
+
+  const result = await prisma.$transaction(async (tx) => {
+    const user = await tx.user.findUnique({
+      where: { id: userInfo.id },
+      select: {
+        id: true,
+        mustChangePassword: true,
+      },
+    });
+
+    if (!user) throw new Error('User not found');
+
+    let method: 'SELF_SERVICE' | 'INITIAL_SET';
+
+    if (user.mustChangePassword) {
+      method = 'INITIAL_SET';
+    } else {
+      method = 'SELF_SERVICE';
+    }
+
+    const updatedUser = await tx.user.update({
+      where: { id: userInfo.id, organizationId: organizationId },
+      data: {
+        passwordHash: hashedPassword,
+        mustChangePassword: false,
+      },
+    });
+
+    return { updatedUser, method };
+  });
+
+  const logEvents = [
+    buildLogEvent({
+      userId: userInfo.id,
+      actorType: 'USER',
+      action: 'UPDATE_PASSWORD',
+      targetId: userInfo.id,
+      targetType: 'USER',
+      organizationId: organizationId,
+      metadata: {
+        name: `${result.updatedUser.firstName}_${result.updatedUser.lastName}`,
+        email: result.updatedUser.email,
+        method: result.method,
+        timeStamp: new Date().toISOString(),
+      },
+    }),
+  ];
+
+  logBus.emit('activityLog', logEvents);
+
+  res.status(200).json({
+    message: 'User password updated successfully',
+  });
+  return;
+}
+
 // Delete User (Patch)
 export async function deleteUser(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     // From storeUserAndProjectInfo
