@@ -26,13 +26,13 @@ describe('Create a user', () => {
       prismaTest,
       testDescription,
       OrganizationRole.ADMIN,
-      organization.id
+      organization.id,
     );
     token = generateJwtToken(
       user.id,
       user.globalRole,
       user.organizationId,
-      user.organizationRole
+      user.organizationRole,
     );
   });
   afterAll(async () => {
@@ -68,6 +68,7 @@ describe('Create a user', () => {
       isDeleted: false,
       organizationId: expect.any(Number),
       organizationRole: expect.any(String),
+      mustChangePassword: expect.any(Boolean),
     });
     expect(res.body.message).toEqual('User created successfully');
   });

@@ -25,13 +25,13 @@ describe('Update user', () => {
       prismaTest,
       testDescription,
       OrganizationRole.USER,
-      organization.id
+      organization.id,
     );
     token = generateJwtToken(
       user.id,
       user.globalRole,
       user.organizationId,
-      user.organizationRole
+      user.organizationRole,
     );
   });
   afterAll(async () => {
@@ -64,9 +64,10 @@ describe('Update user', () => {
           isDeleted: false,
           organizationId: expect.any(Number),
           organizationRole: expect.any(String),
+          mustChangePassword: expect.any(Boolean),
         },
         message: expect.any(String),
-      })
+      }),
     );
   });
   it('reject self-role promotion request', async () => {
@@ -78,7 +79,17 @@ describe('Update user', () => {
       });
     expect(res.status).toBe(403);
     expect(res.body.error).toEqual(
-      'Unauthorized to change your own global role.'
+      'Unauthorized to change your own global role.',
     );
+  });
+  it('reject password change request', async () => {
+    const res = await request(app)
+      .patch(`/api/users/${user.id}/update`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        password: 'This_Should_Fail',
+      });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toEqual('Validation failed');
   });
 });

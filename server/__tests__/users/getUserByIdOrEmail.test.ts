@@ -23,13 +23,13 @@ describe('Get User By Id or email', () => {
       prismaTest,
       testDescription,
       OrganizationRole.ADMIN,
-      organization.id
+      organization.id,
     );
     token = generateJwtToken(
       user.id,
       user.globalRole,
       user.organizationId,
-      user.organizationRole
+      user.organizationRole,
     );
   });
   afterAll(async () => {
@@ -57,6 +57,7 @@ describe('Get User By Id or email', () => {
       isDeleted: false,
       organizationId: expect.any(Number),
       organizationRole: expect.any(String),
+      mustChangePassword: expect.any(Boolean),
     });
     expect(res.body.message).toBe('Users retrieved successfully');
   });
@@ -81,6 +82,7 @@ describe('Get User By Id or email', () => {
       isDeleted: false,
       organizationId: expect.any(Number),
       organizationRole: expect.any(String),
+      mustChangePassword: expect.any(Boolean),
     });
     expect(res.body.message).toBe('Users retrieved successfully');
   });
