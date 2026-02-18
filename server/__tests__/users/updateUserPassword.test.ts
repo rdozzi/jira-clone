@@ -7,7 +7,6 @@ import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
 import { createOrganization } from '../../src/utilities/testUtilities/createOrganization';
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
-import { hashPassword } from '../../src/utilities/password';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
@@ -17,7 +16,6 @@ describe('Self-update user password', () => {
   let token: string;
   let user: User;
   let organization: Organization;
-  let originalHashedPassword: string;
 
   const testDescription = 'SelfUpdateUserPassword';
   beforeAll(async () => {
@@ -31,7 +29,6 @@ describe('Self-update user password', () => {
       OrganizationRole.USER,
       organization.id,
     );
-    originalHashedPassword = user.passwordHash;
     token = generateJwtToken(
       user.id,
       user.globalRole,
@@ -67,7 +64,7 @@ describe('Self-update user password', () => {
     expect(matchesNewPassword).toBe(true);
 
     const matchesOldPassword = await bcrypt.compare(
-      'seedPassword123', // whatever your seed used
+      'seedPassword123',
       updatedUser!.passwordHash,
     );
 
