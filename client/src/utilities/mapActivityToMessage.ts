@@ -19,6 +19,8 @@ export function mapActivityToMessage(log: ActivityLogs) {
       return { message: 'Banned user email address', time };
     case 'DELETE_BANNED_EMAIL':
       return { message: 'Removed banned email address', time };
+    case 'UPDATE_PASSWORD':
+      return { message: 'Updated password', time };
 
     // Project actions
     case 'CREATE_PROJECT':

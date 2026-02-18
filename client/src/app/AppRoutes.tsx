@@ -17,6 +17,7 @@ import ProjectViewAll from '../ui/ProjectViewAll';
 import ProjectInfoLayout from '../ui/ProjectInfoLayout';
 import UserProfile from '../ui/UserProfile';
 import PublicRoute from '../utilities/PublicRoute';
+import ChangePassword from '../pages/ChangePassword';
 
 export function AppRoutes() {
   return (
@@ -43,6 +44,7 @@ export function AppRoutes() {
         }
       >
         {/* User Homepage; Renders depending on User Profile */}
+        <Route path='/change-password' element={<ChangePassword />} />
         <Route path='/user-homepage' element={<UserHome />} />
         <Route path='user-profile' element={<UserProfile />} />
 

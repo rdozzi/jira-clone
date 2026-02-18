@@ -74,6 +74,8 @@ function LoginPage() {
 
     login(token, organizationRole, userId);
 
+    // implement conditional logic, if the flag password changed is true then go to other page, else go to user homepage.
+
     const redirectPath =
       organizationRole === 'SUPERADMIN' ||
       organizationRole === 'ADMIN' ||

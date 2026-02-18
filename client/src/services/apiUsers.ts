@@ -80,3 +80,30 @@ export async function updateUser(userId: number, userInfo: UpdatedUser) {
     console.error(err);
   }
 }
+
+export async function updateUserPasswordSelf(
+  newPassword: string,
+  confirmPassword: string,
+) {
+  try {
+    const token = getAuthToken();
+    const res = await apiFetch(`/api/users/updatePasswordSelf`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        newPassword: newPassword,
+        confirmPassword: confirmPassword,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to update User');
+    }
+    const { data } = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(err);
+  }
+}

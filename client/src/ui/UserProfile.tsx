@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Button, Checkbox, Form, Input, Select, Space } from 'antd';
+import { Button, Checkbox, Form, Input, message, Select, Space } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useUser } from '../contexts/useUser';
 import { useUpdateUser } from '../features/users/useUpdateUser';
 import { getUpdatedUserFields } from '../utilities/getUpdatedFields';
+import { passwordValidation } from '../lib/validation/passwordValidation';
+import { useUpdatePasswordSelf } from '../features/users/useUpdatePasswordSelf';
 
 import BackButton from './BackButton';
 import Loading from './Loading';
@@ -33,16 +35,18 @@ interface Value {
 
 interface Password {
   newPassword: string;
-  confirmedPassword: string;
+  confirmPassword: string;
 }
 
-function UserProfile() {
+export function UserProfile() {
   const [profileCheckboxChecked, setProfileCheckboxChecked] = useState(false);
   const [passwordCheckBoxChecked, setPasswordCheckBoxChecked] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
   const [editPassword, setEditPassword] = useState(false);
   const { userSelf, isLoadingUser, error: userSelfError } = useUser();
   const { updateUser, isUpdatingUser } = useUpdateUser();
+  const { updateUserPasswordSelf, isUpdatingPassword, passwordUpdateError } =
+    useUpdatePasswordSelf();
 
   const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
@@ -68,6 +72,7 @@ function UserProfile() {
       setEditPassword(true);
     } else {
       setEditPassword(false);
+      passwordForm.resetFields();
     }
   }
 
@@ -120,7 +125,13 @@ function UserProfile() {
   }
 
   function onFinishPasswordEdit(value: Password) {
-    console.log('Password Box Clicked');
+    const { newPassword, confirmPassword } = value;
+    if (newPassword !== confirmPassword) {
+      message.error('Passwords do not match.');
+      return;
+    }
+    updateUserPasswordSelf({ newPassword, confirmPassword });
+
     passwordForm.resetFields();
     setEditPassword(false);
     setPasswordCheckBoxChecked(false);
@@ -208,7 +219,7 @@ function UserProfile() {
             fontSize: '24px',
           }}
         >
-          Change Password
+          Update Password
         </div>
         <div>
           <Form
@@ -216,13 +227,13 @@ function UserProfile() {
             {...formItemLayout}
             style={{ maxWidth: 600, margin: '20px 50px 10px 20px' }}
             form={passwordForm}
-            disabled={!editPassword}
+            disabled={!editPassword || isUpdatingPassword}
             onFinish={onFinishPasswordEdit}
           >
             <Form.Item
               name='newPassword'
               label='New Password'
-              rules={[{ required: true, min: 2, max: 150 }]}
+              rules={passwordValidation}
             >
               <Input.Password
                 placeholder='New Password'
@@ -234,7 +245,7 @@ function UserProfile() {
             <Form.Item
               name='confirmPassword'
               label='Confirm Password'
-              rules={[{ required: true, min: 2, max: 150 }]}
+              rules={passwordValidation}
             >
               <Input.Password
                 placeholder='Confirm New Password'
