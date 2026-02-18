@@ -277,11 +277,11 @@ export async function updatePasswordSelf(
   const userInfo = res.locals.userInfo;
 
   // passwordData newPassword, confirmPassword
-  const { confirmPassword } = res.locals.validatedBody;
+  const { newPassword } = res.locals.validatedBody;
 
   const organizationId = userInfo.organizationId;
 
-  const hashedPassword = await hashPassword(confirmPassword);
+  const hashedPassword = await hashPassword(newPassword);
 
   const result = await prisma.$transaction(async (tx) => {
     const user = await tx.user.findUnique({
