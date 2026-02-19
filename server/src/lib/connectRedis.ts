@@ -29,6 +29,10 @@ export async function verifyRedisConnection() {
 }
 
 export async function checkRedis() {
-  await connectRedis();
-  await verifyRedisConnection();
+  const isTest = process.env.NODE_ENV === 'test';
+  if (!isTest) {
+    await connectRedis();
+    await verifyRedisConnection();
+  }
+  return;
 }
