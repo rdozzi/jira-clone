@@ -8,18 +8,15 @@ import { createOrganization } from '../../src/utilities/testUtilities/createOrga
 import { createUserProfile } from '../../src/utilities/testUtilities/createUserProfile';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
+import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import waitForExpect from 'wait-for-expect';
 
-// Positive Result:
-// 1) Successful Login: Create credential, use credential to log in.
-// Negative Result:
-// 1) Failed Login: Enter wrong password for test user
-// 2) Failed Login: Enter wrong information for non-exisent user
-
-describe('Login Auth Route', () => {
-  const testDescription = 'Login_Auth_Route';
+describe('Logout Auth Route', () => {
+  const testDescription = 'Logout_User_Auth_Route';
   let user: User;
+  // let userNoToken: User;
   let organization: Organization;
+  let token: string;
   beforeAll(async () => {
     await prismaTest.$connect();
     await resetTestDatabase();
@@ -29,7 +26,19 @@ describe('Login Auth Route', () => {
       prismaTest,
       testDescription,
       OrganizationRole.ADMIN,
-      organization.id
+      organization.id,
+    );
+    // userNoToken = await createUserProfile(
+    //   prismaTest,
+    //   `${testDescription}-NoToken`,
+    //   OrganizationRole.USER,
+    //   organization.id,
+    // );
+    token = generateJwtToken(
+      user.id,
+      user.globalRole,
+      user.organizationId,
+      user.organizationRole,
     );
   });
   afterAll(async () => {
@@ -37,21 +46,13 @@ describe('Login Auth Route', () => {
   });
 
   // Positive Result:
-  // 1) Successful Login: Create credential, use credential to log in.
-  it('should log in successfully with valid credentials', async () => {
+  // 1) Successful logout. Generate log.
+  it('should log out successfully with token', async () => {
     const res = await request(app)
-      .post('/api/auth/login')
-      .send({ email: user.email, password: 'seedPassword123' });
+      .post('/api/auth/logout')
+      .set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
-    expect(res.body).toMatchObject({
-      message: 'Login successful',
-      userId: expect.any(Number),
-      email: expect.any(String),
-      globalRole: expect.any(String),
-      organizationRole: expect.any(String),
-      organizationId: expect.any(Number),
-      token: expect.any(String),
-    });
+    expect(res.body.message).toBe('Logout successful');
 
     await waitForExpect(async () => {
       const activityLog = await prismaTest.activityLog.findMany({
@@ -67,10 +68,6 @@ describe('Login Auth Route', () => {
         targetType: expect.any(String),
         metadata: expect.objectContaining({
           id: expect.any(Number),
-          name: expect.any(String),
-          email: expect.any(String),
-          globalRole: expect.any(String),
-          organizationRole: expect.any(String),
           timestamp: expect.any(String),
         }),
         createdAt: expect.any(Date),
@@ -80,19 +77,12 @@ describe('Login Auth Route', () => {
   });
 
   // Negative Results:
-  // 1) Unsuccessful Login: Bad password
-  it('should fail because of a bad password', async () => {
-    const res = await request(app)
-      .post('/api/auth/login')
-      .send({ email: user.email, password: 'incorrectPassword' });
-    expect(res.status).toBe(401);
-  });
+  // 1) Unsuccessful Logout: No token
+  it('logout should fail without a token', async () => {
+    const res = await request(app).post('/api/auth/logout');
 
-  // 2) Unsuccessful Login: Bad email/User doesn't exist.
-  it('should fail because of a bad email', async () => {
-    const res = await request(app)
-      .post('/api/auth/login')
-      .send({ email: 'idontexist@example.com', password: 'seedPassword123' });
+    console.log('error', res.body.error, 'message', res.body.message);
     expect(res.status).toBe(401);
+    expect(res.body.error).toBe('No token provided');
   });
 });

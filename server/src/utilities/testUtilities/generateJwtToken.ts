@@ -5,7 +5,7 @@ export function generateJwtToken(
   userId: number,
   globalRole: GlobalRole,
   organizationId: number | null,
-  organizationRole: OrganizationRole | null
+  organizationRole: OrganizationRole | null,
 ) {
   const token = jwt.sign(
     {
@@ -14,8 +14,7 @@ export function generateJwtToken(
       organizationId: organizationId,
       organizationRole: organizationRole,
     },
-    process.env.JWT_SECRET!,
-    { expiresIn: '1hr' }
+    process.env.JWT_SECRET as string,
   );
   return token;
 }

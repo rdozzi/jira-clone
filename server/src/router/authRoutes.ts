@@ -3,6 +3,7 @@ import prisma from '../lib/prisma';
 import { loginUser, logoutUser } from '../controllers/authController';
 import { validateBody } from '../middleware/validation/validateBody';
 import { authCredentialCheckSchema } from '../schemas/auth.schema';
+import { checkForToken } from '../middleware/authAndLoadInfoMiddleware/checkForToken';
 
 const router = Router();
 
@@ -12,11 +13,15 @@ router.post(
   validateBody(authCredentialCheckSchema),
   async (req: Request, res: Response): Promise<void> => {
     await loginUser(req, res, prisma);
-  }
+  },
 );
 
 // Lougout user
-router.post('/logout', async (req: Request, res: Response): Promise<void> => {
-  await logoutUser(req, res);
-});
+router.post(
+  '/logout',
+  checkForToken,
+  async (req: Request, res: Response): Promise<void> => {
+    await logoutUser(req, res);
+  },
+);
 export default router;

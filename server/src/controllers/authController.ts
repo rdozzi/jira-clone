@@ -12,7 +12,7 @@ dotenv.config();
 export async function loginUser(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const { email, password } = res.locals.validatedBody;
@@ -35,6 +35,12 @@ export async function loginUser(
       return res.status(401).json({ error: 'Invalid Credentials' });
     }
 
+    if (user.mustChangePassword) {
+      return res
+        .status(200)
+        .json({ message: 'Credentials accepted. User must change password.' });
+    }
+
     const token = jwt.sign(
       {
         id: user.id,
@@ -43,7 +49,7 @@ export async function loginUser(
         organizationId: user.organizationId,
         organizationRole: user.organizationRole,
       },
-      process.env.JWT_SECRET as string
+      process.env.JWT_SECRET as string,
     );
 
     const logEvents = [
@@ -74,6 +80,7 @@ export async function loginUser(
       globalRole: user.globalRole,
       organizationRole: user.organizationRole,
       organizationId: user.organizationId,
+      mustChangePassword: user.mustChangePassword,
       token: token,
     });
   } catch (error) {
@@ -83,17 +90,10 @@ export async function loginUser(
 }
 
 export async function logoutUser(req: Request, res: Response) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) {
-    return res.status(401).json({ error: 'No token provided' });
-  }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    const userId = parseInt((decoded as { id: string }).id, 10);
-    const organizationId = parseInt(
-      (decoded as { organizationId: string }).organizationId,
-      10
-    );
+    // Variables from checkForToken middleware
+    const userId = res.locals.userIdDecoded;
+    const organizationId = res.locals.organizationIdDecoded;
 
     const logEvents = [
       buildLogEvent({

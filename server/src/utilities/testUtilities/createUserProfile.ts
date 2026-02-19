@@ -5,9 +5,11 @@ export async function createUserProfile(
   prismaTest: PrismaClient,
   testDescription: string,
   organizationRole: OrganizationRole,
-  organizationId: number
+  organizationId: number,
+  options?: { mustChangePassword?: boolean },
 ) {
   const email = `organizationUser_${organizationRole}_${testDescription}@example.com`;
+  const { mustChangePassword = false } = options || {};
   const user = await prismaTest.user.findUnique({
     where: { email: email },
   });
@@ -24,6 +26,7 @@ export async function createUserProfile(
         globalRole: GlobalRole.USER,
         organizationRole: organizationRole,
         organizationId: organizationId,
+        mustChangePassword: mustChangePassword,
       },
     });
     return user;
