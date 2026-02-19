@@ -45,7 +45,7 @@ export function UserProfile() {
   const [editPassword, setEditPassword] = useState(false);
   const { userSelf, isLoadingUser, error: userSelfError } = useUser();
   const { updateUser, isUpdatingUser } = useUpdateUser();
-  const { updateUserPasswordSelf, isUpdatingPassword, passwordUpdateError } =
+  const { updateUserPasswordSelf, isUpdatingPassword } =
     useUpdatePasswordSelf();
 
   const [profileForm] = Form.useForm();
