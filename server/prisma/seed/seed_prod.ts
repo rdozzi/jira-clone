@@ -1,11 +1,3 @@
-import path from 'path';
-
-import dotenv from 'dotenv';
-dotenv.config({
-  path: path.resolve(process.cwd(), '.env.prod'),
-  override: true,
-});
-
 import prisma from '../../src/lib/prisma';
 
 import { seedBoardProd } from '../seedModules-prod/seedBoardProd';
