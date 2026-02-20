@@ -18,13 +18,19 @@ export async function login({
         password,
       }),
     });
+
+    const authPayload = await res.json().catch(() => null);
+
     if (!res.ok) {
-      throw new Error('Failed to obtain authorization payload');
+      const error: any = new Error(authPayload?.message || 'Login failed');
+      error.status = res.status;
+      throw error;
     }
-    const authPayload = await res.json();
     return authPayload;
-  } catch (err: any | unknown) {
-    console.error(err);
+  } catch (error: any | unknown) {
+    if (error instanceof Error) {
+      throw error;
+    }
   }
 }
 
