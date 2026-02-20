@@ -97,6 +97,7 @@ describe('Login Auth Route', () => {
     expect(res.body.message).toBe(
       'Credentials accepted. User must change password.',
     );
+    expect(res.body.mustChangePassword).toBe(true);
   });
 
   // Negative Results:

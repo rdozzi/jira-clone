@@ -36,9 +36,11 @@ export async function loginUser(
     }
 
     if (user.mustChangePassword) {
-      return res
-        .status(200)
-        .json({ message: 'Credentials accepted. User must change password.' });
+      res.status(200).json({
+        message: 'Credentials accepted. User must change password.',
+        mustChangePassword: user.mustChangePassword,
+      });
+      return;
     }
 
     const token = jwt.sign(
