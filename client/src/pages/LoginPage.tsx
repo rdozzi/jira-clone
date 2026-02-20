@@ -12,7 +12,6 @@ import {
   Form,
   Input,
   Layout,
-  message,
   Modal,
   Space,
 } from 'antd';
@@ -51,21 +50,12 @@ function LoginPage() {
   const [isUpdatePasswordModalOpen, setIsUpdatePasswordModalOpen] =
     useState<boolean>(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, logout: frontendLogout } = useAuth();
   const { newLoginInfo, loginInfoLoading } = useLogin();
-  const [messageApi, contextHolder] = message.useMessage();
   const { updateUserPasswordSelf, isUpdatingPassword } =
     useUpdatePasswordSelf();
-
   const [form] = Form.useForm();
   const [passwordForm] = Form.useForm();
-
-  function error() {
-    messageApi.open({
-      type: 'error',
-      content: 'Login failed. Please check your credentials.',
-    });
-  }
 
   async function checkUserLoginInfo(email: string, password: string) {
     try {
@@ -73,6 +63,7 @@ function LoginPage() {
         email,
         password,
       });
+
       return authPayload;
     } catch (error) {
       console.error('Login:', error);
@@ -87,18 +78,17 @@ function LoginPage() {
     if (!loginCheckPayload) {
       console.error('Login failed');
       form.resetFields();
-      error();
-      return;
-    }
-
-    if (loginCheckPayload.mustChangePassword) {
-      setIsUpdatePasswordModalOpen(true);
       return;
     }
 
     const { token, userId, organizationRole } = loginCheckPayload;
 
     login(token, organizationRole, userId);
+
+    if (loginCheckPayload.mustChangePassword) {
+      setIsUpdatePasswordModalOpen(true);
+      return;
+    }
 
     // implement conditional logic, if the flag password changed is true then go to other page, else go to user homepage.
 
@@ -113,6 +103,7 @@ function LoginPage() {
     navigate(redirectPath, { replace: true });
   }
 
+  // Login Form related functions
   function onFinish(values: LoginFormValues): void {
     const { email, password } = values;
     handleLogin(email, password);
@@ -122,6 +113,7 @@ function LoginPage() {
     console.error('Failed:', errorInfo);
   }
 
+  // New User Password related functions
   function handlePasswordFormOk() {
     passwordForm.submit();
   }
@@ -129,13 +121,20 @@ function LoginPage() {
   function handlePasswordForm(values: PasswordFormValues) {
     const { newPassword, confirmPassword } = values;
     updateUserPasswordSelf({ newPassword, confirmPassword });
+    frontendLogout();
     setIsUpdatePasswordModalOpen(false);
+  }
+
+  function onCancelPasswordForm() {
+    setIsUpdatePasswordModalOpen(false);
+    passwordForm.resetFields();
+    frontendLogout();
+    return null;
   }
 
   return (
     <>
       <Layout style={{ minHeight: '100vh' }}>
-        {contextHolder} {/* Message API for error messages */}
         <Content
           style={{
             display: 'flex',
@@ -270,10 +269,7 @@ function LoginPage() {
         onOk={handlePasswordFormOk}
         width={700}
         centered
-        onCancel={() => {
-          setIsUpdatePasswordModalOpen(false);
-          passwordForm.resetFields();
-        }}
+        onCancel={onCancelPasswordForm}
         destroyOnClose={true}
         okText={'Update'}
       >
