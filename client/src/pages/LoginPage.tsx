@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/useAuth';
 import { useLogin } from '../features/auth/useLogin';
+import { passwordValidation } from '../lib/validation/passwordValidation';
+import { useUpdatePasswordSelf } from '../features/users/useUpdatePasswordSelf';
 
 import {
   Button,
@@ -10,8 +13,10 @@ import {
   Input,
   Layout,
   message,
+  Modal,
   Space,
 } from 'antd';
+import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 
 const { Content } = Layout;
 
@@ -32,13 +37,28 @@ interface OnFinishFailedErrorInfo {
   outOfDate: boolean;
 }
 
-function LoginPage() {
-  const [form] = Form.useForm();
-  const navigate = useNavigate();
-  const [messageApi, contextHolder] = message.useMessage();
+interface PasswordFormValues {
+  newPassword: string;
+  confirmPassword: string;
+}
 
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
+};
+
+function LoginPage() {
+  const [isUpdatePasswordModalOpen, setIsUpdatePasswordModalOpen] =
+    useState<boolean>(false);
+  const navigate = useNavigate();
   const { login } = useAuth();
   const { newLoginInfo, loginInfoLoading } = useLogin();
+  const [messageApi, contextHolder] = message.useMessage();
+  const { updateUserPasswordSelf, isUpdatingPassword } =
+    useUpdatePasswordSelf();
+
+  const [form] = Form.useForm();
+  const [passwordForm] = Form.useForm();
 
   function error() {
     messageApi.open({
@@ -61,12 +81,18 @@ function LoginPage() {
   }
 
   async function handleLogin(email: string, password: string) {
+    // This calls the login function in the backend and will either inform that the password needs to be updated or will permit the use the Jwt information to get the
     const loginCheckPayload = await checkUserLoginInfo(email, password);
 
     if (!loginCheckPayload) {
       console.error('Login failed');
       form.resetFields();
       error();
+      return;
+    }
+
+    if (loginCheckPayload.mustChangePassword) {
+      setIsUpdatePasswordModalOpen(true);
       return;
     }
 
@@ -94,6 +120,16 @@ function LoginPage() {
 
   function onFinishFailed(errorInfo: OnFinishFailedErrorInfo): void {
     console.error('Failed:', errorInfo);
+  }
+
+  function handlePasswordFormOk() {
+    passwordForm.submit();
+  }
+
+  function handlePasswordForm(values: PasswordFormValues) {
+    const { newPassword, confirmPassword } = values;
+    updateUserPasswordSelf({ newPassword, confirmPassword });
+    setIsUpdatePasswordModalOpen(false);
   }
 
   return (
@@ -228,6 +264,52 @@ function LoginPage() {
           </Card>
         </Content>
       </Layout>
+      <Modal
+        title='Enter New Password Here'
+        open={isUpdatePasswordModalOpen}
+        onOk={handlePasswordFormOk}
+        width={700}
+        centered
+        onCancel={() => {
+          setIsUpdatePasswordModalOpen(false);
+          passwordForm.resetFields();
+        }}
+        destroyOnClose={true}
+        okText={'Update'}
+      >
+        <Form
+          name='userPasswordForm'
+          {...formItemLayout}
+          form={passwordForm}
+          disabled={isUpdatingPassword}
+          onFinish={handlePasswordForm}
+        >
+          <Form.Item
+            name='newPassword'
+            label='New Password'
+            rules={passwordValidation}
+          >
+            <Input.Password
+              placeholder='New Password'
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />
+          </Form.Item>
+          <Form.Item
+            name='confirmPassword'
+            label='Confirm Password'
+            rules={passwordValidation}
+          >
+            <Input.Password
+              placeholder='Confirm New Password'
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </>
   );
 }
