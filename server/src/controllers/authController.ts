@@ -35,14 +35,6 @@ export async function loginUser(
       return res.status(401).json({ error: 'Invalid Credentials' });
     }
 
-    if (user.mustChangePassword) {
-      res.status(200).json({
-        message: 'Credentials accepted. User must change password.',
-        mustChangePassword: user.mustChangePassword,
-      });
-      return;
-    }
-
     const token = jwt.sign(
       {
         id: user.id,
@@ -53,6 +45,15 @@ export async function loginUser(
       },
       process.env.JWT_SECRET as string,
     );
+
+    if (user.mustChangePassword) {
+      res.status(200).json({
+        message: 'Credentials accepted. User must change password.',
+        mustChangePassword: user.mustChangePassword,
+        token: token,
+      });
+      return;
+    }
 
     const logEvents = [
       buildLogEvent({
