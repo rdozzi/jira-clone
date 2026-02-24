@@ -27,6 +27,7 @@ import ticketLabelRoutes from './router/ticketLabelRoutes';
 import ticketRoutes from './router/ticketRoutes';
 import userRoutes from './router/userRoutes';
 import otpRoutes from './router/otpRoutes';
+import organizationRoutes from './router/organizationRoutes';
 
 export const app: Application = express();
 
@@ -81,6 +82,8 @@ app.use(loadUserProjects);
 app.use(storeUserAndProjectInfo);
 
 // Protected routes
+app.use('/api', organizationRoutes);
+
 app.use('/api', userRoutes);
 
 app.use('/api', projectRoutes);
