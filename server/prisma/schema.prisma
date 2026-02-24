@@ -11,7 +11,7 @@ datasource db {
 model Organization {
   id        Int       @id @default(autoincrement())
   name      String    @unique @db.VarChar(150)
-  createAt  DateTime  @default(now()) @db.Timestamptz()
+  createdAt DateTime  @default(now()) @db.Timestamptz()
   updatedAt DateTime  @updatedAt @db.Timestamptz()
   deletedAt DateTime? @db.Timestamptz()
   isDeleted Boolean?  @default(false)
