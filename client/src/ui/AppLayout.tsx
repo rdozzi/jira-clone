@@ -10,6 +10,7 @@ import {
 import SidebarActionButton from './SidebarActionButton';
 import HeaderComp from './HeaderComp';
 import UserAvatar from './UserAvatar';
+import OrganizationHeader from './OrganizationHeader';
 import { useProjectBoard } from '../contexts/useProjectBoard';
 import { useAuth } from '../contexts/useAuth';
 import { useLogout } from '../features/auth/useLogout';
@@ -79,6 +80,7 @@ function AppLayout() {
             style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
           >
             <Flex vertical justify='flex-start'>
+              <OrganizationHeader />
               <UserAvatar />
               <SidebarActionButton
                 icon={
