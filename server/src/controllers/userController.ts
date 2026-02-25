@@ -137,6 +137,37 @@ export async function getUserByProjectId(
   }
 }
 
+// Get users by OrganizationId
+export async function getUsersByOrganizationId(
+  req: Request,
+  res: Response,
+  prisma: PrismaClient,
+) {
+  try {
+    const organizationId = res.locals.userInfo.organizationId;
+
+    const users = await prisma.user.findMany({
+      where: { organizationId: organizationId },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        organizationRole: true,
+        createdAt: true,
+      },
+    });
+    res.status(200).json({
+      message: 'Users fetched successfully',
+      data: users,
+    });
+  } catch (error) {
+    console.error('Error fetching users by organization ID: ', error);
+    res.status(500).json({ error: 'Failed to fetch users by organization ID' });
+    return;
+  }
+}
+
 // Create user
 export async function createUser(
   req: Request,

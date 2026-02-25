@@ -15,6 +15,7 @@ import {
   updateUser,
   updatePasswordSelf,
   getUserSelf,
+  getUsersByOrganizationId,
 } from '../controllers/userController';
 import { validateQuery } from '../middleware/validation/validateQuery';
 import { validateParams } from '../middleware/validation/validateParams';
@@ -67,6 +68,11 @@ router.get(
     await getUserByProjectId(req, res, prisma);
   },
 );
+
+// Get users by organization
+router.get('/users/organization', async (req: Request, res: Response) => {
+  await getUsersByOrganizationId(req, res, prisma);
+});
 
 // Create user
 router.post(
