@@ -13,8 +13,6 @@ export async function getOrganization(
       where: { id: organizationId },
     });
 
-    console.log(organization);
-
     res.status(200).json({
       message: 'Organization fetched successfully',
       data: organization,
