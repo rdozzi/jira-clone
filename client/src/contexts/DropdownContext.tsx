@@ -2,9 +2,9 @@ import React, { createContext, useContext, useState } from 'react';
 
 interface DropdownContextType {
   activeDropdown: number | null;
-  openDropdown: (_ticketId: number) => void;
+  openDropdown: (_entityId: number) => void;
   closeDropdown: () => void;
-  toggleDropdown: (_ticketId: number) => void;
+  toggleDropdown: (_entityId: number) => void;
 }
 
 const DropdownContext = createContext<DropdownContextType | null>(null);
@@ -12,16 +12,16 @@ const DropdownContext = createContext<DropdownContextType | null>(null);
 export function DropdownProvider({ children }: { children: React.ReactNode }) {
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
 
-  function openDropdown(ticketId: number) {
-    setActiveDropdown(ticketId);
+  function openDropdown(entityId: number) {
+    setActiveDropdown(entityId);
   }
 
   function closeDropdown() {
     setActiveDropdown(null);
   }
 
-  function toggleDropdown(ticketId: number) {
-    setActiveDropdown(ticketId === activeDropdown ? null : ticketId);
+  function toggleDropdown(entityId: number) {
+    setActiveDropdown(entityId === activeDropdown ? null : entityId);
   }
 
   return (
