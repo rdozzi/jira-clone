@@ -48,7 +48,6 @@ describe('Create a user', () => {
         email: 'createAUser@example.com',
         firstName: 'Leonard',
         lastName: 'Nimoy',
-        password: 'Test1234!',
         organizationRole: OrganizationRole.USER,
       });
 

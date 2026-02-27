@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../utilities/password';
+import { generatePassword } from '../utilities/password';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { deleteUserCascade } from '../services/deletionServices/deleteUserCascade';
@@ -16,7 +17,20 @@ export async function getAllUsers(
   try {
     const organizationId = res.locals.userInfo.organizationId;
     const users = await prisma.user.findMany({
-      where: { organizationId: organizationId },
+      where: {
+        organizationId: organizationId,
+        isDeleted: false,
+        isBanned: false,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        organizationRole: true,
+        organizationId: true,
+        createdAt: true,
+      },
     });
     res
       .status(200)
@@ -48,18 +62,43 @@ export async function getUser(
 
     if (query === 'userId') {
       user = await prisma.user.findUnique({
-        where: { id: data, organizationId: organizationId },
+        where: {
+          id: data,
+          organizationId: organizationId,
+          isBanned: false,
+          isDeleted: false,
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          organizationRole: true,
+          organizationId: true,
+          createdAt: true,
+        },
       });
     } else if (query === 'userEmail') {
       user = await prisma.user.findUnique({
         where: {
           email: typeof data === 'string' ? data : undefined,
           organizationId: organizationId,
+          isDeleted: false,
+          isBanned: false,
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          organizationRole: true,
+          organizationId: true,
+          createdAt: true,
         },
       });
     }
 
-    if (!user || user.isDeleted) {
+    if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
@@ -84,7 +123,21 @@ export async function getUserSelf(
     const userInfo = res.locals.userInfo;
 
     const user = await prisma.user.findUnique({
-      where: { id: userInfo.id, organizationId: userInfo.organizationId },
+      where: {
+        id: userInfo.id,
+        organizationId: userInfo.organizationId,
+        isBanned: false,
+        isDeleted: false,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        organizationRole: true,
+        organizationId: true,
+        createdAt: true,
+      },
     });
 
     res.status(200).json({
@@ -109,7 +162,10 @@ export async function getUserByProjectId(
     const organizationId = res.locals.userInfo.organizationId;
 
     const users = await prisma.projectMember.findMany({
-      where: { projectId: projectId, organizationId: organizationId },
+      where: {
+        projectId: projectId,
+        organizationId: organizationId,
+      },
       include: {
         user: {
           select: {
@@ -118,6 +174,8 @@ export async function getUserByProjectId(
             lastName: true,
             email: true,
             organizationRole: true,
+            organizationId: true,
+            createdAt: true,
           },
         },
       },
@@ -147,7 +205,11 @@ export async function getUsersByOrganizationId(
     const organizationId = res.locals.userInfo.organizationId;
 
     const users = await prisma.user.findMany({
-      where: { organizationId: organizationId },
+      where: {
+        organizationId: organizationId,
+        isDeleted: false,
+        isBanned: false,
+      },
       select: {
         id: true,
         email: true,
@@ -177,8 +239,11 @@ export async function createUser(
   try {
     // From storeUserAndProjectInfo
     const userInfo = res.locals.userInfo;
-    const { email, firstName, lastName, password, organizationRole } =
+    const { email, firstName, lastName, organizationRole } =
       res.locals.validatedBody;
+
+    const password = generatePassword();
+
     const hashedPassword = await hashPassword(password);
     const organizationId = res.locals.userInfo.organizationId;
     const resourceType = res.locals.resourceType;
@@ -196,6 +261,7 @@ export async function createUser(
             passwordHash: hashedPassword,
             organizationRole: organizationRole,
             organizationId: organizationId,
+            mustChangePassword: true,
           },
         }),
     );

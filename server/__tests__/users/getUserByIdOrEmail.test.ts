@@ -41,23 +41,17 @@ describe('Get User By Id or email', () => {
       .get(`/api/users`)
       .query({ userId: `${user.id}` })
       .set('Authorization', `Bearer ${token}`);
+
+    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual({
       id: expect.any(Number),
       firstName: expect.any(String),
       lastName: expect.any(String),
       email: expect.any(String),
-      passwordHash: expect.any(String),
-      globalRole: expect.any(String),
-      avatarSource: 'NA',
-      isBanned: false,
-      createdAt: expect.any(String),
-      updatedAt: expect.any(String),
-      deletedAt: null,
-      isDeleted: false,
       organizationId: expect.any(Number),
       organizationRole: expect.any(String),
-      mustChangePassword: expect.any(Boolean),
+      createdAt: expect.any(String),
     });
     expect(res.body.message).toBe('Users retrieved successfully');
   });
@@ -72,17 +66,9 @@ describe('Get User By Id or email', () => {
       firstName: expect.any(String),
       lastName: expect.any(String),
       email: expect.any(String),
-      passwordHash: expect.any(String),
-      globalRole: expect.any(String),
-      avatarSource: 'NA',
-      isBanned: false,
       createdAt: expect.any(String),
-      updatedAt: expect.any(String),
-      deletedAt: null,
-      isDeleted: false,
       organizationId: expect.any(Number),
       organizationRole: expect.any(String),
-      mustChangePassword: expect.any(Boolean),
     });
     expect(res.body.message).toBe('Users retrieved successfully');
   });

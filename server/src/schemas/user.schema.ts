@@ -11,15 +11,11 @@ export const userCreateSchema = z
     email: emailSchema,
     firstName: nameSchema,
     lastName: nameSchema,
-    password: passwordSchema,
     organizationRole: organizationRoleSchema,
   })
   .strict();
 
-export const userUpdateSchema = userCreateSchema
-  .omit({ password: true })
-  .partial()
-  .strict();
+export const userUpdateSchema = userCreateSchema.partial().strict();
 
 export const userUpdatePasswordSchema = z
   .object({ newPassword: passwordSchema, confirmPassword: passwordSchema })

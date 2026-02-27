@@ -23,35 +23,35 @@ describe('Get all users', () => {
       prismaTest,
       `${testDescription}_1`,
       OrganizationRole.ADMIN,
-      organization.id
+      organization.id,
     );
     //user 2
     await createUserProfile(
       prismaTest,
       `${testDescription}_2`,
       OrganizationRole.USER,
-      organization.id
+      organization.id,
     );
     //user 3
     await createUserProfile(
       prismaTest,
       `${testDescription}_3`,
       OrganizationRole.GUEST,
-      organization.id
+      organization.id,
     );
     //user 4
     await createUserProfile(
       prismaTest,
       `${testDescription}_4`,
       OrganizationRole.GUEST,
-      organization.id
+      organization.id,
     );
 
     token = generateJwtToken(
       user1.id,
       user1.globalRole,
       user1.organizationId,
-      user1.organizationRole
+      user1.organizationRole,
     );
   });
   afterAll(async () => {
@@ -65,5 +65,17 @@ describe('Get all users', () => {
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Users fetched successfully');
     expect(res.body.data).toHaveLength(4);
+    expect(res.body.data).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: expect.any(Number),
+          firstName: expect.any(String),
+          lastName: expect.any(String),
+          email: expect.any(String),
+          organizationRole: expect.any(String),
+          createdAt: expect.any(String),
+        }),
+      ]),
+    );
   });
 });
