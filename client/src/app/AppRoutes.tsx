@@ -17,6 +17,7 @@ import ProjectViewAll from '../ui/ProjectViewAll';
 import ProjectInfoLayout from '../ui/ProjectInfoLayout';
 import UserProfile from '../ui/UserProfile';
 import PublicRoute from '../utilities/PublicRoute';
+import OrganizationPage from '../pages/OrganizationPage';
 
 export function AppRoutes() {
   return (
@@ -44,7 +45,8 @@ export function AppRoutes() {
       >
         {/* User Homepage; Renders depending on User Profile */}
         <Route path='/user-homepage' element={<UserHome />} />
-        <Route path='user-profile' element={<UserProfile />} />
+        <Route path='/user-profile' element={<UserProfile />} />
+        <Route path='/organization-members' element={<OrganizationPage />} />
 
         {/* Tickets Section */}
         <Route path='/tickets'>

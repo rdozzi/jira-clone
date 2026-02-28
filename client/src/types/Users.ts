@@ -17,3 +17,8 @@ export interface Users {
   deletedAt: Date;
   isDeleted: boolean;
 }
+
+export type OrganizationUser = Pick<
+  Users,
+  'id' | 'firstName' | 'lastName' | 'email' | 'organizationRole' | 'createdAt'
+>;

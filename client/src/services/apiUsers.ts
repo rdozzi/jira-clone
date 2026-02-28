@@ -60,6 +60,27 @@ export async function getUsersByProjectId(projectId: number) {
   }
 }
 
+export async function createUser(user: Partial<Users>) {
+  try {
+    const token = getAuthToken();
+    const res = await apiFetch(`/api/users`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(user),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to create user');
+    }
+    const data = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(err);
+  }
+}
+
 export async function updateUser(userId: number, userInfo: UpdatedUser) {
   try {
     const token = getAuthToken();
@@ -102,6 +123,29 @@ export async function updateUserPasswordSelf(
       throw new Error('Failed to update User');
     }
     const { data } = await res.json();
+    return data;
+  } catch (err: any | unknown) {
+    console.error(err);
+  }
+}
+
+export async function deleteUser(userId: number) {
+  try {
+    const token = getAuthToken();
+    const res = await apiFetch(`/api/users/${userId}/soft-delete`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!res.ok) {
+      throw new Error('Failed to delete user');
+    }
+    const { data, message } = await res.json();
+    console.log('after JSON call');
+    console.log(message);
+    console.log(data);
     return data;
   } catch (err: any | unknown) {
     console.error(err);
