@@ -4,8 +4,9 @@ import BackButton from '../ui/BackButton';
 
 import { useGetUsers } from '../features/users/useGetUsers';
 import { useOrganizationUserModal } from '../contexts/modalContexts/useOrganizationUserModal';
+import { useUser } from '../contexts/useUser';
 
-import { Spin, Table, Button } from 'antd';
+import { Spin, Table, Button, message } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
@@ -15,6 +16,7 @@ function OrganizationPage() {
   const { isLoadingUsers, users, error } = useGetUsers();
   const { isOpen, openModal, closeModal, modalProps } =
     useOrganizationUserModal();
+  const { userSelf } = useUser();
 
   if (isLoadingUsers) {
     return (
@@ -51,6 +53,12 @@ function OrganizationPage() {
   ];
 
   function handleCreate() {
+    if (
+      userSelf?.organizationRole !== 'ADMIN' &&
+      userSelf?.organizationRole !== 'SUPERADMIN'
+    ) {
+      message.error('Insufficient role: Cannot create new user');
+    }
     openModal({});
   }
 

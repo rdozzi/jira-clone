@@ -1,11 +1,12 @@
 import { memo, useState } from 'react';
 import { useDropdown } from '../contexts/DropdownContext';
 
-import { Dropdown, Button, Popconfirm } from 'antd';
+import { Dropdown, Button, Popconfirm, message } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 
 import { OrganizationUser } from '../types/Users';
 import { useDeleteUser } from '../features/users/useDeleteUser';
+import { useUser } from '../contexts/useUser';
 
 const dropdownItems = [
   {
@@ -23,6 +24,7 @@ export const OrganizationMemberListItemButton = memo(
     const [isPopConfirmOpen, setIsPopConfirmOpen] = useState<boolean>(false);
     const { activeDropdown, closeDropdown, toggleDropdown } = useDropdown();
     const { deleteUser, isDeletingUser } = useDeleteUser();
+    const { userSelf } = useUser();
 
     const isDropdownOpen = activeDropdown === record.id;
 
@@ -40,9 +42,15 @@ export const OrganizationMemberListItemButton = memo(
           console.log(`Action selected: ${e.key} for project member:`, record);
       }
       closeDropdown();
+      return;
     }
 
     function handlePopConfirmDeleteUser(recordId: number) {
+      if (recordId === userSelf?.id) {
+        message.error('Cannot delete yourself. Contact admin for assistance.');
+        setIsPopConfirmOpen(false);
+        return;
+      }
       deleteUser(recordId);
       setIsPopConfirmOpen(false);
       return;

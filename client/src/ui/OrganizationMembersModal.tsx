@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { OrganizationUser } from '../types/Users';
 import { organizationRole } from '../types/OrganizationRole';
-import { Modal, Form, Select, Input } from 'antd';
+import { Modal, Form, Select, Input, message } from 'antd';
 import { useCreateUser } from '../features/users/useCreateUser';
 import { Users } from '../types/Users';
-
+import { useUser } from '../contexts/useUser';
 export interface ModalProps {
   isOpen: boolean;
   closeModal: () => void;
@@ -21,10 +21,19 @@ export interface Value {
 export function OrganizationMembersModal({ isOpen, closeModal }: ModalProps) {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { createUser, isCreating } = useCreateUser();
+  const { userSelf } = useUser();
 
   const [form] = Form.useForm();
 
   function handleOk() {
+    if (
+      userSelf?.organizationRole !== 'ADMIN' &&
+      userSelf?.organizationRole !== 'SUPERADMIN'
+    ) {
+      message.error('Insufficient role: Cannot delete user');
+      closeModal();
+      form.resetFields();
+    }
     form.submit();
   }
 
