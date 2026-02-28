@@ -26,6 +26,7 @@ import {
   userUpdatePasswordSchema,
 } from '../schemas/user.schema';
 import { checkMaxUsageTotals } from '../middleware/organizationUsageMiddleware/checkMaxUsageTotals';
+import { blockSelfDelete } from '../middleware/userMiddleware/blockSelfDelete';
 
 const router = Router();
 
@@ -90,6 +91,7 @@ router.patch(
   '/users/:userId/soft-delete',
   authorizeOrganizationRole(OrganizationRole.ADMIN),
   validateParams,
+  blockSelfDelete,
   async (req: Request, res: Response): Promise<void> => {
     await deleteUser(req, res, prisma);
   },
