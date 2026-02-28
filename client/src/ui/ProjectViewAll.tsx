@@ -103,7 +103,7 @@ function ProjectViewAll() {
         mode={mode}
         record={record}
       />
-      <BackButton>Back</BackButton>
+      <BackButton />
     </>
   );
 }
