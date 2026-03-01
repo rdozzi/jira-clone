@@ -142,10 +142,7 @@ export async function deleteUser(userId: number) {
     if (!res.ok) {
       throw new Error('Failed to delete user');
     }
-    const { data, message } = await res.json();
-    console.log('after JSON call');
-    console.log(message);
-    console.log(data);
+    const data = await res.json();
     return data;
   } catch (err: any | unknown) {
     console.error(err);
