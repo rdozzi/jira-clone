@@ -245,7 +245,17 @@ export function UserProfile() {
             <Form.Item
               name='confirmPassword'
               label='Confirm Password'
-              rules={passwordValidation}
+              rules={[
+                { required: true, message: 'Please confirm your password' },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('newPassword') === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('Passwords do not match'));
+                  },
+                }),
+              ]}
             >
               <Input.Password
                 placeholder='Confirm New Password'

@@ -5,7 +5,7 @@ import { AuthBoundaryProviders } from './AuthBoundaryProviders';
 import LoginPage from '../pages/LoginPage';
 import ProtectedRoute from '../router/ProtectedRoute';
 import UserHome from '../pages/UserHome';
-import NotFoundPage from '../ui/NotFoundPage';
+import NotFoundPage from '../pages/NotFoundPage';
 import AppLayout from '../ui/AppLayout';
 import TicketList from '../pages/TicketList';
 import TaskCalendar from '../pages/TaskCalendar';
@@ -18,6 +18,10 @@ import ProjectInfoLayout from '../ui/ProjectInfoLayout';
 import UserProfile from '../ui/UserProfile';
 import PublicRoute from '../utilities/PublicRoute';
 import OrganizationPage from '../pages/OrganizationPage';
+import ChangePasswordPage from '../pages/ForgotPasswordPage';
+import ForgotPasswordPage from '../pages/ForgotPasswordPage';
+import RegisterOrganization from '../pages/RegisterOrganization';
+import TermsOfService from '../pages/TermsOfService';
 
 export function AppRoutes() {
   return (
@@ -32,6 +36,24 @@ export function AppRoutes() {
           </PublicRoute>
         }
       />
+      <Route
+        path='/forgot-password'
+        element={
+          <PublicRoute>
+            <ForgotPasswordPage />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path='/change-password'
+        element={
+          <PublicRoute>
+            <ChangePasswordPage />
+          </PublicRoute>
+        }
+      />
+      <Route path='/register' element={<RegisterOrganization />} />
+      <Route path='/terms-of-service' element={<TermsOfService />} />
 
       {/* Protected Routes */}
       <Route

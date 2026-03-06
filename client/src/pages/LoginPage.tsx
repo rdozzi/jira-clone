@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/useAuth';
 import { useLogin } from '../features/auth/useLogin';
 import { passwordValidation } from '../lib/validation/passwordValidation';
@@ -9,6 +9,7 @@ import {
   Button,
   Card,
   Checkbox,
+  Flex,
   Form,
   Input,
   Layout,
@@ -49,11 +50,11 @@ const formItemLayout = {
 function LoginPage() {
   const [isUpdatePasswordModalOpen, setIsUpdatePasswordModalOpen] =
     useState<boolean>(false);
-  const navigate = useNavigate();
   const { login, logout: frontendLogout } = useAuth();
   const { newLoginInfo, loginInfoLoading } = useLogin();
   const { updateUserPasswordSelf, isUpdatingPassword } =
     useUpdatePasswordSelf();
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [passwordForm] = Form.useForm();
 
@@ -131,6 +132,20 @@ function LoginPage() {
     frontendLogout();
     return null;
   }
+
+  function handleLoginDemo() {
+    console.log('Clicked handleLoginDemo');
+  }
+
+  const clickHere = (
+    <Link
+      to=''
+      onClick={handleLoginDemo}
+      style={{ pointerEvents: loginInfoLoading ? 'none' : 'auto' }}
+    >
+      HERE
+    </Link>
+  );
 
   return (
     <>
@@ -221,31 +236,44 @@ function LoginPage() {
               >
                 <Checkbox>Remember me</Checkbox>
               </Form.Item>
+              <Flex justify='space-between'>
+                <Space style={{ justifyContent: 'flex-start' }}>
+                  {/* Submit Button */}
+                  <Form.Item label={null}>
+                    <Button
+                      type='primary'
+                      htmlType='submit'
+                      loading={loginInfoLoading}
+                      disabled={loginInfoLoading}
+                    >
+                      Submit
+                    </Button>
+                  </Form.Item>
 
-              <Space>
-                {/* Submit Button */}
+                  {/* Reset */}
+                  <Form.Item label={null}>
+                    <Button
+                      htmlType='button'
+                      onClick={() => {
+                        form.resetFields();
+                      }}
+                    >
+                      Reset
+                    </Button>
+                  </Form.Item>
+                </Space>
+
                 <Form.Item label={null}>
                   <Button
-                    type='primary'
-                    htmlType='submit'
-                    loading={loginInfoLoading}
-                  >
-                    Submit
-                  </Button>
-                </Form.Item>
-
-                {/* Reset */}
-                <Form.Item label={null}>
-                  <Button
-                    htmlType='button'
+                    type='link'
                     onClick={() => {
-                      form.resetFields();
+                      navigate('/register');
                     }}
                   >
-                    Reset
+                    Register
                   </Button>
                 </Form.Item>
-              </Space>
+              </Flex>
             </Form>
             <div
               style={{
@@ -255,16 +283,24 @@ function LoginPage() {
                 color: 'var(--antd-text-secondary, #999)',
               }}
             >
-              <p style={{ marginBottom: 4 }}>
-                Demo credentials available in the project README.
+              <p style={{ marginBottom: 4, fontSize: 16 }}>
+                Check out the demo {clickHere}.
               </p>
-              <a style={{ fontSize: 12 }}>Forgot password?</a>
+              <Button
+                type='link'
+                onClick={() => {
+                  navigate('/forgot-password');
+                }}
+                style={{ fontSize: 12 }}
+              >
+                Forgot password?
+              </Button>
             </div>
           </Card>
         </Content>
       </Layout>
       <Modal
-        title='Enter New Password Here'
+        title='Enter New Password here'
         open={isUpdatePasswordModalOpen}
         onOk={handlePasswordFormOk}
         width={700}
