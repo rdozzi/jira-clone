@@ -25,7 +25,7 @@ export const attachmentEntityTypeSchema = z
       Object.values(AttachmentEntityType).includes(val as AttachmentEntityType),
     {
       message: 'Invalid entity type',
-    }
+    },
   );
 
 export const boardDescriptionSchema = z
@@ -50,10 +50,10 @@ export const commentContentSchema = z
     (val) => {
       const tokens = val.toLowerCase().split(/\s+/);
       return !tokens.some((token) =>
-        badWordsList.some((word) => token === word.toLowerCase())
+        badWordsList.some((word) => token === word.toLowerCase()),
       );
     },
-    { error: 'Comment contains prohibited language.' }
+    { error: 'Comment contains prohibited language.' },
   );
 
 export const emailAuthSchema = z
@@ -92,7 +92,7 @@ export const labelColorSchema = z
   .max(9)
   .regex(
     /^#[0-9A-F]{6}$/,
-    'Color must be a valid 6-digit hex code (e.g., #AABBCC).'
+    'Color must be a valid 6-digit hex code (e.g., #AABBCC).',
   )
   .trim()
   .toUpperCase();
@@ -106,9 +106,9 @@ export const labelNameSchema = z
     z.transform((str) =>
       str.replace(
         /\w\S*/g,
-        (txt) => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase()
-      )
-    )
+        (txt) => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase(),
+      ),
+    ),
   );
 
 export const nameSchema = z
@@ -116,18 +116,27 @@ export const nameSchema = z
   .trim()
   .min(2, 'Name should be at least 2 characters')
   .max(150, 'Name cannot exceed 150 characters')
-  .refine((name) => /^[A-Za-z0-9 _'-]+$/.test(name), {
+  .refine((name) => /^[\p{L}0-9 _'-]+$/u.test(name), {
     message: 'Name contains invalid characters',
   })
   .refine((name) => !/\s{2,}/.test(name), {
     message: 'Name must not contain consecutive spaces',
   })
+  .refine(
+    (val) => {
+      const tokens = val.toLowerCase().split(/\s+/);
+      return !tokens.some((token) =>
+        badWordsList.some((word) => token === word.toLowerCase()),
+      );
+    },
+    { error: 'Comment contains prohibited language.' },
+  )
   .transform((name) =>
     name
       .split(' ')
       .filter(Boolean)
       .map((w) => w.charAt(0).toUpperCase() + w.substring(1).toLowerCase())
-      .join(' ')
+      .join(' '),
   );
 
 export const numberIdSchema = z.coerce
@@ -149,10 +158,10 @@ export const organizationNameSchema = z
     (val) => {
       const tokens = val.toLowerCase().split(/\s+/);
       return !tokens.some((token) =>
-        badWordsList.some((word) => token === word.toLowerCase())
+        badWordsList.some((word) => token === word.toLowerCase()),
       );
     },
-    { error: 'Comment contains prohibited language.' }
+    { error: 'Comment contains prohibited language.' },
   )
   .transform((val) => val.replace(/\s+/g, ' ').trim());
 
@@ -164,7 +173,7 @@ export const organizationRoleSchema = z
     (val) => Object.values(OrganizationRole).includes(val as OrganizationRole),
     {
       message: 'Invalid global role',
-    }
+    },
   );
 
 export const otpSchema = z
@@ -187,7 +196,7 @@ export const passwordSchema = z
   .regex(/\d/, 'Password must contain at least one number')
   .regex(
     /[^A-Za-z0-9]/,
-    'Password must contain at least one special character'
+    'Password must contain at least one special character',
   );
 
 export const projectDescriptionSchema = z
@@ -230,10 +239,10 @@ export const ticketDescriptionSchema = z
     (val) => {
       const tokens = val.toLowerCase().split(/\s+/);
       return !tokens.some((token) =>
-        badWordsList.some((word) => token === word.toLowerCase())
+        badWordsList.some((word) => token === word.toLowerCase()),
       );
     },
-    { error: 'Comment contains prohibited language.' }
+    { error: 'Comment contains prohibited language.' },
   );
 
 export const ticketTitleSchema = z
@@ -246,10 +255,10 @@ export const ticketTitleSchema = z
     (val) => {
       const tokens = val.toLowerCase().split(/\s+/);
       return !tokens.some((token) =>
-        badWordsList.some((word) => token === word.toLowerCase())
+        badWordsList.some((word) => token === word.toLowerCase()),
       );
     },
-    { error: 'Comment contains prohibited language.' }
+    { error: 'Comment contains prohibited language.' },
   );
 
 export const ticketPrioritySchema = z
@@ -278,8 +287,8 @@ export const reasonSchema = z
     (val) => {
       const tokens = val.toLowerCase().split(/\s+/);
       return !tokens.some((token) =>
-        badWordsList.some((word) => token === word.toLowerCase())
+        badWordsList.some((word) => token === word.toLowerCase()),
       );
     },
-    { error: 'Comment contains prohibited language.' }
+    { error: 'Comment contains prohibited language.' },
   );
