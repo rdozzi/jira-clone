@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "TokenPurpose" ADD VALUE 'INITIAL_PASSWORD_SETUP';

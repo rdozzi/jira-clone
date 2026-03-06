@@ -138,7 +138,7 @@ model User {
   firstName          String?           @db.VarChar(150)
   lastName           String?           @db.VarChar(150)
   email              String            @unique @db.VarChar(255)
-  passwordHash       String
+  passwordHash       String?
   organizationRole   OrganizationRole?
   globalRole         GlobalRole        @default(USER)
   avatarSource       String?           @default("NA") @db.VarChar(2048)
@@ -163,7 +163,8 @@ model User {
   projectMemberships ProjectMember[]
 
   //Other Relationships
-  Organization Organization? @relation(fields: [organizationId], references: [id])
+  Organization   Organization?   @relation(fields: [organizationId], references: [id])
+  passwordTokens PasswordToken[]
 }
 
 model Attachment {
@@ -262,6 +263,21 @@ model ProjectMember {
 
   //Composite key
   @@unique([userId, projectId])
+}
+
+model PasswordToken {
+  id          Int          @id @default(autoincrement())
+  userId      Int
+  tokenHash   String       @unique
+  purpose     TokenPurpose
+  expiresAt   DateTime
+  hasBeenUsed Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([purpose])
 }
 
 model OrganizationProjectUsage {
@@ -412,4 +428,10 @@ enum ActorTypeActivity {
   USER
   SYSTEM
   // Future types: BOT, INTEGRATION, WEBHOOK
+}
+
+enum TokenPurpose {
+  RESET_PASSWORD
+  ACCOUNT_ACTIVATION
+  ACCOUNT_INVITE
 }
