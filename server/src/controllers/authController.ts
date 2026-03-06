@@ -24,7 +24,13 @@ export async function loginUser(
       '$2a$12$lI.goTb7KK0ctewAzqHcteO65M7Su2esatiZjxuP3FMsvDwHB1Qme';
     // 'FaKEHAshMKXI#*()&%#%!$)' was hashed with 12 rounds from https://bcrypt-generator.com
 
-    if (!user || !password || user.deletedAt) {
+    if (
+      !user ||
+      !password ||
+      user.deletedAt ||
+      !user.passwordHash ||
+      user.mustChangePassword
+    ) {
       await verifyPassword('fakePassword', fakeHash);
       return res.status(401).json({ error: 'Invalid Credentials' });
     }

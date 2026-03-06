@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../utilities/password';
-import { generatePassword } from '../utilities/password';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { deleteUserCascade } from '../services/deletionServices/deleteUserCascade';
 import { createResourceService } from '../services/organizationUsageServices/createResourceService';
+
 import { logBus } from '../lib/logBus';
 
 // Get all users
@@ -242,9 +242,6 @@ export async function createUser(
     const { email, firstName, lastName, organizationRole } =
       res.locals.validatedBody;
 
-    const password = generatePassword();
-
-    const hashedPassword = await hashPassword(password);
     const organizationId = res.locals.userInfo.organizationId;
     const resourceType = res.locals.resourceType;
 
@@ -258,7 +255,6 @@ export async function createUser(
             email: email,
             firstName: firstName,
             lastName: lastName,
-            passwordHash: hashedPassword,
             organizationRole: organizationRole,
             organizationId: organizationId,
             mustChangePassword: true,

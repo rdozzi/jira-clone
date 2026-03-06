@@ -26,7 +26,6 @@ import setupRoutes from './router/setupRoutes';
 import ticketLabelRoutes from './router/ticketLabelRoutes';
 import ticketRoutes from './router/ticketRoutes';
 import userRoutes from './router/userRoutes';
-import otpRoutes from './router/otpRoutes';
 import organizationRoutes from './router/organizationRoutes';
 
 export const app: Application = express();
@@ -67,7 +66,6 @@ checkRedis();
 initLogService();
 
 // Public routes
-app.use('/api', otpRoutes);
 app.use('/api/setup', routeRateLimiter, setupRoutes);
 // app.use('/api/auth', routeRateLimiter, authRoutes);
 app.use('/api/auth', authRoutes);
