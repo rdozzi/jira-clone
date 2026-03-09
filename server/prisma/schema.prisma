@@ -37,6 +37,7 @@ model Organization {
   OrganizationActivityLogUsage  OrganizationActivityLogUsage[]
   OrganizationFileStorageUsage  OrganizationFileStorageUsage[]
   OrganizationBannedEmailsUsage OrganizationBannedEmailsUsage[]
+  passwordTokens                PasswordToken[]
 }
 
 model Project {
@@ -266,15 +267,17 @@ model ProjectMember {
 }
 
 model PasswordToken {
-  id          Int          @id @default(autoincrement())
-  userId      Int
-  tokenHash   String       @unique
-  purpose     TokenPurpose
-  expiresAt   DateTime
-  hasBeenUsed Boolean      @default(false)
-  createdAt   DateTime     @default(now())
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  tokenHash      String       @unique
+  purpose        TokenPurpose
+  expiresAt      DateTime
+  hasBeenUsed    Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  organizationId Int
 
-  user User @relation(fields: [userId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+  Organization Organization @relation(fields: [organizationId], references: [id])
 
   @@index([userId])
   @@index([purpose])

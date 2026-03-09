@@ -11,10 +11,12 @@ export async function createToken(
     userId,
     purpose,
     ttlMinutesType,
+    organizationId,
   }: {
     userId: number;
     purpose: TokenPurpose;
     ttlMinutesType: TtlKey;
+    organizationId: number;
   },
 ) {
   const ttlMinutes = TTL[ttlMinutesType];
@@ -38,6 +40,7 @@ export async function createToken(
       tokenHash,
       purpose,
       expiresAt,
+      organizationId,
     },
   });
 
