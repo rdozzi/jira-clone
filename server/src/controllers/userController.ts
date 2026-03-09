@@ -5,6 +5,7 @@ import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { deleteUserCascade } from '../services/deletionServices/deleteUserCascade';
 import { createResourceService } from '../services/organizationUsageServices/createResourceService';
+import { accountInviteService } from '../services/tokenServices/accountInviteService';
 
 import { logBus } from '../lib/logBus';
 
@@ -260,6 +261,15 @@ export async function createUser(
             mustChangePassword: true,
           },
         }),
+    );
+
+    await accountInviteService(
+      prisma,
+      userInfo.id,
+      user.id,
+      user.firstName!,
+      user.email,
+      organizationId,
     );
 
     const logEvents = [

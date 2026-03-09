@@ -21,6 +21,7 @@ export async function resetTestDatabase() {
     'Board',
     'Project',
     'Organization',
+    'PasswordToken',
     'OrganizationProjectUsage',
     'OrganizationBoardUsage',
     'OrganizationTicketUsage',
@@ -35,7 +36,7 @@ export async function resetTestDatabase() {
   await prismaTest.$transaction(async (tx) => {
     for (const table of tablesInOrder) {
       await tx.$executeRawUnsafe(
-        `TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE`
+        `TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE`,
       );
     }
   });
