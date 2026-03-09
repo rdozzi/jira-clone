@@ -5,14 +5,12 @@ import { logBus } from '../lib/logBus';
 
 export function initLogService() {
   logBus.on('activityLog', async (activityLogs: LogEventPayload[]) => {
-    try {
-      setImmediate(async () => {
-        await Promise.all(
-          activityLogs.map((activityLog) => createActivityLog(activityLog))
-        );
-      });
-    } catch (error) {
-      console.error('Could not access createActivityLog:', error);
+    for (const activityLog of activityLogs) {
+      try {
+        await createActivityLog(activityLog);
+      } catch (error) {
+        console.error('Activity log write failed:', error);
+      }
     }
   });
 }
