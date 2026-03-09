@@ -2,13 +2,17 @@ import { PrismaClient, TokenPurpose } from '@prisma/client';
 import { createToken } from './tokenFunctions';
 import { sendTokenEmail } from './sendTokenEmail';
 import { TTL } from '../../utilities/tokenUtilities/ttlMinutes';
+import { buildLogEvent } from '../buildLogEvent';
+import { logBus } from '../../lib/logBus';
 
 // Service to INVITE a user to the organization
 export async function accountInviteService(
   prisma: PrismaClient,
+  hostUserId: number,
   userId: number,
   firstName: string,
   email: string,
+  organizationId: number,
 ) {
   const ttlType: TokenPurpose = 'ACCOUNT_INVITE';
 
@@ -18,6 +22,7 @@ export async function accountInviteService(
       userId,
       purpose: TokenPurpose.ACCOUNT_ACTIVATION,
       ttlMinutesType: ttlType,
+      organizationId,
     });
   });
 
@@ -37,6 +42,20 @@ export async function accountInviteService(
       'resetPassword',
       'resetPasswordText',
     );
+
+    const logEvents = [
+      buildLogEvent({
+        userId: hostUserId,
+        actorType: 'USER',
+        action: 'EMAIL_ACCOUNT_INVITE',
+        targetId: userId,
+        targetType: 'USER',
+        organizationId: organizationId,
+        metadata: {},
+      }),
+    ];
+
+    logBus.emit('activityLog', logEvents);
 
     return { messageId, messageUrl, rawToken };
   } catch (error) {
