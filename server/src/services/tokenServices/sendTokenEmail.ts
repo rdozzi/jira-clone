@@ -1,6 +1,5 @@
 import nodemailer from 'nodemailer';
-import hbs from 'nodemailer-express-handlebars';
-import exphbs from 'express-handlebars';
+import { create } from 'express-handlebars';
 import path from 'path';
 import { SendMailOptions } from 'nodemailer';
 
@@ -26,35 +25,46 @@ if (!host || !port || !user || !password || !from) {
 
 // Handlebars setup
 
-const handlebars = exphbs.create({ extname: '.hbs', defaultLayout: false });
+const handlebars = create({ extname: '.hbs', defaultLayout: false });
 
 const hbsOptions = {
   viewEngine: handlebars,
-  viewPath: path.resolve(process.cwd(), 'server/tokenServices/templates'),
+  viewPath: path.resolve(__dirname, '../../tokenServices/templates'),
   extname: '.hbs',
 };
 
 // Transporter Singleton
 
-const transporter = nodemailer.createTransport({
-  host: host,
-  port: port,
-  secure: secure,
-  auth: {
-    user: user,
-    pass: password,
-  },
-});
+let handlebarsInitialized = false;
 
-transporter.use('compile', hbs(hbsOptions));
+async function initializeHandlebars() {
+  if (handlebarsInitialized) return;
 
-if (process.env.NODE_ENV !== 'production') {
-  transporter
-    .verify()
-    .then(() => {
-      console.log('SMTP ready');
-    })
-    .catch(console.error);
+  const { default: hbs } = await import('nodemailer-express-handlebars');
+
+  const transporter = nodemailer.createTransport({
+    host: host,
+    port: port,
+    secure: secure,
+    auth: {
+      user: user,
+      pass: password,
+    },
+  });
+
+  transporter.use('compile', hbs(hbsOptions));
+
+  if (process.env.NODE_ENV !== 'production') {
+    transporter
+      .verify()
+      .then(() => {
+        console.log('SMTP ready');
+      })
+      .catch(console.error);
+  }
+
+  handlebarsInitialized = true;
+  return transporter;
 }
 
 // Begin function.
@@ -66,8 +76,14 @@ export async function sendTokenEmail(
   template: Template,
   templateText: TemplateText,
 ) {
+  const transporter = await initializeHandlebars();
+
+  if (!transporter) {
+    throw new Error('Transporter was not initialized');
+  }
+
   const mailOptions: HandlebarsMailOptions = {
-    from: `"Jira-Clone" <jira-clone@example.com>`,
+    from: from,
     to: email,
     subject: 'Request to Change Password Token - JiraClone',
     template: template,
