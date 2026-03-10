@@ -5,17 +5,16 @@ import { TTL } from '../../utilities/tokenUtilities/ttlMinutes';
 import { buildLogEvent } from '../buildLogEvent';
 import { logBus } from '../../lib/logBus';
 
-// Service to INVITE a user to the organization
-export async function accountInviteService(
+// Service to generate and email token to a user. Accommodates all three types: "RESET_PASSWORD" | "ACCOUNT_ACTIVATION" | "ACCOUNT_INVITE"
+export async function tokenGenerationService(
   prisma: PrismaClient,
   hostUserId: number,
   userId: number,
   firstName: string,
   email: string,
   organizationId: number,
+  ttlType: TokenPurpose,
 ) {
-  const ttlType: TokenPurpose = 'ACCOUNT_INVITE';
-
   // Create a token
   const rawToken = await prisma.$transaction(async (tx) => {
     return createToken(tx, {
@@ -47,7 +46,7 @@ export async function accountInviteService(
       buildLogEvent({
         userId: hostUserId,
         actorType: 'USER',
-        action: 'EMAIL_ACCOUNT_INVITE',
+        action: ttlType,
         targetId: userId,
         targetType: 'USER',
         organizationId: organizationId,
