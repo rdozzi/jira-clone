@@ -1,13 +1,11 @@
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 
 import { verifyPassword } from '../utilities/password';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { logBus } from '../lib/logBus';
-
-dotenv.config();
+import { tokenGenerationService } from '../services/tokenServices/tokenGenerationService';
 
 export async function loginUser(
   req: Request,
@@ -125,5 +123,38 @@ export async function logoutUser(req: Request, res: Response) {
   } catch (error) {
     console.error('Error logging out user: ', error);
     return res.status(500).json({ error: 'Failed to log out user' });
+  }
+}
+
+export async function requestPasswordReset(
+  req: Request,
+  res: Response,
+  prisma: PrismaClient,
+) {
+  try {
+    const userId = res.locals.userId;
+    const firstName = res.locals.firstName;
+    const email = res.locals.email;
+    const organizationId = res.locals.organizationId;
+
+    await tokenGenerationService(
+      prisma,
+      userId,
+      userId,
+      firstName,
+      email,
+      organizationId,
+      'RESET_PASSWORD',
+    );
+
+    res
+      .status(200)
+      .json({ message: 'A reset email has been sent to this account.' });
+  } catch (error) {
+    console.error('Password reset request failed:', error);
+
+    return res.status(200).json({
+      message: 'A reset email has been sent to this account.',
+    });
   }
 }
