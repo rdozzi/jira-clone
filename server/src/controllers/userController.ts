@@ -5,7 +5,7 @@ import { buildLogEvent } from '../services/buildLogEvent';
 import { generateDiff } from '../services/generateDiff';
 import { deleteUserCascade } from '../services/deletionServices/deleteUserCascade';
 import { createResourceService } from '../services/organizationUsageServices/createResourceService';
-import { accountInviteService } from '../services/tokenServices/accountInviteService';
+import { tokenGenerationService } from '../services/tokenServices/tokenGenerationService';
 
 import { logBus } from '../lib/logBus';
 
@@ -263,13 +263,14 @@ export async function createUser(
         }),
     );
 
-    await accountInviteService(
+    await tokenGenerationService(
       prisma,
       userInfo.id,
       user.id,
       user.firstName!,
       user.email,
       organizationId,
+      'ACCOUNT_INVITE',
     );
 
     const logEvents = [
