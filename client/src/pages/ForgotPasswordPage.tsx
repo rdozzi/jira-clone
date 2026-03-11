@@ -1,4 +1,4 @@
-import { Card, Form, Input, Button, Typography } from 'antd';
+import { Card, Form, Input, Button, message, Typography } from 'antd';
 import { PublicBackButton } from '../ui/PublicBackButton';
 
 const { Title, Text } = Typography;
@@ -7,6 +7,8 @@ function ForgotPasswordPage() {
   const [form] = Form.useForm();
 
   const handleSubmit = (values: any) => {
+    message.success('A reset email has been sent to this account');
+    form.resetFields();
     console.log(values);
     // call mutation here
   };
@@ -54,7 +56,7 @@ function ForgotPasswordPage() {
               },
             ]}
           >
-            <Input.Password size='large' />
+            <Input size='large' />
           </Form.Item>
 
           <Form.Item style={{ marginTop: 24 }}>
