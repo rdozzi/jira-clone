@@ -1,8 +1,7 @@
 Hello {{firstName}},
 
-We received a request to reset your password.
+Thank you for registering. Please click the link below to confirm your email address and activate your account.
 
-Use the link below:
 {{link}}
 
 This link expires in {{expiresIn}} minutes.
