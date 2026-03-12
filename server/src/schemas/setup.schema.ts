@@ -7,10 +7,3 @@ export const seedOrganizationSchema = z.object({
   lastName: nameSchema,
   organizationName: organizationNameSchema,
 });
-
-// export const seedSuperUserSchema = z.object({
-//   email: emailSchema,
-//   firstName: nameSchema,
-//   lastName: nameSchema,
-//   password: passwordSchema,
-// });

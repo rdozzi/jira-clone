@@ -67,10 +67,12 @@ export const emailQuerySchema = z
   .pipe(z.email('Input must be a valid email').min(5).max(254));
 
 export const emailSchema = z
-  .email('A valid email is required')
+  .string()
+  .toLowerCase()
   .trim()
   .min(5, 'Email must be 5 charcters long')
-  .max(254, 'Email must be less than 255 characters');
+  .max(254, 'Email must be less than 255 characters')
+  .pipe(z.email('A valid email is required'));
 
 export const globalRoleSchema = z
   .string('A string is required')
@@ -276,6 +278,16 @@ export const ticketTypeSchema = z
   .refine((val) => Object.values(Type).includes(val as Type), {
     message: 'Invalid project role',
   });
+
+export const tokenQuerySchema = z
+  .object({
+    token: z
+      .string()
+      .trim()
+      .length(64, 'Invalid or expired token')
+      .regex(/^[a-f0-9]{64}$/i, 'Invalid or expired token'),
+  })
+  .strict();
 
 export const reasonSchema = z
   .string('A reason is required')
