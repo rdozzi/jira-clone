@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PasswordToken, PrismaClient } from '@prisma/client';
 
-import { verifyPassword } from '../utilities/password';
+import { hashPassword, verifyPassword } from '../utilities/password';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { logBus } from '../lib/logBus';
 import { tokenGenerationService } from '../services/tokenServices/tokenGenerationService';
@@ -27,16 +27,18 @@ export async function loginUser(
       !password ||
       user.deletedAt ||
       !user.passwordHash ||
-      user.mustChangePassword
+      user.mustChangePassword ||
+      !user.isEmailVerified
     ) {
       await verifyPassword('fakePassword', fakeHash);
-      return res.status(401).json({ error: 'Invalid Credentials' });
+      return res.status(400).json({ error: 'Invalid Credentials' });
     }
 
     const isPasswordValid = await verifyPassword(password, user.passwordHash);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid Credentials' });
+      await verifyPassword('fakePassword', fakeHash);
+      return res.status(400).json({ error: 'Invalid Credentials' });
     }
 
     const token = jwt.sign(
@@ -49,15 +51,6 @@ export async function loginUser(
       },
       process.env.JWT_SECRET as string,
     );
-
-    if (user.mustChangePassword) {
-      res.status(200).json({
-        message: 'Credentials accepted. User must change password.',
-        mustChangePassword: user.mustChangePassword,
-        token: token,
-      });
-      return;
-    }
 
     const logEvents = [
       buildLogEvent({
@@ -145,9 +138,10 @@ export async function requestPasswordReset(
       email,
       organizationId,
       'RESET_PASSWORD',
+      'RESET_PASSWORD',
     );
 
-    res
+    return res
       .status(200)
       .json({ message: 'A reset email has been sent to this account.' });
   } catch (error) {
@@ -157,4 +151,60 @@ export async function requestPasswordReset(
       message: 'A reset email has been sent to this account.',
     });
   }
+}
+
+// Change Password (RESET_PASSWORD, ACCOUNT_INVITE, ACCOUNT_ACTIVATION)
+export async function changePasswordPublic(
+  req: Request,
+  res: Response,
+  prisma: PrismaClient,
+) {
+  const tokenRecord: PasswordToken = res.locals.tokenRecord;
+
+  const userId = res.locals.userId;
+  const organizationId = res.locals.organizationId;
+  const { newPassword } = res.locals.validatedBody;
+
+  const result = await prisma.$transaction(async (tx) => {
+    const hashedPassword = await hashPassword(newPassword);
+
+    const updatedUser = await tx.user.update({
+      where: { id: userId, organizationId: organizationId },
+      data: {
+        passwordHash: hashedPassword,
+        mustChangePassword: false,
+        isEmailVerified: true,
+      },
+    });
+
+    await tx.passwordToken.update({
+      where: { id: tokenRecord.id, tokenHash: tokenRecord.tokenHash },
+      data: { hasBeenUsed: true },
+    });
+
+    return { updatedUser };
+  });
+
+  const logEvents = [
+    buildLogEvent({
+      userId: userId,
+      actorType: 'USER',
+      action: tokenRecord.purpose,
+      targetId: userId,
+      targetType: 'USER',
+      organizationId: organizationId,
+      metadata: {
+        name: `${result.updatedUser.firstName}_${result.updatedUser.lastName}`,
+        email: result.updatedUser.email,
+        timeStamp: new Date().toISOString(),
+      },
+    }),
+  ];
+
+  logBus.emit('activityLog', logEvents);
+
+  res.status(200).json({
+    message: 'User password updated successfully',
+  });
+  return;
 }

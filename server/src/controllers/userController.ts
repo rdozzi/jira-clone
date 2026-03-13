@@ -259,6 +259,7 @@ export async function createUser(
             organizationRole: organizationRole,
             organizationId: organizationId,
             mustChangePassword: true,
+            isEmailVerified: false,
           },
         }),
     );
@@ -270,6 +271,7 @@ export async function createUser(
       user.firstName!,
       user.email,
       organizationId,
+      'ACCOUNT_INVITE',
       'ACCOUNT_INVITE',
     );
 
@@ -392,29 +394,22 @@ export async function updatePasswordSelf(
       where: { id: userInfo.id },
       select: {
         id: true,
-        mustChangePassword: true,
+        isDeleted: true,
+        isBanned: true,
       },
     });
 
-    if (!user) throw new Error('User not found');
-
-    let method: 'SELF_SERVICE' | 'INITIAL_SET';
-
-    if (user.mustChangePassword) {
-      method = 'INITIAL_SET';
-    } else {
-      method = 'SELF_SERVICE';
-    }
+    if (!user || user.isDeleted || user.isBanned)
+      throw new Error('User not found');
 
     const updatedUser = await tx.user.update({
       where: { id: userInfo.id, organizationId: organizationId },
       data: {
         passwordHash: hashedPassword,
-        mustChangePassword: false,
       },
     });
 
-    return { updatedUser, method };
+    return { updatedUser, method: 'SELF_SERVICE_AUTHENTICATED' };
   });
 
   const logEvents = [

@@ -1,22 +1,25 @@
 import { Request, Response } from 'express';
 import { PrismaClient, OrganizationRole } from '@prisma/client';
-import { hashPassword } from '../utilities/password';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { createCountTables } from '../services/setupServices/createCountTables';
 import { logBus } from '../lib/logBus';
+import { generateOrganizationSlug } from '../utilities/setupUtilities/generateOrganizationSlug';
+import { tokenGenerationService } from '../services/tokenServices/tokenGenerationService';
 
 export async function seedOrganizationAndSuperAdmin(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
-    const { email, firstName, lastName, password, organizationName } =
+    const { email, firstName, lastName, organizationName } =
       res.locals.validatedBody;
+
+    const slugName = await generateOrganizationSlug(prisma, organizationName);
 
     // Check if organization exists
     const organization = await prisma.organization.findUnique({
-      where: { name: organizationName },
+      where: { slug: slugName },
     });
 
     if (organization) {
@@ -33,11 +36,10 @@ export async function seedOrganizationAndSuperAdmin(
       }
     }
 
-    const hashedPassword = await hashPassword(password);
-
+    // Update the organization and user with new user table specifications
     const [newOrganization, newUser] = await prisma.$transaction(async (tx) => {
       const newOrganization = await tx.organization.create({
-        data: { name: organizationName },
+        data: { name: organizationName, slug: slugName },
       });
 
       const newUser = await tx.user.create({
@@ -45,9 +47,10 @@ export async function seedOrganizationAndSuperAdmin(
           email: email,
           firstName: firstName,
           lastName: lastName,
-          passwordHash: hashedPassword,
           organizationRole: OrganizationRole.SUPERADMIN,
           organizationId: newOrganization.id,
+          mustChangePassword: true,
+          isEmailVerified: false,
         },
       });
 
@@ -55,6 +58,17 @@ export async function seedOrganizationAndSuperAdmin(
 
       return [newOrganization, newUser];
     });
+
+    tokenGenerationService(
+      prisma,
+      newUser.id,
+      newUser.id,
+      newUser.firstName!,
+      newUser.email,
+      newOrganization.id,
+      'ACCOUNT_ACTIVATION',
+      'ACCOUNT_ACTIVATION',
+    );
 
     const logEvents = [
       buildLogEvent({
@@ -69,6 +83,7 @@ export async function seedOrganizationAndSuperAdmin(
           name: `${newUser.firstName}_${newUser.lastName}`,
           email: `${newUser.email}`,
           organization: newOrganization.name,
+          orgSlug: newOrganization.slug,
         },
       }),
     ];
