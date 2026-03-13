@@ -8,8 +8,10 @@ interface HandlebarsMailOptions extends SendMailOptions {
   context?: Record<string, unknown>;
 }
 
-type Template = 'resetPassword' | 'verifyEmail';
-type TemplateText = 'resetPasswordText' | 'verifyEmailText';
+import {
+  HbsType,
+  HbsTextType,
+} from '../../utilities/tokenUtilities/emailTypeMap';
 
 // Environment Validation
 const host: string | undefined = process.env.SMTP_HOST;
@@ -71,10 +73,10 @@ async function initializeHandlebars() {
 export async function sendTokenEmail(
   email: string,
   firstName: string,
-  resetUrl: string,
+  link: string,
   expiresIn: number,
-  template: Template,
-  templateText: TemplateText,
+  template: HbsType,
+  templateText: HbsTextType,
 ) {
   const transporter = await initializeHandlebars();
 
@@ -87,7 +89,7 @@ export async function sendTokenEmail(
     to: email,
     subject: 'Request to Change Password Token - JiraClone',
     template: template,
-    context: { firstName, resetUrl, expiresIn },
+    context: { firstName, link, expiresIn },
     text: templateText,
   };
 

@@ -25,6 +25,7 @@ export async function createToken(
   const tokenHash = generateHashedToken(rawToken);
   const expiresAt = new Date(Date.now() + ttlMinutes);
 
+  // Invalidate any previous tokens with the same userId and purpose; mark hasBeenUser to True
   await tx.passwordToken.updateMany({
     where: {
       userId,
@@ -34,6 +35,7 @@ export async function createToken(
     data: { hasBeenUsed: true },
   });
 
+  // Create a new token
   await tx.passwordToken.create({
     data: {
       userId,
@@ -47,16 +49,7 @@ export async function createToken(
   return rawToken;
 }
 
-export async function validateToken(
-  prisma: PrismaClient,
-  {
-    rawToken,
-    purpose,
-  }: {
-    rawToken: string;
-    purpose: TokenPurpose;
-  },
-) {
+export async function validateToken(prisma: PrismaClient, rawToken: string) {
   const tokenHash = generateHashedToken(rawToken);
 
   const record = await prisma.passwordToken.findUnique({
@@ -64,7 +57,13 @@ export async function validateToken(
   });
 
   if (!record) return null;
-  if (record.purpose !== purpose) return null;
+  if (
+    record.purpose !== TokenPurpose.RESET_PASSWORD &&
+    record.purpose !== TokenPurpose.ACCOUNT_ACTIVATION &&
+    record.purpose !== TokenPurpose.ACCOUNT_INVITE
+  )
+    return null;
+
   if (record.hasBeenUsed) return null;
   if (record.expiresAt < new Date()) return null;
 

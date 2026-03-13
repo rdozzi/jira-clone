@@ -3,6 +3,7 @@ import { createToken } from './tokenFunctions';
 import { sendTokenEmail } from './sendTokenEmail';
 import { TTL } from '../../utilities/tokenUtilities/ttlMinutes';
 import { buildLogEvent } from '../buildLogEvent';
+import { emailTypeMap } from '../../utilities/tokenUtilities/emailTypeMap';
 import { logBus } from '../../lib/logBus';
 
 // Service to generate and email token to a user. Accommodates all three types: "RESET_PASSWORD" | "ACCOUNT_ACTIVATION" | "ACCOUNT_INVITE"
@@ -13,13 +14,14 @@ export async function tokenGenerationService(
   firstName: string,
   email: string,
   organizationId: number,
+  purpose: TokenPurpose,
   ttlType: TokenPurpose,
 ) {
   // Create a token
   const rawToken = await prisma.$transaction(async (tx) => {
     return createToken(tx, {
       userId,
-      purpose: TokenPurpose.ACCOUNT_ACTIVATION,
+      purpose: purpose,
       ttlMinutesType: ttlType,
       organizationId,
     });
@@ -30,16 +32,16 @@ export async function tokenGenerationService(
     const expiresIn = TTL[ttlType];
 
     // Define the url with token
-    const resetUrl = `${process.env.FRONTEND_URL}/change-password?token=${rawToken}`;
+    const passwordUrl = `${process.env.FRONTEND_URL}/change-password?token=${rawToken}`;
 
     // Send email
     const { messageId, messageUrl } = await sendTokenEmail(
       email,
       firstName,
-      resetUrl,
+      passwordUrl,
       expiresIn,
-      'resetPassword',
-      'resetPasswordText',
+      emailTypeMap[purpose].hbs,
+      emailTypeMap[purpose].text,
     );
 
     const logEvents = [
