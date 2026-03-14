@@ -12,7 +12,7 @@ import { checkRedis } from './lib/connectRedis';
 import { authenticate } from './middleware/authAndLoadInfoMiddleware/authenticate';
 import { loadUserProjects } from './middleware/authAndLoadInfoMiddleware/loadUserProjects';
 import { storeUserAndProjectInfo } from './middleware/authAndLoadInfoMiddleware/storeUserAndProjectInfo';
-import { globalRateLimiter, routeRateLimiter } from './middleware/rateLimiter';
+import { globalRateLimiter } from './middleware/rateLimiter';
 
 // Routes
 import attachmentRoutes from './router/attachmentRoutes';
@@ -66,9 +66,9 @@ checkRedis();
 initLogService();
 
 // Public routes
-app.use('/api/setup', routeRateLimiter, setupRoutes);
-// app.use('/api/auth', routeRateLimiter, authRoutes);
+
 app.use('/api/auth', authRoutes);
+app.use('/api/setup', setupRoutes);
 
 // Authentication middleware (for protected routes)
 app.use(authenticate);
