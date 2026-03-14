@@ -159,52 +159,58 @@ export async function changePasswordPublic(
   res: Response,
   prisma: PrismaClient,
 ) {
-  const tokenRecord: PasswordToken = res.locals.tokenRecord;
+  try {
+    const tokenRecord: PasswordToken = res.locals.tokenRecord;
 
-  const userId = res.locals.userId;
-  const organizationId = res.locals.organizationId;
-  const { newPassword } = res.locals.validatedBody;
+    const userId = res.locals.userId;
+    const organizationId = res.locals.organizationId;
+    const { newPassword } = res.locals.validatedBody;
 
-  const result = await prisma.$transaction(async (tx) => {
-    const hashedPassword = await hashPassword(newPassword);
+    const result = await prisma.$transaction(async (tx) => {
+      const hashedPassword = await hashPassword(newPassword);
 
-    const updatedUser = await tx.user.update({
-      where: { id: userId, organizationId: organizationId },
-      data: {
-        passwordHash: hashedPassword,
-        mustChangePassword: false,
-        isEmailVerified: true,
-      },
+      const updatedUser = await tx.user.update({
+        where: { id: userId, organizationId: organizationId },
+        data: {
+          passwordHash: hashedPassword,
+          mustChangePassword: false,
+          isEmailVerified: true,
+        },
+      });
+
+      await tx.passwordToken.update({
+        where: { id: tokenRecord.id, tokenHash: tokenRecord.tokenHash },
+        data: { hasBeenUsed: true },
+      });
+
+      return { updatedUser };
     });
 
-    await tx.passwordToken.update({
-      where: { id: tokenRecord.id, tokenHash: tokenRecord.tokenHash },
-      data: { hasBeenUsed: true },
+    const logEvents = [
+      buildLogEvent({
+        userId: userId,
+        actorType: 'USER',
+        action: tokenRecord.purpose,
+        targetId: userId,
+        targetType: 'USER',
+        organizationId: organizationId,
+        metadata: {
+          name: `${result.updatedUser.firstName}_${result.updatedUser.lastName}`,
+          email: result.updatedUser.email,
+          timeStamp: new Date().toISOString(),
+        },
+      }),
+    ];
+
+    logBus.emit('activityLog', logEvents);
+
+    res.status(200).json({
+      message: 'User password updated successfully',
     });
-
-    return { updatedUser };
-  });
-
-  const logEvents = [
-    buildLogEvent({
-      userId: userId,
-      actorType: 'USER',
-      action: tokenRecord.purpose,
-      targetId: userId,
-      targetType: 'USER',
-      organizationId: organizationId,
-      metadata: {
-        name: `${result.updatedUser.firstName}_${result.updatedUser.lastName}`,
-        email: result.updatedUser.email,
-        timeStamp: new Date().toISOString(),
-      },
-    }),
-  ];
-
-  logBus.emit('activityLog', logEvents);
-
-  res.status(200).json({
-    message: 'User password updated successfully',
-  });
-  return;
+    return;
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: `Could not change password: ${error}` });
+  }
 }
