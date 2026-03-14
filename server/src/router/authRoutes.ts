@@ -41,7 +41,7 @@ router.post(
 
 // Request Password Reset (Forgot Password -> RESET_PASSWORD)
 router.post(
-  '/auth/request-password-reset',
+  '/request-password-reset',
   authRateLimiter,
   checkHoneypotForgotPassword,
   validateBody(emailSchema),
@@ -53,7 +53,7 @@ router.post(
 
 // Change Password Public (RESET_PASSWORD, ACCOUNT_INVITE, ACCOUNT_ACTIVATION)
 router.post(
-  '/auth/change-password-public',
+  '/change-password-public',
   authRateLimiter,
   validateTokenQuery,
   validateBody(changePasswordPublicSchema),

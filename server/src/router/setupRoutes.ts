@@ -15,7 +15,7 @@ import { checkDisposableDomains } from '../middleware/setupMiddleware/checkDispo
 const router = Router();
 
 router.post(
-  '/seedOrganizationAndSuperAdmin',
+  '/seed-organization-and-superadmin',
   checkHoneypotAndTimer(),
   validateBody(seedOrganizationSchema),
   checkDisposableDomains(),
