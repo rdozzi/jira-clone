@@ -1,4 +1,4 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -11,6 +11,12 @@ export const globalRateLimiter = rateLimit({
   limit: GLOBAL_LIMIT,
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  keyGenerator: (req) => {
+    const ip = ipKeyGenerator(req.ip ?? 'unknown', 56) ?? 'unknown';
+    const email = req.body?.email?.toLowerCase?.();
+
+    return email ? `${ip}-${email}` : ip;
+  },
   // message: Too many requests, please try again later.
   // statusCode: 429
 });
@@ -30,7 +36,7 @@ export const authRateLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   keyGenerator: (req) => {
-    const ip = req.ip ?? 'unknown';
+    const ip = ipKeyGenerator(req.ip ?? 'unknown', 56) ?? 'unknown';
     const email = req.body?.email?.toLowerCase?.();
 
     return email ? `${ip}-${email}` : ip;
