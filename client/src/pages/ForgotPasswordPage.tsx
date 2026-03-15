@@ -1,16 +1,21 @@
-import { Card, Form, Input, Button, message, Typography } from 'antd';
+import { Card, Form, Input, Button, Typography } from 'antd';
 import { PublicBackButton } from '../ui/PublicBackButton';
+import { useRequestPasswordChange } from '../features/auth/useRequestPasswordChange';
+import { ForgotPasswordPayload } from '../types/AuthPublicPassword';
 
 const { Title, Text } = Typography;
 
 function ForgotPasswordPage() {
+  const { requestPasswordChange, isRequestingEmail } =
+    useRequestPasswordChange();
   const [form] = Form.useForm();
 
-  const handleSubmit = (values: any) => {
-    message.success('A reset email has been sent to this account');
+  const handleSubmit = (values: ForgotPasswordPayload) => {
+    if (values.contactFax || values.secondaryEmail) {
+      return;
+    }
+    requestPasswordChange(values);
     form.resetFields();
-    console.log(values);
-    // call mutation here
   };
 
   return (
@@ -45,6 +50,21 @@ function ForgotPasswordPage() {
           onFinish={handleSubmit}
           style={{ marginTop: 24 }}
         >
+          {/* Honeypot */}
+          <Form.Item
+            name='contactFax'
+            style={{ position: 'absolute', left: '-9999px' }}
+          >
+            <Input autoComplete='off' tabIndex={-1} />
+          </Form.Item>
+          <Form.Item
+            name='secondaryEmail'
+            style={{ position: 'absolute', left: '-9999px' }}
+          >
+            <Input autoComplete='off' tabIndex={-1} />
+          </Form.Item>
+
+          {/* Real Form */}
           <Form.Item
             label='Email'
             name='email'
@@ -64,6 +84,7 @@ function ForgotPasswordPage() {
               type='primary'
               htmlType='submit'
               size='large'
+              disabled={isRequestingEmail}
               block
               style={{
                 background: '#5154F0',

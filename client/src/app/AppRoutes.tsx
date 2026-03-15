@@ -18,7 +18,7 @@ import ProjectInfoLayout from '../ui/ProjectInfoLayout';
 import UserProfile from '../ui/UserProfile';
 import PublicRoute from '../utilities/PublicRoute';
 import OrganizationPage from '../pages/OrganizationPage';
-import ChangePasswordPage from '../pages/ForgotPasswordPage';
+import ChangePasswordPage from '../pages/ChangePasswordPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import RegisterOrganization from '../pages/RegisterOrganization';
 import TermsOfService from '../pages/TermsOfService';
@@ -44,14 +44,7 @@ export function AppRoutes() {
           </PublicRoute>
         }
       />
-      <Route
-        path='/change-password'
-        element={
-          <PublicRoute>
-            <ChangePasswordPage />
-          </PublicRoute>
-        }
-      />
+      <Route path='/change-password' element={<ChangePasswordPage />} />
       <Route path='/register' element={<RegisterOrganization />} />
       <Route path='/terms-of-service' element={<TermsOfService />} />
 

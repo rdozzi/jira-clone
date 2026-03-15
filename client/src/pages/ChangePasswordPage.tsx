@@ -1,13 +1,15 @@
-import { useSearchParams } from 'react-router-dom';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import { Card, Form, Input, Button, Typography } from 'antd';
+import { passwordValidation } from '../lib/validation/passwordValidation';
+import { useChangePasswordPublic } from '../features/auth/useChangePasswordPublic';
 
 const { Title, Text } = Typography;
 
 function ChangePasswordPage() {
+  const { changePasswordPublic, isChangingPassword } =
+    useChangePasswordPublic();
   const [searchParams] = useSearchParams();
-
-  const token = searchParams.get('token');
+  const token = searchParams?.get('token');
 
   const [form] = Form.useForm();
 
@@ -16,8 +18,14 @@ function ChangePasswordPage() {
   }
 
   const handleSubmit = (values: any) => {
-    console.log(values);
-    // call mutation here
+    const changePasswordPayload = { token, ...values };
+    try {
+      changePasswordPublic(changePasswordPayload);
+      form.resetFields();
+      <Navigate to='/login' replace />;
+    } catch (error) {
+      console.error(`Could not update password: ${error}`);
+    }
   };
 
   return (
@@ -54,10 +62,7 @@ function ChangePasswordPage() {
           <Form.Item
             label='New Password'
             name='newPassword'
-            rules={[
-              { required: true, message: 'Please enter a new password' },
-              { min: 8, message: 'Password must be at least 8 characters' },
-            ]}
+            rules={passwordValidation}
           >
             <Input.Password size='large' />
           </Form.Item>
@@ -86,6 +91,7 @@ function ChangePasswordPage() {
               type='primary'
               htmlType='submit'
               size='large'
+              disabled={isChangingPassword}
               block
               style={{
                 background: '#5154F0',

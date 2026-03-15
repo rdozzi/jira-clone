@@ -1,37 +1,25 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Form, Input, Button, Card, Checkbox, Typography, Space } from 'antd';
 import {
   nameValidationRules,
   organizationNameRules,
-} from '../validation/orgRegistrationSchemas';
+} from '../lib/validation/orgRegistrationSchemas';
 import { PublicBackButton } from '../ui/PublicBackButton';
-// import { registerOrganization } from '../services/authService';
+import { OrgRegistrationForm } from '../types/OrgRegistration';
+import { useCreateOrg } from '../features/setup/useCreateOrg';
 
 const { Title } = Typography;
 
-interface RegisterFormValues {
-  contactFax: string;
-  secondaryEmail: string;
-  formLoadedAt: number;
-  firstName: string;
-  lastName: string;
-  organizationName: string;
-  email: string;
-  acceptTerms: boolean;
-}
-
 function RegisterOrganization() {
+  const formLoadedAt = useRef(Date.now());
   const [form] = Form.useForm();
+  const { createOrg, isCreatingOrg } = useCreateOrg();
 
   const clickHere = <Link to='/terms-of-service'>Terms of Service</Link>;
 
-  const handleSubmit = async (values: RegisterFormValues) => {
-    // try {
-    //   await registerOrganization(values);
-    // } catch (error) {
-    //   console.error(error);
-    // }
-    const duration = Date.now() - values.formLoadedAt;
+  const handleSubmit = async (values: OrgRegistrationForm) => {
+    const duration = Date.now() - formLoadedAt.current;
 
     if (values.contactFax || values.secondaryEmail) {
       return;
@@ -41,7 +29,9 @@ function RegisterOrganization() {
       return;
     }
 
-    console.log(values);
+    const createOrgPayload = { duration, ...values };
+
+    createOrg(createOrgPayload);
     form.resetFields();
   };
 
@@ -81,11 +71,6 @@ function RegisterOrganization() {
               style={{ position: 'absolute', left: '-9999px' }}
             >
               <Input autoComplete='off' tabIndex={-1} />
-            </Form.Item>
-
-            {/* Time trap */}
-            <Form.Item name='formLoadedAt' initialValue={Date.now()} hidden>
-              <Input />
             </Form.Item>
 
             {/* Real Form */}
@@ -150,7 +135,12 @@ function RegisterOrganization() {
             </Form.Item>
 
             <Form.Item>
-              <Button type='primary' htmlType='submit' block>
+              <Button
+                type='primary'
+                htmlType='submit'
+                disabled={isCreatingOrg}
+                block
+              >
                 Create Organization
               </Button>
             </Form.Item>
