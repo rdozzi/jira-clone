@@ -21,7 +21,6 @@ export function useLogin() {
       }
     },
     onSuccess: () => {
-      console.log('inside onSuccess');
       queryClient.removeQueries({ queryKey: ['userSelf'] });
       message.success('Login was successul');
     },
