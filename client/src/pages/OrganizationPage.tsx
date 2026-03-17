@@ -58,6 +58,7 @@ function OrganizationPage() {
       userSelf?.organizationRole !== 'SUPERADMIN'
     ) {
       message.error('Insufficient role: Cannot create new user');
+      return;
     }
     openModal({});
   }
