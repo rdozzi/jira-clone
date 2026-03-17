@@ -13,6 +13,7 @@ import { authenticate } from './middleware/authAndLoadInfoMiddleware/authenticat
 import { loadUserProjects } from './middleware/authAndLoadInfoMiddleware/loadUserProjects';
 import { storeUserAndProjectInfo } from './middleware/authAndLoadInfoMiddleware/storeUserAndProjectInfo';
 import { globalRateLimiter } from './middleware/rateLimiter';
+import { blockDemoWrites } from './middleware/authAndLoadInfoMiddleware/blockDemoWrites';
 
 // Routes
 import attachmentRoutes from './router/attachmentRoutes';
@@ -78,6 +79,9 @@ app.use(loadUserProjects);
 
 // Store user and project info in response locals
 app.use(storeUserAndProjectInfo);
+
+// Demo Guard
+app.use(blockDemoWrites);
 
 // Protected routes
 app.use('/api', organizationRoutes);

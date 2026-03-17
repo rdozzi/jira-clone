@@ -5,9 +5,9 @@ import { CustomRequest } from '../../types/CustomRequest';
 function storeUserAndProjectInfoFn(
   req: CustomRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void {
-  const { id, globalRole, organizationId, organizationRole } = req.user!;
+  const { id, globalRole, organizationId, organizationRole, email } = req.user!;
   const userProjects = req.userProjects;
 
   res.locals.userInfo = {
@@ -15,6 +15,7 @@ function storeUserAndProjectInfoFn(
     globalRole: globalRole,
     organizationId: organizationId,
     organizationRole: organizationRole,
+    email: email,
   };
 
   res.locals.userProjects = userProjects;
