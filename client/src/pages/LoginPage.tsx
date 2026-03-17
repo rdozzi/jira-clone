@@ -73,7 +73,7 @@ function LoginPage() {
   }
 
   async function handleLogin(email: string, password: string) {
-    // This calls the login function in the backend and will either inform that the password needs to be updated or will permit the use the Jwt information to get the
+    // This calls the login function in the backend and will either fail (bad credentials) or populate the frontend Auth context with the login function below.
     const loginCheckPayload = await checkUserLoginInfo(email, password);
 
     if (!loginCheckPayload) {
@@ -86,12 +86,7 @@ function LoginPage() {
 
     login(token, organizationRole, userId);
 
-    if (loginCheckPayload.mustChangePassword) {
-      setIsUpdatePasswordModalOpen(true);
-      return;
-    }
-
-    // implement conditional logic, if the flag password changed is true then go to other page, else go to user homepage.
+    // Conditional logic is here for expansion. All roles currently lead to the same homepage
 
     const redirectPath =
       organizationRole === 'SUPERADMIN' ||
@@ -133,8 +128,13 @@ function LoginPage() {
     return null;
   }
 
-  function handleLoginDemo() {
-    console.log('Clicked handleLoginDemo');
+  async function handleLoginDemo() {
+    form.setFieldValue('email', 'demo@jiraclone.com');
+    form.setFieldValue('password', 'demo-password');
+
+    setTimeout(() => {
+      handleLogin('demo@jiraclone.com', 'demo-password');
+    }, 200);
   }
 
   const clickHere = (
