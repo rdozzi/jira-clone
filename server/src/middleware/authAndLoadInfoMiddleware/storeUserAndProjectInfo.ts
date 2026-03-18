@@ -7,7 +7,8 @@ function storeUserAndProjectInfoFn(
   res: Response,
   next: NextFunction,
 ): void {
-  const { id, globalRole, organizationId, organizationRole, email } = req.user!;
+  const { id, globalRole, organizationId, organizationRole, isDemoUser } =
+    req.user!;
   const userProjects = req.userProjects;
 
   res.locals.userInfo = {
@@ -15,7 +16,7 @@ function storeUserAndProjectInfoFn(
     globalRole: globalRole,
     organizationId: organizationId,
     organizationRole: organizationRole,
-    email: email,
+    isDemoUser: isDemoUser,
   };
 
   res.locals.userProjects = userProjects;

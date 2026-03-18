@@ -152,6 +152,7 @@ model User {
   isDeleted          Boolean?          @default(false)
   mustChangePassword Boolean?          @default(false)
   isEmailVerified    Boolean?          @default(true)
+  isDemoUser         Boolean           @default(false)
 
   //passwordHash is the input password hashed by bcrypt
 

@@ -48,6 +48,7 @@ export async function loginUser(
         globalRole: user.globalRole,
         organizationId: user.organizationId,
         organizationRole: user.organizationRole,
+        isDemoUser: user.isDemoUser,
       },
       process.env.JWT_SECRET as string,
     );
@@ -67,6 +68,7 @@ export async function loginUser(
           globalRole: user.globalRole,
           organizationRole: user.organizationRole,
           timestamp: new Date().toISOString(),
+          isDemoUser: user.isDemoUser,
         },
       }),
     ];

@@ -18,7 +18,7 @@ export interface CustomRequest extends Request {
     organizationRole: OrganizationRole;
     globalRole: GlobalRole;
     organizationId: number;
-    email: string;
+    isDemoUser: boolean;
   };
 
   userProjects?: {

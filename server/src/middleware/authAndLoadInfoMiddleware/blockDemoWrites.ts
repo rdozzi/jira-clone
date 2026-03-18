@@ -5,9 +5,7 @@ export function blockDemoWrites(
   res: Response,
   next: NextFunction,
 ) {
-  const userEmail = res.locals.userInfo.email;
-
-  const isDemoUser = userEmail === process.env.DEMO_USER_EMAIL;
+  const isDemoUser = res.locals.userInfo.isDemoUser;
 
   const writeMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
 

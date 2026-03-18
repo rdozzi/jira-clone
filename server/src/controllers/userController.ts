@@ -138,6 +138,7 @@ export async function getUserSelf(
         organizationRole: true,
         organizationId: true,
         createdAt: true,
+        isDemoUser: true,
       },
     });
 

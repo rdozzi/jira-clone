@@ -27,7 +27,7 @@ function authenticateFn(req: CustomRequest, res: Response, next: NextFunction) {
       globalRole: payload.globalRole,
       organizationId: payload.organizationId,
       organizationRole: payload.organizationRole,
-      email: payload.email,
+      isDemoUser: payload.isDemoUser,
     };
 
     next();

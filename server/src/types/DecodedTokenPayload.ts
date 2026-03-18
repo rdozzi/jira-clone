@@ -8,4 +8,5 @@ export interface DecodedTokenPayload {
   organizationId: number;
   iat?: number;
   exp?: number;
+  isDemoUser: boolean;
 }
