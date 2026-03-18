@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ProjectMember } from '../types/ProjectMember';
-import { Modal, Form, Select } from 'antd';
+import { Modal, Form, Select, message } from 'antd';
 import { useAddProjectMember } from '../features/projectMember/useAddProjectMember';
 import { useUpdateProjectMemberRole } from '../features/projectMember/useUpdateProjectMemberRole';
 import { useProjectInfo } from '../contexts/useProjectInfo';
 import { useGetUsers } from '../features/users/useGetUsers';
 import { PROJECT_ROLES } from '../types/ProjectMember';
 import { Users } from '../types/Users';
+import { useUser } from '../contexts/useUser';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ function ProjectMembersModal({ isOpen, closeModal, record, mode }: ModalProps) {
     useUpdateProjectMemberRole();
   const { selectedProject, typedProjects, isProjectLoading } = useProjectInfo();
   const { isLoadingUsers, users } = useGetUsers();
+  const { userSelf } = useUser();
 
   const [form] = Form.useForm();
 
@@ -50,6 +52,10 @@ function ProjectMembersModal({ isOpen, closeModal, record, mode }: ModalProps) {
   }
 
   async function onFinishAdd(values: Value) {
+    if (userSelf?.isDemoUser) {
+      message.info('This button is disabled for demo users');
+      return;
+    }
     try {
       const { projectId, ...rest } = values;
       const memberInfo = { ...rest };
@@ -65,6 +71,10 @@ function ProjectMembersModal({ isOpen, closeModal, record, mode }: ModalProps) {
   }
 
   async function onFinishUpdate(values: Value) {
+    if (userSelf?.isDemoUser) {
+      message.info('This button is disabled for demo users');
+      return;
+    }
     try {
       const { projectId, userId, projectRole } = values;
       updateProjectMemberRole({ projectId, userId, projectRole });

@@ -104,6 +104,10 @@ export function UserProfile() {
   };
 
   function onFinishProfileEdit(values: Value) {
+    if (userSelf?.isDemoUser) {
+      message.info('This button is disabled for demo users');
+      return;
+    }
     const { organizationRole, ...rest } = values;
     const updatedOrgRole = organizationRole.toUpperCase();
     const updatedValues = { organizationRole: updatedOrgRole, ...rest };
@@ -125,6 +129,10 @@ export function UserProfile() {
   }
 
   function onFinishPasswordEdit(value: Password) {
+    if (userSelf?.isDemoUser) {
+      message.info('This button is disabled for demo users');
+      return;
+    }
     const { newPassword, confirmPassword } = value;
     if (newPassword !== confirmPassword) {
       message.error('Passwords do not match.');

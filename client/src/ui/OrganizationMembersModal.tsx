@@ -26,7 +26,11 @@ export function OrganizationMembersModal({ isOpen, closeModal }: ModalProps) {
   const [form] = Form.useForm();
 
   function handleOk() {
-    if (
+    if (userSelf?.isDemoUser) {
+      message.info('This button is disabled for demo users');
+      form.resetFields();
+      return;
+    } else if (
       userSelf?.organizationRole !== 'ADMIN' &&
       userSelf?.organizationRole !== 'SUPERADMIN'
     ) {
@@ -66,7 +70,7 @@ export function OrganizationMembersModal({ isOpen, closeModal }: ModalProps) {
       getContainer={false}
       destroyOnClose={true}
       mask={false}
-      okText={'create'}
+      okText={'Create'}
     >
       <Form
         form={form}

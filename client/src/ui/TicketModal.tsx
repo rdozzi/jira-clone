@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import dayjs from 'dayjs';
 
-import { Modal, Form, Input, Radio, DatePicker, Select } from 'antd';
+import { Modal, Form, Input, Radio, DatePicker, Select, message } from 'antd';
 
 import { Ticket, Priority, Status, Type } from '../types/Ticket';
 
@@ -10,7 +10,7 @@ import { useCreateTickets } from '../features/tickets/useCreateTickets';
 import { useGetTicketById } from '../features/tickets/useGetTicketById';
 import { useUpdateTicket } from '../features/tickets/useUpdateTicket';
 import { useProjectBoard } from '../contexts/useProjectBoard';
-import { useGetUserSelf } from '../features/users/useGetUserSelf';
+import { useUser } from '../contexts/useUser';
 import { ProjectMember } from '../types/ProjectMember';
 import { getUpdatedFields } from '../utilities/getUpdatedFields';
 import { useGetProjectMembers } from '../features/projectMember/useGetProjectMembers';
@@ -39,7 +39,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
   const { ticket } = useGetTicketById(record?.id);
   const { updateTicket, isUpdating } = useUpdateTicket();
   const { projectId, boardId } = useProjectBoard();
-  const { userSelf, isLoadingUser } = useGetUserSelf();
+  const { userSelf, isLoadingUser } = useUser();
   const { isLoadingProjectMember, projectMembers } =
     useGetProjectMembers(projectId);
 
@@ -67,6 +67,10 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
   const userOptions = getOptions(projectMembers);
 
   function handleOk() {
+    if (userSelf?.isDemoUser) {
+      message.info('This button is disabled for demo users');
+      return;
+    }
     form.submit();
   }
 
@@ -98,7 +102,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
       const updatedValues = {
         ...rest,
         boardId: boardId as number,
-        reporterId: userSelf.id,
+        reporterId: userSelf?.id,
         assigneeId: assignee,
         dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
         priority: values.priority as Priority,
@@ -124,7 +128,7 @@ function TicketModal({ isOpen, closeModal, record, mode }: TicketModalProps) {
       const updatedValues = {
         ...rest,
         boardId: boardId as number,
-        reporterId: userSelf.id,
+        reporterId: userSelf?.id,
         assigneeId: assignee,
         dueDate: dayjs(values.dueDate).format('YYYY-MM-DDTHH:mm:ssZ'),
       };

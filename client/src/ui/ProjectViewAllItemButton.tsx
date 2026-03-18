@@ -4,8 +4,9 @@ import { useProjectModal } from '../contexts/modalContexts/useProjectModal';
 
 import { useCreateProject } from '../features/projects/useCreateProject';
 import { useDeleteProject } from '../features/projects/useDeleteProject';
+import { useUser } from '../contexts/useUser';
 
-import { Dropdown, Button } from 'antd';
+import { Dropdown, Button, message } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
 import { ProjectViewAllProjects } from '../types/Project';
@@ -45,6 +46,7 @@ const ProjectViewAllItemButton = memo(function ProjectViewAllItemButton({
   const { deleteProject, isDeletingProject } = useDeleteProject();
   const { openModal } = useProjectModal();
   const { openModal: openAttachmentModal } = useAttachmentModal();
+  const { userSelf } = useUser();
 
   const isDropdownOpen = activeDropdown === record.id;
 
@@ -63,6 +65,10 @@ const ProjectViewAllItemButton = memo(function ProjectViewAllItemButton({
         break;
 
       case 'duplicate':
+        if (userSelf?.isDemoUser) {
+          message.info('This button is disabled for demo users');
+          return;
+        }
         if (!record || typeof record != 'object') {
           console.error('Invalid record for duplication', record);
           break;
@@ -71,7 +77,9 @@ const ProjectViewAllItemButton = memo(function ProjectViewAllItemButton({
         break;
 
       case 'archive':
-        console.log('Archive option selected for project:', record.name);
+        message.info(
+          `Archive option selected for project ${record.name} [Future feature]`,
+        );
         break;
 
       case 'attachments':
@@ -79,6 +87,10 @@ const ProjectViewAllItemButton = memo(function ProjectViewAllItemButton({
         break;
 
       case 'delete':
+        if (userSelf?.isDemoUser) {
+          message.info('This button is disabled for demo users');
+          return;
+        }
         deleteProject(record.id);
         break;
 

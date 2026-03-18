@@ -46,6 +46,11 @@ export const OrganizationMemberListItemButton = memo(
     }
 
     function handlePopConfirmDeleteUser(recordId: number) {
+      if (userSelf?.isDemoUser) {
+        message.info('This button is disabled for demo users');
+        setIsPopConfirmOpen(false);
+        return;
+      }
       if (recordId === userSelf?.id) {
         message.error('Cannot delete yourself. Contact admin for assistance.');
         setIsPopConfirmOpen(false);
@@ -77,6 +82,7 @@ export const OrganizationMemberListItemButton = memo(
           onConfirm={() => handlePopConfirmDeleteUser(record.id)}
           okText='Yes'
           cancelText='No'
+          onCancel={() => setIsPopConfirmOpen(false)}
           open={isPopConfirmOpen}
         />
       </>

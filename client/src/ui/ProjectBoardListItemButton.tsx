@@ -5,8 +5,9 @@ import { useBoardModal } from '../contexts/modalContexts/useBoardModal';
 import { useCreateBoard } from '../features/boards/useCreateBoard';
 import { useDeleteBoard } from '../features/boards/useDeleteBoard';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
+import { useUser } from '../contexts/useUser';
 
-import { Dropdown, Button } from 'antd';
+import { Dropdown, Button, message } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 
 const dropdownItems = [
@@ -42,6 +43,7 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
   const { openModal: openAttachmentModal } = useAttachmentModal();
   const { createBoard, isCreatingBoard } = useCreateBoard();
   const { deleteBoard, isDeletingBoard } = useDeleteBoard();
+  const { userSelf } = useUser();
 
   const isDropdownOpen = activeDropdown === record.id;
 
@@ -61,6 +63,10 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
         break;
 
       case 'duplicate':
+        if (userSelf?.isDemoUser) {
+          message.info('This button is disabled for demo users');
+          return;
+        }
         if (!record || typeof record != 'object') {
           console.error('Invalid record for duplication', record);
           break;
@@ -69,7 +75,9 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
         break;
 
       case 'archive':
-        console.log(`Archive selected for board: ${record.name}`);
+        message.info(
+          `Archive selected for board: ${record.name} [Future feature]`,
+        );
         break;
 
       case 'attachments':
@@ -77,6 +85,10 @@ const ProjectBoardListItemButton = memo(function ProjectBoardListItemButton({
         break;
 
       case 'delete':
+        if (userSelf?.isDemoUser) {
+          message.info('This button is disabled for demo users');
+          return;
+        }
         deleteBoard(record.id);
         break;
 

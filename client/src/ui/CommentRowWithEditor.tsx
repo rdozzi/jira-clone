@@ -10,6 +10,8 @@ import {
 import { getLocalTime } from '../utilities/getLocalTime';
 import { areStringsIdentical } from '../utilities/areStringsIdentical';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
+import { useUser } from '../contexts/useUser';
+import { DemoPopover } from './DemoPopover';
 
 interface CommentRowWithEditorProps {
   comment: {
@@ -43,6 +45,7 @@ const CommentRowWithEditor = memo(function CommentRowWithEditor({
   handleOpenEditor,
   handleDeleteComment,
 }: CommentRowWithEditorProps) {
+  const { userSelf } = useUser();
   const { openModal } = useAttachmentModal();
   function openAttachmentModal() {
     openModal('COMMENT', { id: comment.id, comment });
@@ -69,7 +72,7 @@ const CommentRowWithEditor = memo(function CommentRowWithEditor({
                 if (
                   areStringsIdentical(
                     editValue || comment.content,
-                    comment.content
+                    comment.content,
                   )
                 ) {
                   setOpenEditor(null);
@@ -94,43 +97,51 @@ const CommentRowWithEditor = memo(function CommentRowWithEditor({
           <span>{getLocalTime(comment.updatedAt)}</span>
         </>
       )}
-      <Tooltip title='Edit Comment'>
-        <Button
-          type='text'
-          shape='circle'
-          icon={<EditOutlined />}
-          size='small'
-          onClick={() => handleOpenEditor(comment.id, comment.content)}
-        ></Button>
-      </Tooltip>
-      <Popconfirm
-        title='Delete Comment'
-        description='Are you sure you want to delete this comment?'
-        onConfirm={() => handleDeleteComment(comment.id)}
-        placement='top'
-        okText='Yes'
-        cancelText='No'
-      >
-        <Tooltip title='Delete Comment'>
+      <DemoPopover content='This feature is not available for demo users'>
+        <Tooltip title='Edit Comment'>
+          <Button
+            disabled={userSelf?.isDemoUser}
+            type='text'
+            shape='circle'
+            icon={<EditOutlined />}
+            size='small'
+            onClick={() => handleOpenEditor(comment.id, comment.content)}
+          ></Button>
+        </Tooltip>
+      </DemoPopover>
+      <DemoPopover content='This feature is not available for demo users'>
+        <Popconfirm
+          title='Delete Comment'
+          description='Are you sure you want to delete this comment?'
+          onConfirm={() => handleDeleteComment(comment.id)}
+          placement='top'
+          okText='Yes'
+          cancelText='No'
+        >
+          <Tooltip title='Delete Comment'>
+            <Button
+              type='text'
+              shape='circle'
+              icon={<DeleteOutlined />}
+              size='small'
+              disabled={isDeleting || userSelf?.isDemoUser}
+              danger
+            ></Button>
+          </Tooltip>
+        </Popconfirm>
+      </DemoPopover>
+      <DemoPopover content='This feature is not available for demo users'>
+        <Tooltip title='See Attachments'>
           <Button
             type='text'
             shape='circle'
-            icon={<DeleteOutlined />}
+            icon={<PaperClipOutlined />}
             size='small'
-            disabled={isDeleting}
-            danger
+            onClick={openAttachmentModal}
+            disabled={userSelf?.isDemoUser}
           ></Button>
         </Tooltip>
-      </Popconfirm>
-      <Tooltip title='See Attachments'>
-        <Button
-          type='text'
-          shape='circle'
-          icon={<PaperClipOutlined />}
-          size='small'
-          onClick={openAttachmentModal}
-        ></Button>
-      </Tooltip>
+      </DemoPopover>
     </li>
   );
 });

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Modal, Form, Input, Select } from 'antd';
+import { Modal, Form, Input, Select, message } from 'antd';
 import { useProjectInfo } from '../contexts/useProjectInfo';
 import { useGetBoardById } from '../features/boards/useGetBoardsById';
 import { useUpdateBoard } from '../features/boards/useUpdateBoard';
+import { useUser } from '../contexts/useUser';
 import { getUpdatedBoardFields } from '../utilities/getUpdatedFields';
 import { Board } from '../types/Board';
 import { Project } from '../types/Project';
@@ -38,6 +39,7 @@ function ProjectBoardsModal({ isOpen, closeModal, record, mode }: ModalProps) {
   const { createBoard, isCreatingBoard } = useCreateBoard();
   const { board } = useGetBoardById(record?.id);
   const { updateBoard, isUpdatingBoard } = useUpdateBoard();
+  const { userSelf } = useUser();
 
   const [form] = Form.useForm();
   const projectOptions = getOptions(typedProjects);
@@ -74,6 +76,10 @@ function ProjectBoardsModal({ isOpen, closeModal, record, mode }: ModalProps) {
   }
 
   async function onFinishCreate(values: Value) {
+    if (userSelf?.isDemoUser) {
+      message.info('This button is disabled for demo users');
+      return;
+    }
     try {
       const { project, ...rest } = values;
       const newValues = { projectId: project, ...rest };
@@ -89,6 +95,10 @@ function ProjectBoardsModal({ isOpen, closeModal, record, mode }: ModalProps) {
   }
 
   async function onFinishEdit(values: Value) {
+    if (userSelf?.isDemoUser) {
+      message.info('This button is disabled for demo users');
+      return;
+    }
     try {
       const { project, ...rest } = values;
       const newValues = { projectId: project, ...rest };

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ModalProps } from '../types/ModalProps';
-import { Modal, Form, Input } from 'antd';
+import { Modal, Form, Input, message } from 'antd';
 import { useCreateProject } from '../features/projects/useCreateProject';
 import { useUpdateProject } from '../features/projects/useUpdateProject';
+import { useUser } from '../contexts/useUser';
 import { getUpdatedProjectFields } from '../utilities/getUpdatedFields';
 import { Project } from '../types/Project';
 
@@ -23,6 +24,7 @@ function ProjectViewAllModal({
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { createProject, isCreatingProject } = useCreateProject();
   const { updateProject, isUpdatingProject } = useUpdateProject();
+  const { userSelf } = useUser();
 
   const [form] = Form.useForm();
 
@@ -57,6 +59,10 @@ function ProjectViewAllModal({
   }
 
   async function onFinishCreate(values: Values) {
+    if (userSelf?.isDemoUser) {
+      message.info('This button is disabled for demo users');
+      return;
+    }
     try {
       createProject(values);
       setConfirmLoading(isCreatingProject);
@@ -70,6 +76,10 @@ function ProjectViewAllModal({
   }
 
   async function onFinishEdit(values: Values) {
+    if (userSelf?.isDemoUser) {
+      message.info('This button is disabled for demo users');
+      return;
+    }
     try {
       const projectId = record?.id as number;
       const updatedFields = getUpdatedProjectFields(record, values);

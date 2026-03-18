@@ -4,11 +4,12 @@ import { useDropdown } from '../contexts/DropdownContext';
 import { useProjectMemberModal } from '../contexts/modalContexts/useProjectMemberModal';
 import ProjectMembersModal from './ProjectMembersModal';
 
-import { Dropdown, Button } from 'antd';
+import { Dropdown, Button, message } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 
 import { ProjectMember } from '../types/ProjectMember';
 import { useRemoveProjectMember } from '../features/projectMember/useRemoveProjectMember';
+import { useUser } from '../contexts/useUser';
 
 const dropdownItems = [
   {
@@ -37,6 +38,7 @@ const ProjectMemberListItemButton = memo(function ProjectMemberListItemButton({
     useProjectMemberModal();
   const { removeProjectMember, isRemovingProjectMember } =
     useRemoveProjectMember();
+  const { userSelf } = useUser();
   const navigate = useNavigate();
 
   const isDropdownOpen = activeDropdown === record.userId;
@@ -52,6 +54,10 @@ const ProjectMemberListItemButton = memo(function ProjectMemberListItemButton({
         break;
 
       case 'removeMember':
+        if (userSelf?.isDemoUser) {
+          message.info('This button is disabled for demo users');
+          return;
+        }
         removeProjectMember({
           projectId: projectId,
           userId: record.userId,

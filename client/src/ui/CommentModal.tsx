@@ -1,11 +1,12 @@
 import { useMemo, useState, useCallback } from 'react';
-import { Modal, Form } from 'antd';
+import { Modal, Form, message } from 'antd';
 
 import { useGetCommentsById } from '../features/comments/useGetCommentsById';
 import { sortCommentObjects } from '../utilities/sortCommentObjects';
 import { useCreateComment } from '../features/comments/useCreateComment';
 import { useDeleteComment } from '../features/comments/useDeleteComment';
 import { useUpdateComment } from '../features/comments/useUpdateComment';
+import { useUser } from '../contexts/useUser';
 
 import CreateCommentForm from './CreateCommentForm';
 import CommentRowWithEditor from './CommentRowWithEditor';
@@ -30,6 +31,7 @@ function CommentModal({
   const { createNewComment, isCreating } = useCreateComment(recordId);
   const { deleteComment, isDeleting } = useDeleteComment(recordId);
   const { editComment, isUpdating } = useUpdateComment(recordId);
+  const { userSelf } = useUser();
 
   const sortedComments = useMemo(() => {
     return sortCommentObjects(comments ?? []);
@@ -49,7 +51,7 @@ function CommentModal({
         setEditValue(content);
       }
     },
-    [openEditor]
+    [openEditor],
   );
 
   const handleEditComment = useCallback(
@@ -64,11 +66,16 @@ function CommentModal({
         setOpenEditor(null);
       }
     },
-    [editComment]
+    [editComment],
   );
 
   const handleCreateComment = useCallback(
     async function handleCreateComment(values: { content: string }) {
+      if (userSelf?.isDemoUser) {
+        message.info('This button is disabled for demo users');
+        form.resetFields();
+        return;
+      }
       const trimmedContent = values.content.trim();
       values.content = trimmedContent;
       try {
@@ -83,7 +90,7 @@ function CommentModal({
         form.resetFields();
       }
     },
-    [createNewComment, recordId, form]
+    [createNewComment, recordId, form, userSelf?.isDemoUser],
   );
 
   const handleDeleteComment = useCallback(
@@ -94,7 +101,7 @@ function CommentModal({
         console.error('Error deleting comment: ', error);
       }
     },
-    [deleteComment]
+    [deleteComment],
   );
 
   if (error) return <div>Could not load Comment Data</div>;

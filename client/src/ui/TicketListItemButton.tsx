@@ -2,7 +2,7 @@ import { useState, memo } from 'react';
 import dayjs from 'dayjs';
 import { Ticket } from '../types/Ticket';
 
-import { Dropdown, Button } from 'antd';
+import { Dropdown, Button, message } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 
 import { useDeleteTicket } from '../features/tickets/useDeleteTicket';
@@ -10,6 +10,7 @@ import { useCreateTickets } from '../features/tickets/useCreateTickets';
 import { useDropdown } from '../contexts/DropdownContext';
 import { useTicketModal } from '../contexts/modalContexts/useTicketModal';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
+import { useUser } from '../contexts/useUser';
 
 import CommentModal from './CommentModal';
 
@@ -49,6 +50,7 @@ const TicketListItemButton = memo(function TicketListItemButton<
   const { deleteTicket, isDeleting } = useDeleteTicket();
   const { createNewTicket, isCreating } = useCreateTickets();
   const { openModal: openAttachmentModal } = useAttachmentModal();
+  const { userSelf } = useUser();
 
   const [isCommentOpen, setIsCommentOpen] = useState(false);
 
@@ -84,11 +86,19 @@ const TicketListItemButton = memo(function TicketListItemButton<
           console.error('Invalid record for duplication', record);
           break;
         }
+
+        if (userSelf?.isDemoUser) {
+          message.info('This button is disabled for demo users');
+          return;
+        }
+
         createNewTicket(duplicateTicket);
         break;
 
       case 'archive':
-        console.log(`Archive option selected for ticket`, record.title);
+        message.info(
+          `Archive option selected for ticket ${record.title} [future feature]`,
+        );
         break;
 
       case 'add_view_comments':
@@ -100,6 +110,10 @@ const TicketListItemButton = memo(function TicketListItemButton<
         break;
 
       case 'delete':
+        if (userSelf?.isDemoUser) {
+          message.info('This button is disabled for demo users');
+          return;
+        }
         deleteTicket(record.id);
         break;
 

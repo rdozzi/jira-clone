@@ -16,6 +16,7 @@ export interface Users {
   updatedAt: Date;
   deletedAt: Date;
   isDeleted: boolean;
+  isDemoUser: boolean;
 }
 
 export type OrganizationUser = Pick<

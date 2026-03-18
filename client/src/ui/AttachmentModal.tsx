@@ -8,6 +8,8 @@ import AttachmentRow from './AttachmentRow';
 import Loading from './Loading';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
 import { useUploadSingleAttachment } from '../features/attachments/useUploadSingleAttachment';
+import { useUser } from '../contexts/useUser';
+import { DemoPopover } from './DemoPopover';
 
 export type ModalPropsWithRecord = {
   id?: number;
@@ -17,6 +19,7 @@ export type ModalPropsWithRecord = {
 
 function AttachmentModal() {
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const { userSelf } = useUser();
 
   const { isOpen, closeModal, mode, modalProps } = useAttachmentModal() as {
     isOpen: boolean;
@@ -27,7 +30,7 @@ function AttachmentModal() {
   const { isFetchingAttachments, attachments, attachmentError } =
     useGetAttachments(
       mode,
-      typeof modalProps?.id === 'number' ? modalProps.id : -1
+      typeof modalProps?.id === 'number' ? modalProps.id : -1,
     );
   const { uploadSingleAttachment, isUploadingAttachment } =
     useUploadSingleAttachment();
@@ -83,16 +86,18 @@ function AttachmentModal() {
       ) : (
         <div> No Attachments Found</div>
       )}
-      <Upload
-        customRequest={handleCustomRequest}
-        showUploadList={false}
-        multiple={false}
-        disabled={isUploadingAttachment}
-      >
-        <Button icon={<UploadOutlined />}>Upload</Button>
-      </Upload>
+      <DemoPopover content='This feature is not available for demo users'>
+        <Upload
+          customRequest={handleCustomRequest}
+          showUploadList={false}
+          multiple={false}
+          disabled={isUploadingAttachment || userSelf?.isDemoUser}
+        >
+          <Button icon={<UploadOutlined />}>Upload</Button>
+        </Upload>
+      </DemoPopover>
     </Modal>,
-    document.body
+    document.body,
   );
 }
 

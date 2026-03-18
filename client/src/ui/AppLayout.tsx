@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Layout, Flex, Typography } from 'antd';
+import { Alert, Layout, Flex, Typography } from 'antd';
 import {
   LogoutOutlined,
   HomeOutlined,
@@ -16,6 +16,7 @@ import { useAuth } from '../contexts/useAuth';
 import { useLogout } from '../features/auth/useLogout';
 import { useProjectInfo } from '../contexts/useProjectInfo';
 import { useTheme } from '../contexts/useTheme';
+import { useUser } from '../contexts/useUser';
 import { GenericDropdown } from './GenericDropdown';
 import ModalLayer from '../ui/ModalLayer';
 
@@ -39,10 +40,14 @@ function AppLayout() {
     setBoard,
     isBoardLoading,
   } = useProjectBoard();
+  const { userSelf } = useUser();
 
   const isProjectInfoView = /^\/projects\//.test(location.pathname);
   const isUserHomePageView = /^\/user-homepage/.test(location.pathname);
   const isUserProfileView = /^\/user-profile/.test(location.pathname);
+  const isOrganizationMembers = /^\/organization-members/.test(
+    location.pathname,
+  );
 
   const navigate = useNavigate();
 
@@ -110,7 +115,10 @@ function AppLayout() {
                 setSelected={setProject}
                 isSelectedLoading={isProjectLoading}
                 isProjectInfoView={
-                  isProjectInfoView || isUserHomePageView || isUserProfileView
+                  isProjectInfoView ||
+                  isUserHomePageView ||
+                  isUserProfileView ||
+                  isOrganizationMembers
                 }
               />
               <GenericDropdown
@@ -119,7 +127,10 @@ function AppLayout() {
                 setSelected={setBoard}
                 isSelectedLoading={isBoardLoading}
                 isProjectInfoView={
-                  isProjectInfoView || isUserHomePageView || isUserProfileView
+                  isProjectInfoView ||
+                  isUserHomePageView ||
+                  isUserProfileView ||
+                  isOrganizationMembers
                 }
               />
               <SidebarActionButton
@@ -148,6 +159,16 @@ function AppLayout() {
           </div>
         </Sider>
         <Content>
+          {userSelf?.isDemoUser ? (
+            <Alert
+              message='You are using the public demo account.'
+              description='Some administrative features are disabled.'
+              type='info'
+              showIcon={true}
+            />
+          ) : (
+            ''
+          )}
           <Outlet />
         </Content>
         <ModalLayer />

@@ -7,6 +7,8 @@ import { EntityType } from '../types/Attachments';
 import { ModalPropsWithRecord } from './AttachmentModal';
 import { useAttachmentModal } from '../contexts/useAttachmentModal';
 import { downloadAttachment } from '../services/apiAttachments';
+import { useUser } from '../contexts/useUser';
+import { DemoPopover } from './DemoPopover';
 
 function editFilename(fileName: string) {
   const dashIndex = fileName.indexOf('-', 0);
@@ -24,8 +26,9 @@ function AttachmentRow({ attachment }: { attachment: Attachment }) {
   };
   const { deleteSingleAttachment, isDeletingAttachment } = useDeleteAttachment(
     mode,
-    typeof modalProps?.id === 'number' ? modalProps.id : -1
+    typeof modalProps?.id === 'number' ? modalProps.id : -1,
   );
+  const { userSelf } = useUser();
 
   async function handleDownload(attachmentId: number) {
     try {
@@ -41,26 +44,33 @@ function AttachmentRow({ attachment }: { attachment: Attachment }) {
   return (
     <Flex justify='flex-start' align='center' gap='small'>
       {editFilename(attachment.fileName)}
-      <Tooltip title='Download Attachment'>
-        <Button
-          icon={<DownloadOutlined />}
-          onClick={() => handleDownload(attachment.id)}
-          loading={isDownloadingAttachment}
-          disabled={isDownloadingAttachment}
-        />
-      </Tooltip>
-      <Popconfirm
-        title='Delete Attachments'
-        description='Are you sure you want to delete this attachment?'
-        onConfirm={() => deleteSingleAttachment(attachment.id)}
-        placement='top'
-        okText='Yes'
-        cancelText='No'
-      >
-        <Tooltip title='Delete Attachment'>
-          <Button icon={<DeleteOutlined />} disabled={isDeletingAttachment} />
+      <DemoPopover content='This feature is not available for demo users'>
+        <Tooltip title='Download Attachment'>
+          <Button
+            icon={<DownloadOutlined />}
+            onClick={() => handleDownload(attachment.id)}
+            loading={isDownloadingAttachment}
+            disabled={isDownloadingAttachment || userSelf?.isDemoUser}
+          />
         </Tooltip>
-      </Popconfirm>
+      </DemoPopover>
+      <DemoPopover content='This feature is not available for demo users'>
+        <Popconfirm
+          title='Delete Attachments'
+          description='Are you sure you want to delete this attachment?'
+          onConfirm={() => deleteSingleAttachment(attachment.id)}
+          placement='top'
+          okText='Yes'
+          cancelText='No'
+        >
+          <Tooltip title='Delete Attachment'>
+            <Button
+              icon={<DeleteOutlined />}
+              disabled={isDeletingAttachment || userSelf?.isDemoUser}
+            />
+          </Tooltip>
+        </Popconfirm>
+      </DemoPopover>
     </Flex>
   );
 }
