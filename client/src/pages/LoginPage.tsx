@@ -18,6 +18,9 @@ import {
 } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 
+const demoEmail = import.meta.env.VITE_DEMO_EMAIL;
+const demoPassword = import.meta.env.VITE_DEMO_PASSWORD;
+
 const { Content } = Layout;
 
 type FieldType = {
@@ -129,11 +132,11 @@ function LoginPage() {
   }
 
   async function handleLoginDemo() {
-    form.setFieldValue('email', 'demo@jiraclone.com');
-    form.setFieldValue('password', 'demo-password');
+    form.setFieldValue('email', demoEmail);
+    form.setFieldValue('password', demoPassword);
 
     setTimeout(() => {
-      handleLogin('demo@jiraclone.com', 'demo-password');
+      handleLogin(demoEmail, demoPassword);
     }, 200);
   }
 
