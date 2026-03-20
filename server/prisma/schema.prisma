@@ -35,7 +35,6 @@ model Organization {
   OrganizationCommentUsage      OrganizationCommentUsage[]
   OrganizationUserUsage         OrganizationUserUsage[]
   OrganizationLabelUsage        OrganizationLabelUsage[]
-  OrganizationActivityLogUsage  OrganizationActivityLogUsage[]
   OrganizationFileStorageUsage  OrganizationFileStorageUsage[]
   OrganizationBannedEmailsUsage OrganizationBannedEmailsUsage[]
   passwordTokens                PasswordToken[]
@@ -341,16 +340,6 @@ model OrganizationLabelUsage {
   totalLabels    Int      @default(0)
   maxLabels      Int?     @default(100)
   updatedAt      DateTime @updatedAt @db.Timestamptz()
-
-  //Relationships
-  Organization Organization @relation(fields: [organizationId], references: [id])
-}
-
-model OrganizationActivityLogUsage {
-  organizationId    Int      @id
-  totalActivityLogs Int      @default(0)
-  maxActivityLogs   Int?     @default(50000)
-  updatedAt         DateTime @updatedAt @db.Timestamptz()
 
   //Relationships
   Organization Organization @relation(fields: [organizationId], references: [id])
