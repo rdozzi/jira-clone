@@ -6,12 +6,11 @@ import { createOrgCommentCount } from './createOrgCommentCount';
 import { createOrgUserCount } from './createOrgUserCount';
 import { createOrgFileStorageCount } from './createOrgFileStorageCount';
 import { createOrgLabelCount } from './createOrgLabelCount';
-import { createOrgActivityLogCount } from './createOrgActivityLogCount';
 import { createOrgBannedEmailCount } from './createOrgBannedEmailCount';
 
 export async function createOrgCountRecords(
   prismaTest: PrismaClient | Prisma.TransactionClient,
-  organizationId: number
+  organizationId: number,
 ): Promise<void> {
   await createOrgProjectCount(prismaTest, organizationId);
   await createOrgBoardCount(prismaTest, organizationId);
@@ -20,7 +19,6 @@ export async function createOrgCountRecords(
   await createOrgUserCount(prismaTest, organizationId);
   await createOrgLabelCount(prismaTest, organizationId);
   await createOrgFileStorageCount(prismaTest, organizationId);
-  await createOrgActivityLogCount(prismaTest, organizationId);
   await createOrgBannedEmailCount(prismaTest, organizationId);
   return;
 }
