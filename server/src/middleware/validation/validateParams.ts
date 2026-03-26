@@ -5,7 +5,7 @@ import { z, ZodError } from 'zod';
 export function validateParams(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   const entitykey = Object.keys(req.params)[0];
 
