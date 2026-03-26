@@ -14,7 +14,7 @@ import { logBus } from '../lib/logBus';
 export async function getAllProjects(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const organizationId = res.locals.userInfo.organizationId;
@@ -36,14 +36,14 @@ export async function getAllProjects(
 export async function getProjectsByUserId(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const userProjects = res.locals.userProjects;
     const organizationId = res.locals.userInfo.organizationId;
 
     const projectIds: number[] = userProjects.map(
-      (p: { projectId: number; projectRole: string }) => p.projectId
+      (p: { projectId: number; projectRole: string }) => p.projectId,
     );
 
     const projects = await prisma.project.findMany({
@@ -64,7 +64,7 @@ export async function getProjectsByUserId(
 export async function createProject(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const user = res.locals.userInfo;
@@ -87,7 +87,7 @@ export async function createProject(
       async (tx) =>
         await tx.project.create({
           data,
-        })
+        }),
     );
 
     try {
@@ -127,7 +127,7 @@ export async function createProject(
       logBus.emit('activityLog', logEvents);
     } catch (setupError) {
       console.error(
-        `Failed to create board or add project member: ${setupError}`
+        `Failed to create board or add project member: ${setupError}`,
       );
     }
 
@@ -167,7 +167,7 @@ export async function createProject(
 export async function updateProject(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const user = res.locals.userInfo;
@@ -218,7 +218,7 @@ export async function updateProject(
 export async function deleteProject(
   req: Request,
   res: Response,
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ) {
   try {
     const userId = res.locals.userInfo.id;
@@ -241,7 +241,7 @@ export async function deleteProject(
         AttachmentEntityType.PROJECT,
         projectId,
         userId,
-        organizationId
+        organizationId,
       );
       await tx.project.delete({
         where: { id: projectId, organizationId: organizationId },
