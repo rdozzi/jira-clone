@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 
 export async function createCountTables(
   tx: Prisma.TransactionClient,
-  organizationId: number
+  organizationId: number,
 ) {
   try {
     await tx.organizationProjectUsage.create({
@@ -21,9 +21,6 @@ export async function createCountTables(
       data: { organizationId: organizationId },
     });
     await tx.organizationLabelUsage.create({
-      data: { organizationId: organizationId },
-    });
-    await tx.organizationActivityLogUsage.create({
       data: { organizationId: organizationId },
     });
     await tx.organizationFileStorageUsage.create({

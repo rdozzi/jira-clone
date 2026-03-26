@@ -5,7 +5,7 @@ export async function createTicket(
   testDescription: string,
   boardId: number,
   userId: number,
-  organizationId: number
+  organizationId: number,
 ) {
   const ticket = await prismaTest.ticket.create({
     data: {

@@ -280,14 +280,10 @@ export const ticketTypeSchema = z
   });
 
 export const tokenQuerySchema = z
-  .object({
-    token: z
-      .string()
-      .trim()
-      .length(64, 'Invalid or expired token')
-      .regex(/^[a-f0-9]{64}$/i, 'Invalid or expired token'),
-  })
-  .strict();
+  .string()
+  .trim()
+  .length(64, 'Invalid or expired token')
+  .regex(/^[a-f0-9]{64}$/i, 'Invalid or expired token');
 
 export const reasonSchema = z
   .string('A reason is required')

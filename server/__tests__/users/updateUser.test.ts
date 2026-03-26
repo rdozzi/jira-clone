@@ -65,6 +65,8 @@ describe('Update user', () => {
           organizationId: expect.any(Number),
           organizationRole: expect.any(String),
           mustChangePassword: expect.any(Boolean),
+          isEmailVerified: expect.any(Boolean),
+          isDemoUser: expect.any(Boolean),
         },
         message: expect.any(String),
       }),

@@ -10,14 +10,15 @@ import { validateBody } from '../middleware/validation/validateBody';
 import {
   authCredentialCheckSchema,
   changePasswordPublicSchema,
+  requestChangePasswordPublicSchema,
 } from '../schemas/auth.schema';
 import { checkForToken } from '../middleware/authAndLoadInfoMiddleware/checkForToken';
-import { emailSchema } from '../schemas/base.schema';
 import { getUserInfoForPassword } from '../middleware/authAndLoadInfoMiddleware/getUserInfoForPassword';
 import { authRateLimiter } from '../middleware/rateLimiter';
 import { validateTokenQuery } from '../middleware/validation/validateTokenQuery';
 import { getUserInfoFromToken } from '../middleware/authAndLoadInfoMiddleware/getUserInfoFromToken';
 import { checkHoneypotForgotPassword } from '../middleware/authAndLoadInfoMiddleware/checkHoneypotForgotPassword';
+import { checkValidPasswordToken } from '../middleware/authAndLoadInfoMiddleware/checkValidPasswordToken';
 
 const router = Router();
 
@@ -42,9 +43,9 @@ router.post(
 // Request Password Reset (Forgot Password -> RESET_PASSWORD)
 router.post(
   '/request-password-reset',
-  authRateLimiter,
   checkHoneypotForgotPassword,
-  validateBody(emailSchema),
+  authRateLimiter,
+  validateBody(requestChangePasswordPublicSchema),
   getUserInfoForPassword,
   async (req: Request, res: Response): Promise<void> => {
     await requestPasswordReset(req, res, prisma);
@@ -56,6 +57,7 @@ router.post(
   '/change-password-public',
   authRateLimiter,
   validateTokenQuery,
+  checkValidPasswordToken,
   validateBody(changePasswordPublicSchema),
   getUserInfoFromToken,
   async (req: Request, res: Response): Promise<void> => {

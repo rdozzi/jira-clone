@@ -6,12 +6,18 @@ export async function createUserProfile(
   testDescription: string,
   organizationRole: OrganizationRole,
   organizationId: number,
-  options?: { mustChangePassword?: boolean },
+  options?: {
+    mustChangePassword?: boolean;
+    isEmailVerified?: boolean;
+    isDemoUser?: boolean;
+  },
 ) {
   const email = `organizationUser_${organizationRole}_${testDescription}@example.com`;
+  const emailLowerCase = email.toLowerCase();
   const { mustChangePassword = false } = options || {};
+  const { isEmailVerified = true } = options || {};
   const user = await prismaTest.user.findUnique({
-    where: { email: email },
+    where: { email: emailLowerCase },
   });
 
   if (user) {
@@ -19,7 +25,7 @@ export async function createUserProfile(
   } else {
     const user = await prismaTest.user.create({
       data: {
-        email: `organizationUser_${organizationRole}_${testDescription}@example.com`,
+        email: emailLowerCase,
         firstName: `User_${testDescription}_firstName`,
         lastName: `User_${testDescription}_lastName`,
         passwordHash: await hashPassword('seedPassword123'),
@@ -27,6 +33,8 @@ export async function createUserProfile(
         organizationRole: organizationRole,
         organizationId: organizationId,
         mustChangePassword: mustChangePassword,
+        isEmailVerified: isEmailVerified,
+        isDemoUser: false,
       },
     });
     return user;

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   emailAuthSchema,
+  emailSchema,
   passwordAuthSchema,
   passwordSchema,
 } from './base.schema';
@@ -8,6 +9,10 @@ import {
 export const authCredentialCheckSchema = z.object({
   email: emailAuthSchema,
   password: passwordAuthSchema,
+});
+
+export const requestChangePasswordPublicSchema = z.object({
+  email: emailSchema,
 });
 
 export const changePasswordPublicSchema = z

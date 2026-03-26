@@ -74,7 +74,7 @@ describe('Create a user', () => {
       id: expect.any(Number),
       firstName: 'Leonard',
       lastName: 'Nimoy',
-      email: 'createAUser@example.com',
+      email: 'createauser@example.com',
       passwordHash: null,
       globalRole: 'USER',
       avatarSource: 'NA',
@@ -86,6 +86,8 @@ describe('Create a user', () => {
       organizationId: expect.any(Number),
       organizationRole: expect.any(String),
       mustChangePassword: expect.any(Boolean),
+      isDemoUser: expect.any(Boolean),
+      isEmailVerified: expect.any(Boolean),
     });
     expect(res.body.message).toEqual('User created successfully');
     expect(sendTokenEmail).toHaveBeenCalled();

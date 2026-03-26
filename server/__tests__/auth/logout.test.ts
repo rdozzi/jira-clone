@@ -28,12 +28,6 @@ describe('Logout Auth Route', () => {
       OrganizationRole.ADMIN,
       organization.id,
     );
-    // userNoToken = await createUserProfile(
-    //   prismaTest,
-    //   `${testDescription}-NoToken`,
-    //   OrganizationRole.USER,
-    //   organization.id,
-    // );
     token = generateJwtToken(
       user.id,
       user.globalRole,
@@ -80,8 +74,6 @@ describe('Logout Auth Route', () => {
   // 1) Unsuccessful Logout: No token
   it('logout should fail without a token', async () => {
     const res = await request(app).post('/api/auth/logout');
-
-    console.log('error', res.body.error, 'message', res.body.message);
     expect(res.status).toBe(401);
     expect(res.body.error).toBe('No token provided');
   });

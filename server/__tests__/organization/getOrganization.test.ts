@@ -19,7 +19,6 @@ describe('Get Organization By User', () => {
     await prismaTest.$connect();
     await resetTestDatabase();
     organization = await createOrganization(prismaTest, testDescription);
-    console.log(organization);
     user = await createUserProfile(
       prismaTest,
       `${testDescription}_1`,
@@ -41,8 +40,6 @@ describe('Get Organization By User', () => {
     const res = await request(app)
       .get(`/api/organization`)
       .set('Authorization', `Bearer ${token}`);
-    console.log(res.body.data);
-    // console.log(typeof res.body.data);
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Organization fetched successfully');
     expect(res.body.data).toEqual(

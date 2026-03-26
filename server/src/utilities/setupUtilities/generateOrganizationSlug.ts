@@ -1,8 +1,8 @@
 import slugify from 'slugify';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 export async function generateOrganizationSlug(
-  prisma: PrismaClient,
+  prisma: PrismaClient | Prisma.TransactionClient,
   orgName: string,
 ): Promise<string> {
   const baseSlug = slugify(orgName, {

@@ -28,7 +28,6 @@ export async function resetTestDatabase() {
     'OrganizationCommentUsage',
     'OrganizationUserUsage',
     'OrganizationLabelUsage',
-    'OrganizationActivityLogUsage',
     'OrganizationFileStorageUsage',
     'OrganizationBannedEmailsUsage',
   ];

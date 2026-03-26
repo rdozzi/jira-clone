@@ -10,7 +10,6 @@ import { createUserProfile } from '../../src/utilities/testUtilities/createUserP
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
-import { redisClient } from '../../src/lib/connectRedis';
 
 describe('Self-update user password', () => {
   let token: string;
@@ -37,7 +36,6 @@ describe('Self-update user password', () => {
     );
   });
   afterAll(async () => {
-    await redisClient.quit();
     await prismaTest.$disconnect();
   });
 
@@ -58,14 +56,14 @@ describe('Self-update user password', () => {
 
     const matchesNewPassword = await bcrypt.compare(
       'NewPassWord2!',
-      updatedUser!.passwordHash,
+      updatedUser!.passwordHash!,
     );
 
     expect(matchesNewPassword).toBe(true);
 
     const matchesOldPassword = await bcrypt.compare(
       'seedPassword123',
-      updatedUser!.passwordHash,
+      updatedUser!.passwordHash!,
     );
 
     expect(matchesOldPassword).toBe(false);

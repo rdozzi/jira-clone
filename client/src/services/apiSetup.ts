@@ -5,13 +5,16 @@ export async function createOrg(
   orgRegistrationPayload: OrgRegistrationPayload,
 ) {
   try {
-    const res = await apiFetch(`/api/setup/seed-organization-and-superadmin`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const res = await apiFetch(
+      `/api/setup/create-organization-and-superadmin`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orgRegistrationPayload),
       },
-      body: JSON.stringify(orgRegistrationPayload),
-    });
+    );
 
     const createOrgPayload = await res.json().catch(() => null);
 

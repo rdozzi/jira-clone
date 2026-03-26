@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { PrismaClient, OrganizationRole } from '@prisma/client';
+import { PrismaClient, OrganizationRole, Prisma } from '@prisma/client';
 import { buildLogEvent } from '../services/buildLogEvent';
 import { createCountTables } from '../services/setupServices/createCountTables';
 import { logBus } from '../lib/logBus';
 import { generateOrganizationSlug } from '../utilities/setupUtilities/generateOrganizationSlug';
 import { tokenGenerationService } from '../services/tokenServices/tokenGenerationService';
 
-export async function seedOrganizationAndSuperAdmin(
+export async function createOrganizationAndSuperAdmin(
   req: Request,
   res: Response,
   prisma: PrismaClient,
@@ -17,29 +17,13 @@ export async function seedOrganizationAndSuperAdmin(
 
     const slugName = await generateOrganizationSlug(prisma, organizationName);
 
-    // Check if organization exists
-    const organization = await prisma.organization.findUnique({
-      where: { slug: slugName },
-    });
-
-    if (organization) {
-      // Check if a SuperAdmin within the organization exists
-      const superAdmin = await prisma.user.findFirst({
-        where: { organizationRole: OrganizationRole.SUPERADMIN },
-      });
-
-      if (superAdmin) {
-        res
-          .status(409)
-          .json({ message: 'SuperAdmin already exists. Contact for access.' });
-        return;
-      }
-    }
-
     // Update the organization and user with new user table specifications
-    const [newOrganization, newUser] = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       const newOrganization = await tx.organization.create({
-        data: { name: organizationName, slug: slugName },
+        data: {
+          name: organizationName,
+          slug: slugName,
+        },
       });
 
       const newUser = await tx.user.create({
@@ -56,14 +40,16 @@ export async function seedOrganizationAndSuperAdmin(
 
       await createCountTables(tx, newOrganization.id);
 
-      return [newOrganization, newUser];
+      return { newOrganization, newUser };
     });
 
-    tokenGenerationService(
+    const { newOrganization, newUser } = result;
+
+    await tokenGenerationService(
       prisma,
       newUser.id,
       newUser.id,
-      newUser.firstName!,
+      newUser.firstName,
       newUser.email,
       newOrganization.id,
       'ACCOUNT_ACTIVATION',
@@ -74,12 +60,13 @@ export async function seedOrganizationAndSuperAdmin(
       buildLogEvent({
         userId: newUser.id,
         actorType: 'USER',
-        action: 'SEED_USER_AND_ORGANIZATION',
+        action: 'CREATE_USER_AND_ORGANIZATION',
         targetId: newUser.id,
         targetType: 'USER',
         organizationId: newOrganization.id,
         metadata: {
-          role: `${newUser.globalRole}`,
+          globalRole: `${newUser.globalRole}`,
+          organizationRole: `${newUser.organizationRole}`,
           name: `${newUser.firstName}_${newUser.lastName}`,
           email: `${newUser.email}`,
           organization: newOrganization.name,
@@ -95,7 +82,15 @@ export async function seedOrganizationAndSuperAdmin(
       data: { organization: newOrganization, user: newUser },
     });
     return;
-  } catch (error) {
+  } catch (error: unknown) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2002'
+    ) {
+      return res.status(409).json({
+        message: 'SuperAdmin already exists. Contact for access.',
+      });
+    }
     console.error('Error creating user: ', error);
     res.status(500).json({ error: 'Failed to create user' });
     return;

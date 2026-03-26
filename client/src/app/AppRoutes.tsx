@@ -45,7 +45,7 @@ export function AppRoutes() {
         }
       />
       <Route path='/change-password' element={<ChangePasswordPage />} />
-      <Route path='/register' element={<RegisterOrganization />} />
+      <Route path='/register-organization' element={<RegisterOrganization />} />
       <Route path='/terms-of-service' element={<TermsOfService />} />
 
       {/* Protected Routes */}

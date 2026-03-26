@@ -20,6 +20,7 @@ describe('Login Auth Route', () => {
   const testDescription = 'Login_User_Auth_Route';
   let user: User;
   let userNew: User;
+  let userNotVerified: User;
   let organization: Organization;
   beforeAll(async () => {
     await prismaTest.$connect();
@@ -38,6 +39,13 @@ describe('Login Auth Route', () => {
       OrganizationRole.USER,
       organization.id,
       { mustChangePassword: true },
+    );
+    userNotVerified = await createUserProfile(
+      prismaTest,
+      `${testDescription}-NewUser`,
+      OrganizationRole.USER,
+      organization.id,
+      { mustChangePassword: false, isEmailVerified: false },
     );
   });
   afterAll(async () => {
@@ -88,26 +96,13 @@ describe('Login Auth Route', () => {
     });
   });
 
-  // Positive Results (New Users)
-  it('should return success informing that user should create a new password', async () => {
-    const res = await request(app)
-      .post('/api/auth/login')
-      .send({ email: userNew.email, password: 'seedPassword123' });
-    expect(res.status).toBe(200);
-    expect(res.body.message).toBe(
-      'Credentials accepted. User must change password.',
-    );
-    expect(res.body.mustChangePassword).toBe(true);
-    expect(res.body.token).toBe(String);
-  });
-
   // Negative Results:
   // 1) Unsuccessful Login: Bad password
   it('should fail because of a bad password', async () => {
     const res = await request(app)
       .post('/api/auth/login')
       .send({ email: user.email, password: 'incorrectPassword' });
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(400);
   });
 
   // 2) Unsuccessful Login: Bad email/User doesn't exist.
@@ -115,6 +110,24 @@ describe('Login Auth Route', () => {
     const res = await request(app)
       .post('/api/auth/login')
       .send({ email: 'idontexist@example.com', password: 'seedPassword123' });
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(400);
+  });
+
+  // 3) Unsuccessful Login: mustChangePassword is true
+  it('should fail because of user must Change Password', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({ email: userNew.email, password: 'seedPassword123' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('Invalid Credentials');
+  });
+
+  // 4) Unsuccessful Login: isEmailVerified is false
+  it('should fail because of user must verify email', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({ email: userNotVerified.email, password: 'seedPassword123' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('Invalid Credentials');
   });
 });

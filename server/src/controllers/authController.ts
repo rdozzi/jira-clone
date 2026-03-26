@@ -180,12 +180,12 @@ export async function changePasswordPublic(
         },
       });
 
-      await tx.passwordToken.update({
+      const updatedTokenRecord = await tx.passwordToken.update({
         where: { id: tokenRecord.id, tokenHash: tokenRecord.tokenHash },
         data: { hasBeenUsed: true },
       });
 
-      return { updatedUser };
+      return { updatedUser, updatedTokenRecord };
     });
 
     const logEvents = [

@@ -131,7 +131,6 @@ export async function createNewTicket(
   prisma: PrismaClient,
 ) {
   try {
-    console.log('Inside createNewTicket function');
     const userId = res.locals.userInfo.id;
     const organizationId = res.locals.userInfo.organizationId;
     const resourceType = res.locals.resourceType;

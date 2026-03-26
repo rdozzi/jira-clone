@@ -7,9 +7,9 @@ export function validateTokenQuery(
   res: Response,
   next: NextFunction,
 ) {
-  const { token } = req.query;
+  const { rawToken } = req.query;
 
-  const result = tokenQuerySchema.safeParse(token);
+  const result = tokenQuerySchema.safeParse(rawToken);
 
   if (!result.success) {
     const error: ZodError = result!.error;
@@ -18,6 +18,7 @@ export function validateTokenQuery(
       error: 'Validation failed',
       message: prettifiedError,
     });
+
     return;
   }
 

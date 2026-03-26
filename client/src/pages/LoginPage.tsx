@@ -270,7 +270,7 @@ function LoginPage() {
                   <Button
                     type='link'
                     onClick={() => {
-                      navigate('/register');
+                      navigate('/register-organization');
                     }}
                   >
                     Register

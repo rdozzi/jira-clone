@@ -1,0 +1,83 @@
+// import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
+// import request from 'supertest';
+
+// import { OrganizationRole, Organization, User } from '@prisma/client';
+// import { app } from '../../../app';
+// import { prismaTest } from '../../../lib/prismaTestClient';
+// import { createOrganization } from '../../../utilities/testUtilities/createOrganization';
+// import { createUserProfile } from '../../../utilities/testUtilities/createUserProfile';
+// import { resetTestDatabase } from '../../../utilities/testUtilities/resetTestDatabase';
+// import { generateJwtToken } from '../../../utilities/testUtilities/generateJwtToken';
+// import { createOrgCountRecords } from '../../../utilities/testUtilities/createOrgCountRecords';
+// import { redisClient } from '../../../lib/connectRedis';
+
+// describe.skip('createLabel', () => {
+//   let token: string;
+//   let user: User;
+//   let organization: Organization;
+//   const testDescription = 'createLabel';
+//   beforeAll(async () => {
+//     await prismaTest.$connect();
+//     await resetTestDatabase();
+//     organization = await createOrganization(prismaTest, testDescription);
+//     await createOrgCountRecords(prismaTest, organization.id);
+//     user = await createUserProfile(
+//       prismaTest,
+//       testDescription,
+//       OrganizationRole.ADMIN,
+//       organization.id,
+//     );
+//     token = generateJwtToken(
+//       user.id,
+//       user.globalRole,
+//       user.organizationId,
+//       user.organizationRole,
+//     );
+//   });
+//   afterAll(async () => {
+//     redisClient.quit();
+//     await prismaTest.$disconnect();
+//   });
+
+//   it('should create a label', async () => {
+//     const res = await request(app)
+//       .post('/api/labels')
+//       .set('Authorization', `Bearer ${token}`)
+//       .send({ name: `${testDescription}_label`, color: '#FF0000' });
+//     expect(res.status).toBe(201);
+//     expect(res.body).toEqual({
+//       message: 'Label created successfully',
+//       data: {
+//         id: expect.any(Number),
+//         name: `Createlabel_label`, // Hard-coded to satisfy test purposes
+//         color: '#FF0000',
+//         createdAt: expect.any(String),
+//         organizationId: expect.any(Number),
+//       },
+//     });
+//   });
+//   it('should give a 400 error message: string length', async () => {
+//     const res = await request(app)
+//       .post('/api/labels')
+//       .set('Authorization', `Bearer ${token}`)
+//       .send({ name: `4lxh8GJoElTXMposwhki7t7m9s`, color: '#FF0000' });
+//     //random.org: Length is 26 chars long.
+//     expect(res.status).toBe(400);
+//     expect(res.body).toEqual({
+//       error: 'Validation failed',
+//       message: expect.any(String),
+//     });
+//   });
+//   it('should give a 400 error message: invalid color format', async () => {
+//     const res = await request(app)
+//       .post('/api/labels')
+//       .set('Authorization', `Bearer ${token}`)
+//       .send({ name: `${testDescription}_label`, color: '#1234567' });
+//     //random.org: Length is 26 chars long.
+//     expect(res.status).toBe(400);
+//     expect(res.body).toEqual({
+//       error: 'Validation failed',
+//       message: expect.any(String),
+//     });
+//   });
+// });
