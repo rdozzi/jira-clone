@@ -91,7 +91,7 @@ router.patch(
   '/users/:userId/soft-delete',
   authorizeOrganizationRole(OrganizationRole.ADMIN),
   validateParams,
-  blockSelfDelete,
+  blockSelfDelete(),
   async (req: Request, res: Response): Promise<void> => {
     await deleteUser(req, res, prisma);
   },

@@ -1,9 +1,6 @@
 import { Request, Response, Router } from 'express';
 import prisma from '../lib/prisma';
-import {
-  seedOrganizationAndSuperAdmin,
-  // seedSuperUser,
-} from '../controllers/setupController';
+import { createOrganizationAndSuperAdmin } from '../controllers/setupController';
 import { validateBody } from '../middleware/validation/validateBody';
 import {
   seedOrganizationSchema,
@@ -11,16 +8,18 @@ import {
 } from '../schemas/setup.schema';
 import { checkHoneypotAndTimer } from '../middleware/setupMiddleware/checkHoneypotAndTimer';
 import { checkDisposableDomains } from '../middleware/setupMiddleware/checkDisposableDomains';
+import { termsOfServiceCheck } from '../middleware/setupMiddleware/termsOfServiceCheck';
 
 const router = Router();
 
 router.post(
-  '/seed-organization-and-superadmin',
+  '/create-organization-and-superadmin',
   checkHoneypotAndTimer(),
+  termsOfServiceCheck,
   validateBody(seedOrganizationSchema),
   checkDisposableDomains(),
   async (req: Request, res: Response): Promise<void> => {
-    await seedOrganizationAndSuperAdmin(req, res, prisma);
+    await createOrganizationAndSuperAdmin(req, res, prisma);
   },
 );
 
