@@ -30,9 +30,8 @@ function RegisterOrganization() {
     }
 
     const createOrgPayload = { duration, ...values };
-    console.log(createOrgPayload);
 
-    // createOrg(createOrgPayload);
+    createOrg(createOrgPayload);
     form.resetFields();
   };
 
