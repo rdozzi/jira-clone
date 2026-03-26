@@ -24,25 +24,25 @@ describe('Get Projects', () => {
       prismaTest,
       `${testDescription}_1`,
       OrganizationRole.ADMIN,
-      organization.id
+      organization.id,
     );
     await createProject(
       prismaTest,
-      `${testDescription}_1`,
+      `${testDescription}_2`,
       user.id,
-      organization.id
+      organization.id,
     );
     await createProject(
       prismaTest,
-      `${testDescription}_1`,
+      `${testDescription}_3`,
       user.id,
-      organization.id
+      organization.id,
     );
     token = generateJwtToken(
       user.id,
       user.globalRole,
       user.organizationId,
-      user.organizationRole
+      user.organizationRole,
     );
   });
   afterAll(async () => {

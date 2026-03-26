@@ -1,4 +1,20 @@
-import { describe, expect, afterAll, beforeAll, it } from '@jest/globals';
+jest.mock('../../src/services/tokenServices/sendTokenEmail', () => ({
+  sendTokenEmail: jest
+    .fn<() => Promise<{ messageId: string; messageUrl: string }>>()
+    .mockResolvedValue({
+      messageId: 'test-id',
+      messageUrl: 'test-url',
+    } as { messageId: string; messageUrl: string }),
+}));
+
+jest.mock('../../src/lib/logBus', () => ({
+  logBus: {
+    emit: jest.fn(),
+    on: jest.fn(),
+  },
+}));
+
+import { describe, expect, afterAll, beforeAll, it, jest } from '@jest/globals';
 import { OrganizationRole, Organization, User, Project } from '@prisma/client';
 
 import { app } from '../../src/app';
@@ -32,11 +48,11 @@ describe('Test user counters', () => {
     organization = await createOrganization(prismaTest, testDescription);
     organization2 = await createOrganization(
       prismaTest,
-      `${testDescription}_2`
+      `${testDescription}_2`,
     );
     organization3 = await createOrganization(
       prismaTest,
-      `${testDescription}_3`
+      `${testDescription}_3`,
     );
     await createOrgCountRecords(prismaTest, organization.id);
     await createOrgCountRecords(prismaTest, organization2.id);
@@ -46,50 +62,50 @@ describe('Test user counters', () => {
       prismaTest,
       testDescription,
       OrganizationRole.ADMIN,
-      organization.id
+      organization.id,
     );
     user2 = await createUserProfile(
       prismaTest,
       `${testDescription}_2`,
       OrganizationRole.ADMIN,
-      organization2.id
+      organization2.id,
     );
     user3 = await createUserProfile(
       prismaTest,
       `${testDescription}_3`,
       OrganizationRole.ADMIN,
-      organization3.id
+      organization3.id,
     );
     project = await createProject(
       prismaTest,
       testDescription,
       user.id,
-      organization.id
+      organization.id,
     );
     await createProjectMember(
       prismaTest,
       project.id,
       user.id,
       'ADMIN',
-      organization.id
+      organization.id,
     );
     token = generateJwtToken(
       user.id,
       user.globalRole,
       user.organizationId,
-      user.organizationRole
+      user.organizationRole,
     );
     token2 = generateJwtToken(
       user2.id,
       user2.globalRole,
       user2.organizationId,
-      user2.organizationRole
+      user2.organizationRole,
     );
     token3 = generateJwtToken(
       user3.id,
       user3.globalRole,
       user3.organizationId,
-      user3.organizationRole
+      user3.organizationRole,
     );
   });
   afterAll(async () => {
@@ -99,16 +115,17 @@ describe('Test user counters', () => {
 
   // Happy Path (Increment + Total)
   it('org-level user should be 1', async () => {
-    await request(app)
+    const req = await request(app)
       .post('/api/users')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        email: 'createAUser@example.com',
+        email: 'createauser@example.com',
         firstName: 'Leonard',
         lastName: 'Nimoy',
-        password: 'Test1234!',
         organizationRole: OrganizationRole.USER,
       });
+
+    const newUser = req.body.data;
 
     const userOrgTotal = await prismaTest.organizationUserUsage.findUnique({
       where: { organizationId: organization.id },
@@ -118,8 +135,14 @@ describe('Test user counters', () => {
     const totalCount = userOrgTotal!.totalUsers;
     expect(totalCount).toEqual(1);
 
+    const tokenRecord = await prismaTest.passwordToken.findFirst({
+      where: { userId: newUser.id },
+    });
+
+    await prismaTest.passwordToken.delete({ where: { id: tokenRecord!.id } });
+
     await prismaTest.user.delete({
-      where: { email: 'createAUser@example.com' },
+      where: { email: 'createauser@example.com' },
     });
   });
 
@@ -133,12 +156,13 @@ describe('Test user counters', () => {
       .post('/api/users')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        email: 'createAUser@example.com',
+        email: 'createauser@example.com',
         firstName: 'Leonard',
         lastName: 'Nimoy',
-        password: 'Test1234!',
         organizationRole: OrganizationRole.USER,
       });
+
+    const newUser = res.body.data;
 
     expect(res.status).toBe(201);
 
@@ -150,8 +174,14 @@ describe('Test user counters', () => {
     const totalCount = userOrgTotal!.totalUsers;
     expect(totalCount).toEqual(1000);
 
+    const tokenRecord = await prismaTest.passwordToken.findFirst({
+      where: { userId: newUser.id },
+    });
+
+    await prismaTest.passwordToken.delete({ where: { id: tokenRecord!.id } });
+
     await prismaTest.user.delete({
-      where: { email: 'createAUser@example.com' },
+      where: { email: 'createauser@example.com' },
     });
   });
 
@@ -168,12 +198,11 @@ describe('Test user counters', () => {
         email: 'createAUser@example.com',
         firstName: 'Leonard',
         lastName: 'Nimoy',
-        password: 'Test1234!',
         organizationRole: OrganizationRole.USER,
       });
     expect(res.status).toBe(403);
     expect(res.body.message).toContain(
-      'The organization has reached the maximum limit of this resource'
+      'The organization has reached the maximum limit of this resource',
     );
   });
 
@@ -194,7 +223,6 @@ describe('Test user counters', () => {
         email: 'createAUser2@example.com',
         firstName: 'Leonard',
         lastName: 'Nimoy',
-        password: 'Test1234!',
         organizationRole: OrganizationRole.USER,
       });
 
@@ -205,12 +233,11 @@ describe('Test user counters', () => {
         email: 'createAUser3@example.com',
         firstName: 'William',
         lastName: 'Shatner',
-        password: 'Test1234!',
         organizationRole: OrganizationRole.USER,
       });
     expect(res2.status).toBe(403);
     expect(res2.body.message).toContain(
-      'The organization has reached the maximum limit of this resource'
+      'The organization has reached the maximum limit of this resource',
     );
     expect(res3.status).toBe(201);
     expect(res3.body.message).toContain('User created successfully');

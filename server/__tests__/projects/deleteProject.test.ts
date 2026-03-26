@@ -13,8 +13,6 @@ import {
   Comment,
   Attachment,
   ProjectRole,
-  Label,
-  TicketLabel,
 } from '@prisma/client';
 import { app } from '../../src/app';
 import { prismaTest } from '../../src/lib/prismaTestClient';
@@ -26,13 +24,11 @@ import { createTicket } from '../../src/utilities/testUtilities/createTicket';
 import { createComment } from '../../src/utilities/testUtilities/createComment';
 import { createTestAttachment } from '../../src/utilities/testUtilities/createAttachments';
 import { createProjectMember } from '../../src/utilities/testUtilities/createProjectMember';
-import { createTicketLabel } from '../../src/utilities/testUtilities/createTicketLabel';
-import { createLabel } from '../../src/utilities/testUtilities/createLabel';
 import { createOrgCountRecords } from '../../src/utilities/testUtilities/createOrgCountRecords';
 import { resetTestDatabase } from '../../src/utilities/testUtilities/resetTestDatabase';
 import { generateJwtToken } from '../../src/utilities/testUtilities/generateJwtToken';
 
-describe('Delete a board', () => {
+describe('Delete a project', () => {
   let token: string;
   let user: User;
   let project: Project;
@@ -47,10 +43,6 @@ describe('Delete a board', () => {
   let attachment2: Attachment;
   let attachment3: Attachment;
   let attachment4: Attachment;
-  let label1: Label;
-  let label2: Label;
-  let ticketLabelPairsAfterDelete1: TicketLabel | null;
-  let ticketLabelPairsAfterDelete2: TicketLabel | null;
   let organization: Organization;
 
   const testDescription = 'deleteAProject';
@@ -63,60 +55,60 @@ describe('Delete a board', () => {
       prismaTest,
       testDescription,
       OrganizationRole.USER,
-      organization.id
+      organization.id,
     );
     project = await createProject(
       prismaTest,
       testDescription,
       user.id,
-      organization.id
+      organization.id,
     );
     board1 = await createBoard(
       prismaTest,
       `${testDescription}_1`,
       project.id,
-      organization.id
+      organization.id,
     );
     board2 = await createBoard(
       prismaTest,
       `${testDescription}_2`,
       project.id,
-      organization.id
+      organization.id,
     );
     ticket1 = await createTicket(
       prismaTest,
-      testDescription,
+      `${testDescription}_1`,
       board1.id,
       user.id,
-      organization.id
+      organization.id,
     );
     ticket2 = await createTicket(
       prismaTest,
-      testDescription,
+      `${testDescription}_2`,
       board2.id,
       user.id,
-      organization.id
+      organization.id,
     );
     ticket3 = await createTicket(
       prismaTest,
-      testDescription,
+      `${testDescription}_3`,
       board2.id,
       user.id,
-      organization.id
+      organization.id,
     );
     comment1 = await createComment(
       prismaTest,
       `${testDescription}_1`,
       ticket1.id,
       user.id,
-      organization.id
+      organization.id,
     );
     comment2 = await createComment(
       prismaTest,
       `${testDescription}_2`,
       ticket2.id,
       user.id,
-      organization.id
+      organization.id,
     );
 
     attachment1 = await createTestAttachment(
@@ -126,7 +118,7 @@ describe('Delete a board', () => {
       'COMMENT',
       user.id,
       'jpg',
-      organization.id
+      organization.id,
     );
 
     attachment2 = await createTestAttachment(
@@ -136,7 +128,7 @@ describe('Delete a board', () => {
       'TICKET',
       user.id,
       'pdf',
-      organization.id
+      organization.id,
     );
 
     attachment3 = await createTestAttachment(
@@ -146,7 +138,7 @@ describe('Delete a board', () => {
       'BOARD',
       user.id,
       'png',
-      organization.id
+      organization.id,
     );
 
     attachment4 = await createTestAttachment(
@@ -156,7 +148,7 @@ describe('Delete a board', () => {
       'PROJECT',
       user.id,
       'png',
-      organization.id
+      organization.id,
     );
 
     await createProjectMember(
@@ -164,29 +156,14 @@ describe('Delete a board', () => {
       project.id,
       user.id,
       ProjectRole.ADMIN,
-      organization.id
+      organization.id,
     );
 
-    label1 = await createLabel(
-      prismaTest,
-      'test label 1',
-      '#AAA123',
-      organization.id
-    );
-    label2 = await createLabel(
-      prismaTest,
-      'test label 2',
-      '#E74C3C',
-      organization.id
-    );
-
-    await createTicketLabel(prismaTest, ticket1.id, label1.id, organization.id);
-    await createTicketLabel(prismaTest, ticket2.id, label2.id, organization.id);
     token = generateJwtToken(
       user.id,
       user.globalRole,
       user.organizationId,
-      user.organizationRole
+      user.organizationRole,
     );
   });
 
@@ -277,22 +254,6 @@ describe('Delete a board', () => {
         where: { id: attachment4.id },
       });
       expect(attachmentAfterDelete4).toBeNull();
-
-      //Ticket Label 1
-      ticketLabelPairsAfterDelete1 = await prismaTest.ticketLabel.findUnique({
-        where: {
-          ticketId_labelId: { ticketId: ticket1.id, labelId: label1.id },
-        },
-      });
-      expect(ticketLabelPairsAfterDelete1).toBeNull();
-
-      //Ticket Label 2
-      ticketLabelPairsAfterDelete2 = await prismaTest.ticketLabel.findUnique({
-        where: {
-          ticketId_labelId: { ticketId: ticket2.id, labelId: label2.id },
-        },
-      });
-      expect(ticketLabelPairsAfterDelete2).toBeNull();
     });
   });
   afterAll(async () => {

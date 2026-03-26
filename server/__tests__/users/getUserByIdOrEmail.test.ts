@@ -41,8 +41,6 @@ describe('Get User By Id or email', () => {
       .get(`/api/users`)
       .query({ userId: `${user.id}` })
       .set('Authorization', `Bearer ${token}`);
-
-    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual({
       id: expect.any(Number),

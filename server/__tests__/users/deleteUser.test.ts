@@ -47,45 +47,47 @@ describe('Delete a user', () => {
       prismaTest,
       testDescription,
       OrganizationRole.ADMIN,
-      organization.id
+      organization.id,
+      { mustChangePassword: false, isEmailVerified: true, isDemoUser: false },
     );
     user2 = await createUserProfile(
       prismaTest,
       testDescription,
       OrganizationRole.USER,
-      organization.id
+      organization.id,
+      { mustChangePassword: false, isEmailVerified: true, isDemoUser: false },
     );
     token = generateJwtToken(
       user1.id,
       user1.globalRole,
       user1!.organizationId,
-      user1!.organizationRole
+      user1!.organizationRole,
     );
     project = await createProject(
       prismaTest,
       testDescription,
       user2.id,
-      organization.id
+      organization.id,
     );
     board = await createBoard(
       prismaTest,
       testDescription,
       project.id,
-      organization.id
+      organization.id,
     );
     ticket = await createTicket(
       prismaTest,
       testDescription,
       board.id,
       user2.id,
-      organization.id
+      organization.id,
     );
     comment = await createComment(
       prismaTest,
       testDescription,
       ticket.id,
       user2.id,
-      organization.id
+      organization.id,
     );
     attachment = await createTestAttachment(
       prismaTest,
@@ -94,7 +96,7 @@ describe('Delete a user', () => {
       'COMMENT',
       user2.id,
       'jpg',
-      organization.id
+      organization.id,
     );
   });
   afterAll(async () => {
@@ -109,8 +111,6 @@ describe('Delete a user', () => {
     expect(res.status).toBe(200);
     expect(res.body.message).toContain('User deleted successfully');
     await waitForExpect(async () => {
-      //User
-
       //projects
       const projectAfterDelete = await prismaTest.project.findUnique({
         where: { id: project.id },
