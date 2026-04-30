@@ -171,7 +171,7 @@ function LoginPage() {
                   color: 'var(--antd-text-secondary, #666)',
                 }}
               >
-                A full-stack project management application
+                A multi-tenant project management application
               </p>
 
               <p
