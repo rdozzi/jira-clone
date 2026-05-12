@@ -164,7 +164,7 @@ function LoginPage() {
         >
           <Card title='Login' style={{ width: 400 }} bordered={false}>
             <div style={{ marginBottom: 16, textAlign: 'center' }}>
-              <h2 style={{ margin: 0 }}>Jira Clone</h2>
+              <h2 style={{ margin: 0 }}>ProjectFlow</h2>
               <p
                 style={{
                   margin: '4px 0',

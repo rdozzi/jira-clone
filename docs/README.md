@@ -1,10 +1,10 @@
-<h1> Jira-Clone (Portfolio MVP) </h1>
+<h1> ProjectFlow (A multi-tenant project management application) </h1>
 
 <h2> Table of Contents </h2>
 
 <h2> 1. Introduction</h2>
 
-This is a Jira-clone project management application MVP that I created as a part of a personal education project in my ongoing journey into fullstack web development and software engineering. The application is designed to manage tasks among teams of users representing tickets/issues in tabular, Kanban-like, and calendar views.
+This is a Jira-like project management application MVP that I created as a part of a personal education project in my ongoing journey into fullstack web development and software engineering. The application is designed to manage tasks among teams of users representing tickets/issues in tabular, Kanban-like, and calendar views.
 
 <h2> 2. Architecture Overview </h2>
 
